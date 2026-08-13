@@ -83,6 +83,19 @@ Le noyau de supporters change de côté d'un plan à l'autre dans les premières
 
 Vu depuis les gradins, ils sont donc **en bas à gauche** du cadre.
 
+### Le remplissage — une progression, pas un hasard
+
+La tribune est tantôt vide, tantôt occupée, et ça doit se lire comme le temps qui passe, pas comme une incohérence. **L'occupation ne fait que croître, jamais l'inverse.**
+
+| Moment du film | Tribune | Barrière |
+|---|---|---|
+| Avant (plans 01 à 04) | **complètement vide**, pas une personne | déserte |
+| L'arrivée (plan 05) | quelques grappes qui montent, un cinquième des places | le kop commence à se former à gauche |
+| Le match (plans 06 à 13) | **un tiers occupée**, par petits groupes espacés | le kop installé, une vingtaine |
+| Le coup de sifflet (plans 18-19) | même tiers, mais debout | le kop debout sur la rambarde |
+
+Elle n'est **jamais pleine**, à aucun moment. Et on ne revoit jamais un gradin vide après l'avoir vu occupé.
+
 ### Le public — recensement à respecter partout
 
 Le nombre de spectateurs variait d'un plan à l'autre : tribune bondée ici, quinze personnes là. C'est aussi visible qu'une erreur de décor. **Un seul effectif pour toute la soirée :**
