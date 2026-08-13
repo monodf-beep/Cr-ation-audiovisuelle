@@ -60,11 +60,19 @@ Une seule, sur un grand côté.
 - **Derrière chaque but : de hauts filets pare-ballons blancs** tendus sur des poteaux. C'est du filet à mailles larges, souple, pas du grillage rigide.
 - **Pas de grillage type chantier autour du terrain.** Une simple barrière basse borde la piste par endroits.
 
-### Le décor
+### Le décor — la règle d'axe, la plus facile à rater
 
-- **Une grande montagne arrondie, isolée, occupe tout le fond** derrière la tribune. Sommet vert, flancs boisés, forme massive et reconnaissable. Ce n'est pas une crête dentelée ni une paroi verticale.
-- Entre la tribune et la montagne : **les toits de tuiles de la ville**, des maisons basses, quelques immeubles.
-- Des arbres sur les côtés.
+Le stade est au fond d'une vallée : il y a du relief des deux côtés. **Mais ce ne sont pas les mêmes montagnes**, et les confondre fait apparaître le même sommet dans deux directions opposées. C'est l'erreur la plus visible commise jusqu'ici.
+
+**Quand on regarde VERS la tribune :**
+- **Le Môle** occupe tout le fond, derrière elle : une masse **arrondie, isolée, massive**, sommet vert, flancs boisés, forme très reconnaissable.
+- Entre la tribune et la montagne, les toits de tuiles de la ville, des maisons basses, quelques immeubles.
+
+**Quand on regarde DEPUIS la tribune, vers le terrain et au-delà :**
+- Pas de Môle. **Une crête boisée plus longue, plus raide et moins caractéristique**, souvent coiffée de nuages bas.
+- Des arbres, des installations sportives annexes, quelques bâtiments.
+
+**Test :** si un plan est pris depuis les gradins et qu'on y voit une grosse montagne arrondie isolée, il est faux.
 
 ### Le public — recensement à respecter partout
 
@@ -110,10 +118,15 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
 - Behind each goal: TALL WHITE BALL-STOP NETTING on poles — soft wide-mesh
   net, NOT rigid chain-link fence. There is no site fencing around the pitch,
   only a low barrier rail in places.
-- Backdrop: ONE large rounded isolated green mountain filling the horizon
-  behind the stand, wooded flanks, massive and smooth — NOT a jagged ridge,
-  NOT a vertical cliff. Between stand and mountain, the tiled roofs of a small
-  town. Trees at the sides.
+- BACKDROP DEPENDS ON WHICH WAY THE CAMERA POINTS — there is relief on both
+  sides of the valley but they are DIFFERENT mountains:
+  * Looking TOWARDS the stand: ONE large rounded isolated green mountain
+    filling the horizon behind it, wooded flanks, massive and smooth. Between
+    stand and mountain, the tiled roofs of a small town.
+  * Looking FROM the stand out over the pitch: NO rounded isolated peak.
+    Instead a LONGER, STEEPER, less distinctive WOODED RIDGE, often with low
+    cloud on it, plus trees and a few outbuildings.
+  Never show the same rounded peak in both directions.
 - Scattered kit: white mobile goals parked on the track, a grey wheeled
   officials' platform, green tarpaulins over stacked equipment, orange cones.
 
@@ -143,6 +156,7 @@ CROWD CENSUS — the same turnout in every shot:
 | Pas de piste d'athlétisme du tout | La piste est visible dans presque tous les plans larges |
 | Piste réduite à un liseré rouge au bord du terrain | Six à huit couloirs, une bande large, lignes blanches |
 | Hiver : neige, boue, buée, doudounes, ciel noir | Été : sec, chaud, manches courtes, ciel bleu profond |
+| Le même sommet arrondi visible dans les deux directions | Le Môle derrière la tribune, une crête plus longue en face |
 
 ---
 
@@ -156,6 +170,7 @@ Avant de valider un plan large, vérifier dans l'ordre :
 3. **La tribune** est-elle en retrait derrière la piste, avec des bancs bruns et un toit plat sombre ?
 4. **Derrière les buts** : du filet blanc, pas du grillage ?
 5. **La montagne** est-elle une masse arrondie unique, pas une crête ?
-6. **Le public** est-il au bon effectif — un noyau d'une vingtaine, le reste dispersé, la tribune jamais pleine ?
+6. **La montagne est-elle du bon côté** — le sommet arrondi isolé uniquement derrière la tribune, une crête plus longue dans l'autre sens ?
+7. **Le public** est-il au bon effectif — un noyau d'une vingtaine, le reste dispersé, la tribune jamais pleine ?
 
 Un plan qui rate deux de ces cinq points est à refaire : l'œil ne relève pas le détail isolé, mais il sent immédiatement que deux plans ne sont pas le même endroit.
