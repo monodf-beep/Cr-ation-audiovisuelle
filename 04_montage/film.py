@@ -1,73 +1,86 @@
 #!/usr/bin/env python3
 """
-Monte le film a partir des plans fixes ET des clips generes.
+Monte le film : dix plans sur seize sont de la vraie video, et il y a du son.
 
-Quatre plans sont maintenant de la vraie video : le maillot deploye qui
-ondule, le dos qui respire, la goutte sur le patch, le drapeau qui claque.
-Les onze autres restent des images, animees en pan-and-scan.
+Deux reproches ont fait cette version. Le film n'avait pas de son du tout,
+et onze plans sur quinze etaient des images animees en pan-and-scan — ce
+qui, meme avec de vrais mouvements de camera, se lit comme un diaporama
+des qu'il y en a plusieurs de suite.
 
-Le montage doit tenir le style, pas seulement les plans :
+Ce qui a change :
 
-  RACCORD   les clips reviennent du modele avec leur propre contraste et
-            leur propre balance. On les repasse dans le registre du film,
-            sinon la coupe entre un clip et une image se voit.
-  COUPE     franche partout. Aucun fondu enchaine : ce n'est pas un
-            diaporama qui glisse d'une vue a l'autre, c'est un film qui
-            coupe.
-  RYTHME    long au debut et a la fin, court au milieu. La sequence des
-            flocages tombe a une seconde par plan.
-  SILENCE   0,6 s de noir avant le dos. C'est le seul effet du film.
+  MATIERE  les plans qui trainaient sont devenus des clips. Il ne reste
+           d'images que la ou le plan dure moins d'une seconde : a cette
+           duree, une image ne se lit pas comme une image mais comme un
+           flash.
+  RYTHME   les plans sont plus courts et plus nombreux. Le milieu descend
+           a une seconde, la fin a sept dixiemes. Seuls trois plans
+           durent trois secondes : le maillot deploye, les crampons, le
+           dos.
+  SON      04_montage/son.py fabrique une piste calee sur ces coupes, avec
+           une frappe sur chacune. C'est elle qui tient le rythme autant
+           que le montage.
+  RACCORD  les clips reviennent du modele avec leur propre contraste ; on
+           les repasse dans leur registre, sinon la coupe se voit.
 
 Usage : python3 04_montage/film.py
-Sortie : 04_montage/champions-26.mp4  (1080x1920, 24 fps)
+Sortie : 04_montage/champions-26.mp4  (1080x1920, 24 fps, avec son)
 """
 
 import os
+import subprocess
 import numpy as np
 from PIL import Image, ImageFilter
 import imageio.v2 as imageio
+import imageio_ffmpeg
 
 SRC = "11_final"
 CLIPS = "19_clips"
+MUET = "04_montage/champions-26-muet.mp4"
+SON = "04_montage/champions-26.wav"
 OUT = "04_montage/champions-26.mp4"
 W, H, FPS = 1080, 1920, 24
 
-# type    : "image" -> pan-and-scan  |  "clip" -> video retimee
+# kind    : "clip" (video) | "image" (pan-and-scan)
 # duree   : secondes a l'ecran
-# mouv    : (echelle depart, echelle fin, dx, dy) pour les images
-# depart  : position de depart dans le clip, en fraction de sa duree
-# registre: "net" (le maillot) ou "sale" (le lieu) ; "nuit" = "sale" + une
-#           correction de nuit, pour les deux plans du lieu qui restaient
-#           verts et clairs a cote du reste
+# reglage : clip  -> (depart dans le clip 0-1, zoom de recadrage, dx, dy)
+#           image -> (echelle depart, echelle fin, dx, dy)
+# registre: "net" (le maillot) | "sale" (le lieu) | "nuit" (lieu de jour a corriger)
 PLANS = [
-    # --- l'objet ---
-    ("clip",  "CLIP-PATCH",  3.0, None,                        0.00, "net"),
-    ("image", "PLAN-03",     2.0, (1.04, 1.04,  0.6, -0.3),    None, "net"),
+    # --- l'objet : deux macros, lumiere dure ---
+    ("clip",  "CLIP-R2",       2.5, (0.00, 1.00,  0.0,  0.0), "net"),
+    # on remonte le cadre : le bas du clip garde le haut de FORZAFC coupe en
+    # deux, et une demi-lettre se lit comme du texte casse
+    ("clip",  "CLIP-ECUSSON",  2.5, (0.00, 1.45,  0.0, -0.75), "net"),
 
-    # --- le lieu ---
-    ("image", "AMAT-02",     2.0, (1.00, 1.08,  0.0,  0.0),    None, "nuit"),
-    ("image", "GP-CRAMPONS", 3.0, (1.00, 1.10,  0.0,  0.0),    None, "nuit"),
+    # --- le lieu : un flash, puis les crampons ---
+    ("image", "AMAT-02",       1.0, (1.00, 1.06,  0.0,  0.0), "nuit"),
+    # le clip est deja tourne de nuit : pas de correction d'heure a lui appliquer
+    ("clip",  "CLIP-CRAMPONS", 3.0, (0.00, 1.00,  0.0,  0.0), "sale"),
 
-    # --- le maillot ---
-    ("clip",  "CLIP-FACE",   3.0, None,                        0.00, "net"),
-    ("image", "PLATE-08",    2.0, (1.00, 1.00, -1.0,  1.0),    None, "net"),
-    ("image", "PLAN-06",     2.0, (1.02, 1.02,  0.0, -0.8),    None, "net"),
-    ("image", "PLAN-07",     2.0, (1.00, 1.09,  0.0,  0.0),    None, "net"),
-    ("image", "FLAG-01",     1.0, (1.04, 1.04,  0.0,  0.0),    None, "sale"),
+    # --- le maillot : le produit occupe le film ---
+    ("clip",  "CLIP-FACE",     3.0, (0.00, 1.00,  0.0,  0.0), "net"),
+    # on reste sur le debut de ces deux clips : plus loin, un pli du tissu
+    # deforme le flocage et le mot devient illisible
+    ("clip",  "CLIP-FORZA",    1.5, (0.00, 1.00,  0.0,  0.0), "net"),
+    ("clip",  "CLIP-MANCHE",   1.5, (0.00, 1.00,  0.0,  0.0), "net"),
+    ("clip",  "CLIP-FORCE",    1.2, (0.35, 1.00,  0.0,  0.0), "net"),
+    ("clip",  "CLIP-FACE",     1.0, (0.70, 1.10,  0.0,  0.0), "net"),
+    ("clip",  "CLIP-FLAG",     1.0, (0.30, 1.00,  0.0,  0.0), "sale"),
 
     # --- la montee ---
-    ("clip",  "CLIP-ULTRAS", 2.0, None,                        0.34, "sale"),
+    ("clip",  "CLIP-ULTRAS",   2.0, (0.34, 1.00,  0.0,  0.0), "sale"),
 
     # --- le dos ---
-    ("clip",  "CLIP-DOS",    3.0, None,                        0.00, "net"),
-    ("image", "PLAN-11",     1.0, (1.10, 1.00,  0.0,  0.0),    None, "net"),
-    ("image", "PLATE-12",    1.0, (1.00, 1.00, -1.0,  0.0),    None, "net"),
-    ("image", "PLAN-13",     1.0, (1.03, 1.03,  0.0,  0.0),    None, "net"),
-    ("image", "PLAN-15",     1.5, (1.02, 1.02,  0.0,  0.0),    None, "net"),
+    ("clip",  "CLIP-DOS",      3.0, (0.00, 1.00,  0.0,  0.0), "net"),
+    ("image", "PLAN-11",       0.7, (1.06, 1.00,  0.0,  0.0), "net"),
+    ("image", "PLATE-12",      0.7, (1.00, 1.00, -0.6,  0.0), "net"),
+    ("image", "PLAN-13",       0.7, (1.03, 1.03,  0.0,  0.0), "net"),
+    ("image", "PLAN-15",       1.8, (1.00, 1.04,  0.0,  0.0), "net"),
 ]
 
 NOIR_AVANT = "CLIP-DOS"
-NOIR_DUREE = 0.6
+NOIR_DUREE = 0.5
 
 
 # --------------------------------------------------------------------------
@@ -112,27 +125,26 @@ def raccord_sale(a, rng):
 
 
 def nuit(a):
-    """Ramene a la nuit les deux plans du lieu qui restaient clairs et verts.
+    """Ramene a la nuit les plans du lieu qui restaient clairs et verts.
 
     Le probleme n'est pas le style, c'est l'heure : a cote de macros
     cuivrees sous projecteur, une pelouse verte bien exposee lit comme un
-    autre jour. On ne fabrique pas une fausse nuit — on retire le vert,
-    on ferme d'un diaphragme, on laisse la lumiere ne tenir que le sujet.
+    autre jour. On ne fabrique pas une fausse nuit — on retire le vert, on
+    ferme d'un diaphragme, on laisse la lumiere ne tenir que le sujet.
     """
-    # le vert de l'herbe de jour, ramene vers la pelouse sous sodium
     vert = np.clip((a[..., 1] - (a[..., 0] + a[..., 2]) / 2) * 2.6, 0.0, 1.0)[..., None]
     a = a * (1.0 - vert * 0.42) + a * vert * 0.42 * np.array([1.16, 0.86, 0.50], np.float32)
 
-    a = np.clip(a * 0.72, 0.0, 1.0)                       # un diaphragme de moins
+    a = np.clip(a * 0.72, 0.0, 1.0)
     s = np.where(a < 0.5, 2.0 * a * a, 1.0 - 2.0 * (1.0 - a) ** 2)
-    a = np.clip(a * 0.45 + s * 0.55, 0.0, 1.0)            # les ombres se ferment
+    a = np.clip(a * 0.45 + s * 0.55, 0.0, 1.0)
 
     lum = a.mean(axis=2, keepdims=True)
-    haut = np.clip(lum * 2.1, 0.0, 1.0) ** 1.5            # seules les lampes restent
+    haut = np.clip(lum * 2.1, 0.0, 1.0) ** 1.5
     a = np.clip(a * (np.array([1.02, 0.94, 0.78], np.float32) * (1 - haut)
                      + np.array([1.12, 1.00, 0.80], np.float32) * haut), 0.0, 1.0)
 
-    h, w = a.shape[:2]                                    # la nuit tombe vers les bords
+    h, w = a.shape[:2]
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     d = np.sqrt(((xx - w / 2) / (w / 2)) ** 2 + ((yy - h / 2) / (h / 2)) ** 2)
     return a * np.clip(1.0 - 0.42 * (d / 1.3) ** 2.0, 0.0, 1.0)[..., None]
@@ -140,7 +152,12 @@ def nuit(a):
 
 def raccord(frame, registre, rng):
     a = frame.astype(np.float32) / 255.0
-    a = raccord_net(a, rng) if registre == "net" else raccord_sale(a, rng)
+    if registre == "net":
+        a = raccord_net(a, rng)
+    else:
+        a = raccord_sale(a, rng)
+        if registre == "nuit":
+            a = nuit(a)
     return (a * 255).astype(np.uint8)
 
 
@@ -148,11 +165,18 @@ def raccord(frame, registre, rng):
 # Cadrage
 # --------------------------------------------------------------------------
 
-def couvre(im):
-    """Remplit le cadre 9:16 sans deformer, en recadrant au centre."""
-    r = max(W / im.width, H / im.height)
+def couvre(im, zoom=1.0, dx=0.0, dy=0.0):
+    """Remplit le cadre 9:16 sans deformer, avec un recadrage optionnel.
+
+    Le zoom sert a sortir du cadre ce que le modele a laisse au bord : un
+    mot coupe en deux au bas de l'image se lit comme du texte casse, alors
+    qu'il suffit de le cadrer dehors.
+    """
+    r = max(W / im.width, H / im.height) * zoom
     im = im.resize((max(W, int(im.width * r)), max(H, int(im.height * r))), Image.LANCZOS)
-    x, y = (im.width - W) // 2, (im.height - H) // 2
+    mx, my = im.width - W, im.height - H
+    x = int(np.clip(mx / 2 + dx * mx / 2, 0, mx))
+    y = int(np.clip(my / 2 + dy * my / 2, 0, my))
     return im.crop((x, y, x + W, y + H))
 
 
@@ -181,30 +205,38 @@ def lissage(t):
 
 # --------------------------------------------------------------------------
 
-def frames_clip(name, duree, depart, registre, rng):
+_cache = {}
+
+
+def lire(name):
+    if name not in _cache:
+        r = imageio.get_reader(os.path.join(CLIPS, name + ".mp4"))
+        _cache[name] = [f for f in r]
+        r.close()
+    return _cache[name]
+
+
+def frames_clip(name, duree, reglage, registre, rng):
     """Prend une fenetre du clip, a sa vitesse reelle.
 
-    Le clip fait cinq secondes, le plan en fait deux ou trois. On ne le
-    reechantillonne pas pour l'etaler sur la duree du plan : un ralenti
-    synthetique se voit tout de suite, et le mouvement de camera du modele
-    est deja cale a la bonne vitesse. On coupe donc dedans, comme on
-    couperait dans un rush.
+    On ne reechantillonne pas pour etaler le clip sur la duree du plan : un
+    ralenti synthetique se voit tout de suite, et le mouvement de camera du
+    modele est deja cale a la bonne vitesse. On coupe dedans, comme dans un
+    rush.
     """
-    path = os.path.join(CLIPS, name + ".mp4")
-    reader = imageio.get_reader(path)
-    brut = [f for f in reader]
-    reader.close()
+    depart, zoom, dx, dy = reglage
+    brut = lire(name)
     n_src = len(brut)
     n_out = min(int(duree * FPS), n_src)
     d0 = int(depart * (n_src - n_out))
     for i in range(n_out):
-        f = np.asarray(couvre(Image.fromarray(brut[d0 + i]).convert("RGB")))
+        f = np.asarray(couvre(Image.fromarray(brut[d0 + i]).convert("RGB"), zoom, dx, dy))
         yield raccord(f, registre, rng)
 
 
-def frames_image(name, duree, mouv, registre, rng):
+def frames_image(name, duree, reglage, registre, rng):
     im = source(name, registre)
-    s0, s1, dx, dy = mouv
+    s0, s1, dx, dy = reglage
     n = int(duree * FPS)
     for i in range(n):
         t = lissage(i / max(n - 1, 1))
@@ -214,14 +246,14 @@ def frames_image(name, duree, mouv, registre, rng):
 if __name__ == "__main__":
     os.makedirs("04_montage", exist_ok=True)
     rng = np.random.default_rng(1961)
-    writer = imageio.get_writer(OUT, fps=FPS, codec="libx264", quality=9,
+    writer = imageio.get_writer(MUET, fps=FPS, codec="libx264", quality=9,
                                 macro_block_size=1, ffmpeg_params=["-pix_fmt", "yuv420p"])
     noir = np.zeros((H, W, 3), dtype=np.uint8)
     total = 0
 
-    for kind, name, duree, mouv, depart, registre in PLANS:
-        chemin = os.path.join(CLIPS if kind == "clip" else SRC,
-                              name + (".mp4" if kind == "clip" else ".jpg"))
+    for kind, name, duree, reglage, registre in PLANS:
+        ext = ".mp4" if kind == "clip" else ".jpg"
+        chemin = os.path.join(CLIPS if kind == "clip" else SRC, name + ext)
         if not os.path.exists(chemin):
             print(f"{name:14s} absent — plan saute")
             continue
@@ -231,17 +263,26 @@ if __name__ == "__main__":
                 writer.append_data(noir)
                 total += 1
 
-        gen = (frames_clip(name, duree, depart, registre, rng) if kind == "clip"
-               else frames_image(name, duree, mouv, registre, rng))
+        gen = (frames_clip if kind == "clip" else frames_image)(
+            name, duree, reglage, registre, rng)
         n = int(duree * FPS)
         dernier = (name == PLANS[-1][1])
         for i, f in enumerate(gen):
             if dernier:                       # fondu au noir sur le dernier plan
                 f = (f.astype(np.float32)
-                     * max(0.0, 1.0 - max(0.0, (i / n - 0.45)) / 0.55)).astype(np.uint8)
+                     * max(0.0, 1.0 - max(0.0, (i / n - 0.40)) / 0.60)).astype(np.uint8)
             writer.append_data(f)
             total += 1
-        print(f"{name:14s} {duree:>4.1f}s  {kind:5s} {registre}")
+        print(f"{total/FPS - duree:>5.1f}s  {name:14s} {duree:>4.1f}s  {kind:5s} {registre}")
 
     writer.close()
-    print(f"\n{OUT}  {total/FPS:.1f}s  {total} images")
+    print(f"\nimage : {total/FPS:.1f}s  {total} images")
+
+    if os.path.exists(SON):
+        ff = imageio_ffmpeg.get_ffmpeg_exe()
+        subprocess.run([ff, "-y", "-loglevel", "error", "-i", MUET, "-i", SON,
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                        "-shortest", "-movflags", "+faststart", OUT], check=True)
+        print(f"{OUT}  image + son")
+    else:
+        print(f"{SON} absent — lancer d'abord 04_montage/son.py")
