@@ -78,28 +78,28 @@ Rien de tout ça n'est décoratif : c'est le liant. Un plan photographié et un 
 
 ## 5. Découpage plan par plan
 
-`TERRAIN-XX` = plan de terrain fabriqué. `PLAN-XX` / `PLATE-XX` = photographie du vrai maillot, réétalonnée.
+Trois origines : `REEL-XX` = **photographie réelle du club** (le stade, le maillot porté). `PLAN-XX` / `PLATE-XX` = **photographie du vrai maillot**, recadrée. `NUIT-XX` / `AMAT-XX` / `FLAG-XX` / `TERRAIN-XX` = plans fabriqués, ancrés sur le vrai stade.
 
-### ACTE I — LE TERRAIN AVANT TOUT LE MONDE
+### ACTE I — LE LIEU
 
 | # | TC | Asset | Plan | Animation |
 |---|---|---|---|---|
-| 01 | 0:00–0:02 | `TERRAIN-01` | Noir. Un seul projecteur s'allume au loin, un point dur qui perce la brume. | Fixe. La halation gonfle sur l'amorçage. |
-| 02 | 0:02–0:04 | `TERRAIN-02` | Contre-plongée : le mât entier s'allume d'un coup, cônes de lumière dans le brouillard. | Léger push-in, flare qui traverse. |
-| 03 | 0:04–0:06 | `TERRAIN-03` | L'herbe mouillée en contre-jour rasant, la ligne de craie fraîche qui traverse. | Travelling bas, latéral, très lent. |
-| 04 | 0:06–0:08 | `TERRAIN-04` | Le banc des remplaçants, vide, trempé, sous le halo. | Fixe. Une goutte tombe. |
-| 05 | 0:08–0:10 | `PLAN-01` | Macro de la maille. Une bande dorée accroche la lumière dans le noir. | Dérive latérale de 2 %. |
-| 06 | 0:10–0:12 | `PLAN-04` | Le maillot de dos, suspendu, au quart de lumière. On devine le 26, on ne le lit pas. | Fixe, léger flottement du tissu. |
+| 01 | 0:00–0:02 | `REEL-01` | **Le vrai stade**, vu du haut, jour gris de vallée. Le synthétique à bandes, la piste rouge, les crêtes dans les nuages. | Fixe. Push-in très lent. |
+| 02 | 0:02–0:04 | `NUIT-03` | La nuit tombée. Un mât de projecteurs, la crête en silhouette, les lumières de la ville en bas. | Léger tilt montant. |
+| 03 | 0:04–0:06 | `NUIT-01` | Le terrain entier sous les projecteurs, vu du même coin. Personne. | Fixe, dérive latérale de 2 %. |
+| 04 | 0:06–0:08 | `NUIT-02` | Au ras du synthétique : les brins plastique, la bille de caoutchouc, la ligne blanche, la piste rouge au bord. | Travelling bas, latéral. |
+| 05 | 0:08–0:10 | `PLAN-01` | Macro de la maille du maillot. Une bande dorée accroche la lumière. | Dérive latérale. |
+| 06 | 0:10–0:12 | `PLAN-04` | Le maillot de dos, au quart de lumière. On devine le 26, on ne le lit pas. | Fixe, flottement du tissu. |
 
 ### ACTE II — CEUX QUI Y VONT
 
 | # | TC | Asset | Plan | Animation |
 |---|---|---|---|---|
-| 07 | 0:12–0:14 | `PLAN-02` | Le bord déchiré d'un coup de pinceau rouge, lumière rasante. | Push-in lent le long de la déchirure. |
-| 08 | 0:14–0:16 | `TERRAIN-05` | Des crampons plantés dans l'herbe, cadrés sous le genou. Contre-jour, buée. | Push-in sec sur l'impact sonore. |
+| 07 | 0:12–0:14 | `PLAN-02` | Le bord déchiré d'un coup de pinceau rouge. | Push-in lent. |
+| 08 | 0:14–0:16 | `AMAT-05` | Des crampons dans l'herbe, cadrés sous le genou. Buée. | Push-in sec sur l'impact. |
 | 09 | 0:16–0:18 | `PLAN-03` | L'écusson FC CLUSES. Le « 1961 » sort de l'ombre en dernier. | La lumière balaie de la droite. |
-| 10 | 0:18–0:20 | `PLAN-06` | La couronne, et dessous **UNIS DANS TOUS NOS DÉFIS**. | Tilt descendant de la couronne vers la devise. |
-| 11 | 0:20–0:22 | `TERRAIN-06` | Une main serre le cordage du filet. Gouttes en contre-jour. Rien au-dessus du poignet. | Fixe. Le filet vibre. |
+| 10 | 0:18–0:20 | `PLAN-06` | La couronne, et dessous **UNIS DANS TOUS NOS DÉFIS**. | Tilt descendant. |
+| 11 | 0:20–0:22 | `TERRAIN-06` | Une main serre le cordage du filet. Rien au-dessus du poignet. | Fixe. Le filet vibre. |
 | 12 | 0:22–0:24 | `PLAN-07` | Le patch **R2 LAuRAFoot**, et sous lui **FORCE ROUGE ET NOIR**. | Push-in sec. |
 
 ### ACTE III — LE SIGNE
@@ -107,15 +107,17 @@ Rien de tout ça n'est décoratif : c'est le liant. Un plan photographié et un 
 | # | TC | Asset | Plan | Animation |
 |---|---|---|---|---|
 | 13 | 0:24–0:26 | `PLATE-05` | **TARIM**, or sur nuit. | Travelling latéral (pan-and-scan). |
-| 14 | 0:26–0:28 | `PLATE-08` | **FORZAFC** traverse le cadre. | Travelling latéral rapide, le mot sort du cadre. |
-| 15 | 0:28–0:29 | `PLAN-09` | Le maillot de face, entier, pour la première fois. | Coupe franche, image quasi fixe. Un temps d'arrêt. |
-| 16 | 0:29–0:31 | `TERRAIN-08` | Le ballon immobile sur le point de penalty, projecteurs derrière. | Push-in très lent. |
-| 17 | 0:31–0:32 | `TERRAIN-07` | Une silhouette de dos s'en va vers la lumière. Tête hors cadre. | Travelling arrière, elle s'éloigne. |
-| 18 | 0:32–0:34 | `PLAN-11` | Le **26** plein cadre. | Pull-back qui découvre CHAMPIONS. |
-| 19 | 0:34–0:35 | `PLATE-12` | **CHAMPIONS**, la lumière court sur l'or. | Travelling latéral, puis amorce de remontée. |
-| 20 | 0:35–0:36 | `PLAN-13` | La remontée s'arrête sur **FC CLUSA**. | Arrêt sec sur le mot. |
-| 21 | 0:36–0:37 | `PLAN-14` | La **Croix de Savoie** plein cadre. Point culminant lumineux du film. | Push-in minimal, la lumière monte. |
-| 22 | 0:37–0:38 | `PLAN-15` | Croix de Savoie **et** FC CLUSA nets ensemble, le reste tombe dans le noir. | Fondu au noir. Le blason est la dernière chose visible. |
+| 14 | 0:26–0:28 | `PLATE-08` | **FORZAFC** traverse le cadre. | Travelling latéral rapide. |
+| 15 | 0:28–0:30 | `REEL-03` | **Le maillot porté.** Un buste, bras croisés, cadré sous le menton. La vraie photo du club. | Coupe franche, quasi fixe. Un temps d'arrêt. |
+| 16 | 0:30–0:32 | `FLAG-01` | Le **drapeau du Faucigny** sur le grillage, trempé. Or et rouge : les couleurs du maillot. | Fixe. Le tissu bouge à peine. |
+| 17 | 0:32–0:33 | `AMAT-07` | Une silhouette de dos s'en va vers la lumière. | Travelling arrière. |
+| 18 | 0:33–0:35 | `PLAN-11` | Le **26** plein cadre. | Pull-back qui découvre CHAMPIONS. |
+| 19 | 0:35–0:36 | `PLATE-12` | **CHAMPIONS**. | Travelling latéral, puis remontée. |
+| 20 | 0:36–0:37 | `PLAN-13` | La remontée s'arrête sur **FC CLUSA**. | Arrêt sec. |
+| 21 | 0:37–0:38 | `PLAN-14` | La **Croix de Savoie** plein cadre. | Push-in minimal. |
+| 22 | 0:38–0:39 | `PLAN-15` | Croix de Savoie **et** FC CLUSA nets ensemble. | Fondu au noir. |
+
+**Plans de réserve :** `TERRAIN-08` (le ballon sur le point de penalty), `FLAG-02` (le drapeau porté à bout de bras), `REEL-02` (le stade vu du bord de touche).
 
 ---
 
