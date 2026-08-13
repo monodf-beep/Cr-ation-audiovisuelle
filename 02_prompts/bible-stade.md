@@ -12,9 +12,9 @@ D'après les photographies du club, du sol et depuis les gradins.
 
 ## La saison — le point le plus mal briefé jusqu'ici
 
-**Le film se passe par une soirée de fin de printemps, pas en hiver.**
+**Le film se passe par une soirée d'été, pas en hiver.**
 
-Un titre de R2 se joue en mai ou juin. Les photographies du club le confirment : feuillage vert, ciel clair, manches courtes. J'ai pourtant briefé « nuit d'hiver » sur tous les premiers plans, d'où de la neige, de la boue, de la buée et des doudounes qui n'ont rien à faire là.
+On est en août, et les photographies du club sont estivales : feuillage vert dense, ciel clair, manches courtes. J'ai pourtant briefé « nuit d'hiver » sur tous les premiers plans, d'où de la neige, de la boue, de la buée et des doudounes qui n'ont rien à faire là.
 
 | Interdit | À la place |
 |---|---|
@@ -25,7 +25,7 @@ Un titre de R2 se joue en mai ou juin. Les photographies du club le confirment :
 | Ciel noir | **Ciel bleu profond de crépuscule tardif**, encore lumineux à l'horizon |
 | Arbres nus | Feuillage vert dense |
 
-**Le ciel est le point à surveiller.** En juin à 21 h, les projecteurs sont allumés mais le ciel n'est pas noir : il reste d'un bleu profond, plus clair au-dessus des crêtes. C'est plus distinctif que le noir, et c'est le détail qui date immédiatement une image de match.
+**Le ciel est le point à surveiller.** En août à 21 h 30, les projecteurs sont allumés mais le ciel n'est pas noir : il reste d'un bleu profond, plus clair au-dessus des crêtes. C'est plus distinctif que le noir, et c'est le détail qui date immédiatement une image de match.
 
 ---
 
@@ -75,7 +75,7 @@ Ce sont les détails qui rendent le lieu vrai : des **buts blancs mobiles** rang
 ## Bloc à coller dans les prompts
 
 ```
-SEASON — late spring / early summer evening, NEVER winter:
+SEASON — a SUMMER evening in August, NEVER winter:
 - NO snow, NO mud, NO breath vapour, NO puffer jackets, NO scarves, NO hoods.
 - People wear t-shirts, polos or light sweatshirts; bare arms are normal.
 - The synthetic pitch is DRY, with black rubber crumb visible between the blades.
@@ -121,7 +121,7 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
 | Crêtes dentelées, parois verticales, vallée encaissée | Une seule montagne arrondie et massive, boisée |
 | Pas de piste d'athlétisme du tout | La piste est visible dans presque tous les plans larges |
 | Piste réduite à un liseré rouge au bord du terrain | Six à huit couloirs, une bande large, lignes blanches |
-| Hiver : neige, boue, buée, doudounes, ciel noir | Fin de printemps : sec, doux, manches courtes, ciel bleu profond |
+| Hiver : neige, boue, buée, doudounes, ciel noir | Été : sec, chaud, manches courtes, ciel bleu profond |
 
 ---
 

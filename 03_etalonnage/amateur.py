@@ -42,6 +42,10 @@ OUT = "08_amateur"
 PRESET = {
     "05_plans":  dict(iso=0.30, lift=0.040, clip=0.95, ca=0.6, jpeg=(70, 82), sharp=60),
     "06_terrain": dict(iso=0.62, lift=0.070, clip=0.91, ca=1.1, jpeg=(56, 76), sharp=95),
+    # Les photos du stade sont prises de jour, bien exposees et bien cadrees :
+    # ce sont les plus propres du lot, donc celles qui encaissent le traitement
+    # le plus dur avant de ressembler au reste du film.
+    "09_reel/plans": dict(iso=0.85, lift=0.095, clip=0.88, ca=1.5, jpeg=(44, 68), sharp=130),
 }
 
 
