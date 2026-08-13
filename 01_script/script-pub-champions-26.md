@@ -1,134 +1,120 @@
 # FC CLUSA — « CHAMPIONS 26 »
 ## Script publicitaire — maillot commémoratif R2 LAuRAFoot
 
-**Format :** 9:16 vertical · **Durée :** 40 s · **22 plans**
-**Aucune voix off. Aucun texte ajouté.**
-**Règle absolue :** aucun visage.
+**9:16 · 40 s · 21 plans · aucune voix off · aucun visage**
 
 ---
 
-## 1. L'idée
+## L'histoire : un soir
 
-**Le maillot est le seul texte du film.**
+Le film raconte **une soirée, dans l'ordre**. Le dernier match de la saison, celui où ça se joue.
 
-Pas de narrateur, pas de slogan écrit par une agence, aucun mot incrusté. Tous les mots qui apparaissent à l'écran sont déjà floqués sur le vêtement :
+Avant, pendant, après. C'est tout. Il n'y a rien à comprendre, il n'y a qu'à suivre — et c'est exactement ce qu'on veut : personne ne décode un film de quarante secondes sur un téléphone.
 
-`FC CLUSES 1961` · `FORZAFC` · `UNIS DANS TOUS NOS DÉFIS` · `FORCE ROUGE ET NOIR` · `R2 LAuRAFoot` · `CHAMPIONS` · `26` · `FC CLUSA`
+**Ce qui donnait l'impression que ça ne racontait rien**, dans les versions précédentes, c'est que les plans se répondaient par idées au lieu de se suivre dans le temps. Un maillot qui dialogue avec une vallée, c'est un concept ; ça se explique, donc ça ne se regarde pas.
 
-Lus dans l'ordre, ces mots racontent déjà toute l'histoire. Qui on est, ce qu'on crie, ce qu'on s'est promis, à quel niveau on joue, ce qu'on a fait, en quelle année, et d'où on vient. Le club a écrit son propre scénario en le faisant imprimer sur du polyester, il y a des mois, sans le savoir.
+## Le maillot est l'horloge du film
 
-C'est cohérent avec tout le reste du projet : rien d'inventé, tout est vrai.
+On sait toujours où on en est dans la soirée en regardant le vêtement :
 
-## 2. Le mécanisme : appel et réponse
-
-Chaque mot du maillot appelle une image de la vallée qui lui répond. Le film est un dialogue entre un vêtement et un endroit.
-
-| Le maillot dit | La vallée répond |
+| Moment | Le maillot |
 |---|---|
-| `FC CLUSES 1961` | le stade au fond des parois |
-| `FORZAFC` | la tribune pleine, debout |
-| `UNIS DANS TOUS NOS DÉFIS` | les crampons dans la boue |
-| `FORCE ROUGE ET NOIR` | le drapeau du Faucigny, or et rouge |
-| `CHAMPIONS 26` | tout le monde debout |
+| Avant | plié, propre, sec, posé sur un banc |
+| Pendant | porté, mouillé, taché, en mouvement |
+| Après | jeté au sol, puis **le dos** |
 
-Personne ne parle et tout est dit. C'est ce qui remplace la voix off — et c'est plus fort, parce qu'un narrateur qui affirme « on est unis » est moins convaincant qu'un maillot qui le porte imprimé au-dessus d'une tribune pleine.
+C'est le seul mécanisme du film, et il est lisible sans y penser.
 
-## 3. Le moteur : le dos est un secret
+## Le secret : le dos
 
-Pendant trente secondes, **on ne voit jamais le dos du maillot.** Le film s'interdit donc `CHAMPIONS`, le `26`, `FC CLUSA` et la Croix de Savoie.
+Pendant trente secondes, on ne voit **jamais** le verso. Ce n'est pas un truc de montage, c'est juste comment on filme quelqu'un : pendant tout le match, on le voit de face.
 
-À la trentième seconde, **un joueur se retourne.** Tout tombe d'un coup, et la tribune répond.
+À la fin, il se retourne. Et ce qui est écrit dans le dos, c'est le résultat de la soirée.
 
-Sans ce secret, il n'y a pas de film : juste un catalogue. C'est la seule chose qui donne au dernier tiers le droit d'exister.
+`CHAMPIONS` · `26` · `FC CLUSA`
 
-| Acte | Temps | Ce qui se passe |
+---
+
+## Découpage
+
+`✓` disponible · `•` à produire
+
+### AVANT — 0:00 → 0:11
+*Le stade se prépare. Il n'y a encore personne.*
+
+| # | TC | Asset | Plan |
+|---|---|---|---|
+| 01 | 0:00–0:02 | ✓ `NUIT-03` | Noir. Un mât s'allume, seul, au fond de la vallée. |
+| 02 | 0:02–0:04 | ✓ `PAROIS` | Les parois au-dessus du terrain. La ville, minuscule, en bas. |
+| 03 | 0:04–0:06 | ✓ `TRIBUNE` | La tribune vide. Les gradins bruns, personne dessus. |
+| 04 | 0:06–0:08 | ✓ `CORNER` | Le drapeau de corner planté. Le terrain est prêt. |
+| 05 | 0:08–0:11 | • `VESTIAIRE` | **Le maillot plié, propre, posé sur le banc.** Rien n'a encore commencé. |
+
+### PENDANT — 0:11 → 0:28
+*Les gens arrivent. Le match se joue. Le maillot se salit.*
+
+| # | TC | Asset | Plan |
+|---|---|---|---|
+| 06 | 0:11–0:13 | • `ARRIVEE` | Des silhouettes montent les marches et s'installent. |
+| 07 | 0:13–0:15 | • `ULTRAS` | Un noyau d'une vingtaine à la rambarde, drapeaux du Faucigny. Le reste clairsemé. |
+| 08 | 0:15–0:17 | ✓ `AMAT-05` | Les crampons dans la boue. Cadrés sous le genou. |
+| 09 | 0:17–0:19 | ✓ `PLAN-03` | L'écusson `FC CLUSES 1961`, en gros, sur un maillot qui bouge. |
+| 10 | 0:19–0:21 | ✓ `PLATE-08` | `FORZAFC` traverse le cadre. |
+| 11 | 0:21–0:23 | ✓ `PLAN-06` | La couronne et `UNIS DANS TOUS NOS DÉFIS`, sur la manche. |
+| 12 | 0:23–0:25 | ✓ `PLAN-07` | Le patch `R2` et `FORCE ROUGE ET NOIR`. |
+| 13 | 0:25–0:26 | ✓ `PLAN-02` | Macro : le rouge du maillot, trempé, collé à la peau. |
+| 14 | 0:26–0:28 | ✓ `SOL-flash2` | **Le maillot par terre**, au flash. Le match est fini. |
+
+### APRÈS — 0:28 → 0:40
+*C'est gagné. Il se retourne.*
+
+| # | TC | Asset | Plan |
+|---|---|---|---|
+| 15 | 0:28–0:30 | ✓ `AMAT-07` | Une silhouette seule s'éloigne vers la lumière. |
+| 16 | 0:30–0:33 | • `DOS` | **Il se retourne.** Le dos, en pied. **Silence total.** |
+| 17 | 0:33–0:34 | ✓ `PLAN-11` | `26` |
+| 18 | 0:34–0:35 | ✓ `PLATE-12` | `CHAMPIONS` |
+| 19 | 0:35–0:37 | • `ULTRAS-FIN` | La tribune debout, drapeaux levés. |
+| 20 | 0:37–0:38 | ✓ `PLAN-13` | `FC CLUSA` |
+| 21 | 0:38–0:40 | ✓ `PLAN-15` | La Croix de Savoie et `FC CLUSA` ensemble. Fondu au noir. |
+
+**Carton :** `FC CLUSES 1961` — `CHAMPIONS R2 · LAuRAFoot 2026`
+
+---
+
+## Son
+
+Le son raconte la même soirée, et il est encore plus explicite que l'image.
+
+| | |
+|---|---|
+| 0:00 → 0:08 | Vent de vallée. Le claquement d'un projecteur qui s'amorce, puis son bourdonnement. Rien d'autre. |
+| 0:08 → 0:13 | Une porte de vestiaire. Des pas sur le béton. Des sièges qui claquent. La rumeur commence. |
+| 0:13 → 0:26 | Le match : crampons, respirations, une frappe hors champ, un tambour. Le chant part sur `FORZAFC`. |
+| 0:26 → 0:30 | Tout retombe. Il ne reste que la rumeur. |
+| **0:30 → 0:31** | **Coupe totale. Une seconde de rien**, pendant qu'il se retourne. |
+| 0:31 → 0:39 | Tout revient d'un coup. Plein régime jusqu'au blason. |
+| 0:39 → 0:40 | Un accord tenu. Fondu. |
+
+Cette seconde de silence est le seul effet du film. Tout ce qui précède existe pour la rendre possible.
+
+---
+
+## Plans à produire
+
+| Asset | Plan | Note |
 |---|---|---|
-| I — La vallée arrive | 0:00 → 0:10 | la nuit tombe sur le stade, la tribune se remplit |
-| II — Le maillot parle | 0:10 → 0:28 | les mots de la face, chacun suivi de sa réponse |
-| III — Le dos | 0:28 → 0:40 | il se retourne, la tribune se lève |
+| `VESTIAIRE` | Le maillot plié, propre, sur un banc de vestiaire, avant le match. | Fait basculer tout l'acte I : sans lui, on ne sait pas qu'on est *avant*. |
+| `ARRIVEE` | Des gens montent les marches, la tribune se garnit. | De dos, à contre-jour. |
+| `ULTRAS` | Un noyau d'une vingtaine à la rambarde, drapeaux. Le reste de la tribune quasi vide, des gens dispersés. | Une tribune de R2 entièrement debout n'existe pas. Ce qui existe : un petit groupe compact et beaucoup de vide autour. |
+| `ULTRAS-FIN` | Le même groupe, debout, drapeaux levés, à la fin. | Le retour du même endroit ferme la soirée. |
+| `DOS` | Le dos porté, en pied, sous les projecteurs. | À refaire en style amateur : sodium, projecteurs cramés, cadre penché. |
 
----
+## Ce qui a été écarté, et pourquoi
 
-## 4. Découpage
-
-`•` = plan à produire · `✓` = plan disponible
-
-### ACTE I — LA VALLÉE ARRIVE · 0:00 → 0:10
-
-| # | TC | Asset | Plan | Mouvement |
-|---|---|---|---|---|
-| 01 | 0:00–0:02 | ✓ `NUIT-03` | Noir. Un mât s'allume, seul, au fond d'une vallée. | Fixe, la halation gonfle |
-| 02 | 0:02–0:04 | • `PAROIS` | Les parois au-dessus du terrain, de nuit. La ville minuscule en bas. | Tilt descendant |
-| 03 | 0:04–0:07 | • `TRIBUNE-REMPLIT` | La tribune, de dos, vue des gradins bas : des silhouettes montent les marches, s'installent. | Fixe |
-| 04 | 0:07–0:10 | • `TRIBUNE-PLEINE` | La tribune pleine, de nuit. Des drapeaux du Faucigny au-dessus des têtes. | Push-in très lent |
-
-### ACTE II — LE MAILLOT PARLE · 0:10 → 0:28
-
-| # | TC | Asset | Plan | Mouvement |
-|---|---|---|---|---|
-| 05 | 0:10–0:12 | ✓ `PLAN-01` | Macro de la maille. Une bande dorée. **L'objet arrive, illisible.** | Dérive latérale |
-| 06 | 0:12–0:14 | ✓ `PLAN-02` | Le bord déchiré d'un coup de pinceau rouge. | Push-in lent |
-| 07 | 0:14–0:16 | ✓ `PLAN-03` | **`FC CLUSES 1961`.** L'écusson, la date sort en dernier. | Balayage de lumière |
-| 08 | 0:16–0:18 | • `CORNER` | *Réponse :* le drapeau de corner, la tribune et le mât derrière. Le lieu. | Fixe |
-| 09 | 0:18–0:20 | ✓ `PLATE-08` | **`FORZAFC`** traverse le cadre. | Travelling rapide |
-| 10 | 0:20–0:22 | • `TRIBUNE-DEBOUT` | *Réponse :* la tribune debout, bras levés, de dos. | Fixe, coupe sèche |
-| 11 | 0:22–0:24 | ✓ `PLAN-06` | **`UNIS DANS TOUS NOS DÉFIS`**, sous la couronne. | Tilt descendant |
-| 12 | 0:24–0:26 | ✓ `AMAT-05` | *Réponse :* les crampons dans la boue, cadrés sous le genou. | Push-in sec |
-| 13 | 0:26–0:27 | ✓ `PLAN-07` | **`R2 LAuRAFoot`** et **`FORCE ROUGE ET NOIR`**. | Push-in sec |
-| 14 | 0:27–0:28 | ✓ `FLAG-01` | *Réponse :* le drapeau du Faucigny. Or et rouge — les couleurs du maillot, mais celles du pays d'abord. | Fixe |
-
-### ACTE III — LE DOS · 0:28 → 0:40
-
-| # | TC | Asset | Plan | Mouvement |
-|---|---|---|---|---|
-| 15 | 0:28–0:30 | ✓ `AMAT-07` | Une silhouette s'éloigne vers la lumière. On la suit. | Travelling arrière |
-| 16 | 0:30–0:33 | • `DOS` | **Il se retourne.** Le dos, en pied, sous les projecteurs. **Silence total.** | Arrêt sec, puis push-in |
-| 17 | 0:33–0:34 | ✓ `PLAN-11` | Le **`26`** plein cadre. | Pull-back |
-| 18 | 0:34–0:35 | ✓ `PLATE-12` | **`CHAMPIONS`**, la lumière court sur l'or. | Travelling latéral |
-| 19 | 0:35–0:36 | • `TRIBUNE-EXPLOSE` | *Réponse :* toute la tribune debout, drapeaux levés. | Fixe, coupe sèche |
-| 20 | 0:36–0:37 | ✓ `PLAN-13` | **`FC CLUSA`**. | Arrêt sec |
-| 21 | 0:37–0:38 | ✓ `PLAN-14` | La **Croix de Savoie** plein cadre. | Push-in minimal |
-| 22 | 0:38–0:40 | ✓ `PLAN-15` | Croix de Savoie **et** `FC CLUSA` nets ensemble. | Fondu au noir |
-
-**Carton de fin :** `FC CLUSES 1961` / `CHAMPIONS R2 — LAuRAFoot 2026`
-Seul texte du film qui ne soit pas imprimé sur le maillot.
-
----
-
-## 5. Le son fait tout le travail
-
-Sans voix off, la bande son n'est plus un accompagnement : c'est la moitié du film. Et une tribune pleine nous donne le seul instrument dont on a besoin.
-
-- **0:00 → 0:04** — quasi silence. Le claquement d'amorçage d'un projecteur, son bourdonnement. Vent de vallée.
-- **0:04 → 0:10** — la rumeur monte : pas sur le béton, sièges qui claquent, voix, un tambour très loin.
-- **0:10 → 0:20** — la rumeur s'installe sous les plans du maillot. Elle ne monte plus, elle est là.
-- **0:20** — sur `FORZAFC` et la tribune debout : **le chant part.** Trois syllabes, scandées.
-- **0:20 → 0:30** — le chant tient, les crampons et les respirations passent par-dessus.
-- **0:30 → 0:31** — **coupe totale.** Une seconde de rien pendant qu'il se retourne.
-- **0:31 → 0:39** — tout revient d'un coup, plein régime, jusqu'au blason.
-- **0:39 → 0:40** — tombe. Un accord tenu. Fondu au noir.
-
-La seconde de silence à 0:30 est l'effet principal du film. Tout ce qui précède existe pour la rendre possible.
-
----
-
-## 6. Plans à produire
-
-Quatre nouveaux plans de tribune pleine, plus le dos à refaire. Tous de nuit, dans le style `AMAT` : dominante sodium, projecteurs cramés, noirs laiteux, cadrage penché.
-
-| Asset | Plan | Contrainte visages |
-|---|---|---|
-| `TRIBUNE-REMPLIT` | des silhouettes montent les marches et s'installent | vues de dos, de loin, à contre-jour |
-| `TRIBUNE-PLEINE` | la tribune pleine, drapeaux du Faucigny au-dessus des têtes | de dos depuis les rangs du bas |
-| `TRIBUNE-DEBOUT` | la tribune debout, bras levés | de dos, silhouettes |
-| `TRIBUNE-EXPLOSE` | tout le monde debout, drapeaux levés, le plus dense | de dos, contre-jour des projecteurs |
-| `PAROIS` | les parois de la vallée au-dessus du terrain, de nuit | aucune personne |
-| `DOS` | le dos porté, en pied, sous les projecteurs | tête hors cadre ou de dos |
-
-**Sur les visages dans une tribune :** une foule de nuit vue de dos et à contre-jour ne montre aucun visage par construction. C'est le seul endroit du film où on peut avoir du monde sans avoir à traiter des figures — et c'est aussi le plus vrai, parce qu'un supporter regarde le terrain, donc tourne le dos à celui qui photographie depuis les gradins.
-
-## 7. Ce que la tribune pleine change
-
-L'ancienne version disait « personne ne nous regarde ». C'était faux, et surtout c'était triste. Un club de R2 qui monte remplit son stade — c'est même à ça qu'on voit qu'une saison se passe bien.
-
-Le film ne raconte donc plus la solitude, il raconte **une vallée qui vient**. Ce qui rend le dernier plan bien plus fort : quand il se retourne, il ne se retourne pas vers des gradins vides, il se retourne vers deux cents personnes debout qui savent déjà ce qui est écrit.
+| | |
+|---|---|
+| Le dispositif appel-réponse | Il fallait le comprendre pour le suivre. Une chronologie ne se comprend pas, elle se suit. |
+| Le drapeau du Faucigny en réponse à `FORCE ROUGE ET NOIR` | Le Faucigny est **or et rouge**, le club **rouge et noir**. Ce n'était pas une rime, c'était une contradiction. Le drapeau reste, mais dans la tribune, où il est simplement vrai. |
+| La voix off | Sur demande. Le son de la tribune fait mieux le travail. |
+| Le gros plan du sponsor, le buste de face, la main sur le filet | Aucun rôle dans la soirée. |
