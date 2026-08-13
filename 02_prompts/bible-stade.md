@@ -48,7 +48,7 @@ Un **stade d'athlétisme**, pas un stade de football. Ça change tout : le terra
 
 ### La tribune
 
-Une seule, sur un grand côté.
+**Il n'y en a qu'UNE, et elle est sur un seul grand côté.** Jamais deux, jamais une en face. Les trois autres côtés de l'ovale n'ont que de l'herbe, du bitume, une barrière basse et quelques arbres. Un plan qui montre deux gradins est faux, même si le second est au loin.
 
 - **Longue, basse, ouverte sur les côtés**, toit plat sombre porté par des poteaux fins.
 - **Gradins en bancs bruns**, pente faible, huit à dix rangs.
@@ -74,6 +74,14 @@ Le stade est au fond d'une vallée : il y a du relief des deux côtés. **Mais c
 - Des arbres, des installations sportives annexes, quelques bâtiments.
 
 **Test :** si un plan est pris depuis les gradins et qu'on y voit une grosse montagne arrondie isolée, il est faux.
+
+### La place du kop — toujours la même
+
+Le noyau de supporters change de côté d'un plan à l'autre dans les premières versions. C'est aussi cassant qu'une erreur de décor, parce que tout le film repose sur l'idée qu'on suit **le même groupe au même endroit** du début à la fin.
+
+**Position fixe :** à la **gauche de la tribune** quand on regarde la tribune depuis le terrain, contre la barrière qui borde la piste, à hauteur de la surface de réparation. Toujours là, à l'arrivée comme au coup de sifflet.
+
+Vu depuis les gradins, ils sont donc **en bas à gauche** du cadre.
 
 ### Le public — recensement à respecter partout
 
@@ -108,8 +116,10 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
   never a thin red strip hugging the touchline. A darker brick-red throwing
   apron in one corner.
 - The grass pitch sits inside the oval. NOTHING is close to the touchline.
-- ONE long low covered stand on one side only, set BACK BEHIND THE TRACK, so
-  eight lanes separate the front row from the pitch. Dark flat roof on slim
+- EXACTLY ONE long low covered stand, on ONE side only, set BACK BEHIND THE
+  TRACK, so eight lanes separate the front row from the pitch. NEVER a second
+  stand, NEVER terracing opposite — the other three sides of the oval are bare
+  grass, tarmac, a low barrier rail and a few trees. Dark flat roof on slim
   posts, BROWN BENCH TIERS, eight to ten shallow rows, open sides, and behind
   it a building with a long row of windows.
 - FOUR FLOODLIGHT PYLONS at the FOUR CORNERS OF THE OVAL, far from both the
@@ -131,7 +141,10 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
 - Scattered kit: white mobile goals parked on the track, a grey wheeled
   officials' platform, green tarpaulins over stacked equipment, orange cones.
 
-CROWD CENSUS — the same turnout in every shot:
+CROWD CENSUS — the same turnout in the same place in every shot:
+- The knot of supporters is ALWAYS at the SAME SPOT: against the barrier to
+  the LEFT of the stand as seen from the pitch. Seen from inside the stand,
+  they are down at the front-left. Never on the other side.
 - About 150 people in total, no more. A seventh-tier club on title night,
   not a professional arena.
 - ONE compact knot of about twenty standing at the pitch-side barrier with
@@ -158,6 +171,8 @@ CROWD CENSUS — the same turnout in every shot:
 | Piste réduite à un liseré rouge au bord du terrain | Six à huit couloirs, une bande large, lignes blanches |
 | Hiver : neige, boue, buée, doudounes, ciel noir | Été : sec, chaud, manches courtes, ciel bleu profond |
 | Le même sommet arrondi visible dans les deux directions | Le sommet isolé derrière la tribune, une crête plus longue en face |
+| Deux tribunes dans le même plan | Une seule, les autres côtés sont nus |
+| Le kop qui change de côté | Toujours à gauche de la tribune, vue depuis le terrain |
 
 ---
 
@@ -172,6 +187,7 @@ Avant de valider un plan large, vérifier dans l'ordre :
 4. **Derrière les buts** : du filet blanc, pas du grillage ?
 5. **La montagne** est-elle une masse arrondie unique, pas une crête ?
 6. **La montagne est-elle du bon côté** — le sommet arrondi isolé uniquement derrière la tribune, une crête plus longue dans l'autre sens ?
-7. **Le public** est-il au bon effectif — un noyau d'une vingtaine, le reste dispersé, la tribune jamais pleine ?
+7. **Y a-t-il bien une seule tribune**, et le kop est-il à sa place habituelle, à gauche ?
+8. **Le public** est-il au bon effectif — un noyau d'une vingtaine, le reste dispersé, la tribune jamais pleine ?
 
 Un plan qui rate deux de ces cinq points est à refaire : l'œil ne relève pas le détail isolé, mais il sent immédiatement que deux plans ne sont pas le même endroit.
