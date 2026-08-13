@@ -10,11 +10,30 @@ Ce fichier fait pour le lieu ce que `prompts-nano-banana-pro.md` fait pour le ma
 
 D'après les photographies du club, du sol et depuis les gradins.
 
+## La saison — le point le plus mal briefé jusqu'ici
+
+**Le film se passe par une soirée de fin de printemps, pas en hiver.**
+
+Un titre de R2 se joue en mai ou juin. Les photographies du club le confirment : feuillage vert, ciel clair, manches courtes. J'ai pourtant briefé « nuit d'hiver » sur tous les premiers plans, d'où de la neige, de la boue, de la buée et des doudounes qui n'ont rien à faire là.
+
+| Interdit | À la place |
+|---|---|
+| Neige au sol | Herbe et bitume secs |
+| Boue, terrain détrempé | Synthétique sec, bille de caoutchouc visible |
+| Buée devant la bouche | Rien — il fait doux |
+| Doudounes, écharpes, capuches | T-shirts, polos, sweats légers, bras nus |
+| Ciel noir | **Ciel bleu profond de crépuscule tardif**, encore lumineux à l'horizon |
+| Arbres nus | Feuillage vert dense |
+
+**Le ciel est le point à surveiller.** En juin à 21 h, les projecteurs sont allumés mais le ciel n'est pas noir : il reste d'un bleu profond, plus clair au-dessus des crêtes. C'est plus distinctif que le noir, et c'est le détail qui date immédiatement une image de match.
+
+---
+
 ### Implantation
 
 Un **stade d'athlétisme**, pas un stade de football. Ça change tout : le terrain est au centre d'un ovale, et **rien n'est collé au terrain**.
 
-- **Piste d'athlétisme** rose-saumon, six à huit couloirs, **ovale complet** autour du terrain. Un aplat rouge-brique plus foncé dans un angle (aire de saut ou de lancer).
+- **Piste d'athlétisme** rose-saumon, **six à huit couloirs bien visibles, séparés par des lignes blanches**, ovale complet autour du terrain. C'est une piste **large** — elle occupe une bande épaisse dans le cadre, jamais un simple liseré rouge collé au terrain. Un aplat rouge-brique plus foncé dans un angle (aire de saut ou de lancer).
 - **Le terrain** au centre de l'ovale, en herbe à bandes de tonte.
 - **La tribune est en retrait, derrière la piste** — huit couloirs séparent le premier rang du bord du terrain. Aucun supporter n'est jamais à moins de vingt mètres de la touche.
 
@@ -56,9 +75,19 @@ Ce sont les détails qui rendent le lieu vrai : des **buts blancs mobiles** rang
 ## Bloc à coller dans les prompts
 
 ```
+SEASON — late spring / early summer evening, NEVER winter:
+- NO snow, NO mud, NO breath vapour, NO puffer jackets, NO scarves, NO hoods.
+- People wear t-shirts, polos or light sweatshirts; bare arms are normal.
+- The synthetic pitch is DRY, with black rubber crumb visible between the blades.
+- Trees are in full green leaf.
+- The sky is a DEEP BLUE late dusk, still luminous low over the ridge — NOT
+  black night. Floodlights are on against that blue.
+
 STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
-- A full oval PINK-SALMON ATHLETICS TRACK, six to eight lanes, surrounds the
-  pitch. A darker brick-red throwing/jumping apron in one corner.
+- A full oval PINK-SALMON ATHLETICS TRACK of SIX TO EIGHT LANES marked out in
+  white, surrounding the pitch. It is WIDE — a thick band across the frame,
+  never a thin red strip hugging the touchline. A darker brick-red throwing
+  apron in one corner.
 - The grass pitch sits inside the oval. NOTHING is close to the touchline.
 - ONE long low covered stand on one side only, set BACK BEHIND THE TRACK, so
   eight lanes separate the front row from the pitch. Dark flat roof on slim
@@ -91,6 +120,8 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
 | Tribune collée au terrain | Huit couloirs de piste entre le premier rang et la touche |
 | Crêtes dentelées, parois verticales, vallée encaissée | Une seule montagne arrondie et massive, boisée |
 | Pas de piste d'athlétisme du tout | La piste est visible dans presque tous les plans larges |
+| Piste réduite à un liseré rouge au bord du terrain | Six à huit couloirs, une bande large, lignes blanches |
+| Hiver : neige, boue, buée, doudounes, ciel noir | Fin de printemps : sec, doux, manches courtes, ciel bleu profond |
 
 ---
 
@@ -98,7 +129,8 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
 
 Avant de valider un plan large, vérifier dans l'ordre :
 
-1. **La piste est-elle là**, et rose-saumon ?
+0. **La saison est-elle la bonne** — sec, feuillage vert, pas de buée ni de doudoune, ciel bleu profond et non noir ?
+1. **La piste est-elle large**, rose-saumon, avec ses couloirs blancs ?
 2. **Le mât** est-il un poteau rond à tête rectangulaire unique, et loin du terrain ?
 3. **La tribune** est-elle en retrait derrière la piste, avec des bancs bruns et un toit plat sombre ?
 4. **Derrière les buts** : du filet blanc, pas du grillage ?
