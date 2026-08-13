@@ -65,7 +65,8 @@ Une seule, sur un grand côté.
 Le stade est au fond d'une vallée : il y a du relief des deux côtés. **Mais ce ne sont pas les mêmes montagnes**, et les confondre fait apparaître le même sommet dans deux directions opposées. C'est l'erreur la plus visible commise jusqu'ici.
 
 **Quand on regarde VERS la tribune :**
-- **Le Môle** occupe tout le fond, derrière elle : une masse **arrondie, isolée, massive**, sommet vert, flancs boisés, forme très reconnaissable.
+- **Un sommet isolé** occupe tout le fond, derrière elle : une masse **arrondie, presque pyramidale, massive**, entièrement boisée, très reconnaissable et détachée du reste du relief.
+- *Le nom de ce sommet reste à confirmer par le club.* Il n'a aucune incidence sur les prompts — seule la silhouette compte — mais il vaudrait mieux ne pas se tromper si une légende accompagne un jour les images.
 - Entre la tribune et la montagne, les toits de tuiles de la ville, des maisons basses, quelques immeubles.
 
 **Quand on regarde DEPUIS la tribune, vers le terrain et au-delà :**
@@ -152,11 +153,11 @@ CROWD CENSUS — the same turnout in every shot:
 | Mâts en treillis, ou à bras multiples écartés | Poteau rond fin, une seule tête rectangulaire au sommet |
 | Mâts plantés au bord de la touche ou derrière la tribune | Aux quatre angles de l'ovale, loin de tout |
 | Tribune collée au terrain | Huit couloirs de piste entre le premier rang et la touche |
-| Crêtes dentelées, parois verticales, vallée encaissée | Une seule montagne arrondie et massive, boisée |
+| Crêtes dentelées, parois verticales, vallée encaissée | Un sommet arrondi, massif et boisé, isolé du reste |
 | Pas de piste d'athlétisme du tout | La piste est visible dans presque tous les plans larges |
 | Piste réduite à un liseré rouge au bord du terrain | Six à huit couloirs, une bande large, lignes blanches |
 | Hiver : neige, boue, buée, doudounes, ciel noir | Été : sec, chaud, manches courtes, ciel bleu profond |
-| Le même sommet arrondi visible dans les deux directions | Le Môle derrière la tribune, une crête plus longue en face |
+| Le même sommet arrondi visible dans les deux directions | Le sommet isolé derrière la tribune, une crête plus longue en face |
 
 ---
 
