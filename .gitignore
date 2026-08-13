@@ -10,3 +10,4 @@
 04_montage/*.mp4
 19_clips/
 04_montage/*.wav
+__pycache__/
