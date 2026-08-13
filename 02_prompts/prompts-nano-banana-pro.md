@@ -1,8 +1,29 @@
 # Prompts image — « CHAMPIONS 26 »
 
-**Modèle :** `nano_banana_pro` (Google — Gemini 3 Pro Image), résolution `4k`, aspect ratio `9:16`
+**Modèle :** `nano_banana_pro` (Google — Gemini 3 Pro Image), résolution `4k`
 **Pourquoi celui-là :** meilleur rendu de texte et de logos du catalogue, accepte des images de référence, sort en 4K. C'est le seul qui tient une typo anguleuse comme `FORZAFC` ou `LAuRAFoot` sans la déformer.
-**Références à joindre à chaque appel :** les 3 photos réelles du maillot (face à plat, dos à plat, macro manche couronne) + la macro FORZAFC/écusson. Rôle média : `image`.
+
+## Médias de référence (uploadés dans Higgsfield)
+
+| ID média | Contenu | Plans concernés |
+|---|---|---|
+| `f8e03a96-2678-42e2-9508-b4480207606d` | photo réelle — face à plat, vue d'ensemble | 01, 02, 04, 09 |
+| `d5912c1c-7372-4f72-ac9f-fd0410192dd3` | photo réelle — macro FORZAFC + TARIM + écusson FC CLUSES 1961 | 03, 05, 08, 09 |
+| `8fa95b82-f704-450c-b09d-3081f5a0f2af` | photo réelle — manche gauche : couronne + UNIS DANS TOUS NOS DÉFIS | 06, 09 |
+| `f84a1157-adf4-4c6d-9753-7ae819044fdb` | photo réelle — manche droite : R2 LAuRAFoot + FORCE ROUGE ET NOIR | 07, 09 |
+| `5e2237c9-50ac-40f9-b069-c1e32fd2439f` | photo réelle — dos : Croix de Savoie, FC CLUSA, CHAMPIONS, 26 | 04, 11, 12, 13, 15 |
+| `f7fff009-c190-4417-9db2-9ab5fafc0066` | photo réelle — macro dos haut : Croix de Savoie + FC CLUSA | 13, 14, 15 |
+| `6f8a23bc-1a1c-4216-8015-4acbb5955d94` | rendu Meta AI — face | éclairage seulement |
+| `adc4d477-f649-4b25-a809-bbe2397fce89` | rendu Meta AI — dos | éclairage seulement |
+
+Les deux rendus Meta AI ne servent que de référence d'ambiance lumineuse : leurs couleurs et leurs textes sont faux.
+
+## Ratio : ne pas générer les plans larges en 9:16
+
+Vérifié à la production : en `9:16`, le modèle remplit la largeur du cadre avec le buste et **éjecte systématiquement les manches hors champ** — la devise `UNIS DANS TOUS NOS DÉFIS` et le patch `R2` sont tronqués à chaque essai, quelle que soit la formulation du prompt.
+
+- **Plans larges du maillot entier (04, 09)** → générer en `4:5`, recadrer en 9:16 au montage ou par outpaint.
+- **Macros (01, 02, 03, 05, 06, 07, 08, 11, 12, 13, 14, 15)** → `9:16` sans problème, la zone remplit le cadre.
 
 ---
 
