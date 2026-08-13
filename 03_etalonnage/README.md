@@ -1,5 +1,17 @@
 # Étalonnage — plans macro tirés des photos réelles
 
+## État : les 15 plans sont produits
+
+| Plans | Source | Fidélité |
+|---|---|---|
+| 01, 02, 03, 05, 06, 07, 08, 11, 12, 13, 14, 15 | photos réelles réétalonnées | exacte |
+| 04, 09 | génération 4:5, Nano Banana Pro | packshots, ~1 s d'écran chacun |
+| 10 | génération 9:16, Nano Banana Pro | paysage, aucun enjeu de détail |
+
+Les deux plans de matière (01, 02) ont finalement été tirés eux aussi des photos réelles plutôt que générés : ils ne portent aucun texte, mais les générer les aurait rendus étrangers à la texture des dix autres.
+
+**Sur le plan 10 :** l'image est une vallée alpine crédible, cadrée et étalonnée dans l'esprit de la vallée de l'Arve. Ce n'est pas une vue documentée de Cluses. Elle tient son rôle de respiration au montage, mais elle ne doit pas être présentée comme une photographie du lieu.
+
 ## Principe
 
 Dix des quinze plans du film sont des macros : l'écusson, TARIM, la couronne, le patch R2, FORZAFC, le 26, CHAMPIONS, FC CLUSA, la Croix de Savoie, le plan de fin. Pour ces dix plans, **on ne génère rien**. Les photos du vrai maillot sont déjà les images du film ; elles sont seulement remontées en résolution, recadrées et éclairées.

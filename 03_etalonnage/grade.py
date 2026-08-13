@@ -47,6 +47,19 @@ SOURCES = {
 # kind  : "plan" -> cadre 9:16 ; "plate" -> plaque large pour travelling
 # --------------------------------------------------------------------------
 PLANS = [
+    # --- ACTE I : la matiere, tiree elle aussi des vraies photos ---
+    # Ces deux plans ne portent aucun texte, mais ils donnent le ton de la
+    # matiere du film. Les generer les aurait rendus etrangers aux dix autres.
+    # Cadres tenus a l'ecart du carrelage visible en bas de la photo de manche,
+    # et de tout flocage : a ce stade du film aucune lettre ne doit apparaitre.
+    dict(id="01", kind="plan",  src="manche_g",   rot=0,
+         crop=(0.020, 0.705, 0.560, 0.885), light=(0.30, 0.88), ev=0.60,
+         note="macro maille, une bande doree accroche la lumiere dans le noir"),
+
+    dict(id="02", kind="plan",  src="dos_macro",  rot=0,
+         crop=(0.000, 0.25, 0.215, 0.50), light=(0.80, 0.25), ev=0.82,
+         note="bord dechire d'un coup de pinceau rouge, lumiere rasante"),
+
     dict(id="03", kind="plan",  src="face_macro", rot=90,
          crop=(0.581, 0.00, 0.845, 1.00), light=(0.80, 0.35), ev=0.94,
          note="ecusson FC CLUSES 1961, lumiere rasante venant de la droite"),
