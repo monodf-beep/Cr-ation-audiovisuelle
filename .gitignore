@@ -11,3 +11,7 @@
 19_clips/
 04_montage/*.wav
 __pycache__/
+20_audio/
+21_savoie/
+*.webp
+04_montage/coupes.json
