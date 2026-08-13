@@ -108,8 +108,9 @@ Trois origines : `REEL-XX` = **photographie réelle du club** (le stade, le mail
 |---|---|---|---|---|
 | 13 | 0:24–0:26 | `PLATE-05` | **TARIM**, or sur nuit. | Travelling latéral (pan-and-scan). |
 | 14 | 0:26–0:28 | `PLATE-08` | **FORZAFC** traverse le cadre. | Travelling latéral rapide. |
-| 15 | 0:28–0:30 | `REEL-03` | **Le maillot porté.** Un buste, bras croisés, cadré sous le menton. La vraie photo du club. | Coupe franche, quasi fixe. Un temps d'arrêt. |
-| 16 | 0:30–0:32 | `FLAG-01` | Le **drapeau du Faucigny** sur le grillage, trempé. Or et rouge : les couleurs du maillot. | Fixe. Le tissu bouge à peine. |
+| 15 | 0:28–0:30 | `REEL-03` | **Le maillot porté, de face.** Un buste, bras croisés, cadré sous le menton. La vraie photo du club. | Coupe franche, quasi fixe. Un temps d'arrêt. |
+| 15b | 0:30–0:32 | `DOS-nuit` | **Le dos porté, sur le terrain, sous les projecteurs.** `CHAMPIONS`, le `26`, la Croix de Savoie, en pied. Vu de dos, aucun visage. | Push-in très lent. |
+| 16 | 0:32–0:34 | `DRAPEAU` | Un supporter lève le **drapeau du Faucigny**, qui lui masque entièrement la tête. Or et rouge : les couleurs du maillot. Le `26` dessous. | Fixe. Le tissu claque. |
 | 17 | 0:32–0:33 | `AMAT-07` | Une silhouette de dos s'en va vers la lumière. | Travelling arrière. |
 | 18 | 0:33–0:35 | `PLAN-11` | Le **26** plein cadre. | Pull-back qui découvre CHAMPIONS. |
 | 19 | 0:35–0:36 | `PLATE-12` | **CHAMPIONS**. | Travelling latéral, puis remontée. |
@@ -117,7 +118,11 @@ Trois origines : `REEL-XX` = **photographie réelle du club** (le stade, le mail
 | 21 | 0:37–0:38 | `PLAN-14` | La **Croix de Savoie** plein cadre. | Push-in minimal. |
 | 22 | 0:38–0:39 | `PLAN-15` | Croix de Savoie **et** FC CLUSA nets ensemble. | Fondu au noir. |
 
-**Plans de réserve :** `TERRAIN-08` (le ballon sur le point de penalty), `FLAG-02` (le drapeau porté à bout de bras), `REEL-02` (le stade vu du bord de touche).
+**Plans de réserve :** `DOS-jour` (le dos porté en lumière du jour), `SOL-flash` (le maillot jeté sur le synthétique, flash direct, la chaussure du photographe dans le coin), `SOL-soir` (le maillot au sol près de la ligne blanche), `TERRAIN-08` (le ballon sur le point de penalty), `FLAG-01` (le drapeau sur le grillage), `REEL-02` (le stade vu du bord de touche).
+
+**Note sur le drapeau.** Deux versions existent. Sur `DRAPEAU`, le drapeau est tenu levé : les bandes sont verticales, donc le palé d'or et de gueules est héraldiquement juste, et la tête du porteur est entièrement masquée. Sur `FLAG-01`, accroché au grillage par un coin, les bandes tombent à l'horizontale — personne ne le remarquera hors du Faucigny, mais dans le Faucigny, si. `DRAPEAU` est la version à utiliser.
+
+**Note sur les visages.** Sur `DOS-jour` et `DOS-nuit`, la tête est dans le cadre, vue de dos. Aucun trait de visage n'est visible et il n'y a donc rien à retoucher, mais le cadrage s'écarte de la consigne initiale qui la voulait hors champ. À trancher : en l'état c'est mieux composé.
 
 ---
 
