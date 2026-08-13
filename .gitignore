@@ -1,0 +1,8 @@
+# Assets binaires : livres hors depot (plusieurs dizaines de Mo).
+# Le depot ne porte que le script, le decoupage et la recette d'etalonnage,
+# qui suffisent a tout regenerer depuis les sources Higgsfield.
+04_sources/
+05_plans/
+*.png
+*.jpg
+*.mp4
