@@ -66,6 +66,16 @@ Une seule, sur un grand côté.
 - Entre la tribune et la montagne : **les toits de tuiles de la ville**, des maisons basses, quelques immeubles.
 - Des arbres sur les côtés.
 
+### Le public — recensement à respecter partout
+
+Le nombre de spectateurs variait d'un plan à l'autre : tribune bondée ici, quinze personnes là. C'est aussi visible qu'une erreur de décor. **Un seul effectif pour toute la soirée :**
+
+- **Environ cent cinquante personnes en tout**, pas plus. C'est un club de R2 un soir de titre, pas un stade professionnel.
+- **Un noyau d'une vingtaine à la rambarde**, compact, debout, avec deux ou trois drapeaux du Faucigny. Toujours au même endroit, toujours les mêmes.
+- **Le reste assis et dispersé dans la tribune**, par petits groupes de deux ou trois, avec des rangs entiers vides entre eux.
+- **La tribune n'est jamais pleine.** Elle est occupée à un tiers au maximum, y compris au coup de sifflet final.
+- Aux abords du terrain, en dehors du noyau : **quelques personnes seulement**, très espacées le long de la barrière.
+
 ### Le matériel qui traîne
 
 Ce sont les détails qui rendent le lieu vrai : des **buts blancs mobiles** rangés sur la piste, une **structure grise sur roues** (podium ou tour de juge) posée en bord de piste, des **bâches vertes** sur du matériel empilé, des **plots orange**.
@@ -106,6 +116,17 @@ STADIUM SPEC — an ATHLETICS stadium, not a football-only ground:
   town. Trees at the sides.
 - Scattered kit: white mobile goals parked on the track, a grey wheeled
   officials' platform, green tarpaulins over stacked equipment, orange cones.
+
+CROWD CENSUS — the same turnout in every shot:
+- About 150 people in total, no more. A seventh-tier club on title night,
+  not a professional arena.
+- ONE compact knot of about twenty standing at the pitch-side barrier with
+  two or three gold-and-red striped flags, always the same spot.
+- Everyone else seated and scattered in the stand, in twos and threes, with
+  whole empty rows between them.
+- The stand is NEVER full — a third occupied at most, even at the final
+  whistle.
+- Along the rest of the barrier: only a few widely spaced individuals.
 ```
 
 ---
@@ -135,5 +156,6 @@ Avant de valider un plan large, vérifier dans l'ordre :
 3. **La tribune** est-elle en retrait derrière la piste, avec des bancs bruns et un toit plat sombre ?
 4. **Derrière les buts** : du filet blanc, pas du grillage ?
 5. **La montagne** est-elle une masse arrondie unique, pas une crête ?
+6. **Le public** est-il au bon effectif — un noyau d'une vingtaine, le reste dispersé, la tribune jamais pleine ?
 
 Un plan qui rate deux de ces cinq points est à refaire : l'œil ne relève pas le détail isolé, mais il sent immédiatement que deux plans ne sont pas le même endroit.
