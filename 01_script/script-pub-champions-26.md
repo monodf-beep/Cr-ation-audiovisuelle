@@ -1,7 +1,7 @@
 # FC CLUSA — « CHAMPIONS 26 »
 ## Script publicitaire — maillot commémoratif R2 LAuRAFoot
 
-**9:16 · 40 s · 21 plans · aucune voix off · aucun visage**
+**9:16 · 38 s · 21 plans · aucune voix off · aucun visage**
 
 ---
 
@@ -21,7 +21,9 @@ On sait toujours où on en est dans la soirée en regardant le vêtement :
 |---|---|
 | Avant | plié, propre, sec, posé sur un banc |
 | Pendant | porté, mouillé, taché, en mouvement |
-| Après | jeté au sol, puis **le dos** |
+| Après | trempé, collé à la peau, puis **le dos** |
+
+Le maillot n'est jamais montré par terre. C'est le vêtement d'un titre : on le voit propre, puis porté, puis retourné — jamais abandonné au sol.
 
 C'est le seul mécanisme du film, et il est lisible sans y penser.
 
@@ -62,21 +64,23 @@ Pendant trente secondes, on ne voit **jamais** le verso. Ce n'est pas un truc de
 | 10 | 0:19–0:21 | ✓ `PLATE-08` | `FORZAFC` traverse le cadre. |
 | 11 | 0:21–0:23 | ✓ `PLAN-06` | La couronne et `UNIS DANS TOUS NOS DÉFIS`, sur la manche. |
 | 12 | 0:23–0:25 | ✓ `PLAN-07` | Le patch `R2` et `FORCE ROUGE ET NOIR`. |
-| 13 | 0:25–0:26 | ✓ `PLAN-02` | Macro : le rouge du maillot, trempé, collé à la peau. |
-| 14 | 0:26–0:28 | ✓ `SOL-flash2` | **Le maillot par terre**, au flash. Le match est fini. |
+| 13 | 0:25–0:27 | ✓ `PLAN-02` | Macro : le rouge du maillot, trempé, collé à la peau. Le match s'achève. |
 
-### APRÈS — 0:28 → 0:40
+### APRÈS — 0:27 → 0:38
 *C'est gagné. Il se retourne.*
 
 | # | TC | Asset | Plan |
 |---|---|---|---|
-| 15 | 0:28–0:30 | ✓ `AMAT-07` | Une silhouette seule s'éloigne vers la lumière. |
-| 16 | 0:30–0:33 | • `DOS` | **Il se retourne.** Le dos, en pied. **Silence total.** |
-| 17 | 0:33–0:34 | ✓ `PLAN-11` | `26` |
-| 18 | 0:34–0:35 | ✓ `PLATE-12` | `CHAMPIONS` |
-| 19 | 0:35–0:37 | • `ULTRAS-FIN` | La tribune debout, drapeaux levés. |
-| 20 | 0:37–0:38 | ✓ `PLAN-13` | `FC CLUSA` |
-| 21 | 0:38–0:40 | ✓ `PLAN-15` | La Croix de Savoie et `FC CLUSA` ensemble. Fondu au noir. |
+| 14 | 0:27–0:29 | ✓ `AMAT-07` | Une silhouette seule s'éloigne vers la lumière. |
+| 15 | 0:29–0:32 | • `DOS` | **Il se retourne.** Le dos, en pied. **Silence total.** |
+| 16 | 0:32–0:33 | ✓ `PLAN-11` | `26` |
+| 17 | 0:33–0:34 | ✓ `PLATE-12` | `CHAMPIONS` |
+| 18 | 0:34–0:35 | ✓ `DRAPEAU2` | **Un ado brandit le drapeau du Faucigny**, de dos, bras levés. Le drapeau lui masque la tête. |
+| 19 | 0:35–0:36 | • `ULTRAS-FIN` | Le noyau à la rambarde, debout, drapeaux levés. |
+| 20 | 0:36–0:37 | ✓ `PLAN-13` | `FC CLUSA` |
+| 21 | 0:37–0:38 | ✓ `PLAN-15` | La Croix de Savoie et `FC CLUSA` ensemble. Fondu au noir. |
+
+**Pourquoi le drapeau au plan 18.** Il arrive juste après `CHAMPIONS`, donc il ne commente rien : il célèbre. Et il enchaîne sur la Croix de Savoie du maillot trois plans plus loin — le pays d'abord, la Savoie ensuite. Deux blasons, dans le bon ordre.
 
 **Carton :** `FC CLUSES 1961` — `CHAMPIONS R2 · LAuRAFoot 2026`
 
@@ -91,10 +95,10 @@ Le son raconte la même soirée, et il est encore plus explicite que l'image.
 | 0:00 → 0:08 | Vent de vallée. Le claquement d'un projecteur qui s'amorce, puis son bourdonnement. Rien d'autre. |
 | 0:08 → 0:13 | Une porte de vestiaire. Des pas sur le béton. Des sièges qui claquent. La rumeur commence. |
 | 0:13 → 0:26 | Le match : crampons, respirations, une frappe hors champ, un tambour. Le chant part sur `FORZAFC`. |
-| 0:26 → 0:30 | Tout retombe. Il ne reste que la rumeur. |
-| **0:30 → 0:31** | **Coupe totale. Une seconde de rien**, pendant qu'il se retourne. |
-| 0:31 → 0:39 | Tout revient d'un coup. Plein régime jusqu'au blason. |
-| 0:39 → 0:40 | Un accord tenu. Fondu. |
+| 0:26 → 0:29 | Tout retombe. Il ne reste que la rumeur. |
+| **0:29 → 0:30** | **Coupe totale. Une seconde de rien**, pendant qu'il se retourne. |
+| 0:30 → 0:37 | Tout revient d'un coup. Plein régime jusqu'au blason. |
+| 0:37 → 0:38 | Un accord tenu. Fondu. |
 
 Cette seconde de silence est le seul effet du film. Tout ce qui précède existe pour la rendre possible.
 
@@ -118,3 +122,4 @@ Cette seconde de silence est le seul effet du film. Tout ce qui précède existe
 | Le drapeau du Faucigny en réponse à `FORCE ROUGE ET NOIR` | Le Faucigny est **or et rouge**, le club **rouge et noir**. Ce n'était pas une rime, c'était une contradiction. Le drapeau reste, mais dans la tribune, où il est simplement vrai. |
 | La voix off | Sur demande. Le son de la tribune fait mieux le travail. |
 | Le gros plan du sponsor, le buste de face, la main sur le filet | Aucun rôle dans la soirée. |
+| Le maillot au sol | C'est le vêtement d'un titre. Le montrer par terre le dévalorise, quelle que soit la beauté du plan. `SOL-flash2` et `SOL-soir` restent en réserve, hors film. |
