@@ -257,7 +257,11 @@ def construire(j):
     t_ultras = quand["CLIP-ULTRAS"][0]
     t_rafale = quand["CLIP-CRAMPONS"][-1]
     t_dos = quand["CLIP-DOS"][0]
-    t_calme = quand["DOS"][0]          # le plan long ou tout retombe
+    # Le son ne retombe pas sur la coupe : il tient encore une seconde et
+    # quelque sur le dernier plan, puis lache. Retomber en meme temps que
+    # l'image fait deux evenements au meme endroit, donc un seul evenement ;
+    # les decaler donne un apaisement au lieu d'un arret.
+    t_calme = quand["DOS"][0] + 1.2
     t_noir = next(a for a, _ in j["noirs"] if abs(a - t_dos) < 1.0)
 
     # --- l'amorce : deux claquements, cales sur les deux eclairs ----------

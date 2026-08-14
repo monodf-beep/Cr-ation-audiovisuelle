@@ -54,7 +54,7 @@ PLANS = [
     # un joueur seul, de dos, sous le mat qui vient de s'allumer. Ces deux
     # silhouettes-la sont les seules utilisables avant la fin : sur toutes
     # les autres on lit le dos, et le dos est le secret du film.
-    ("image", "ETE-SILHOUETTE", 1.0, (1.00, 1.07,  0.0,  0.0), "nuit"),
+    ("clip",  "CLIP-SILHOUETTE", 1.1, (0.30, 1.00,  0.0,  0.0), "nuit"),
 
     # --- l'objet : deux macros, lumiere dure ---
     # On entre tout a la fin du clip. Ailleurs l'epaule se deforme en
@@ -68,7 +68,9 @@ PLANS = [
     # --- le lieu ---
     # le clip est deja tourne de nuit : pas de correction d'heure a lui appliquer
     ("clip",  "CLIP-CRAMPONS", 1.8, (0.00, 1.00,  0.0,  0.0), "sale"),
-    ("image", "MACRO-CRAIE",   0.5, (1.00, 1.10,  0.0,  0.0), "sale"),
+    # a la place de la ligne blanche, qui ne portait rien : le terrain vide
+    # sous les projecteurs, rond central visible, la camera recule
+    ("clip",  "CLIP-TERRAIN",  1.5, (0.10, 1.00,  0.0,  0.0), "sale"),
 
     # --- le maillot : le produit occupe le film ---
     ("clip",  "CLIP-FACE",     2.0, (0.00, 1.00,  0.0,  0.0), "net"),
@@ -87,14 +89,14 @@ PLANS = [
     ("image", "TRIBUNE",       0.7, (1.00, 1.06,  0.0,  0.0), "reel"),
 
     # --- la montee : le noyau au drapeau, c'est le sommet du film ---
-    ("clip",  "CLIP-ULTRAS",   2.4, (0.30, 1.00,  0.0,  0.0), "sale"),
-    ("clip",  "CLIP-SAVOIE",   0.5, (0.50, 1.00,  0.0,  0.0), "sale"),
+    ("clip",  "CLIP-ULTRAS",   2.4, (0.55, 1.00,  0.0,  0.0), "sale"),
+    ("clip",  "CLIP-SAVOIE",   0.5, (0.68, 1.00,  0.0,  0.0), "sale"),
 
     # --- la rafale : quatre coupes en un peu plus d'une seconde ---
     # il y avait deux plans de chaussure a la suite ; un seul suffit
     ("clip",  "CLIP-CRAMPONS", 0.4, (0.80, 1.10,  0.0,  0.0), "sale"),
     ("clip",  "CLIP-FLAG",     0.4, (0.75, 1.10,  0.0,  0.0), "sale"),
-    ("clip",  "CLIP-ULTRAS",   0.4, (0.88, 1.10,  0.0,  0.0), "sale"),
+    ("clip",  "CLIP-ULTRAS",   0.4, (0.15, 1.10,  0.0,  0.0), "sale"),
     ("clip",  "CLIP-MANCHE",   0.3, (0.85, 1.10,  0.0,  0.0), "net"),
 
     # --- l'intense : la revelation, puis la marque de plus en plus serree ---
