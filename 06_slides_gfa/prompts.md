@@ -31,7 +31,7 @@ Premier essai du drapeau (`74ccb738-6ff0-488f-9db8-8393806c271b`) écarté : cro
 
 | Fichier | Source | Traitement |
 |---|---|---|
-| `09-franck-portrait.jpg` | `franckmonod.eu/images/hero-portrait.jpg` | Miroir horizontal pour orienter le regard vers la droite, recadré 1080×1160, converti en bichromie navy `#101A38` → `#E8EBF2`, dans l'esprit des affiches de match du club |
+| `09-franck-portrait.jpg` | Drive partagé, `glow-shooting-ep5-624-03-2026 à 23.38.57 2.jpg` | Miroir horizontal pour orienter le regard vers la droite, recadré 1080×1160, converti en bichromie navy `#101A38` → `#E8EBF2`, dans l'esprit des affiches de match du club |
 | `savoy-ia.png` | `ia.franckmonod.eu` | Tel quel |
 | `ils_blanc.png` | Dérivé de `ils_logotype.png` | Version monochrome blanche générée à partir du logotype couleur. **À remplacer par le logo blanc officiel de l'Enstitut** (design kit « enstitut » dans Claude Design), non accessible depuis cette session |
 
