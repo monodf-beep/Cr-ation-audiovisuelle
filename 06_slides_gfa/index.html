@@ -179,8 +179,9 @@
   .cy.done .s{color:var(--red);}
 
   /* ---- 04 · les publications du club en savoyard ----
-     Chaque .ph est un emplacement : remplacer le div par
-     <img src="assets/04-<slot>.jpg" alt="..."> quand l'affiche est fournie. */
+     Chaque .ph est un emplacement. Quand l'affiche est fournie, remplacer
+     le div par une balise img pointant sur assets/, meme cadre et meme
+     format 3:4. La procedure exacte est dans prompts.md. */
   .posts{display:grid; grid-template-columns:repeat(3,1fr); gap:0.55em; margin-top:1em;}
   .post{margin:0;}
   .post .ph, .post img{
