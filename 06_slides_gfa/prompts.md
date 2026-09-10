@@ -64,3 +64,7 @@ Fournies par le client via un dossier Google Drive partagé, téléchargées en 
 | `04-victouera.jpg` | `victouera 1.png` |
 
 Traitement : la pastille de profil Instagram est retirée en rognant les 5,5 % du bas, puis l'image est calée sur un fond navy au format 3:4 sans rien couper du visuel. Les trois affiches sont disposées en éventail, avec rotations et recouvrement, celle du milieu au premier plan.
+
+## Accès LinkedIn (slide 10)
+
+Le QR code `linkedin-qr.png` est généré localement avec la bibliothèque `qrcode`, encodage `https://www.linkedin.com/in/franck-monod/`, correction d'erreur M, modules `#0E1730` sur blanc. C'est l'adresse liée depuis franckmonod.eu. À noter, culture-savoie.com pointe vers un autre profil, `linkedin.com/in/franck-monod-culture-savoie`. Régénérer le QR si c'est celui-là qu'il faut afficher.

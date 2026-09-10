@@ -88,19 +88,19 @@
     --hair:rgba(14,23,48,0.18);
     --card:rgba(255,255,255,0.6);
     background:#EFEDE6;
-    padding-top:42cqh;
+    padding-top:35cqh;
   }
   .slide.light .top{color:rgba(242,240,234,0.82);}
   .slide.light .top .n{color:#F2F0EA;}
   .slide.light .top .n small{color:rgba(242,240,234,0.6);}
   .slide .band{
     position:absolute; top:0; left:0; right:0; z-index:0;
-    width:100%; height:40cqh;
+    width:100%; height:33cqh;
     object-fit:cover; object-position:center 20%;
   }
   .slide .band-fade{
-    position:absolute; top:0; left:0; right:0; height:42cqh; z-index:0;
-    background:linear-gradient(180deg, rgba(239,237,230,0) 70%, #EFEDE6 100%);
+    position:absolute; top:0; left:0; right:0; height:35cqh; z-index:0;
+    background:linear-gradient(180deg, rgba(239,237,230,0) 68%, #EFEDE6 100%);
   }
 
   /* bloc de contenu : sa taille de police est l'unité de tout ce qu'il contient.
@@ -266,7 +266,7 @@
   .pies svg{display:block; width:100%; height:auto;}
   .figure{
     display:grid; grid-template-columns:auto 1fr; gap:0.7em; align-items:center;
-    margin-top:1em; padding-top:0.9em; border-top:1px solid var(--hair);
+    margin-top:0.8em; padding-top:0.7em; border-top:1px solid var(--hair);
   }
   .figure .v{
     font-family:var(--display); font-weight:800; font-size:3.4em; line-height:1;
@@ -305,25 +305,25 @@
   .step p b{color:var(--snow); font-weight:600;}
 
   /* ---- 09 · le réseau ---- */
-  .net{display:grid; grid-template-columns:1fr 1fr; gap:0.6em; margin-top:1em;}
+  .net{display:grid; grid-template-columns:1fr 1fr; gap:0.5em; margin-top:0.8em;}
   .org{
     border:1px solid var(--hair); background:var(--card);
-    padding:0.7em 0.7em 0.6em;
-    display:flex; flex-direction:column; gap:0.5em;
+    padding:0.55em 0.6em 0.5em;
+    display:flex; flex-direction:column; gap:0.4em;
   }
   .org .logo{
-    height:3.6em; display:flex; align-items:center; justify-content:center;
-    background:var(--chip); padding:0.35em 0.6em; border-radius:2px;
+    height:2.9em; display:flex; align-items:center; justify-content:center;
+    background:var(--chip); padding:0.3em 0.5em; border-radius:2px;
   }
   .org .logo img{max-height:100%; max-width:100%; width:auto; display:block;}
   .org .word{
-    height:2.6em; display:block; padding-top:0.45em;
-    font-family:var(--display); font-weight:800; font-size:1.5em; line-height:0.92;
+    height:2.2em; display:block; padding-top:0.3em;
+    font-family:var(--display); font-weight:800; font-size:1.35em; line-height:0.92;
     text-transform:uppercase; color:var(--snow); letter-spacing:0.01em;
     overflow-wrap:anywhere;
   }
   .org .word em{font-style:normal; color:var(--red);}
-  .org .role{font-size:0.76em; line-height:1.3; color:var(--steel); margin:0;}
+  .org .role{font-size:0.72em; line-height:1.25; color:var(--steel); margin:0;}
   .org .role b{color:var(--snow); font-weight:600;}
   .org .soon{
     display:inline-block; font-family:var(--display); font-weight:700; font-size:0.85em;
@@ -331,7 +331,28 @@
     border:1px solid var(--red); padding:0.1em 0.35em 0; margin-left:0.3em; vertical-align:middle;
   }
 
-  /* ---- 10 · clôture ---- */
+  .metier{
+    margin:0.55em 0 0; font-family:var(--display); font-weight:600; font-size:1.05em;
+    line-height:1.15; letter-spacing:0.1em; text-transform:uppercase; color:var(--snow);
+    padding-left:0.55em; border-left:0.16em solid var(--red);
+  }
+  .li{
+    display:grid; grid-template-columns:auto 1fr; gap:0.7em; align-items:center;
+    margin-top:0.8em; padding-top:0.7em; border-top:1px solid var(--hair);
+    text-decoration:none; color:inherit;
+  }
+  .li img{width:3.6em; height:auto; display:block;}
+  .li span{
+    font-family:var(--display); font-weight:700; font-size:1.05em; line-height:1.1;
+    text-transform:uppercase; letter-spacing:0.03em; color:var(--snow);
+  }
+  .li span i{
+    display:block; font-style:normal; font-family:var(--body); font-weight:400;
+    font-size:0.66em; letter-spacing:0; text-transform:none; color:var(--steel); margin-top:0.3em;
+  }
+  .li:focus-visible{outline:0.14em solid var(--red); outline-offset:0.2em;}
+
+  /* ---- 11 · clôture ---- */
   .lockup{
     display:flex; align-items:center; gap:1em;
     margin-top:1.4em; padding-top:1.1em; border-top:1px solid var(--hair);
@@ -344,7 +365,7 @@
   }
   .conv{
     display:grid; grid-template-columns:5.2em 1fr; gap:0.9em; align-items:center;
-    margin-top:1em; padding-top:0.9em; border-top:1px solid var(--hair);
+    margin-top:0.8em; padding-top:0.7em; border-top:1px solid var(--hair);
   }
   .conv img{width:100%; height:auto;}
   .conv p{margin:0; font-size:0.82em; line-height:1.3; color:var(--steel);}
@@ -558,8 +579,9 @@
     <div class="top"><span>Qui je suis</span><span class="n">10<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">Franck Monod</p>
-      <h2>Un chef de projet, pas un <em>communicant.</em></h2>
-      <p class="note">Je monte des projets. Le club peut s'appuyer sur ces structures pour ce qu'il ne peut pas porter seul.</p>
+      <h2>Un initiateur de projets, pas un simple <em>prestataire.</em></h2>
+      <p class="metier">Développement culturel et économique Savoie-Piémont</p>
+      <p class="note">Le club peut s'appuyer sur ces structures pour ce qu'il ne peut pas porter seul.</p>
       <div class="net">
         <div class="org">
           <div class="logo"><img src="assets/ils_logotype.png" alt="Institut de la Langue Savoyarde"></div>
@@ -571,13 +593,17 @@
         </div>
         <div class="org">
           <div class="word">Universitât<br><em>Sabauda</em></div>
-          <p class="role"><b>Président.</b> Missions : SavoiaExperience avec le Département. Accompagnement de Dolin vers le marché piémontais.</p>
+          <p class="role"><b>Président.</b> Missions : SavoiaExperience avec le Département, et Dolin vers le marché piémontais.</p>
         </div>
         <div class="org">
           <div class="logo"><img src="assets/savoy-ia.png" alt="Savoy IA"></div>
           <p class="role"><b>Initiateur.</b> Les chefs d'entreprise savoyards et l'IA.</p>
         </div>
       </div>
+      <a class="li" href="https://www.linkedin.com/in/franck-monod/" target="_blank" rel="noopener noreferrer">
+        <img src="assets/linkedin-qr.png" alt="">
+        <span>Mieux me connaître<i>linkedin.com/in/franck-monod</i></span>
+      </a>
     </div>
   </section>
 
