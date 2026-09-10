@@ -39,3 +39,16 @@ Premier essai du drapeau (`74ccb738-6ff0-488f-9db8-8393806c271b`) écarté : cro
 
 - Les affiches du club en savoyard (`Jorn de partia`, `Victouèra`) en fichiers, pour la slide 04. Elles sont aujourd'hui citées en texte.
 - Les deux écussons du Puy (ancien `Le Puy Foot 43 Auvergne`, nouveau `Le Puy-en-Velay FC`) pour la slide 06. Ils ne sont ni sur Wikimedia ni sur le site du club. La démonstration est aujourd'hui portée par le texte.
+
+## Écussons du Puy (slide 06)
+
+| Fichier | Source |
+|---|---|
+| `puy_ancien.svg` | Wikipédia, `Logo Puy Foot 43 Auvergne 2017.svg` |
+| `puy_nouveau.svg` | Wikipédia, `Logo Le Puy en Velay FC - 2026.svg` |
+
+Écussons de club tiers, repris à titre d'exemple comparatif. Le nouvel écusson a été dévoilé le 12 juin 2026 aux Halles du Puy-en-Velay, refonte par l'agence stéphanoise Bôjeu, aigle et lys tirés du blason de la ville, avec le slogan « Plus haut, ponots ».
+
+## Affiches du club en savoyard (slide 04)
+
+Non récupérables depuis cette session : elles ne sont publiées que sur les réseaux du club, et Instagram comme Facebook sont bloqués par la politique réseau de l'environnement. La slide cite les deux mots en pastilles typographiques, avec leur traduction. Pour les intégrer en image, déposer les fichiers dans le dossier `assets/` du dépôt, ou sur un Drive accessible.
