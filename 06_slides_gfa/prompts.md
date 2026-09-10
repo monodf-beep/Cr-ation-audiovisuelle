@@ -67,8 +67,4 @@ Traitement : la pastille de profil Instagram est retirée en rognant les 5,5 % d
 
 ## Accès LinkedIn (slide 10)
 
-Le QR code `linkedin-qr.png` est généré localement avec la bibliothèque `qrcode`, encodage `https://www.linkedin.com/in/franck-monod/`, correction d'erreur M, modules `#0E1730` sur blanc. C'est l'adresse liée depuis franckmonod.eu. À noter, culture-savoie.com pointe vers un autre profil, `linkedin.com/in/franck-monod-culture-savoie`. Régénérer le QR si c'est celui-là qu'il faut afficher.
-
-## Écusson de Wrexham (slide 07)
-
-`wrexham.svg` : Wikipédia anglophone, `Wrexham A.F.C. Logo.svg`. Écusson de club tiers, repris à titre d'exemple. Il est posé en haut à droite avec la même règle `.crest` que l'écusson du GFA sur la couverture.
+La slide affiche `linkedin.com/in/franck-monod`, l'adresse liée depuis franckmonod.eu, et la ligne entière est cliquable. À noter, culture-savoie.com pointe vers un autre profil, `linkedin.com/in/franck-monod-culture-savoie`.
