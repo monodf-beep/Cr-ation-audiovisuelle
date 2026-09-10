@@ -5,25 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>GFA Albanais</title>
 <meta name="description" content="Identité de club : le business case. Dix slides verticales pour les dirigeants du GFA Rumilly-Vallières.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts.css">
 <style>
+  /* Toutes les dimensions sont en cqw : 1cqw = 1 % de la largeur du cadre 9:16.
+     Le deck se comporte donc comme une image 1080×1920 mise à l'échelle,
+     quel que soit l'écran (téléphone, panneau, grand écran). */
   :root{
     --night:#0B1226;
     --navy:#182047;
     --navy-soft:#22306A;
     --red:#D40000;
-    --red-deep:#A80000;
     --snow:#F2F0EA;
     --steel:#9AA3B2;
     --steel-dim:#6B7386;
-    --hair:rgba(242,240,234,0.14);
+    --hair:rgba(242,240,234,0.16);
     --display:'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
     --body:'Barlow', 'Helvetica Neue', Arial, sans-serif;
     color-scheme: dark;
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box; min-width:0;}
   html,body{margin:0;padding:0;height:100%;}
   body{
     background:var(--night);
@@ -33,366 +33,224 @@
     overflow:hidden;
   }
 
-  /* ---- deck frame ---- */
+  /* ---- cadre ---- */
   .deck{
-    height:100dvh;
-    width:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:var(--night);
+    height:100dvh; width:100%;
+    display:flex; justify-content:center; align-items:center;
+    background:#05091A;
   }
   .phone{
     position:relative;
-    height:100dvh;
-    width:100%;
+    height:100dvh; width:100%;
     max-width:calc(100dvh * 9 / 16);
-    overflow-y:scroll;
-    overflow-x:hidden;
+    overflow-y:scroll; overflow-x:hidden;
     scroll-snap-type:y mandatory;
     scrollbar-width:none;
     background:var(--night);
+    container-type:size;
   }
   .phone::-webkit-scrollbar{display:none;}
   @media (min-aspect-ratio: 9/16){
-    .phone{box-shadow:0 0 0 1px var(--hair), 0 40px 120px rgba(0,0,0,0.6);}
+    .phone{box-shadow:0 0 0 1px rgba(242,240,234,0.08), 0 40px 120px rgba(0,0,0,0.6);}
   }
 
   /* ---- slide ---- */
   .slide{
     position:relative;
-    height:100dvh;
-    width:100%;
-    scroll-snap-align:start;
-    scroll-snap-stop:always;
+    height:100cqh; width:100%;
+    scroll-snap-align:start; scroll-snap-stop:always;
     overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-end;
-    padding:0 28px 56px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    padding:16cqw 7cqw 8cqw;
     isolation:isolate;
   }
   .slide .bg{
-    position:absolute;
-    inset:0;
-    z-index:-2;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position:center;
+    position:absolute; inset:0; z-index:-2;
+    width:100%; height:100%;
+    object-fit:cover; object-position:center;
   }
   .slide .veil{
-    position:absolute;
-    inset:0;
-    z-index:-1;
-    background:
-      linear-gradient(180deg, rgba(11,18,38,0.55) 0%, rgba(11,18,38,0.05) 28%, rgba(11,18,38,0.35) 55%, rgba(11,18,38,0.94) 82%, var(--night) 100%);
+    position:absolute; inset:0; z-index:-1;
+    background:linear-gradient(180deg, rgba(11,18,38,0.62) 0%, rgba(11,18,38,0.08) 24%, rgba(11,18,38,0.30) 48%, rgba(11,18,38,0.92) 72%, var(--night) 100%);
   }
-  .slide.veil-heavy .veil{
-    background:
-      linear-gradient(180deg, rgba(11,18,38,0.72) 0%, rgba(11,18,38,0.5) 30%, rgba(11,18,38,0.92) 60%, var(--night) 100%);
+  .slide.heavy .veil{
+    background:linear-gradient(180deg, rgba(11,18,38,0.78) 0%, rgba(11,18,38,0.62) 22%, rgba(11,18,38,0.94) 46%, var(--night) 100%);
   }
   .slide.solid{background:var(--night);}
+  .slide.solid .veil{display:none;}
 
-  /* top chrome */
+  /* bloc de contenu : sa taille de police est l'unité de tout ce qu'il contient.
+     Le script réduit --fit si, malgré tout, le bloc dépasse la hauteur disponible. */
+  .c{
+    --fit:1;
+    font-size:calc(3.9cqw * var(--fit));
+    display:flex; flex-direction:column; align-items:stretch;
+    width:100%;
+  }
+
+  /* en-tête */
   .top{
-    position:absolute;
-    top:0; left:0; right:0;
-    padding:22px 28px 0;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-family:var(--display);
-    font-weight:600;
-    font-size:14px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--steel);
-    z-index:2;
+    position:absolute; top:0; left:0; right:0; z-index:2;
+    padding:5.5cqw 7cqw 0;
+    display:flex; justify-content:space-between; align-items:center; gap:3cqw;
+    font-family:var(--display); font-weight:600;
+    font-size:3.4cqw; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--steel); white-space:nowrap;
   }
   .top .n{font-variant-numeric:tabular-nums; color:var(--snow);}
-  .top .n small{color:var(--steel);}
+  .top .n small{font-size:inherit; color:var(--steel-dim);}
 
+  /* typo */
   .kicker{
-    font-family:var(--display);
-    font-weight:600;
-    font-size:15px;
-    letter-spacing:0.16em;
-    text-transform:uppercase;
-    color:var(--red);
-    margin:0 0 12px;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    font-family:var(--display); font-weight:600;
+    font-size:0.95em; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--red); margin:0 0 0.7em;
+    display:flex; align-items:center; gap:0.6em; white-space:nowrap;
   }
-  .kicker::before{
-    content:"";
-    width:22px; height:3px;
-    background:var(--red);
-  }
+  .kicker::before{content:""; width:1.4em; height:0.18em; background:var(--red); flex:none;}
   h1,h2{
-    font-family:var(--display);
-    font-weight:800;
-    text-transform:uppercase;
-    line-height:0.92;
-    letter-spacing:-0.005em;
-    margin:0;
-    text-wrap:balance;
-    color:var(--snow);
+    font-family:var(--display); font-weight:800; text-transform:uppercase;
+    line-height:0.9; letter-spacing:-0.005em; margin:0; color:var(--snow);
   }
-  h1{font-size:clamp(56px, 15.5vmin, 96px);}
-  h2{font-size:clamp(42px, 11.5vmin, 72px);}
+  h1{font-size:5.2em;}
+  h2{font-size:3.7em;}
   h1 em, h2 em{font-style:normal; color:var(--red);}
-  .lede{
-    font-size:clamp(16px, 2.6vmin, 19px);
-    line-height:1.4;
-    color:var(--snow);
-    margin:16px 0 0;
-    max-width:36ch;
-  }
+  .lede{font-size:1.1em; line-height:1.35; color:var(--snow); margin:0.9em 0 0;}
   .lede b{font-weight:600;}
-  .note{
-    font-size:13px;
-    line-height:1.4;
-    color:var(--steel);
-    margin:14px 0 0;
-    max-width:40ch;
-  }
+  .note{font-size:0.9em; line-height:1.35; color:var(--steel); margin:0.9em 0 0;}
   .note b{color:var(--snow); font-weight:600;}
+  .src{font-size:0.66em; line-height:1.3; color:var(--steel-dim); margin:1.4em 0 0;}
 
   /* logos */
   .crest{
-    position:absolute;
-    top:52px; right:24px;
-    width:74px; height:auto;
-    z-index:2;
-    filter:drop-shadow(0 6px 16px rgba(0,0,0,0.5));
+    position:absolute; top:12cqw; right:6cqw; z-index:2;
+    width:19cqw; height:auto;
+    filter:drop-shadow(0 1.5cqw 4cqw rgba(0,0,0,0.5));
   }
   .lockup{
-    display:flex; align-items:center; gap:16px;
-    margin-top:26px;
-    padding-top:18px;
-    border-top:1px solid var(--hair);
+    display:flex; align-items:center; gap:1em;
+    margin-top:1.6em; padding-top:1.1em; border-top:1px solid var(--hair);
   }
-  .lockup img{height:56px; width:auto;}
-  .lockup .x{font-family:var(--display); font-size:22px; color:var(--steel);}
-  .lockup .ils{background:var(--snow); padding:6px 10px; border-radius:2px;}
+  .lockup img{height:3.6em; width:auto;}
+  .lockup .x{font-family:var(--display); font-size:1.4em; color:var(--steel);}
+  .lockup .ils{background:var(--snow); padding:0.35em 0.6em; border-radius:2px;}
 
-  /* stage strip (lifecycle) */
-  .stages{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:6px;
-    margin-top:22px;
-  }
+  /* étapes du cycle */
+  .stages{display:grid; grid-template-columns:repeat(4,1fr); gap:0.4em; margin-top:1.3em;}
   .stage{
-    font-family:var(--display);
-    font-weight:700;
-    font-size:clamp(10px, 3vw, 12.5px);
-    letter-spacing:0.02em;
-    text-transform:uppercase;
-    padding:10px 4px 8px;
-    border-top:3px solid var(--steel-dim);
-    color:var(--steel);
-    line-height:1;
+    font-family:var(--display); font-weight:700;
+    font-size:0.8em; letter-spacing:0.02em; text-transform:uppercase; line-height:1;
+    padding:0.6em 0.2em 0.4em; border-top:0.25em solid var(--steel-dim); color:var(--steel);
   }
-  .stage span{display:block; font-size:11px; font-weight:600; letter-spacing:0.14em; color:var(--steel-dim); margin-bottom:6px;}
+  .stage span{display:block; font-size:0.72em; font-weight:600; letter-spacing:0.14em; color:var(--steel-dim); margin-bottom:0.6em;}
   .stage.done{border-top-color:var(--red); color:var(--snow);}
   .stage.done span{color:var(--red);}
 
-  /* chain */
-  .chain{display:flex; flex-direction:column; gap:0; margin-top:20px;}
+  /* chaîne */
+  .chain{display:flex; flex-direction:column; margin-top:1.1em;}
   .link{
-    display:grid;
-    grid-template-columns:108px 1fr;
-    gap:12px;
-    align-items:center;
-    padding:12px 0;
-    border-top:1px solid var(--hair);
+    display:grid; grid-template-columns:6.2em 1fr; gap:0.7em; align-items:center;
+    padding:0.7em 0; border-top:1px solid var(--hair);
   }
   .link .big{
-    font-family:var(--display);
-    font-weight:800;
-    font-size:44px;
-    line-height:1;
-    color:var(--snow);
-    font-variant-numeric:tabular-nums;
-    letter-spacing:-0.01em;
+    font-family:var(--display); font-weight:800; font-size:2.7em; line-height:1;
+    color:var(--snow); font-variant-numeric:tabular-nums; letter-spacing:-0.01em;
   }
-  .link .big small{font-size:22px; font-weight:700; color:var(--red);}
-  .link .big.word{font-size:22px; color:var(--red); line-height:1; text-transform:uppercase;}
-  .link p{margin:0; font-size:14.5px; line-height:1.35; color:var(--snow);}
-  .link p span{display:block; font-size:12px; color:var(--steel); margin-top:3px;}
+  .link .big small{font-size:0.5em; font-weight:700; color:var(--red);}
+  .link .big.word{font-size:1.45em; color:var(--red); text-transform:uppercase;}
+  .link p{margin:0; font-size:0.92em; line-height:1.3; color:var(--snow);}
+  .link p span{display:block; font-size:0.82em; color:var(--steel); margin-top:0.2em;}
 
-  /* cases */
-  .case{
-    padding:14px 0;
-    border-top:1px solid var(--hair);
-  }
+  /* preuves */
+  .case{padding:0.8em 0 0.2em; border-top:1px solid var(--hair); margin-top:0.8em;}
   .case .tag{
-    font-family:var(--display);
-    font-weight:600;
-    font-size:13px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--steel);
-    margin:0 0 4px;
+    font-family:var(--display); font-weight:600; font-size:0.82em; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--steel); margin:0 0 0.3em;
   }
   .case .big{
-    font-family:var(--display);
-    font-weight:800;
-    font-size:56px;
-    line-height:0.95;
-    color:var(--red);
-    font-variant-numeric:tabular-nums;
-    letter-spacing:-0.01em;
+    font-family:var(--display); font-weight:800; font-size:3.4em; line-height:0.95;
+    color:var(--red); font-variant-numeric:tabular-nums; letter-spacing:-0.01em;
   }
-  .case .big small{display:block; font-size:20px; color:var(--snow); font-weight:700; letter-spacing:0.02em; margin-top:2px;}
-  .case p{margin:4px 0 0; font-size:14px; line-height:1.35; color:var(--snow);}
+  .case .big small{display:block; font-size:0.38em; color:var(--snow); font-weight:700; letter-spacing:0.02em; margin-top:0.1em;}
+  .case p{margin:0.3em 0 0; font-size:0.9em; line-height:1.3; color:var(--snow);}
   .case p i{color:var(--steel);}
 
-  /* pie slide */
-  .pies{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    align-items:end;
-    margin:22px 0 6px;
-  }
-  .pie{text-align:left;}
-  .pie svg{display:block; width:100%; height:auto; max-width:100%;}
+  /* gâteau */
+  .pies{display:grid; grid-template-columns:1fr 1.4fr; gap:1em; align-items:end; margin:1.2em 0 0;}
+  .pie svg{display:block; width:100%; height:auto;}
+  .pie.small svg{width:58%;}
+  .pie.large svg{width:78%;}
   .pie .lab{
-    font-family:var(--display);
-    font-weight:700;
-    font-size:18px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--snow);
-    margin:10px 0 2px;
+    font-family:var(--display); font-weight:700; font-size:1.15em; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--snow); margin:0.5em 0 0.1em;
   }
-  .pie .sub{font-size:12.5px; color:var(--steel); margin:0; line-height:1.35;}
+  .pie .sub{font-size:0.8em; color:var(--steel); margin:0; line-height:1.3;}
   .figure{
-    display:flex; align-items:baseline; gap:10px;
-    margin-top:14px;
-    padding-top:14px;
-    border-top:1px solid var(--hair);
+    display:grid; grid-template-columns:auto 1fr; gap:0.7em; align-items:center;
+    margin-top:1.1em; padding-top:0.9em; border-top:1px solid var(--hair);
   }
   .figure .v{
-    font-family:var(--display);
-    font-weight:800;
-    font-size:64px;
-    line-height:1;
-    color:var(--snow);
-    font-variant-numeric:tabular-nums;
+    font-family:var(--display); font-weight:800; font-size:4em; line-height:1;
+    color:var(--snow); font-variant-numeric:tabular-nums;
   }
-  .figure .v small{font-size:28px; color:var(--red);}
-  .figure p{margin:0; font-size:13.5px; line-height:1.35; color:var(--steel); max-width:22ch;}
+  .figure .v small{font-size:0.45em; color:var(--red);}
+  .figure p{margin:0; font-size:0.86em; line-height:1.3; color:var(--steel);}
   .figure p b{color:var(--snow); font-weight:600;}
 
-  /* steps */
-  .steps{display:flex; flex-direction:column; margin-top:18px;}
+  /* méthode */
+  .steps{display:flex; flex-direction:column; margin-top:1em;}
   .step{
-    display:grid;
-    grid-template-columns:44px 1fr;
-    gap:12px;
-    padding:12px 0;
-    border-top:1px solid var(--hair);
-    align-items:start;
+    display:grid; grid-template-columns:2.4em 1fr; gap:0.6em; align-items:start;
+    padding:0.7em 0; border-top:1px solid var(--hair);
   }
   .step .n{
-    font-family:var(--display);
-    font-weight:800;
-    font-size:38px;
-    line-height:0.9;
-    color:var(--red);
-    font-variant-numeric:tabular-nums;
+    font-family:var(--display); font-weight:800; font-size:2.3em; line-height:0.9;
+    color:var(--red); font-variant-numeric:tabular-nums;
   }
   .step h4{
-    margin:0 0 3px;
-    font-family:var(--display);
-    font-weight:700;
-    font-size:22px;
-    text-transform:uppercase;
-    letter-spacing:0.02em;
-    line-height:1;
-    color:var(--snow);
+    margin:0 0 0.2em; font-family:var(--display); font-weight:700; font-size:1.35em;
+    text-transform:uppercase; letter-spacing:0.02em; line-height:1; color:var(--snow);
   }
-  .step p{margin:0; font-size:13.5px; line-height:1.35; color:var(--steel);}
+  .step p{margin:0; font-size:0.86em; line-height:1.3; color:var(--steel);}
   .step p b{color:var(--snow); font-weight:600;}
 
-  /* network */
-  .net{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:18px;
-  }
+  /* réseau */
+  .net{display:grid; grid-template-columns:1fr 1fr; gap:0.6em; margin-top:1.1em;}
   .org{
-    border:1px solid var(--hair);
-    background:rgba(11,18,38,0.55);
-    backdrop-filter:blur(6px);
-    padding:10px 12px 10px;
-    display:flex; flex-direction:column; justify-content:space-between; gap:8px;
+    border:1px solid var(--hair); background:rgba(11,18,38,0.6);
+    padding:0.7em 0.7em 0.6em;
+    display:flex; flex-direction:column; gap:0.5em;
   }
-  .org .logo{height:64px; display:flex; align-items:center; justify-content:center;}
-  .org .logo img{max-height:52px; max-width:100%; width:auto; display:block;}
-  .org .logo.white{background:var(--snow); padding:6px 10px; border-radius:2px; width:100%;}
+  .org .logo{height:4.2em; display:flex; align-items:center; justify-content:center; background:var(--snow); padding:0.35em 0.6em; border-radius:2px;}
+  .org .logo img{max-height:100%; max-width:100%; width:auto; display:block;}
   .org .word{
-    font-family:var(--display);
-    font-weight:800;
-    font-size:24px;
-    line-height:0.95;
-    text-transform:uppercase;
-    color:var(--snow);
-    letter-spacing:0.01em;
+    height:2.8em; display:block; padding-top:0.55em;
+    font-family:var(--display); font-weight:800; font-size:1.5em; line-height:0.92;
+    text-transform:uppercase; color:var(--snow); letter-spacing:0.01em;
+    overflow-wrap:anywhere;
   }
   .org .word em{font-style:normal; color:var(--red);}
-  .org .role{
-    font-size:12px; line-height:1.3; color:var(--steel); margin:0;
-  }
+  .org .role{font-size:0.76em; line-height:1.3; color:var(--steel); margin:0;}
   .org .role b{color:var(--snow); font-weight:600;}
   .org .soon{
-    display:inline-block;
-    font-family:var(--display); font-weight:700; font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--red); border:1px solid var(--red); padding:2px 5px 1px; margin-left:4px; vertical-align:middle;
+    display:inline-block; font-family:var(--display); font-weight:700; font-size:0.85em;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--red);
+    border:1px solid var(--red); padding:0.1em 0.35em 0; margin-left:0.3em; vertical-align:middle;
   }
 
-  .sign{
-    margin-top:22px;
-    padding-top:16px;
-    border-top:1px solid var(--hair);
-    display:flex; justify-content:space-between; align-items:flex-end; gap:12px;
-  }
-  .sign .who{font-family:var(--display); font-weight:700; font-size:20px; text-transform:uppercase; letter-spacing:0.04em; line-height:1;}
-  .sign .who span{display:block; font-family:var(--body); font-weight:400; font-size:12.5px; text-transform:none; letter-spacing:0; color:var(--steel); margin-top:4px;}
+  .sign{margin-top:1.3em; padding-top:1em; border-top:1px solid var(--hair);}
+  .sign .who{font-family:var(--display); font-weight:700; font-size:1.3em; text-transform:uppercase; letter-spacing:0.04em; line-height:1;}
+  .sign .who span{display:block; font-family:var(--body); font-weight:400; font-size:0.62em; text-transform:none; letter-spacing:0; color:var(--steel); margin-top:0.4em;}
 
-  .src{
-    position:absolute;
-    left:28px; right:28px; bottom:18px;
-    font-size:10.5px;
-    color:var(--steel-dim);
-    line-height:1.3;
-  }
-
-  /* hint */
   .hint{
-    position:absolute; left:50%; bottom:18px; transform:translateX(-50%);
-    font-family:var(--display); font-weight:600; font-size:12px; letter-spacing:0.16em; text-transform:uppercase;
-    color:var(--steel);
-    display:flex; align-items:center; gap:8px;
+    position:absolute; left:50%; bottom:3cqw; transform:translateX(-50%);
+    font-family:var(--display); font-weight:600; font-size:3cqw; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--steel); white-space:nowrap;
     animation:nudge 1.6s ease-in-out infinite;
   }
-  .hint::after{content:"↓";}
-  @keyframes nudge{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,6px);}}
+  .hint::after{content:" ↓";}
+  @keyframes nudge{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,1.2cqw);}}
   @media (prefers-reduced-motion: reduce){.hint{animation:none;}}
-
-  @media (max-height:700px){
-    .slide{padding-bottom:44px;}
-    h1{font-size:52px;} h2{font-size:40px;}
-    .lede{font-size:15px;}
-    .link .big{font-size:36px;}
-    .case .big{font-size:44px;}
-  }
 </style>
 </head>
 <body>
@@ -405,9 +263,11 @@
     <div class="veil"></div>
     <div class="top"><span>Business case</span><span class="n">01<small>/10</small></span></div>
     <img class="crest" src="assets/gfa.png" alt="GFA Rumilly-Vallières">
-    <p class="kicker">GFA Rumilly-Vallières</p>
-    <h1>Vingt ans.<br>Deux villages.<br><em>Tout l'Albanais.</em></h1>
-    <p class="lede">Le club peut devenir celui de tout l'Albanais, enraciné en Savoie et jusqu'au Piémont. Ce que je vous propose se mesure comme n'importe quel investissement.</p>
+    <div class="c">
+      <p class="kicker">GFA Rumilly-Vallières</p>
+      <h1>Vingt ans.<br>Deux villages.<br><em>Tout l'Albanais.</em></h1>
+      <p class="lede">Le club peut devenir celui de tout l'Albanais, enraciné en Savoie et jusqu'au Piémont. Ce que je vous propose se mesure comme n'importe quel investissement.</p>
+    </div>
     <div class="hint">Faire défiler</div>
   </section>
 
@@ -416,9 +276,11 @@
     <img class="bg" src="assets/02-territoire.jpg" alt="L'Albanais vu du ciel, Rumilly et le Semnoz">
     <div class="veil"></div>
     <div class="top"><span>La thèse</span><span class="n">02<small>/10</small></span></div>
-    <p class="kicker">Place-based marketing</p>
-    <h2>L'identité n'est pas une lubie. C'est un <em>actif.</em></h2>
-    <p class="lede">Géographie, langue, patrimoine, histoire : la culture de l'Albanais est la seule chose qu'aucun concurrent ne peut copier. Donc le seul argument de vente qu'il ne peut pas égaler.</p>
+    <div class="c">
+      <p class="kicker">Place-based marketing</p>
+      <h2>L'identité n'est pas une lubie. C'est un <em>actif.</em></h2>
+      <p class="lede">Géographie, langue, patrimoine, histoire : la culture de l'Albanais est la seule chose qu'aucun concurrent ne peut copier. Donc le seul argument de vente qu'il ne peut pas égaler.</p>
+    </div>
   </section>
 
   <!-- 03 — Le cycle de vie -->
@@ -426,14 +288,16 @@
     <img class="bg" src="assets/03-tribune.jpg" alt="Tribune un soir de match, écharpes levées">
     <div class="veil"></div>
     <div class="top"><span>Le cycle de vie</span><span class="n">03<small>/10</small></span></div>
-    <p class="kicker">Lifecycle marketing</p>
-    <h2>Un supporter ne se répète pas. Il <em>progresse.</em></h2>
-    <p class="lede">Chaque supporter et chaque partenaire traverse quatre étapes. Le rôle du club : les faire avancer d'une étape à l'autre, pas répéter la même communication en boucle.</p>
-    <div class="stages">
-      <div class="stage done"><span>Acquis</span>Découverte</div>
-      <div class="stage"><span>Étape 2</span>Engagement</div>
-      <div class="stage"><span>Étape 3</span>Fidélisation</div>
-      <div class="stage"><span>Étape 4</span>Ambassadeur</div>
+    <div class="c">
+      <p class="kicker">Lifecycle marketing</p>
+      <h2>Un supporter ne se répète pas. Il <em>progresse.</em></h2>
+      <p class="lede">Quatre étapes pour chaque supporter et chaque partenaire. Le rôle du club : les faire avancer d'une étape à l'autre, pas répéter la même communication en boucle.</p>
+      <div class="stages">
+        <div class="stage done"><span>Acquis</span>Découverte</div>
+        <div class="stage"><span>Étape 2</span>Engagement</div>
+        <div class="stage"><span>Étape 3</span>Fidélisation</div>
+        <div class="stage"><span>Étape 4</span>Ambassadeur</div>
+      </div>
     </div>
   </section>
 
@@ -442,124 +306,136 @@
     <img class="bg" src="assets/08-drapeau-savoie.jpg" alt="Drapeau de Savoie agité en tribune">
     <div class="veil"></div>
     <div class="top"><span>Le signal</span><span class="n">04<small>/10</small></span></div>
-    <p class="kicker">Ça a déjà commencé</p>
-    <h2>Le savoyard a fait <em>réagir.</em></h2>
-    <p class="lede">Les premières communications du club en langue savoyarde n'ont laissé personne indifférent. Les gens se sont demandé ce que c'était. Ils en ont parlé.</p>
-    <p class="note"><b>C'est exactement le signal qu'on attend d'une activation identitaire :</b> elle interpelle avant même d'être comprise. L'étape « Découverte » est gagnée.</p>
+    <div class="c">
+      <p class="kicker">Ça a déjà commencé</p>
+      <h2>Le savoyard a fait <em>réagir.</em></h2>
+      <p class="lede">Les premières communications du club en langue savoyarde n'ont laissé personne indifférent. Les gens se sont demandé ce que c'était. Ils en ont parlé.</p>
+      <p class="note"><b>C'est le signal attendu d'une activation identitaire :</b> elle interpelle avant même d'être comprise. L'étape « Découverte » est gagnée.</p>
+    </div>
   </section>
 
   <!-- 05 — La chaîne -->
-  <section class="slide veil-heavy" id="s5">
+  <section class="slide heavy" id="s5">
     <img class="bg" src="assets/04-partenaire.jpg" alt="Poignée de main au bord du terrain, panneaux publicitaires en fond">
     <div class="veil"></div>
     <div class="top"><span>Les partenaires</span><span class="n">05<small>/10</small></span></div>
-    <p class="kicker">La chaîne, pas des chiffres isolés</p>
-    <h2>Un sponsor n'achète pas de la visibilité.</h2>
-    <div class="chain">
-      <div class="link">
-        <div class="big word">Identité</div>
-        <p>On travaille l'identité albanaise du club.<span>Langue, patrimoine, récit du territoire. Une appartenance, pas un logo.</span></p>
+    <div class="c">
+      <p class="kicker">La chaîne, pas des chiffres isolés</p>
+      <h2>Un sponsor n'achète pas de la visibilité.</h2>
+      <div class="chain">
+        <div class="link">
+          <div class="big word">Identité</div>
+          <p>On travaille l'identité albanaise du club.<span>Une appartenance, pas un logo.</span></p>
+        </div>
+        <div class="link">
+          <div class="big">+42<small>%</small></div>
+          <p>d'intention d'achat de produits du club quand l'attachement augmente.<span>L'attachement se construit sur le local, jamais sur un club lointain.</span></p>
+        </div>
+        <div class="link">
+          <div class="big">80,6<small>%</small></div>
+          <p>des Français plus enclins à acheter une marque partenaire de leur club local.<span>Le sponsor achète du pouvoir d'achat orienté. C'est pour ça qu'il signe.</span></p>
+        </div>
       </div>
-      <div class="link">
-        <div class="big">+42<small>%</small></div>
-        <p>d'intention d'achat de produits du club quand l'attachement augmente.<span>Et l'attachement se construit sur le local, jamais sur un club lointain.</span></p>
-      </div>
-      <div class="link">
-        <div class="big">80,6<small>%</small></div>
-        <p>des Français plus enclins à acheter une marque partenaire de leur club local.<span>Le sponsor achète du pouvoir d'achat orienté. C'est pour ça qu'il signe.</span></p>
-      </div>
+      <p class="src">Sources : méta-analyse identification / intention d'achat, plusieurs clubs · étude ALL SPONSORED–CSA, France.</p>
     </div>
-    <p class="src">Sources : méta-analyse identification / intention d'achat, plusieurs clubs ; étude ALL SPONSORED–CSA, France.</p>
   </section>
 
   <!-- 06 — Les preuves -->
-  <section class="slide veil-heavy" id="s6">
+  <section class="slide heavy" id="s6">
     <img class="bg" src="assets/05-maillot-patrimoine.jpg" alt="Maillot patrimonial sur cintre">
     <div class="veil"></div>
     <div class="top"><span>Les preuves</span><span class="n">06<small>/10</small></span></div>
-    <p class="kicker">On n'invente rien</p>
-    <h2>L'identité est le <em>socle</em> commercial.</h2>
-    <div class="case">
-      <p class="tag">Wrexham AFC · Pays de Galles</p>
-      <div class="big">+155<small>% de chiffre d'affaires</small></div>
-      <p>En un an, après avoir mis l'identité galloise et locale au centre de la marque. Maillot patrimonial épuisé en deux heures. <i>Facteurs multiples, mais l'identité est le socle.</i></p>
-    </div>
-    <div class="case">
-      <p class="tag">Le Puy Foot 43 → Le Puy-en-Velay FC · 2026</p>
-      <p>Le club voisin change de nom pour être identifiable : « 43 Auvergne » créait une confusion permanente. Nouveau nom ancré dans le territoire, en même temps que le virage vers la Ligue 3.</p>
-      <p><i>Son directeur général : « la majorité des gens ne savent pas de quel Puy on parle ». Le problème était l'identité, pas le niveau sportif.</i></p>
+    <div class="c">
+      <p class="kicker">On n'invente rien</p>
+      <h2>L'identité est le <em>socle</em> commercial.</h2>
+      <div class="case">
+        <p class="tag">Wrexham AFC · Pays de Galles</p>
+        <div class="big">+155<small>% de chiffre d'affaires en un an</small></div>
+        <p>Après avoir mis l'identité galloise et locale au centre de la marque. Maillot patrimonial épuisé en deux heures. <i>Facteurs multiples, mais l'identité est le socle.</i></p>
+      </div>
+      <div class="case">
+        <p class="tag">Le Puy Foot 43 → Le Puy-en-Velay FC · 2026</p>
+        <p>Le club voisin change de nom pour être identifiable : « 43 Auvergne » créait une confusion permanente. Nouveau nom ancré dans le territoire, en même temps que le virage vers la Ligue 3.</p>
+        <p><i>Son directeur général : « la majorité des gens ne savent pas de quel Puy on parle ». Le problème était l'identité, pas le niveau sportif.</i></p>
+      </div>
     </div>
   </section>
 
   <!-- 07 — Agrandir le gâteau -->
   <section class="slide solid" id="s7">
     <div class="top"><span>Le vrai objectif</span><span class="n">07<small>/10</small></span></div>
-    <p class="kicker">Pas se battre pour des miettes</p>
-    <h2>Agrandir le <em>gâteau.</em></h2>
-    <p class="lede">Le sport savoyard se partage de toutes petites parts d'un gâteau minuscule, face aux médias sportifs nationaux et européens. L'enjeu n'est pas de prendre la part du voisin : c'est de capter une audience qui ne regarde pas encore le sport savoyard.</p>
-    <div class="pies">
-      <div class="pie">
-        <svg viewBox="0 0 100 100" width="90" height="90" aria-label="Aujourd'hui : petite part d'un petit gâteau">
-          <circle cx="50" cy="50" r="30" fill="none" stroke="#22306A" stroke-width="16"/>
-          <circle cx="50" cy="50" r="30" fill="none" stroke="#D40000" stroke-width="16" stroke-dasharray="15 173.5" transform="rotate(-90 50 50)"/>
-        </svg>
-        <p class="lab">Aujourd'hui</p>
-        <p class="sub">Petite part d'un tout petit gâteau.</p>
+    <div class="c">
+      <p class="kicker">Pas se battre pour des miettes</p>
+      <h2>Agrandir le <em>gâteau.</em></h2>
+      <p class="lede">Le sport savoyard se partage les miettes d'un gâteau minuscule, face aux médias sportifs nationaux. L'enjeu n'est pas de prendre la part du voisin : c'est de capter une audience qui ne regarde pas encore le sport savoyard.</p>
+      <div class="pies">
+        <div class="pie small">
+          <svg viewBox="0 0 100 100" aria-label="Aujourd'hui : petite part d'un petit gâteau">
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#22306A" stroke-width="16"/>
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#D40000" stroke-width="16" stroke-dasharray="15 173.5" transform="rotate(-90 50 50)"/>
+          </svg>
+          <p class="lab">Aujourd'hui</p>
+          <p class="sub">Petite part d'un tout petit gâteau.</p>
+        </div>
+        <div class="pie large">
+          <svg viewBox="0 0 100 100" aria-label="Objectif : la même part, sur un gâteau bien plus grand">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#22306A" stroke-width="18"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#D40000" stroke-width="18" stroke-dasharray="20 231.3" transform="rotate(-90 50 50)"/>
+          </svg>
+          <p class="lab">Objectif</p>
+          <p class="sub">La même part, sur un gâteau bien plus grand. À pourcentage égal, elle vaut objectivement plus.</p>
+        </div>
       </div>
-      <div class="pie">
-        <svg viewBox="0 0 100 100" width="160" height="160" aria-label="Objectif : la même part, sur un gâteau bien plus grand">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#22306A" stroke-width="18"/>
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#D40000" stroke-width="18" stroke-dasharray="20 231.3" transform="rotate(-90 50 50)"/>
-        </svg>
-        <p class="lab">Objectif</p>
-        <p class="sub">La même part, sur un gâteau bien plus grand. À pourcentage égal, elle vaut objectivement plus.</p>
+      <div class="figure">
+        <div class="v">40<small>%</small></div>
+        <p>des <b>2,5 Md€</b> du sponsoring sportif français vont déjà au sport amateur. L'argent existe. Ce qui manque, c'est l'audience.</p>
       </div>
-    </div>
-    <div class="figure">
-      <div class="v">40<small>%</small></div>
-      <p>des <b>2,5 Md€</b> du sponsoring sportif français vont déjà au sport amateur. L'argent existe. Ce qui manque, c'est l'audience.</p>
     </div>
   </section>
 
-  <!-- 08 — Comment on s'y prend -->
-  <section class="slide veil-heavy" id="s8">
+  <!-- 08 — La méthode -->
+  <section class="slide heavy" id="s8">
     <img class="bg" src="assets/06-col-chambery-turin.jpg" alt="Route de col entre Savoie et Piémont au lever du jour">
     <div class="veil"></div>
     <div class="top"><span>La méthode</span><span class="n">08<small>/10</small></span></div>
-    <p class="kicker">Pas à pas</p>
-    <h2>Quatre étapes, dans l'ordre.</h2>
-    <div class="steps">
-      <div class="step"><div class="n">1</div><div><h4>Formaliser l'existant</h4><p>Convention avec l'Institut de la Langue Savoyarde et <b>point de départ chiffré</b> : spectateurs, licences, partenaires. Sans lui, pas de progrès démontrable dans un an.</p></div></div>
-      <div class="step"><div class="n">2</div><div><h4>Construire « le club de l'Albanais »</h4><p>Écusson, récit, présence dans les médias locaux et transfrontaliers. On n'est plus un club parmi d'autres en National.</p></div></div>
-      <div class="step"><div class="n">3</div><div><h4>En faire un argument sponsor</h4><p>Prouver avec des chiffres que la marque a été vue, et <b>envoyer le bilan en fin de saison</b>. C'est ce suivi qui fait renouveler, et payer plus.</p></div></div>
-      <div class="step"><div class="n">4</div><div><h4>Activer le réseau</h4><p>French Tech, Savoy IA, Universitât Sabauda, ALCOTRA : des portes que le club ne peut pas ouvrir seul. Exemple : un financement transfrontalier Chambéry–Turin autour du club.</p></div></div>
+    <div class="c">
+      <p class="kicker">Pas à pas</p>
+      <h2>Quatre étapes, dans l'ordre.</h2>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div><h4>Formaliser l'existant</h4><p>Convention avec l'Institut de la Langue Savoyarde et <b>point de départ chiffré</b> : spectateurs, licences, partenaires. Sans lui, pas de progrès démontrable dans un an.</p></div></div>
+        <div class="step"><div class="n">2</div><div><h4>Construire « le club de l'Albanais »</h4><p>Écusson, récit, présence dans les médias locaux et transfrontaliers. On n'est plus un club parmi d'autres en National.</p></div></div>
+        <div class="step"><div class="n">3</div><div><h4>En faire un argument sponsor</h4><p>Prouver avec des chiffres que la marque a été vue, et <b>envoyer le bilan en fin de saison</b>. C'est ce suivi qui fait renouveler, et payer plus.</p></div></div>
+        <div class="step"><div class="n">4</div><div><h4>Activer le réseau</h4><p>French Tech, Savoy IA, Universitât Sabauda, ALCOTRA : des portes que le club ne peut pas ouvrir seul. Exemple : un financement transfrontalier Chambéry–Turin autour du club.</p></div></div>
+      </div>
     </div>
   </section>
 
   <!-- 09 — Le réseau -->
-  <section class="slide veil-heavy" id="s9">
+  <section class="slide heavy" id="s9">
     <img class="bg" src="assets/02-territoire.jpg" alt="">
     <div class="veil"></div>
     <div class="top"><span>Qui je suis</span><span class="n">09<small>/10</small></span></div>
-    <p class="kicker">Un accompagnement</p>
-    <h2>Des portes que le club ne peut pas ouvrir <em>seul.</em></h2>
-    <p class="lede">Un chef de projet à disposition, pas seulement un communicant. Une convention signée entre l'Institut et le club, pas un accord personnel.</p>
-    <div class="net">
-      <div class="org">
-        <div class="logo white"><img src="assets/ils_logotype.png" alt="Institut de la Langue Savoyarde"></div>
-        <p class="role"><b>Responsable.</b> La stratégie qui a déjà mis le savoyard dans les communications du club.</p>
-      </div>
-      <div class="org">
-        <div class="logo white"><img src="assets/ftalps.svg" alt="La French Tech Alpes"></div>
-        <p class="role"><b>Président, Chambéry</b><span class="soon">Sept. 2026</span><br>Appel d'offres Interreg ALCOTRA remporté sur l'IA, consortium Chambéry, Turin, Vallée d'Aoste.</p>
-      </div>
-      <div class="org">
-        <div class="word">Universitât<br><em>Sabauda</em></div>
-        <p class="role"><b>Président.</b> Sollicité par le Département pour SavoiaExperience (ALCOTRA). Accompagne Dolin à Turin.</p>
-      </div>
-      <div class="org">
-        <div class="word">Savoy <em>IA</em></div>
-        <p class="role"><b>Initiateur.</b> Collectif d'entrepreneurs et de chefs d'entreprise savoyards sur les usages de l'IA.</p>
+    <div class="c">
+      <p class="kicker">Un accompagnement</p>
+      <h2>Des portes que le club ne peut pas ouvrir <em>seul.</em></h2>
+      <p class="note">Un chef de projet à disposition, pas seulement un communicant. Une convention signée entre l'Institut et le club, pas un accord personnel.</p>
+      <div class="net">
+        <div class="org">
+          <div class="logo"><img src="assets/ils_logotype.png" alt="Institut de la Langue Savoyarde"></div>
+          <p class="role"><b>Responsable.</b> La stratégie qui a déjà mis le savoyard dans les communications du club.</p>
+        </div>
+        <div class="org">
+          <div class="logo"><img src="assets/ftalps.svg" alt="La French Tech Alpes"></div>
+          <p class="role"><b>Président, Chambéry</b><span class="soon">Sept. 2026</span><br>Appel d'offres Interreg ALCOTRA remporté sur l'IA, avec Turin et la Vallée d'Aoste.</p>
+        </div>
+        <div class="org">
+          <div class="word">Universitât<br><em>Sabauda</em></div>
+          <p class="role"><b>Président.</b> Sollicité par le Département pour SavoiaExperience (ALCOTRA). Accompagne Dolin à Turin.</p>
+        </div>
+        <div class="org">
+          <div class="word">Savoy <em>IA</em></div>
+          <p class="role"><b>Initiateur.</b> Collectif d'entrepreneurs savoyards sur les usages de l'IA.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -569,15 +445,17 @@
     <img class="bg" src="assets/07-terrain-nuit.jpg" alt="Terrain de nuit sous les montagnes">
     <div class="veil"></div>
     <div class="top"><span>Pour conclure</span><span class="n">10<small>/10</small></span></div>
-    <h1>Le territoire n'est pas un décor.</h1>
-    <p class="lede">C'est <b>l'actif que personne ne peut nous prendre.</b> À nous d'en faire quelque chose.</p>
-    <div class="lockup">
-      <img src="assets/gfa.png" alt="GFA Rumilly-Vallières">
-      <span class="x">×</span>
-      <img class="ils" src="assets/ils_logotype.png" alt="Institut de la Langue Savoyarde">
-    </div>
-    <div class="sign">
-      <div class="who">Franck Monod<span>Institut de la Langue Savoyarde · Universitât Sabauda · French Tech Alpes Chambéry</span></div>
+    <div class="c">
+      <h1>Le territoire n'est pas un décor.</h1>
+      <p class="lede">C'est <b>l'actif que personne ne peut nous prendre.</b> À nous d'en faire quelque chose.</p>
+      <div class="lockup">
+        <img src="assets/gfa.png" alt="GFA Rumilly-Vallières">
+        <span class="x">×</span>
+        <img class="ils" src="assets/ils_logotype.png" alt="Institut de la Langue Savoyarde">
+      </div>
+      <div class="sign">
+        <div class="who">Franck Monod<span>Institut de la Langue Savoyarde · Universitât Sabauda · French Tech Alpes Chambéry</span></div>
+      </div>
     </div>
   </section>
 
@@ -587,9 +465,24 @@
   (function(){
     var phone=document.getElementById('phone');
     var slides=Array.prototype.slice.call(document.querySelectorAll('.slide'));
-    function current(){
-      var h=phone.clientHeight; return Math.round(phone.scrollTop/h);
+
+    /* Garde-fou : si un bloc de contenu dépasse la hauteur disponible
+       (écran très large et bas, police de secours), on réduit son échelle
+       par petits pas jusqu'à ce qu'il tienne. */
+    function fit(){
+      slides.forEach(function(s){
+        var c=s.querySelector('.c'); if(!c) return;
+        var cs=getComputedStyle(s);
+        var avail=s.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+        var f=1; c.style.setProperty('--fit',f);
+        var guard=0;
+        while(c.scrollHeight>avail && f>0.55 && guard++<30){
+          f=Math.round((f-0.03)*100)/100; c.style.setProperty('--fit',f);
+        }
+        s.dataset.fit=f;
+      });
     }
+    function current(){ return Math.round(phone.scrollTop/phone.clientHeight); }
     function go(i){
       i=Math.max(0,Math.min(slides.length-1,i));
       slides[i].scrollIntoView({behavior:'smooth',block:'start'});
@@ -599,6 +492,9 @@
       else if(e.key==='ArrowUp'||e.key==='PageUp'||e.key==='ArrowLeft'){e.preventDefault();go(current()-1);}
       else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(slides.length-1);}
     });
+    var t; window.addEventListener('resize',function(){clearTimeout(t); t=setTimeout(fit,120);});
+    if(document.fonts && document.fonts.ready){ document.fonts.ready.then(fit); }
+    fit(); window.addEventListener('load',fit);
     phone.focus();
   })();
 </script>

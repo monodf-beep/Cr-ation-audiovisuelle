@@ -13,7 +13,7 @@ Source du contenu : `businesscaseidentiteGFA.html` (version longue, format docum
 | Élément | Choix |
 |---|---|
 | Palette | Navy nuit du club (`#0B1226`, `#182047`), rouge de Savoie (`#D40000`) comme seul accent, neige `#F2F0EA`, acier `#9AA3B2` |
-| Typo | Barlow Condensed (titres, esprit signalétique de stade) + Barlow (texte) via Google Fonts |
+| Typo | Barlow Condensed (titres, esprit signalétique de stade) + Barlow (texte), embarquées dans `assets/fonts.css` pour un rendu identique partout |
 | Structure | 01 couverture · 02 thèse · 03 cycle de vie · 04 le signal (savoyard) · 05 la chaîne sponsor · 06 preuves (Wrexham, Le Puy) · 07 agrandir le gâteau · 08 méthode en 4 étapes · 09 le réseau (logos) · 10 clôture |
 
 ## Export en images
@@ -27,3 +27,7 @@ await p.goto('file://'+process.cwd()+'/index.html');await p.waitForTimeout(2000)
 for(let i=0;i<10;i++){await p.evaluate(i=>phone.scrollTo({top:i*phone.clientHeight}),i);await p.waitForTimeout(400);await p.screenshot({path:'slide-'+String(i+1).padStart(2,'0')+'.png'});}
 await b.close();})()"
 ```
+
+## Mise à l'échelle
+
+Toutes les dimensions du deck sont exprimées en `cqw` (1 % de la largeur du cadre 9:16), pas en pixels ni en unités de fenêtre. Le deck se comporte donc comme une image 1080×1920 mise à l'échelle, quel que soit l'écran. Un garde-fou en JavaScript réduit encore l'échelle d'une slide si son contenu dépasse la hauteur disponible (police de secours, cadre inhabituel).
