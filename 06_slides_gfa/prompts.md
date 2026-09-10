@@ -26,3 +26,16 @@ Sortie native 1520×2688, redimensionnée en 1080×1920 JPEG q82. Consigne commu
 | 8 | `08-drapeau-savoie.jpg` | `4a312bd3-d270-4fb1-bf9b-8172f2c3df21` | Vertical photograph, tight detail: a large red flag with a white CENTERED cross whose four arms are equal and reach all the way to the edges of the flag (the historical flag of Savoy: a symmetric white cross on red, NOT the Danish off-centre cross), waving in a small football stadium stand at dusk, backlit by floodlights, fabric folds catching light, out-of-focus supporters and a navy sky behind. Textural, dramatic, cinematic grain, red and navy palette. No text, no logos, no lettering. |
 
 Premier essai du drapeau (`74ccb738-6ff0-488f-9db8-8393806c271b`) écarté : croix décentrée façon Danemark.
+
+## Portraits et logos ajoutés
+
+| Fichier | Source | Traitement |
+|---|---|---|
+| `09-franck-portrait.jpg` | `franckmonod.eu/images/hero-portrait.jpg` | Recadré 1080×1160, converti en bichromie navy `#101A38` → `#E8EBF2`, dans l'esprit des affiches de match du club |
+| `savoy-ia.png` | `ia.franckmonod.eu` | Tel quel |
+| `ils_blanc.png` | Dérivé de `ils_logotype.png` | Version monochrome blanche générée à partir du logotype couleur. **À remplacer par le logo blanc officiel de l'Enstitut** (design kit « enstitut » dans Claude Design), non accessible depuis cette session |
+
+## À fournir pour compléter le deck
+
+- Les affiches du club en savoyard (`Jorn de partia`, `Victouèra`) en fichiers, pour la slide 04. Elles sont aujourd'hui citées en texte.
+- Les deux écussons du Puy (ancien `Le Puy Foot 43 Auvergne`, nouveau `Le Puy-en-Velay FC`) pour la slide 06. Ils ne sont ni sur Wikimedia ni sur le site du club. La démonstration est aujourd'hui portée par le texte.

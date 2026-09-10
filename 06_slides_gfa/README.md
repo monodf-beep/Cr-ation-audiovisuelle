@@ -14,7 +14,8 @@ Source du contenu : `businesscaseidentiteGFA.html` (version longue, format docum
 |---|---|
 | Palette | Navy nuit du club (`#0B1226`, `#182047`), rouge de Savoie (`#D40000`) comme seul accent, neige `#F2F0EA`, acier `#9AA3B2` |
 | Typo | Barlow Condensed (titres, esprit signalétique de stade) + Barlow (texte), embarquées dans `assets/fonts.css` pour un rendu identique partout |
-| Structure | 01 couverture · 02 thèse · 03 cycle de vie · 04 le signal (savoyard) · 05 la chaîne sponsor · 06 preuves (Wrexham, Le Puy) · 07 agrandir le gâteau · 08 méthode en 4 étapes · 09 le réseau (logos) · 10 clôture |
+| Structure | 01 couverture · 02 la thèse · 03 le cycle de vie marketing en 6 étapes · 04 le signal savoyard · 05 la chaîne sponsor · 06 les preuves (Le Puy, Wrexham) · 07 agrandir le gâteau · 08 la méthode en 3 étapes · 09 qui je suis · 10 clôture |
+| Rupture | La slide 09 est la seule page claire du deck : fond crème, texte navy, portrait en bichromie navy comme les affiches de match du club |
 
 ## Export en images
 
