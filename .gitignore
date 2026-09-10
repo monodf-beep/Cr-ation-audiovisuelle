@@ -16,3 +16,6 @@ __pycache__/
 *.webp
 04_montage/coupes.json
 22_drapeaux/
+# Slides GFA : visuels finaux (1080x1920 jpg, ~2 Mo) et logos, livres avec le deck.
+!06_slides_gfa/assets/*.jpg
+!06_slides_gfa/assets/*.png

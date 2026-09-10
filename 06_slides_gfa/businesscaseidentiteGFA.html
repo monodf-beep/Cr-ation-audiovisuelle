@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Identité de club : le business case</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A1A33;
+    --bg-soft: #112247;
+    --card: #12244A0;
+    --card2: #112247;
+    --gold: #C9D2DC;
+    --gold-soft: #9AA7B5;
+    --ivory: #F4F6FA;
+    --sage: #A9B8D6;
+    --sage-dim: #7E8FB3;
+    --rule: rgba(201,210,220,0.32);
+    --hair: rgba(244,246,250,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--ivory);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 80px;}
+  .hero{
+    padding:56px 20px 40px;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(201,210,220,0.18), transparent 55%),
+      linear-gradient(180deg, #061224 0%, var(--bg) 100%);
+    border-bottom:1px solid var(--hair);
+  }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.02em;
+    color: var(--sage);
+    margin:0 0 18px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size: clamp(28px, 6.5vw, 42px);
+    line-height:1.08;
+    margin:0 0 14px;
+    color:var(--ivory);
+    letter-spacing:-0.01em;
+  }
+  .hero p.lede{
+    font-size:16px;
+    color:var(--sage);
+    max-width:52ch;
+    margin:0;
+  }
+  .hero p.lede b{color:var(--ivory); font-weight:600;}
+
+  section{padding:38px 20px;}
+  .sec-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:20px;
+    border-bottom:1px solid var(--rule);
+    padding-bottom:12px;
+  }
+  .sec-head h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:22px;
+    margin:0;
+    color:var(--ivory);
+  }
+  .sec-head span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--gold);
+    white-space:nowrap;
+  }
+
+  /* frameworks */
+  .fw-grid{display:grid; gap:14px;}
+  .fw-card{
+    background:var(--card2);
+    border:1px solid var(--hair);
+    border-left:3px solid var(--gold);
+    padding:16px 18px;
+  }
+  .fw-card h3{
+    margin:0 0 6px;
+    font-size:15px;
+    font-weight:600;
+    color:var(--gold);
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+  .fw-card p{margin:0; font-size:14.5px; color:var(--sage);}
+  .fw-card p b{color:var(--ivory); font-weight:600;}
+  .fw-stages{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:12px;
+  }
+  .fw-stage{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--bg);
+    background:var(--sage);
+    padding:4px 9px;
+    border-radius:2px;
+  }
+  .fw-stage.on{background:var(--gold); color:#241a04;}
+  .fw-arrow{color:var(--sage-dim); align-self:center; font-size:11px;}
+  .fw-proof{
+    margin-top:12px;
+    padding-top:11px;
+    border-top:1px solid var(--hair);
+    font-size:12.5px;
+    color:var(--gold-soft);
+    line-height:1.5;
+  }
+
+  /* item list */
+  .items{display:flex; flex-direction:column; gap:0;}
+  .item{
+    display:grid;
+    grid-template-columns: 84px 1fr;
+    gap:16px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    align-items:start;
+  }
+  .item:last-child{border-bottom:none;}
+  .item .num{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:27px;
+    line-height:1;
+    color:var(--gold);
+    white-space:nowrap;
+  }
+  .item .num small{font-size:14px; font-weight:500; color:var(--gold-soft);}
+  .item .txt p{margin:0 0 4px; font-size:14.5px; color:var(--ivory); font-weight:500;}
+  .item .txt span{font-size:13px; color:var(--sage-dim);}
+
+  /* case chips */
+  .cases{display:flex; flex-direction:column; gap:12px;}
+  .case{
+    background:var(--card2);
+    border:1px solid var(--hair);
+    padding:14px 16px;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:6px;
+  }
+  .case .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--gold);
+  }
+  .case p{margin:0; font-size:14px; color:var(--ivory);}
+  .case p b{color:var(--gold); font-family:'Fraunces', serif; font-size:16px; font-weight:600;}
+  .case .note{font-size:12.5px; color:var(--sage-dim); margin-top:2px;}
+
+  /* roadmap */
+  .road{display:flex; flex-direction:column; gap:0;}
+  .step{
+    display:grid;
+    grid-template-columns: 34px 1fr;
+    gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .step:last-child{border-bottom:none;}
+  .step .n{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--gold);
+    border:1px solid var(--rule);
+    width:30px; height:30px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step h4{margin:0 0 3px; font-size:14.5px; color:var(--ivory); font-weight:600;}
+  .step p{margin:0; font-size:13.5px; color:var(--sage);}
+
+  .close{
+    padding:40px 20px 60px;
+    text-align:left;
+    border-top:1px solid var(--rule);
+  }
+  .close p{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    line-height:1.4;
+    color:var(--ivory);
+    margin:0;
+    max-width:44ch;
+  }
+  .close p b{color:var(--gold);}
+
+  .cred{display:flex; flex-direction:column; gap:0;}
+  .cred-item{
+    display:grid;
+    grid-template-columns: 22px 1fr;
+    gap:14px;
+    padding:13px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .cred-item:last-child{border-bottom:none;}
+  .cred-item .dot{
+    width:8px; height:8px;
+    background:var(--gold);
+    margin-top:6px;
+  }
+  .cred-item p{margin:0 0 3px; font-size:14.5px; color:var(--ivory); font-weight:600;}
+  .cred-item span{font-size:13px; color:var(--sage-dim);}
+  .cred-item .soon{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    color:var(--gold-soft);
+    border:1px solid var(--rule);
+    padding:1px 5px;
+    margin-left:6px;
+    white-space:nowrap;
+  }
+
+  .chain{display:flex; flex-direction:column; align-items:stretch;}
+  .chain-step{
+    background:var(--card2);
+    border:1px solid var(--hair);
+    border-left:3px solid var(--gold);
+    padding:16px 18px;
+  }
+  .chain-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--gold);
+    margin-bottom:8px;
+  }
+  .chain-h{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--ivory);
+    margin:0 0 6px;
+    line-height:1.3;
+  }
+  .chain-txt{font-size:13.5px; color:var(--sage); margin:0 0 10px;}
+  .chain-txt b{color:var(--ivory);}
+  .chain-proof{
+    font-size:12.5px;
+    color:var(--gold-soft);
+    border-top:1px solid var(--hair);
+    padding-top:9px;
+  }
+  .chain-down{
+    text-align:center;
+    color:var(--gold);
+    font-size:18px;
+    padding:6px 0;
+  }
+  .conclu{
+    margin-top:18px;
+    padding:16px 18px;
+    background:rgba(201,210,220,0.08);
+    border:1px solid var(--rule);
+  }
+  .conclu p{margin:0; font-size:14px; color:var(--ivory); line-height:1.5;}
+  .conclu p b{color:var(--gold); font-family:'Fraunces', serif; font-weight:600; font-size:14.5px;}
+
+  .pies{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    padding:10px 0 4px;
+    flex-wrap:wrap;
+  }
+  .pie-block{text-align:center; max-width:150px;}
+  .pie-label{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--ivory);
+    margin:8px 0 4px;
+  }
+  .pie-sub{font-size:12px; color:var(--sage-dim); margin:0; line-height:1.4;}
+  .pie-arrow{color:var(--gold-soft); font-size:20px; align-self:center;}
+
+  @media (max-width:420px){
+    .item{grid-template-columns: 66px 1fr;}
+    .item .num{font-size:22px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap" style="padding:0;">
+    <p class="kicker">GFA RUMILLY-VALLIÈRES · CE QUE JE VOUS PROPOSE</p>
+    <h1>Le club a vingt ans et deux villages. Il peut devenir celui de tout l'Albanais, enraciné en Savoie et jusqu'au Piémont.</h1>
+    <p class="lede">Pour y arriver, il faut travailler l'identité du club. Ce n'est pas une lubie culturelle : c'est du <b>place-based marketing</b>, qui s'active sur un <b>cycle de vie</b> précis. Et ça se mesure comme n'importe quel autre investissement du club.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section style="padding-top:34px;">
+    <div class="sec-head"><h2>Qui je suis dans cette histoire</h2><span>POSITIONNEMENT</span></div>
+    <p style="font-size:14.5px; color:var(--sage); margin:-4px 0 18px;">Pas uniquement un supporter passionné : un expert culturel et un entrepreneur engagé, enraciné en Savoie, à qui l'on fait confiance précisément à la croisée du développement économique et du développement culturel.</p>
+    <div class="cred">
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Responsable de l'Institut de la Langue Savoyarde</p><span>Pilote la stratégie de valorisation de la langue savoyarde, la même expertise qui a permis les premières communications du club en savoyard</span></div>
+      </div>
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Président de l'Universitât Sabauda des sciences gastronomiques, sollicité par le Département pour le projet SavoiaExperience (Interreg ALCOTRA)</p><span>Le Département fait directement appel à moi et à l'association pour ce volet du projet : patrimoine gastronomique savoyard, rayonnement transfrontalier (Piémont, Vallée d'Aoste). J'accompagne aussi Dolin, le vermouth de Chambéry, pour son développement à Turin, le même triangle Chambéry–Turin</span></div>
+      </div>
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Président de French Tech Alpes Chambéry<span class="soon">DÈS SEPTEMBRE 2026</span></p><span>Fédère les projets d'innovation du territoire savoyard. Porteur d'un appel d'offres ALCOTRA Interreg remporté sur l'IA, avec un consortium transfrontalier Chambéry, Turin, Vallée d'Aoste</span></div>
+      </div>
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Initiateur de Savoy IA</p><span>Collectif d'entrepreneurs et de chefs d'entreprise savoyards sur les usages de l'IA</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Deux idées à retenir</h2><span>ON PARLE DE QUOI</span></div>
+    <div class="fw-grid">
+      <div class="fw-card">
+        <h3>Place-based marketing</h3>
+        <p>Construire la marque du club sur le territoire albanais dans toutes ses dimensions : sa géographie, sa langue, son patrimoine, son histoire. C'est cette culture territoriale qui devient un actif que personne d'autre ne peut copier, donc un argument de vente que la concurrence ne peut pas égaler.</p>
+      </div>
+      <div class="fw-card">
+        <h3>Cycle de vie marketing (lifecycle)</h3>
+        <p>Chaque supporter et chaque partenaire traverse 4 étapes. Le rôle du club est de faire progresser les gens d'une étape à l'autre, pas de répéter la même communication en boucle.</p>
+        <div class="fw-stages">
+          <span class="fw-stage on">Découverte</span><span class="fw-arrow">→</span>
+          <span class="fw-stage">Engagement</span><span class="fw-arrow">→</span>
+          <span class="fw-stage">Fidélisation</span><span class="fw-arrow">→</span>
+          <span class="fw-stage">Ambassadeur</span>
+        </div>
+        <div class="fw-proof">Première victoire sur l'étape "Découverte" : l'intégration de la langue savoyarde dans nos publications a déjà joué son rôle d'awareness. Ça n'a laissé personne indifférent, les gens se sont posé la question. C'est gagné.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Pourquoi ça fait venir des partenaires</h2><span>LA CHAÎNE, PAS DES CHIFFRES ISOLÉS</span></div>
+    <p style="font-size:14.5px; color:var(--sage); margin:-4px 0 20px;">Un partenaire ne signe pas parce qu'un club "a de l'identité". Il signe parce que cette identité produit une audience qu'il ne peut pas toucher ailleurs. Trois maillons :</p>
+
+    <div class="chain">
+      <div class="chain-step">
+        <div class="chain-label">1 · CE QU'ON FAIT</div>
+        <p class="chain-h">On travaille l'identité albanaise du club</p>
+        <p class="chain-txt">Langue savoyarde, patrimoine local, récit du territoire, pas un logo, une appartenance.</p>
+        <div class="chain-proof">Déjà vérifié chez vous : les premières communications en savoyard ont suscité des interrogations et de l'engagement, pas de l'indifférence.</div>
+      </div>
+      <div class="chain-down">↓</div>
+      <div class="chain-step">
+        <div class="chain-label">2 · CE QUE ÇA PRODUIT</div>
+        <p class="chain-h">Des supporters plus attachés, qui parlent du club et achètent plus</p>
+        <p class="chain-txt">L'attachement à un club se construit sur le <b>local</b>, jamais sur un club lointain. C'est ce qui transforme un spectateur en public captif.</p>
+        <div class="chain-proof">+42% d'intention d'achat de produits du club quand l'attachement augmente (recherche académique, plusieurs clubs étudiés).</div>
+      </div>
+      <div class="chain-down">↓</div>
+      <div class="chain-step">
+        <div class="chain-label">3 · CE QUE ÇA VAUT POUR UN PARTENAIRE</div>
+        <p class="chain-h">Une audience attachée est une audience qui achète la marque du sponsor</p>
+        <p class="chain-txt">C'est exactement ce qu'une entreprise cherche en sponsorisant un club local : pas de la visibilité, du pouvoir d'achat orienté.</p>
+        <div class="chain-proof">80,6% des Français se disent plus enclins à acheter une marque quand elle est partenaire de leur club local (étude ALL SPONSORED–CSA, France).</div>
+      </div>
+    </div>
+
+    <div class="conclu">
+      <p><b>Ce que ça veut dire pour un sponsor :</b> ce public fait confiance au club. En s'associant au club, le sponsor profite de cette confiance. C'est pour ça qu'il signe.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Ce que gagnent les supporters</h2><span>CEUX QUI VIENNENT DÉJÀ</span></div>
+    <div class="items">
+      <div class="item">
+        <div class="num">+42<small>%</small></div>
+        <div class="txt"><p>d'intention d'achat de merchandising quand l'identification au club augmente</p><span>Méta-analyse, effet moyen-fort mesuré sur plusieurs clubs</span></div>
+      </div>
+      <div class="item">
+        <div class="num">Local</div>
+        <div class="txt"><p>le besoin d'appartenance se fixe sur un club <b style="color:var(--ivory)">local</b>, jamais sur un club lointain</p><span>Recherche répliquée (États-Unis, Grèce), l'ancrage territorial est ce qui crée la fidélité</span></div>
+      </div>
+      <div class="item">
+        <div class="num">83<small>%</small></div>
+        <div class="txt"><p>font confiance à la recommandation d'un proche plus qu'à toute publicité, l'effet est encore plus fort si le proche est perçu comme un "vrai local"</p><span>Recherche sur le bouche-à-oreille</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Le signe qu'on a déjà</h2><span>ÇA MARCHE DÉJÀ UN PEU</span></div>
+    <div class="items">
+      <div class="item">
+        <div class="num" style="font-size:16px; color:var(--ivory);">Langue<br>savoyarde</div>
+        <div class="txt"><p>Les premières communications du club en savoyard ont suscité des interrogations et de l'engagement, les gens se sont demandé ce que c'était</p><span>C'est le signal qu'une activation identitaire fonctionne : elle interpelle avant même d'être comprise</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>D'autres l'ont fait avant nous</h2><span>ON N'INVENTE RIEN</span></div>
+    <div class="cases">
+      <div class="case">
+        <span class="tag">LE PUY FOOT 43 → LE PUY-EN-VELAY FC (2026)</span>
+        <p><b>Un club retravaille son identité pour être identifiable.</b></p>
+        <p>Le club voisin change de nom : "43 Auvergne" créait une confusion permanente avec le Puy-de-Dôme et le Puy du Fou. Nouveau nom ancré dans le territoire, consultation des supporters, joueurs et partenaires, en même temps que le virage de professionnalisation vers la Ligue 3.</p>
+        <p class="note">Directeur général : "la majorité des gens ne savent pas de quel Puy on parle", le problème était l'identité, pas le niveau sportif.</p>
+      </div>
+      <div class="case">
+        <span class="tag">WREXHAM AFC (PAYS DE GALLES)</span>
+        <p><b>+155% de chiffre d'affaires</b> en un an après avoir mis l'identité galloise/locale au centre de la marque.</p>
+        <p class="note">Maillot patrimonial vendu en 2h. Facteurs multiples (médiatisation), mais l'identité est le socle commercial.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Comment on s'y prend</h2><span>PAS À PAS</span></div>
+    <div class="road">
+      <div class="step">
+        <div class="n">1</div>
+        <div><h4>On formalise ce qui existe déjà</h4><p>La convention avec l'Institut de la Langue Savoyarde, et un point de départ chiffré : spectateurs, licences renouvelées, partenaires actuels. Sans ce point de départ, impossible de montrer un progrès dans un an.</p></div>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div><h4>On construit l'identité "club de l'Albanais"</h4><p>Au-delà de la langue savoyarde : un écusson, un récit, une présence dans les médias locaux et transfrontaliers (Nos Alpes). C'est ce qui fait qu'on n'est plus juste un club parmi d'autres en National.</p></div>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <div><h4>On en fait un argument concret pour les sponsors</h4><p>Pas juste un logo sur le maillot : leur prouver, avec des chiffres, que leur marque a été vue par du monde, et leur envoyer ce bilan en fin de saison. C'est ce suivi qui donne envie de renouveler, et de payer plus.</p></div>
+      </div>
+      <div class="step">
+        <div class="n">4</div>
+        <div><h4>On active le réseau pour aller plus loin que le club seul</h4><p>French Tech, Savoy IA, Universitât Sabauda, ALCOTRA : des portes que le club ne peut pas ouvrir lui-même. Exemple : un financement transfrontalier Chambéry–Turin autour du club, porté par moi via ces structures.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Comment je vois mon rôle</h2><span>PAS UNE PRESTATION</span></div>
+    <div class="cred">
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Un accompagnement, pas une mission ponctuelle</p><span>Support continu sur le marketing et la communication du club, pas une prestation qui se termine à la remise d'un livrable. Les modalités de contractualisation restent à définir ensemble.</span></div>
+      </div>
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Une convention de partenariat entre l'Institut de la Langue Savoyarde et le club</p><span>Un cadre signé, formel, entre les deux structures, pas seulement un accord personnel entre le club et moi</span></div>
+      </div>
+      <div class="cred-item">
+        <div class="dot"></div>
+        <div><p>Un chef de projet à disposition, pas seulement un communicant</p><span>Je monte des projets, c'est ce que je fais déjà ailleurs (voir plus haut). Exemple concret : porter auprès du Département ou d'ALCOTRA une demande de financement pour un échange sportif Chambéry–Turin autour du club, une démarche institutionnelle que le club ne peut pas déposer lui-même, mais que je peux porter via l'Institut de la Langue Savoyarde ou l'Universitât Sabauda</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Le vrai objectif : agrandir le gâteau</h2><span>PAS SE BATTRE POUR DES MIETTES</span></div>
+    <p style="font-family:'Fraunces', serif; font-weight:600; font-size:18px; color:var(--ivory); margin:-4px 0 10px; line-height:1.35;">En France, le sport amateur capte déjà 40% des 2,5 Md€ du marché du sponsoring sportif. L'argent existe. Ce qui manque au sport savoyard, c'est l'audience qui justifie d'en prendre une part.</p>
+    <p style="font-size:14.5px; color:var(--sage); margin:0 0 22px;">Aujourd'hui, le sport savoyard se partage de toutes petites parts d'un gâteau minuscule face aux médias sportifs nationaux et européens. Se battre pour ces miettes ne fait grandir personne. L'enjeu, c'est de faire grossir le gâteau lui-même : capter une audience qui ne regarde pas encore le sport savoyard.</p>
+
+    <div class="pies">
+      <div class="pie-block">
+        <svg viewBox="0 0 120 120" width="72" height="72">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--hair)" stroke-width="16"/>
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--gold)" stroke-width="16"
+                  stroke-dasharray="20 306" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+        </svg>
+        <p class="pie-label">Aujourd'hui</p>
+        <p class="pie-sub">Petite part d'un tout petit gâteau</p>
+      </div>
+      <div class="pie-arrow">→</div>
+      <div class="pie-block">
+        <svg viewBox="0 0 200 200" width="168" height="168">
+          <circle cx="100" cy="100" r="88" fill="none" stroke="var(--hair)" stroke-width="22"/>
+          <circle cx="100" cy="100" r="88" fill="none" stroke="var(--gold)" stroke-width="22"
+                  stroke-dasharray="92 460" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+        </svg>
+        <p class="pie-label">Objectif</p>
+        <p class="pie-sub">La même part, sur un gâteau bien plus grand : à pourcentage égal, une part qui vaut objectivement plus</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="close">
+    <p>Le territoire n'est pas un décor. C'est <b>l'actif</b> que personne d'autre ne peut nous prendre. À nous d'en faire quelque chose.</p>
+  </div>
+
+</div>
+</body>
+</html>
