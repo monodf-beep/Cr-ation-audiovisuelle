@@ -178,17 +178,32 @@
   .cy.done{border-top-color:var(--red);}
   .cy.done .s{color:var(--red);}
 
-  /* ---- 04 · les mots déjà publiés ---- */
-  .words{display:flex; flex-wrap:wrap; gap:0.5em; margin-top:1em;}
-  .words span{
-    font-family:var(--display); font-weight:700; font-size:1.15em; line-height:1;
-    text-transform:uppercase; letter-spacing:0.04em; color:var(--snow);
-    border:1px solid var(--hair); border-left:0.22em solid var(--red);
-    padding:0.42em 0.6em 0.3em;
+  /* ---- 04 · les publications du club en savoyard ----
+     Chaque .ph est un emplacement : remplacer le div par
+     <img src="assets/04-<slot>.jpg" alt="..."> quand l'affiche est fournie. */
+  .posts{display:grid; grid-template-columns:repeat(3,1fr); gap:0.55em; margin-top:1em;}
+  .post{margin:0;}
+  .post .ph, .post img{
+    display:block; width:100%; aspect-ratio:3/4;
+    border:1px solid var(--hair); border-top:0.18em solid var(--red);
   }
-  .words span i{
+  .post .ph{
+    background:rgba(11,18,38,0.62);
+    display:flex; align-items:center; justify-content:center; padding:0.4em;
+  }
+  .post .ph span{
+    font-family:var(--display); font-weight:800; font-size:1.2em; line-height:0.95;
+    text-transform:uppercase; text-align:center; color:var(--snow); letter-spacing:0.01em;
+  }
+  .post img{object-fit:cover;}
+  .post figcaption{
+    margin-top:0.4em; font-family:var(--display); font-weight:700; font-size:0.85em;
+    line-height:1.1; text-transform:uppercase; letter-spacing:0.02em; color:var(--snow);
+  }
+  .post figcaption i{
     display:block; font-style:normal; font-family:var(--body); font-weight:400;
-    font-size:0.52em; letter-spacing:0; text-transform:none; color:var(--steel); margin-top:0.3em;
+    font-size:0.72em; letter-spacing:0; text-transform:none; color:var(--steel);
+    line-height:1.25; margin-top:0.25em;
   }
 
   /* ---- 05 · la chaîne ---- */
@@ -413,12 +428,22 @@
     <div class="c">
       <p class="kicker">La notoriété, c'est gagné</p>
       <h2>Le savoyard a fait <em>réagir.</em></h2>
-      <p class="lede">Les communications du club en langue savoyarde n'ont laissé personne indifférent. Les gens se sont demandé ce que c'était. Ils en ont parlé.</p>
-      <div class="words">
-        <span>Jorn de partia<i>Jour de match</i></span>
-        <span>Victouèra<i>Victoire</i></span>
+      <p class="lede">Les publications du club en langue savoyarde n'ont laissé personne indifférent. Les gens se sont demandé ce que c'était. Ils en ont parlé.</p>
+      <div class="posts">
+        <figure class="post">
+          <div class="ph" data-slot="jorn-partia-1"><span>Jorn de<br>Partia</span></div>
+          <figcaption>Jour de match<i>GFA · ESTAC Troyes<br>Les Grangettes, 29.08.26</i></figcaption>
+        </figure>
+        <figure class="post">
+          <div class="ph" data-slot="jorn-partia-2"><span>Jorn de<br>Partia</span></div>
+          <figcaption>Jour de match<i>Haute-Savoie · GFA<br>05.09.26</i></figcaption>
+        </figure>
+        <figure class="post">
+          <div class="ph" data-slot="victouera"><span>Victouèra</span></div>
+          <figcaption>Victoire<i>GFA 3–0 ESTAC II</i></figcaption>
+        </figure>
       </div>
-      <p class="note"><b>C'est ce qu'on attend d'une activation :</b> elle interpelle avant même d'être comprise. La première étape du cycle est franchie. Il reste les cinq autres.</p>
+      <p class="note"><b>Ce n'est pas un coup, c'est une pratique installée.</b> Jour de match, victoire : le savoyard revient à chaque publication. C'est ce qu'on attend d'une activation, elle interpelle avant même d'être comprise.</p>
     </div>
   </section>
 

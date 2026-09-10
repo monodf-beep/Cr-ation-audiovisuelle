@@ -52,3 +52,19 @@ Premier essai du drapeau (`74ccb738-6ff0-488f-9db8-8393806c271b`) écarté : cro
 ## Affiches du club en savoyard (slide 04)
 
 Non récupérables depuis cette session : elles ne sont publiées que sur les réseaux du club, et Instagram comme Facebook sont bloqués par la politique réseau de l'environnement. La slide cite les deux mots en pastilles typographiques, avec leur traduction. Pour les intégrer en image, déposer les fichiers dans le dossier `assets/` du dépôt, ou sur un Drive accessible.
+
+## Comment poser les affiches sur la slide 04
+
+Les trois vignettes de la slide 04 sont des emplacements. Déposer les fichiers dans `assets/` sous les noms `04-jorn-partia-1.jpg`, `04-jorn-partia-2.jpg` et `04-victouera.jpg`, puis remplacer chaque bloc
+
+```html
+<div class="ph" data-slot="jorn-partia-1"><span>Jorn de<br>Partia</span></div>
+```
+
+par
+
+```html
+<img src="assets/04-jorn-partia-1.jpg" alt="Affiche du club en savoyard, jour de match">
+```
+
+Le cadre, le format 3:4, le filet rouge et la légende ne bougent pas.
