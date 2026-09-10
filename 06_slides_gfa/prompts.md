@@ -31,7 +31,7 @@ Premier essai du drapeau (`74ccb738-6ff0-488f-9db8-8393806c271b`) écarté : cro
 
 | Fichier | Source | Traitement |
 |---|---|---|
-| `09-franck-portrait.jpg` | `franckmonod.eu/images/hero-portrait.jpg` | Recadré 1080×1160, converti en bichromie navy `#101A38` → `#E8EBF2`, dans l'esprit des affiches de match du club |
+| `09-franck-portrait.jpg` | `franckmonod.eu/images/hero-portrait.jpg` | Miroir horizontal pour orienter le regard vers la droite, recadré 1080×1160, converti en bichromie navy `#101A38` → `#E8EBF2`, dans l'esprit des affiches de match du club |
 | `savoy-ia.png` | `ia.franckmonod.eu` | Tel quel |
 | `ils_blanc.png` | Dérivé de `ils_logotype.png` | Version monochrome blanche générée à partir du logotype couleur. **À remplacer par le logo blanc officiel de l'Enstitut** (design kit « enstitut » dans Claude Design), non accessible depuis cette session |
 
@@ -51,20 +51,16 @@ Premier essai du drapeau (`74ccb738-6ff0-488f-9db8-8393806c271b`) écarté : cro
 
 ## Affiches du club en savoyard (slide 04)
 
-Non récupérables depuis cette session : elles ne sont publiées que sur les réseaux du club, et Instagram comme Facebook sont bloqués par la politique réseau de l'environnement. La slide cite les deux mots en pastilles typographiques, avec leur traduction. Pour les intégrer en image, déposer les fichiers dans le dossier `assets/` du dépôt, ou sur un Drive accessible.
+Récupérées via Google Drive. Les fichiers d'un dossier Drive partagé se téléchargent directement en HTTP, sans passer par le connecteur : `https://drive.google.com/uc?export=download&id=<ID>`. C'est le canal à utiliser pour tout nouvel asset, les images collées dans une conversation n'atteignant pas le système de fichiers.
 
-## Comment poser les affiches sur la slide 04
+## Affiches du club en savoyard (slide 04)
 
-Les trois vignettes de la slide 04 sont des emplacements. Déposer les fichiers dans `assets/` sous les noms `04-jorn-partia-1.jpg`, `04-jorn-partia-2.jpg` et `04-victouera.jpg`, puis remplacer chaque bloc
+Fournies par le client via un dossier Google Drive partagé, téléchargées en direct.
 
-```html
-<div class="ph" data-slot="jorn-partia-1"><span>Jorn de<br>Partia</span></div>
-```
+| Fichier | Source Drive |
+|---|---|
+| `04-jorn-partia-1.jpg` | `partia 1.png` |
+| `04-jorn-partia-2.jpg` | `partia 2.png` |
+| `04-victouera.jpg` | `victouera 1.png` |
 
-par
-
-```html
-<img src="assets/04-jorn-partia-1.jpg" alt="Affiche du club en savoyard, jour de match">
-```
-
-Le cadre, le format 3:4, le filet rouge et la légende ne bougent pas.
+Traitement : la pastille de profil Instagram est retirée en rognant les 5,5 % du bas, puis l'image est calée sur un fond navy au format 3:4 sans rien couper du visuel. Les trois affiches sont disposées en éventail, avec rotations et recouvrement, celle du milieu au premier plan.
