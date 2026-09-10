@@ -200,31 +200,44 @@
   .link p{margin:0; font-size:0.92em; line-height:1.3; color:var(--snow);}
   .link p span{display:block; font-size:0.82em; color:var(--steel); margin-top:0.2em;}
 
-  /* ---- 06 · avant / après ---- */
-  .compare{display:flex; flex-direction:column; margin-top:1em;}
-  .compare .cell{
-    border-left:0.22em solid var(--steel-dim); padding:0.55em 0 0.55em 0.8em;
-  }
-  .compare .cell.after{border-left-color:var(--red);}
-  .compare .lab{
-    margin:0 0 0.2em; font-family:var(--display); font-weight:700; font-size:0.82em;
+  /* ---- 06 · le repositionnement du Puy ---- */
+  .switch{display:grid; grid-template-columns:1fr 1fr; gap:1em; margin-top:1.1em;}
+  .sw{padding-top:0.6em; border-top:0.22em solid var(--steel-dim);}
+  .sw.after{border-top-color:var(--red);}
+  .sw .lab{
+    margin:0 0 0.4em; font-family:var(--display); font-weight:700; font-size:0.8em;
     letter-spacing:0.14em; text-transform:uppercase; color:var(--steel);
   }
-  .compare .cell.after .lab{color:var(--red);}
-  .compare .v{margin:0; font-size:1.05em; line-height:1.25; color:var(--snow); font-weight:500;}
-  .compare .down{color:var(--red); font-size:1.1em; line-height:1; padding:0.35em 0 0.35em 0.05em;}
+  .sw.after .lab{color:var(--red);}
+  .sw .nm{
+    margin:0 0 0.45em; font-family:var(--display); font-weight:800; font-size:1.5em;
+    line-height:0.95; text-transform:uppercase; color:var(--steel);
+  }
+  .sw.after .nm{color:var(--snow);}
+  .sw .ds{margin:0; font-size:0.78em; line-height:1.3; color:var(--steel);}
+  .sw.after .ds{color:var(--snow);}
+  .chips-lab{
+    margin:1.1em 0 0.45em; font-family:var(--display); font-weight:700; font-size:0.8em;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--red);
+  }
+  .chips{display:flex; flex-wrap:wrap; gap:0.4em;}
+  .chips span{
+    font-family:var(--display); font-weight:700; font-size:0.98em; line-height:1;
+    text-transform:uppercase; letter-spacing:0.03em; color:var(--snow);
+    border:1px solid var(--hair); padding:0.36em 0.55em 0.24em;
+  }
 
   /* ---- 06 · Wrexham ---- */
-  .case{padding:0.75em 0 0; border-top:1px solid var(--hair); margin-top:0.9em;}
+  .case{padding:0.9em 0 0; border-top:1px solid var(--hair); margin-top:1.1em;}
   .case .tag{
     font-family:var(--display); font-weight:600; font-size:0.82em; letter-spacing:0.14em;
     text-transform:uppercase; color:var(--steel); margin:0 0 0.25em;
   }
   .case .big{
-    font-family:var(--display); font-weight:800; font-size:2.6em; line-height:0.95;
+    font-family:var(--display); font-weight:800; font-size:3.6em; line-height:0.95;
     color:var(--red); font-variant-numeric:tabular-nums; letter-spacing:-0.01em;
   }
-  .case .big small{font-size:0.42em; color:var(--snow); font-weight:700; letter-spacing:0.02em; margin-left:0.4em;}
+  .case .big small{display:block; font-size:0.3em; margin-top:0.15em; color:var(--snow); font-weight:700; letter-spacing:0.02em;}
   .case p{margin:0.3em 0 0; font-size:0.88em; line-height:1.3; color:var(--snow);}
   .case p i{color:var(--steel);}
 
@@ -330,13 +343,13 @@
 </head>
 <body>
 <div class="deck">
-<div class="phone" id="phone" tabindex="0" aria-label="Diaporama vertical, dix slides">
+<div class="phone" id="phone" tabindex="0" aria-label="Diaporama vertical, onze slides">
 
   <!-- 01 — Couverture -->
   <section class="slide" id="s1">
     <img class="bg" src="assets/01-stade-albanais.jpg" alt="Stade de Rumilly au crépuscule, les Bauges en arrière-plan">
     <div class="veil"></div>
-    <div class="top"><span>Business case</span><span class="n">01<small>/10</small></span></div>
+    <div class="top"><span>Business case</span><span class="n">01<small>/11</small></span></div>
     <img class="crest" src="assets/gfa.png" alt="GFA Rumilly-Vallières">
     <div class="c">
       <p class="kicker">GFA Rumilly-Vallières</p>
@@ -350,7 +363,7 @@
   <section class="slide" id="s2">
     <img class="bg" src="assets/02-territoire.jpg" alt="L'Albanais vu du ciel, Rumilly et le Semnoz">
     <div class="veil"></div>
-    <div class="top"><span>La thèse</span><span class="n">02<small>/10</small></span></div>
+    <div class="top"><span>La thèse</span><span class="n">02<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">Place-based marketing</p>
       <h2>L'identité est un <em>actif.</em></h2>
@@ -362,7 +375,7 @@
   <section class="slide heavy" id="s3">
     <img class="bg" src="assets/03-tribune.jpg" alt="Tribune un soir de match, écharpes levées">
     <div class="veil"></div>
-    <div class="top"><span>La méthode marketing</span><span class="n">03<small>/10</small></span></div>
+    <div class="top"><span>La méthode marketing</span><span class="n">03<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">Cycle de vie marketing</p>
       <h2>Six étapes à faire <em>franchir.</em></h2>
@@ -382,7 +395,7 @@
   <section class="slide" id="s4">
     <img class="bg" src="assets/08-drapeau-savoie.jpg" alt="Drapeau de Savoie agité en tribune">
     <div class="veil"></div>
-    <div class="top"><span>Étape 01</span><span class="n">04<small>/10</small></span></div>
+    <div class="top"><span>Étape 01</span><span class="n">04<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">La notoriété, c'est gagné</p>
       <h2>Le savoyard a fait <em>réagir.</em></h2>
@@ -399,7 +412,7 @@
   <section class="slide heavy" id="s5">
     <img class="bg" src="assets/04-partenaire.jpg" alt="Poignée de main au bord du terrain, panneaux publicitaires en fond">
     <div class="veil"></div>
-    <div class="top"><span>Les partenaires</span><span class="n">05<small>/10</small></span></div>
+    <div class="top"><span>Les partenaires</span><span class="n">05<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">La chaîne, pas des chiffres isolés</p>
       <h2>Un sponsor achète une <em>audience.</em></h2>
@@ -421,37 +434,50 @@
     </div>
   </section>
 
-  <!-- 06 — Les preuves -->
-  <section class="slide heavy" id="s6">
-    <img class="bg" src="assets/05-maillot-patrimoine.jpg" alt="Maillot patrimonial sur cintre">
-    <div class="veil"></div>
-    <div class="top"><span>Les preuves</span><span class="n">06<small>/10</small></span></div>
+  <!-- 06 — Le Puy : un club entier se repositionne -->
+  <section class="slide solid" id="s6">
+    <div class="top"><span>Le précédent</span><span class="n">06<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">On n'invente rien</p>
-      <h2>Du territoire à la <em>culture.</em></h2>
-      <div class="compare">
-        <div class="cell">
-          <p class="lab">Le Puy Foot 43 Auvergne · avant</p>
-          <p class="v">Une identité de géographie : le numéro du département, le nom de la région, la silhouette de la ville.</p>
+      <h2>Pas le logo. Tout le <em>club.</em></h2>
+      <p class="lede">En 2026, Le Puy Foot 43 Auvergne devient Le Puy-en-Velay FC. Le club abandonne une identité de géographie pour une identité de culture. <b>Ce n'est pas un habillage, c'est un repositionnement.</b></p>
+      <div class="switch">
+        <div class="sw before">
+          <p class="lab">Avant</p>
+          <p class="nm">Le Puy Foot<br>43 Auvergne</p>
+          <p class="ds">Un numéro de département, un nom de région, la silhouette de la ville. Trois façons de dire où l'on est. Aucune de dire qui l'on est.</p>
         </div>
-        <div class="down">↓</div>
-        <div class="cell after">
-          <p class="lab">Le Puy-en-Velay FC · 2026</p>
-          <p class="v">Une identité de culture : l'aigle du blason de la ville, repris dans l'écusson du club.</p>
+        <div class="sw after">
+          <p class="lab">Depuis 2026</p>
+          <p class="nm">Le Puy-en-Velay<br>Football Club</p>
+          <p class="ds">L'aigle du blason de la ville, porté depuis le Moyen Âge. Le club reprend à son compte la culture du lieu dont il porte le nom.</p>
         </div>
       </div>
-      <p class="note">Le club voisin a changé de nom et d'écusson en même temps que son virage vers la Ligue 3. Son directeur général : « la majorité des gens ne savent pas de quel Puy on parle ». Le problème était l'identité, pas le niveau sportif.</p>
+      <p class="chips-lab">Ce qui change en même temps</p>
+      <div class="chips"><span>Le nom</span><span>L'écusson</span><span>Le récit</span><span>Le projet sportif</span></div>
+      <p class="note">Le nouveau nom a été construit avec les supporters, les joueurs et les partenaires, en même temps que le virage de professionnalisation vers la Ligue 3. Son directeur général : « la majorité des gens ne savent pas de quel Puy on parle ». Le problème était l'identité, pas le niveau sportif.</p>
+    </div>
+  </section>
+
+  <!-- 07 — Wrexham : la preuve par le chiffre -->
+  <section class="slide heavy" id="s7">
+    <img class="bg" src="assets/05-maillot-patrimoine.jpg" alt="Maillot patrimonial sur cintre">
+    <div class="veil"></div>
+    <div class="top"><span>Le précédent</span><span class="n">07<small>/11</small></span></div>
+    <div class="c">
+      <p class="kicker">Wrexham AFC · Pays de Galles</p>
+      <h2>L'identité, ça se <em>compte.</em></h2>
       <div class="case">
-        <p class="tag">Wrexham AFC · Pays de Galles</p>
         <div class="big">+155<small>% de chiffre d'affaires en un an</small></div>
-        <p>Après avoir mis l'identité galloise au centre de la marque. Maillot patrimonial épuisé en deux heures. <i>Facteurs multiples, mais l'identité est le socle.</i></p>
+        <p>Après avoir mis l'identité galloise et locale au centre de la marque. Le maillot patrimonial est parti en deux heures.</p>
       </div>
+      <p class="note">La médiatisation du club a joué, personne ne le nie. Mais c'est bien l'identité qui a été mise au centre, et c'est elle qui a donné au club quelque chose à vendre.</p>
     </div>
   </section>
 
   <!-- 07 — Agrandir le gâteau -->
   <section class="slide" id="s7">
-    <div class="top"><span>Le vrai objectif</span><span class="n">07<small>/10</small></span></div>
+    <div class="top"><span>Le vrai objectif</span><span class="n">08<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">Pas se battre pour des miettes</p>
       <h2>Agrandir le <em>gâteau.</em></h2>
@@ -483,7 +509,7 @@
   <section class="slide heavy" id="s8">
     <img class="bg" src="assets/06-col-chambery-turin.jpg" alt="Route de col entre Savoie et Piémont au lever du jour">
     <div class="veil"></div>
-    <div class="top"><span>Comment on s'y prend</span><span class="n">08<small>/10</small></span></div>
+    <div class="top"><span>Comment on s'y prend</span><span class="n">09<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">Pas à pas</p>
       <h2>Trois étapes, dans l'ordre.</h2>
@@ -499,7 +525,7 @@
   <section class="slide light" id="s9">
     <img class="band" src="assets/09-franck-portrait.jpg" alt="Franck Monod">
     <div class="band-fade"></div>
-    <div class="top"><span>Qui je suis</span><span class="n">09<small>/10</small></span></div>
+    <div class="top"><span>Qui je suis</span><span class="n">10<small>/11</small></span></div>
     <div class="c">
       <p class="kicker">Franck Monod</p>
       <h2>Un chef de projet, pas un <em>communicant.</em></h2>
@@ -529,7 +555,7 @@
   <section class="slide" id="s10">
     <img class="bg" src="assets/07-terrain-nuit.jpg" alt="Terrain de nuit sous les montagnes">
     <div class="veil"></div>
-    <div class="top"><span>Pour conclure</span><span class="n">10<small>/10</small></span></div>
+    <div class="top"><span>Pour conclure</span><span class="n">11<small>/11</small></span></div>
     <div class="c">
       <h2>Nommer le territoire, faire sienne sa <em>culture.</em></h2>
       <p class="lede">Le territoire n'est pas un décor. C'est <b>l'actif que personne ne peut nous prendre.</b></p>

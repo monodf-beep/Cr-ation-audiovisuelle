@@ -1,6 +1,6 @@
 # Slides verticales — Identité de club : le business case
 
-Dix slides 9:16 pour présenter le business case « club de l'Albanais » aux dirigeants du GFA Rumilly-Vallières (des chefs d'entreprise). Une idée par slide, texte ancré en bas, visuel plein cadre.
+Onze slides 9:16 pour présenter le business case « club de l'Albanais » aux dirigeants du GFA Rumilly-Vallières (des chefs d'entreprise). Une idée par slide, texte ancré en bas, visuel plein cadre.
 
 - `index.html` : le deck. Défilement vertical par accroche (scroll-snap), flèches / espace au clavier, swipe sur téléphone. Sur écran large, le deck s'affiche dans un cadre 9:16 centré.
 - `assets/` : 8 visuels générés sur Higgsfield (GPT Image 2, 2K, redimensionnés en 1080×1920 JPEG) et les logos officiels.
@@ -14,7 +14,7 @@ Source du contenu : `businesscaseidentiteGFA.html` (version longue, format docum
 |---|---|
 | Palette | Navy nuit du club (`#0B1226`, `#182047`), rouge de Savoie (`#D40000`) comme seul accent, neige `#F2F0EA`, acier `#9AA3B2` |
 | Typo | Barlow Condensed (titres, esprit signalétique de stade) + Barlow (texte), embarquées dans `assets/fonts.css` pour un rendu identique partout |
-| Structure | 01 couverture · 02 la thèse · 03 le cycle de vie marketing en 6 étapes · 04 le signal savoyard · 05 la chaîne sponsor · 06 les preuves (Le Puy, Wrexham) · 07 agrandir le gâteau · 08 la méthode en 3 étapes · 09 qui je suis · 10 clôture |
+| Structure | 01 couverture · 02 la thèse · 03 le cycle de vie marketing en 6 étapes · 04 le signal savoyard · 05 la chaîne sponsor · 06 Le Puy, un club entier se repositionne · 07 Wrexham, la preuve par le chiffre · 08 agrandir le gâteau · 09 la méthode en 3 étapes · 10 qui je suis · 11 clôture |
 | Rupture | La slide 09 est la seule page claire du deck : fond crème, texte navy, portrait en bichromie navy comme les affiches de match du club |
 
 ## Export en images
@@ -25,7 +25,7 @@ Pour livrer les slides en JPEG/PNG (stories, WhatsApp, impression), ouvrir `inde
 node -e "
 const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1920}});
 await p.goto('file://'+process.cwd()+'/index.html');await p.waitForTimeout(2000);
-for(let i=0;i<10;i++){await p.evaluate(i=>phone.scrollTo({top:i*phone.clientHeight}),i);await p.waitForTimeout(400);await p.screenshot({path:'slide-'+String(i+1).padStart(2,'0')+'.png'});}
+for(let i=0;i<11;i++){await p.evaluate(i=>phone.scrollTo({top:i*phone.clientHeight}),i);await p.waitForTimeout(400);await p.screenshot({path:'slide-'+String(i+1).padStart(2,'0')+'.png'});}
 await b.close();})()"
 ```
 
