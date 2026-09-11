@@ -93,6 +93,10 @@
   .slide.light .top{color:rgba(242,240,234,0.82);}
   .slide.light .top .n{color:#F2F0EA;}
   .slide.light .top .n small{color:rgba(242,240,234,0.6);}
+  /* bandeau clair : on repasse l'en-tete en navy */
+  .slide.light.on-light .top{color:var(--steel);}
+  .slide.light.on-light .top .n{color:var(--snow);}
+  .slide.light.on-light .top .n small{color:var(--steel-dim);}
   .slide.light.plain{padding-top:16cqw;}
   .slide.light.plain .top{color:var(--steel);}
   .slide.light.plain .top .n{color:var(--snow);}
@@ -105,6 +109,13 @@
   .slide .band-fade{
     position:absolute; top:0; left:0; right:0; height:33cqh; z-index:0;
     background:linear-gradient(180deg, rgba(239,237,230,0) 70%, #EFEDE6 100%);
+  }
+  /* en-tete blanc sur bandeau : un voile garde le numero lisible
+     meme quand le haut de l'image est clair */
+  .slide.light:not(.on-light) .band-fade{
+    background:
+      linear-gradient(180deg, rgba(11,18,38,0.42) 0%, rgba(11,18,38,0) 20%),
+      linear-gradient(180deg, rgba(239,237,230,0) 70%, #EFEDE6 100%);
   }
 
   /* bloc de contenu : sa taille de police est l'unité de tout ce qu'il contient.
@@ -600,7 +611,9 @@
     </div>
   </section>
   <!-- 11 — Le complexe -->
-  <section class="slide light plain" id="s11">
+  <section class="slide light" id="s11">
+    <img class="band" src="assets/11-arc-alpin.jpg" alt="L'arc alpin vu d'avion, la Savoie au premier plan et la plaine du Piémont au-delà">
+    <div class="band-fade"></div>
     <div class="top"><span>Le vrai obstacle</span><span class="n">11<small>/13</small></span></div>
     <div class="c">
       <p class="kicker">Le vrai obstacle</p>
@@ -610,12 +623,14 @@
     </div>
   </section>
   <!-- 12 — Un club piémontais -->
-  <section class="slide light plain" id="s12">
+  <section class="slide light on-light" id="s12">
+    <img class="band" src="assets/12-vercelli.jpg" alt="Le blason de Pro Vercelli brodé sur le maillot blanc du club">
+    <div class="band-fade"></div>
     <div class="top"><span>Concrètement</span><span class="n">12<small>/13</small></span></div>
     <div class="c">
       <p class="kicker">Concrètement</p>
-      <h2>Un club <em>piémontais.</em></h2>
-      <p class="lede">Un partenariat, des matchs amicaux, des échanges de jeunes. Pro Vercelli, sept fois champion d'Italie, ou Novara, sont à portée de la frontière.</p>
+      <h2>Positionnement et <em>ouverture.</em></h2>
+      <p class="lede">Un partenariat avec un club piémontais : matchs amicaux, échanges de jeunes. Pro Vercelli, sept fois champion d'Italie, ou Novara, sont à portée de la frontière.</p>
       <p class="note"><b>Le transfrontalier fonctionne déjà en économie et en culture.</b> Je peux le monter aussi pour le sport.</p>
     </div>
   </section>

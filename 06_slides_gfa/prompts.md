@@ -68,3 +68,10 @@ Traitement : la pastille de profil Instagram est retirée en rognant les 5,5 % d
 ## Accès LinkedIn (slide 10)
 
 La slide affiche `linkedin.com/in/franck-monod`, l'adresse liée depuis franckmonod.eu, et la ligne entière est cliquable. À noter, culture-savoie.com pointe vers un autre profil, `linkedin.com/in/franck-monod-culture-savoie`.
+
+## Bandeaux des slides 11 et 12
+
+| Fichier | Source | Traitement |
+|---|---|---|
+| `11-arc-alpin.jpg` | Higgsfield, `gpt_image_2`, 3:2, quality high, resolution 2k, job `6d823c42-a1d7-4865-b178-81291da16ed4` | Bichromie navy, comme le portrait. Prompt : vue aérienne à l'aube de l'arc alpin, la Savoie au premier plan, la crête enneigée au centre, la plaine du Piémont au-delà, aucun tracé de frontière |
+| `12-vercelli.jpg` | Drive partagé, `pro vercelli.png` | Recadré sur le blason brodé, 1080×720. Gardé en couleur : la croix rouge se perd en bichromie, et elle répond au rouge du deck. La flèche de l'interface Drive est rognée |
