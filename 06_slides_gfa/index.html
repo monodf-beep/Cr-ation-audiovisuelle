@@ -101,6 +101,10 @@
   .slide.light.deep{padding-top:54cqh;}
   .slide.light.deep .band{height:52cqh;}
   .slide.light.deep .band-fade{height:52cqh;}
+  /* la slide aux ecussons porte plus de contenu : bandeau un peu moins profond */
+  .slide.light.deep.mid{padding-top:45cqh;}
+  .slide.light.deep.mid .band{height:43cqh;}
+  .slide.light.deep.mid .band-fade{height:43cqh;}
   .slide.light.plain{padding-top:16cqw;}
   .slide.light.plain .top{color:var(--steel);}
   .slide.light.plain .top .n{color:var(--snow);}
@@ -272,6 +276,9 @@
     letter-spacing:0.14em; text-transform:uppercase; color:var(--red);
   }
   .chips{display:flex; flex-wrap:wrap; gap:0.4em;}
+  /* 12 · les ecussons voisins, a hauteur egale */
+  .clubs{display:flex; flex-wrap:wrap; align-items:center; gap:0.95em; margin-top:0.55em;}
+  .clubs img{height:2.5em; width:auto; max-width:3.4em; object-fit:contain; display:block;}
   .chips span{
     font-family:var(--display); font-weight:700; font-size:0.98em; line-height:1;
     text-transform:uppercase; letter-spacing:0.03em; color:var(--snow);
@@ -627,7 +634,7 @@
     </div>
   </section>
   <!-- 12 — Un club piémontais -->
-  <section class="slide light on-light deep" id="s12">
+  <section class="slide light on-light deep mid" id="s12">
     <img class="band" src="assets/12-vercelli.jpg" alt="Le blason de Pro Vercelli brodé sur le maillot blanc du club">
     <div class="band-fade"></div>
     <div class="top"><span>Concrètement</span><span class="n">12<small>/13</small></span></div>
@@ -636,6 +643,15 @@
       <h2>Positionnement et <em>ouverture.</em></h2>
       <p class="lede">Un partenariat avec un club piémontais : matchs amicaux, échanges de jeunes. Pro Vercelli, sept fois champion d'Italie, ou Novara, sont à portée de la frontière.</p>
       <p class="note"><b>Le transfrontalier fonctionne déjà en économie et en culture.</b> Je peux le monter aussi pour le sport.</p>
+      <p class="chips-lab">Le voisinage piémontais</p>
+      <div class="clubs">
+        <img src="assets/club-novara.png" alt="Novara">
+        <img src="assets/club-casale.png" alt="Casale FBC 1909">
+        <img src="assets/club-alessandria.png" alt="Alessandria">
+        <img src="assets/club-vercelli.svg" alt="Pro Vercelli">
+        <img src="assets/club-juventus.svg" alt="Juventus">
+        <img src="assets/club-torino.svg" alt="Torino">
+      </div>
     </div>
   </section>
   <!-- 13 — Clôture -->

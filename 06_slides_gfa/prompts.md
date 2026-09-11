@@ -75,3 +75,16 @@ La slide affiche `linkedin.com/in/franck-monod`, l'adresse liée depuis franckmo
 |---|---|---|
 | `11-arc-alpin.jpg` | Higgsfield, `gpt_image_2`, 3:2, quality high, resolution 2k, job `6d823c42-a1d7-4865-b178-81291da16ed4` | Bichromie navy, comme le portrait. Prompt : vue aérienne à l'aube de l'arc alpin, la Savoie au premier plan, la crête enneigée au centre, la plaine du Piémont au-delà, aucun tracé de frontière |
 | `12-vercelli.jpg` | Drive partagé, `pro vercelli.png` | Recadré sur le blason brodé, 1080×720. Gardé en couleur : la croix rouge se perd en bichromie, et elle répond au rouge du deck. La flèche de l'interface Drive est rognée |
+
+## Écussons piémontais (slide 12)
+
+| Fichier | Source |
+|---|---|
+| `club-novara.png` | Wikipédia it, `Stemma novara fc.png`, fond blanc détouré par remplissage depuis les bords |
+| `club-casale.png` | Wikipédia it, `Logo Casale FBC 1909.png` |
+| `club-alessandria.png` | Wikipédia it, `Stemma U.S. Alessandria Calcio.png` |
+| `club-vercelli.svg` | Wikipédia it, `FC Pro Vercelli 1892 Stemma.svg` |
+| `club-juventus.svg` | Wikimedia Commons, `Juventus FC - logo black (Italy, 2020).svg` |
+| `club-torino.svg` | Wikipédia it, `Torino FC logo.svg` |
+
+Les PNG sont redimensionnés à 320 px de haut. Écussons de clubs tiers, repris à titre d'illustration du voisinage piémontais.
