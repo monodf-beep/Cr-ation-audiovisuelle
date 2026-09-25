@@ -270,13 +270,13 @@
       <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="47.4" data-duration="9.5"></video>
       <div class="lieu-fin" id="expo"><span class="l"><span>Dans le Globe,</span></span><span class="l"><span>l'<em>exposition</em></span></span></div>
 
-      <!-- Remerciement en savoyard, « Grant-marci » (62 - 68 s), sur l'affiche animee -->
+      <!-- Remerciement en savoyard, « Grant-marci » (62 - 68 s), sur l'affiche animee :
+           plan 1 serre sur les rubans du bas (sans le titre), plan 2 recule et revele le titre -->
       <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="64.8" data-duration="6" data-media-start="7"></video>
       <div class="plan" id="p-merci">
         <div class="merci">
           <div class="l"><span><em>Grant-marci</em></span></div>
-          <p>à Laetitia, en charge du Projet culturel de territoire du Grand Genève,</p>
-          <p>et à toutes les structures réunies au Globe.</p>
+          <p>à Laetitia et à toutes les structures réunies au Globe.</p>
         </div>
       </div>
 
@@ -414,7 +414,13 @@
       tl.from("#fin-texte h1", { y: 24, opacity: 0, duration: 0.8, ease: "power3.out" }, 54.3);
       tl.from("#fin-texte .sig", { opacity: 0, duration: 0.6 }, 58.2);
 
-      // 62 - 68 s : remerciement.
+      // 62 - 68 s : remerciement. Plan 1 (62 - 65,4) : gros plan sur les rubans, le texte seul.
+      // Plan 2 (65,4 - 68) : le texte sort, la camera recule et le titre de l'affiche apparait.
+      const rubans = (cx, cy, s) => ({ x: 540 - cx * s, y: 960 - cy * s, scale: s });
+      gsap.set("#v-merci", { transformOrigin: "0 0", ...rubans(560, 1620, 3.2) });
+      tl.to("#v-merci", { ...rubans(560, 1610, 3.1), duration: 3.4, ease: "none" }, 62.0);
+      tl.to(".merci", { y: -40, opacity: 0, duration: 0.5, ease: "power2.in" }, 65.2);
+      tl.to("#v-merci", { x: 0, y: 0, scale: 1, duration: 1.6, ease: "power3.inOut" }, 65.4);
       tl.set("#p-carte", { opacity: 0 }, 62.0);
       tl.set("#p-merci", { opacity: 1 }, 62.0);
       tl.from(".merci", { y: 30, opacity: 0, duration: 0.6, ease: "power3.out" }, 62.1);
