@@ -3,12 +3,14 @@
 // Sources : france-geojson (gregoiredavid) pour 01/73/74, click_that_hood pour les cantons,
 // geo.api.gouv.fr pour les 117 communes du Genevois francais, swisstopo pour Geneve et Nyon, ISTAT pour l'Italie.
 // Traits : tres epais Savoie / France-Suisse et bord exterieur ; moyen Savoie / Aoste / Piemont ; leger 73/74 et provinces piemontaises.
+// Par-dessus les aplats, la lueur diffuse de l'aire linguistique (tools/langue.mjs), sans contour.
 //
 // Usage : node tools/build-carte.mjs
 import { readFileSync, writeFileSync } from 'node:fs';
 import * as d3 from 'd3';
 import { topology } from 'topojson-server';
 import { merge, mesh, feature } from 'topojson-client';
+import { lueurSvg, echelleLangue } from './langue.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = p => JSON.parse(readFileSync(new URL(p, root), 'utf8'));
@@ -119,19 +121,23 @@ const zones = [
   { id: 'aoste', f: aoste, cls: 'etats' },
   { id: 'piemont', f: piemont, cls: 'etats' },
   { id: 'savoie', f: savoieUnie, cls: 'savoie' },
-  { id: 'geneve', f: geneve, cls: 'geneve' },
+  { id: 'geneve', f: geneve, cls: 'contexte' },
 ];
 
-// Etiquettes (lon, lat) placees a la main.
+// Etiquettes (lon, lat) placees a la main : espace sabaudo en capitales bleues, lieux de la langue en italique.
 const etiquettes = [
-  { id: 'savoie', t: 'Savoie', ll: [6.38, 46.0] },
-  { id: 'geneve', t: 'Genève', ll: [6.13, 46.19], cls: 'fort' },
-  { id: 'aoste', t: "Vallée d'Aoste", ll: [7.4, 45.72] },
-  { id: 'piemont', t: 'Piémont', ll: [7.5, 45.45] },
-  { id: 'ain', t: 'Ain', ll: [5.55, 46.05], cls: 'contexte' },
-  { id: 'suisse', t: 'SUISSE', ll: [7.2, 46.42], cls: 'pays' },
-  { id: 'france', t: 'FRANCE', ll: [5.78, 45.45], cls: 'pays' },
+  { id: 'savoie', t: 'Savoie', ll: [6.38, 46.0], cls: 'sab' },
+  { id: 'aoste', t: "Vallée d'Aoste", ll: [7.4, 45.72], cls: 'sab' },
+  { id: 'piemont', t: 'Piémont', ll: [7.5, 45.45], cls: 'sab' },
+  { id: 'geneve', t: 'Genève', ll: [6.13, 46.19], cls: 'dif' },
+  { id: 'vaud', t: 'Pays de Vaud', ll: [6.62, 46.6], cls: 'dif' },
+  { id: 'valais', t: 'Bas-Valais', ll: [7.02, 46.27], cls: 'dif' },
+  { id: 'bugey', t: 'Bugey', ll: [5.62, 45.86], cls: 'dif' },
+  { id: 'grenoble', t: 'Grenoble', ll: [5.72, 45.19], cls: 'dif' },
 ];
+
+// Lueur de la langue, a l'echelle de cette carte.
+const lueur = lueurSvg(projection, echelleLangue(projection, { savoie, hauteSavoie, geneve, aoste, ain }));
 
 const globe = P(GLOBE);
 const box = d3.geoBounds({ type: 'FeatureCollection', features: [geneve] });
@@ -139,7 +145,9 @@ const g = [P(box[0]), P(box[1])];
 
 const out = [
   '<svg id="carte" viewBox="0 0 1080 1920">',
+  `  <defs>${lueur.defs.replace(/\n/g, '')}</defs>`,
   ...zones.map(z => `  <path class="zone ${z.cls} zone-${z.id}" d="${round(path(z.f))}"/>`),
+  `  ${lueur.calque}`,
   `  <path class="bord leger" d="${round(path(traitLeger))}"/>`,
   `  <path class="bord moyen" d="${round(path(traitMoyen))}"/>`,
   `  <path class="bord epais" d="${round(path(traitEpais))}"/>`,
@@ -155,4 +163,5 @@ const html = readFileSync(htmlUrl, 'utf8');
 const re = /(<!-- carte:start -->)[\s\S]*?(\n\s*<!-- carte:end -->)/;
 if (!re.test(html)) throw new Error('marqueurs carte:start / carte:end introuvables');
 writeFileSync(htmlUrl, html.replace(re, `$1\n${out}$2`));
-console.log(`index.html : globe a (${globe}), boite Geneve ${JSON.stringify(g)}`);
+console.log(`index.html : globe a (${globe}), boite Geneve ${JSON.stringify(g)}, centre langue ${lueur.centre}`);
+for (const e of etiquettes) console.log(e.id, P(e.ll));
