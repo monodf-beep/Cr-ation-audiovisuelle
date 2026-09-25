@@ -69,7 +69,8 @@
       #fin-texte .sig { margin-top: 36px; font-size: 26px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fm-ink-500); }
     
       /* Affiche du projet (Interreg), recreee en plein cadre */
-      #p-affiche, #p-culture { background: var(--fm-bg); }
+      #p-affiche { background: transparent; }
+      #p-culture { background: var(--fm-bg); }
       #rubans { position: absolute; inset: 0; width: 1080px; height: 1920px; }
       .pct { position: absolute; left: 70px; top: 190px; color: #1a1a1a; font-weight: 700; font-size: 176px; line-height: 0.93; letter-spacing: 0.01em; }
       .pct .ligne { overflow: hidden; }
@@ -105,12 +106,25 @@
       .lieu-fin .l { display: block; overflow: hidden; padding-bottom: 6px; }
       .lieu-fin .l > span { display: inline-block; }
       .lieu-fin em { font-style: italic; border-bottom: 4px solid #ffffff; }
+      /* Remerciement et carton final */
+      #p-merci { background: transparent; }
+      .merci { position: absolute; left: 70px; right: 70px; top: 110px; background: rgba(255,255,255,0.92); padding: 40px 50px 50px; }
+      .merci .l { overflow: hidden; }
+      .merci .l > span { display: inline-block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 170px; line-height: 1; color: var(--fm-bleu-savoie); }
+      .merci em { font-style: italic; border-bottom: 5px solid var(--fm-bleu-savoie); }
+      .merci p { margin-top: 20px; font-size: 40px; font-weight: 600; line-height: 1.25; }
+      #p-final { background: var(--fm-bg); }
+      .final { position: absolute; left: 0; right: 0; top: 760px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
+      .bloc-final { background: var(--fm-bleu-savoie); color: #fff; padding: 30px 44px 34px; text-align: center; }
+      .bloc-final .n { font-size: 76px; font-weight: 700; line-height: 1.05; }
+      .bloc-final .r { margin-top: 12px; font-size: 30px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+      .final p { font-size: 30px; color: var(--fm-ink-700); }
       /* X8 : flash blanc sur les changements de plan */
       #flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; pointer-events: none; z-index: 5; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="62" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="72" data-width="1080" data-height="1920">
 
       <!-- Carte : ouverture (0 - 9,4 s) puis fin (53,6 - 62 s) -->
       <div class="plan" id="p-carte">
@@ -160,39 +174,11 @@
       </div>
 
       <!-- Le projet Interreg : l'affiche du Projet culturel de territoire, recreee en plein cadre et animee (15 - 21,6 s) -->
+      <video id="v-affiche" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="15" data-duration="6.6" data-media-start="0"></video>
       <div class="plan" id="p-affiche">
-        <svg id="rubans" viewBox="0 0 1080 1920">
-          <defs>
-            <linearGradient id="g-bleu" gradientUnits="userSpaceOnUse" x1="980" y1="80" x2="560" y2="1250"><stop offset="0" stop-color="#eeedf8"/><stop offset=".45" stop-color="#a9a8e2"/><stop offset="1" stop-color="#5a5cc4"/></linearGradient>
-            <linearGradient id="g-rose" gradientUnits="userSpaceOnUse" x1="250" y1="650" x2="620" y2="1080"><stop offset="0" stop-color="#f58bc2"/><stop offset=".6" stop-color="#c46fd0"/><stop offset="1" stop-color="#7d57c6"/></linearGradient>
-            <linearGradient id="g-orange" gradientUnits="userSpaceOnUse" x1="420" y1="1050" x2="300" y2="1920"><stop offset="0" stop-color="#f4a3b4"/><stop offset=".5" stop-color="#f6b58a"/><stop offset="1" stop-color="#f7cf6a"/></linearGradient>
-            <linearGradient id="g-vert" gradientUnits="userSpaceOnUse" x1="600" y1="1700" x2="1080" y2="1920"><stop offset="0" stop-color="#9fdc9a"/><stop offset="1" stop-color="#6cc28a"/></linearGradient>
-            <!-- Texture pointillee de l'affiche : taches blanches fines posees sur les rubans -->
-            <filter id="grain" x="0" y="0" width="100%" height="100%">
-              <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="7" result="bruit"/>
-              <feColorMatrix in="bruit" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 14 -9" result="points"/>
-              <feComposite in="points" in2="SourceGraphic" operator="in" result="points-ruban"/>
-              <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="points-ruban"/></feMerge>
-            </filter>
-          </defs>
-          <g filter="url(#grain)" fill="none" stroke-linecap="round">
-            <path class="ruban" d="M 400 1110 C 380 1400, 300 1650, 330 2000" stroke="url(#g-orange)" stroke-width="230" pathLength="1"/>
-            <path class="ruban" d="M 470 1080 A 250 250 0 1 1 640 700" stroke="url(#g-rose)" stroke-width="230" pathLength="1"/>
-            <path class="ruban" d="M 1010 60 C 1080 420, 880 560, 820 760 C 760 960, 600 1080, 520 1240" stroke="url(#g-bleu)" stroke-width="230" pathLength="1"/>
-            <path class="ruban" d="M 600 2000 A 280 280 0 0 1 1150 1870" stroke="url(#g-vert)" stroke-width="230" pathLength="1"/>
-          </g>
-        </svg>
-        <div class="pct">
-          <div class="ligne"><span>PROJET</span></div>
-          <div class="ligne"><span>CULTUREL</span></div>
-          <div class="ligne"><span><small>DE</small>TERRI—</span></div>
-          <div class="ligne"><span>—TOIRE</span></div>
-          <div class="ligne"><span><small>DU</small>GRAND</span></div>
-          <div class="ligne"><span>GENÈVE</span></div>
-        </div>
         <div class="interreg" id="interreg"><b>Projet Interreg</b><span>France – Suisse</span></div>
         <div class="partenaires" id="partenaires">Pôle métropolitain du Genevois français · Canton de Genève · Ville de Genève · Association des communes genevoises · Feuille de route en 2027</div>
-        <div class="credit-noir">D'après l'affiche © Pôle métropolitain du Genevois français</div>
+        <div class="credit-noir">Affiche © Pôle métropolitain du Genevois français</div>
       </div>
 
       <!-- Selfie devant le Globe (21,6 - 30,6 s) -->
@@ -230,6 +216,24 @@
       <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="44.6" data-duration="9.5"></video>
       <div class="lieu-fin" id="expo"><span class="l"><span>Dans le Globe,</span></span><span class="l"><span>l'<em>exposition</em></span></span></div>
 
+      <!-- Remerciement (62 - 68 s), sur l'affiche animee -->
+      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="62" data-duration="6" data-media-start="7"></video>
+      <div class="plan" id="p-merci">
+        <div class="merci">
+          <div class="l"><span><em>Merci</em></span></div>
+          <p>à Laetitia, en charge du Projet culturel de territoire du Grand Genève,</p>
+          <p>et à toutes les structures réunies au Globe.</p>
+        </div>
+      </div>
+
+      <!-- Carton final (68 - 72 s) -->
+      <div class="plan" id="p-final">
+        <div class="final">
+          <div class="bloc-final"><div class="n">Franck Monod</div><div class="r">Enstitut de la Lengoua Savoyârda</div></div>
+          <p>Reportage · CERN, Meyrin · 24 septembre 2026</p>
+        </div>
+      </div>
+
       <div id="flash"></div>
 
       <!-- Sous-titres de la voix off (texte : SCRIPT.md) -->
@@ -244,6 +248,7 @@
       <div class="st" id="st9">Le savoyard se parle à Genève comme à Chambéry.</div>
       <div class="st" id="st10">L'hymne genevois, le Cé qu'è lainô, est écrit dans cette langue.</div>
       <div class="st clair" id="st11">Une langue commune, un territoire commun.</div>
+      <div class="st clair" id="st13">Merci à Laetitia et à toute l'équipe du Projet culturel de territoire pour cette journée.</div>
       <div class="st clair" id="st12">Un projet pour construire un bien commun autour de la culture.</div>
     </div>
     <script>
@@ -256,7 +261,7 @@
       const gg = document.querySelector("#gg").getBBox();
       const ggx = gg.x + gg.width / 2, ggy = gg.y + gg.height / 2;
 
-      gsap.set(["#p-aerien", "#p-affiche", "#p-culture", "#p-badge", "#nom", "#expo", "#fin-texte", ".st", "#pastille-globe", "#gg", "#legende"], { opacity: 0 });
+      gsap.set(["#p-merci", "#p-final", "#p-aerien", "#p-affiche", "#p-culture", "#p-badge", "#nom", "#expo", "#fin-texte", ".st", "#pastille-globe", "#gg", "#legende"], { opacity: 0 });
       gsap.set("#z19", { opacity: 0 });
       gsap.set(["#bague .b-fond", "#bague .b-trait"], { strokeDasharray: 1, strokeDashoffset: 1 });
       gsap.set("#cern .onde", { transformOrigin: "50% 50%" });
@@ -289,14 +294,10 @@
       tl.from("#pastille-globe .l > span", { yPercent: 110, duration: 0.8, ease: "power4.out", stagger: 0.15 }, 12.4);
       tl.set("#p-aerien", { opacity: 0 }, 15.0);
 
-      // 15 - 21,6 s : l'affiche du projet Interreg, rubans puis texte.
+      // 15 - 21,6 s : l'affiche animee du projet (video de Franck), bloc Interreg par-dessus.
       tl.set("#p-affiche", { opacity: 1 }, 15.0);
-      gsap.set(".ruban", { strokeDasharray: 1, strokeDashoffset: 1 });
-      tl.to(".ruban", { strokeDashoffset: 0, duration: 1.6, ease: "power2.inOut", stagger: 0.25 }, 15.0);
-      tl.from(".pct .ligne > span", { yPercent: 105, duration: 0.7, ease: "power4.out", stagger: 0.14 }, 15.3);
-      tl.fromTo("#rubans", { scale: 1 }, { scale: 1.06, transformOrigin: "50% 50%", duration: 6.6, ease: "none" }, 15.0);
-      tl.fromTo("#interreg", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }, 17.0);
-      tl.from("#partenaires", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 17.6);
+      tl.fromTo("#interreg", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }, 16.4);
+      tl.from("#partenaires", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 17.0);
       tl.set("#p-affiche", { opacity: 0 }, 21.6);
 
       // 21,6 - 30,6 s : selfie devant le Globe, bandeau nom.
@@ -343,9 +344,22 @@
       tl.from("#fin-texte h1", { y: 24, opacity: 0, duration: 0.8, ease: "power3.out" }, 54.3);
       tl.from("#fin-texte .sig", { opacity: 0, duration: 0.6 }, 58.2);
 
+      // 62 - 68 s : remerciement.
+      tl.set("#p-carte", { opacity: 0 }, 62.0);
+      tl.set("#p-merci", { opacity: 1 }, 62.0);
+      tl.from(".merci", { y: 30, opacity: 0, duration: 0.6, ease: "power3.out" }, 62.1);
+      tl.from(".merci .l > span", { yPercent: 110, duration: 0.9, ease: "power4.out" }, 62.3);
+      tl.from(".merci p", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out", stagger: 0.3 }, 63.0);
+      tl.set("#p-merci", { opacity: 0 }, 68.0);
+
+      // 68 - 72 s : carton final.
+      tl.set("#p-final", { opacity: 1 }, 68.0);
+      tl.fromTo(".bloc-final", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.inOut" }, 68.2);
+      tl.from(".final p", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, 68.9);
+
       // Sous-titres, cales sur SCRIPT.md.
       [[1, 0.8, 4.6], [2, 4.6, 8.6], [3, 9.2, 14.8], [4, 15.4, 21.2], [5, 21.8, 26.2], [6, 26.2, 30.4],
-       [7, 30.8, 38.2], [8, 38.8, 44.2], [9, 44.8, 49.2], [10, 49.2, 53.6], [11, 54.2, 57.8], [12, 57.8, 61.8]]
+       [7, 30.8, 38.2], [8, 38.8, 44.2], [9, 44.8, 49.2], [10, 49.2, 53.6], [11, 54.2, 57.8], [12, 57.8, 61.8], [13, 62.4, 67.8]]
         .forEach(([n, a, b]) => {
           const st = document.querySelector("#st" + n);
           const mots = st.textContent.trim().split(/\s+/);
@@ -364,7 +378,7 @@
         });
 
       // X8 : flash blanc sur chaque changement de plan.
-      [9.1, 15.0, 21.6, 30.6, 38.6, 44.6, 53.6].forEach((t) => {
+      [9.1, 15.0, 21.6, 30.6, 38.6, 44.6, 53.6, 62.0, 68.0].forEach((t) => {
           tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, t - 0.07);
           tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, t);
         });
