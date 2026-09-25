@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Les États de Savoie en quatre cartes</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="brand/tokens.css" />
+    <style>
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Regular.woff') format('woff'); font-weight: 400; }
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff'); font-weight: 600; }
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Bold.woff') format('woff'); font-weight: 700; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--fm-bg); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--fm-bg); font-family: var(--fm-font); color: var(--fm-ink-900); }
+
+      /* Ouverture et fermeture sur fond blanc */
+      .carton { position: absolute; left: 160px; top: 380px; }
+      .carton .eyebrow { font-size: 22px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-bleu-savoie); white-space: nowrap; }
+      .carton .mask { overflow: hidden; padding-bottom: 12px; margin-top: 14px; }
+      .carton h1 { display: block; font-size: 96px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.05; white-space: nowrap; }
+      .carton .sub { margin-top: 18px; font-size: 30px; color: var(--fm-ink-700); white-space: nowrap; font-variant-numeric: tabular-nums; }
+      #fin .sub { font-size: 24px; }
+
+      /* Une carte = un plan plein cadre ; la camera deplace .monde (image + annotations). */
+      .plan { position: absolute; inset: 0; overflow: hidden; background: var(--fm-bg); }
+      .monde { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .monde img { display: block; }
+      .monde svg { position: absolute; left: 0; top: 0; overflow: visible; }
+      .trait-fond { fill: none; stroke: #ffffff; stroke-width: 12px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+      .trait { fill: none; stroke: var(--fm-bleu-savoie); stroke-width: 5px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+      .etiquette { font-family: var(--fm-font); font-weight: 700; fill: var(--fm-ink-900); paint-order: stroke; stroke: #ffffff; stroke-linejoin: round; }
+
+      /* Fiche de la carte */
+      .fiche { position: absolute; left: 80px; bottom: 80px; width: 720px; background: var(--fm-bg); padding: 36px 44px 40px; }
+      .fiche.haut { bottom: auto; top: 80px; }
+      .fiche.droite { left: auto; right: 80px; }
+      .fiche .annee-mask { overflow: hidden; }
+      .fiche .annee { display: block; font-size: 76px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--fm-bleu-savoie); font-variant-numeric: tabular-nums; }
+      .fiche .titre { margin-top: 18px; font-size: 32px; font-weight: 600; font-style: italic; line-height: 1.2; }
+      .fiche .auteur { margin-top: 8px; font-size: 22px; color: var(--fm-ink-700); }
+      .fiche .note { margin-top: 18px; padding-top: 18px; border-top: 2px solid var(--fm-line); font-size: 26px; line-height: 1.35; }
+
+      .signature { position: absolute; right: 80px; bottom: 60px; font-size: 18px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fm-ink-500); white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1920" data-height="1080">
+
+      <div class="carton" id="ouverture">
+        <div class="eyebrow">Histoire &amp; territoire</div>
+        <div class="mask"><h1 id="titre">Les États de Savoie en quatre cartes</h1></div>
+        <div class="sub">1665 · 1706 · 1728 · 1841</div>
+      </div>
+
+      <!-- 1665 : Sanson. La camera part de la carte entiere et s'approche du cartouche. -->
+      <div class="plan" id="p1">
+        <div class="monde" id="m1" style="width:2040px;height:2240px">
+          <img src="assets/cartes/sanson-1665.jpg" width="2040" height="2240" alt="" />
+          <svg width="2040" height="2240" viewBox="0 0 2040 2240">
+            <rect class="trait-fond a1" x="1430" y="55" width="590" height="585" rx="6" pathLength="1" />
+            <rect class="trait a1" x="1430" y="55" width="590" height="585" rx="6" pathLength="1" />
+          </svg>
+        </div>
+        <div class="fiche">
+          <div class="annee-mask"><span class="annee">1665</span></div>
+          <div class="titre">Estats du duc de Savoye… sous le nom de Piémont</div>
+          <div class="auteur">Nicolas Sanson d'Abbeville</div>
+          <div class="note">Un duché à cheval sur les Alpes, de la Savoie au Piémont.</div>
+        </div>
+      </div>
+
+      <!-- 1706 : Jaillot. La camera part du Leman et recule jusqu'a la Mediterranee. -->
+      <div class="plan" id="p2">
+        <div class="monde" id="m2" style="width:2230px;height:2080px">
+          <img src="assets/cartes/jaillot-1706.jpg" width="2230" height="2080" alt="" />
+          <svg width="2230" height="2080" viewBox="0 0 2230 2080">
+            <ellipse class="trait-fond a2" cx="1165" cy="140" rx="300" ry="115" pathLength="1" />
+            <ellipse class="trait a2" cx="1165" cy="140" rx="300" ry="115" pathLength="1" />
+            <text class="etiquette e2" x="1165" y="330" text-anchor="middle" font-size="48" stroke-width="10">Lac Léman</text>
+          </svg>
+        </div>
+        <div class="fiche">
+          <div class="annee-mask"><span class="annee">1706</span></div>
+          <div class="titre">Les Estats de Savoie et de Piémont</div>
+          <div class="auteur">Hubert Jaillot, géographe du roi</div>
+          <div class="note">Du lac Léman à la Méditerranée, un seul État des deux côtés des Alpes.</div>
+        </div>
+      </div>
+
+      <!-- 1728 : Brunet. Travelling lateral le long de la frontiere, de la Maurienne au Queyras. -->
+      <div class="plan" id="p3">
+        <div class="monde" id="m3" style="width:2230px;height:640px">
+          <img src="assets/cartes/brunet-1728.jpg" width="2230" height="640" alt="" />
+          <svg width="2230" height="640" viewBox="0 0 2230 640">
+            <circle class="trait-fond a3" cx="925" cy="410" r="70" pathLength="1" />
+            <circle class="trait a3" cx="925" cy="410" r="70" pathLength="1" />
+            <text class="etiquette e3" x="925" y="520" text-anchor="middle" font-size="30" stroke-width="7">Briançon</text>
+          </svg>
+        </div>
+        <div class="fiche haut">
+          <div class="annee-mask"><span class="annee">1728</span></div>
+          <div class="titre">Carte des frontières de Piémont et Savoye</div>
+          <div class="auteur">Brunet, commissaire d'artillerie</div>
+          <div class="note">La frontière vue par un militaire : les cols, un par un.</div>
+        </div>
+      </div>
+
+      <!-- 1841 : Bouffard. La camera s'approche de Chambery. -->
+      <div class="plan" id="p4">
+        <div class="monde" id="m4" style="width:1660px;height:2090px">
+          <img src="assets/cartes/bouffard-1841.jpg" width="1660" height="2090" alt="" />
+          <svg width="1660" height="2090" viewBox="0 0 1660 2090">
+            <circle class="trait-fond a4" cx="385" cy="1270" r="95" pathLength="1" />
+            <circle class="trait a4" cx="385" cy="1270" r="95" pathLength="1" />
+          </svg>
+        </div>
+        <div class="fiche droite">
+          <div class="annee-mask"><span class="annee">1841</span></div>
+          <div class="titre">Carte physique et routière du duché de Savoie</div>
+          <div class="auteur">Gravée sur pierre par L. Bouffard</div>
+          <div class="note">Chambéry au centre des nouvelles routes et des relais de poste.</div>
+        </div>
+      </div>
+
+      <div class="carton" id="fin">
+        <div class="eyebrow">Sources</div>
+        <div class="sub">Source gallica.bnf.fr / BnF</div>
+      </div>
+      <div class="signature">Franck Monod</div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Camera : montre le point (cx, cy) de l'image au centre du cadre, a l'echelle s.
+      const vue = (cx, cy, s) => ({ x: 960 - cx * s, y: 540 - cy * s, scale: s });
+
+      const plans = [
+        { id: 1, debut: 2.4, fin: 7.2, de: vue(1020, 1120, 0.95), vers: vue(1272, 480, 1.25), annot: 4.2 },
+        { id: 2, debut: 7.2, fin: 12.0, de: vue(1170, 300, 1.8), vers: vue(1115, 1040, 0.87), annot: 8.0, avant: true },
+        { id: 3, debut: 12.0, fin: 16.8, de: vue(560, 320, 1.75), vers: vue(1670, 320, 1.75), annot: 13.6 },
+        { id: 4, debut: 16.8, fin: 21.4, de: vue(830, 1045, 1.16), vers: vue(560, 1250, 2.0), annot: 19.0 },
+      ];
+
+      gsap.set(".plan", { opacity: 0 });
+      gsap.set("#fin", { opacity: 0 });
+      gsap.set(".fiche", { opacity: 0 });
+      gsap.set([".trait", ".trait-fond"], { strokeDasharray: 1, strokeDashoffset: 1 });
+      gsap.set(".etiquette", { opacity: 0 });
+
+      // Ouverture
+      tl.from("#ouverture .eyebrow", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.2);
+      tl.from("#titre", { yPercent: 110, duration: 0.9, ease: "power4.out" }, 0.35);
+      tl.from("#ouverture .sub", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.9);
+      tl.to("#ouverture", { opacity: 0, y: -16, duration: 0.5, ease: "power2.in" }, 2.0);
+
+      plans.forEach((p) => {
+        const plan = "#p" + p.id, monde = "#m" + p.id, duree = p.fin - p.debut;
+        gsap.set(monde, p.de);
+        // Fondu par le blanc a l'entree et a la sortie.
+        tl.to(plan, { opacity: 1, duration: 0.6, ease: "power1.out" }, p.debut);
+        tl.to(monde, { ...p.vers, duration: duree, ease: "power1.inOut" }, p.debut);
+        tl.to(plan, { opacity: 0, duration: 0.5, ease: "power1.in" }, p.fin - 0.5);
+        // Fiche : l'annee monte derriere un masque, puis le texte.
+        tl.to(plan + " .fiche", { opacity: 1, duration: 0.01 }, p.debut + 0.5);
+        tl.from(plan + " .fiche", { y: 24, duration: 0.6, ease: "power3.out" }, p.debut + 0.5);
+        tl.from(plan + " .annee", { yPercent: 105, duration: 0.8, ease: "power4.out" }, p.debut + 0.6);
+        tl.from([plan + " .titre", plan + " .auteur", plan + " .note"], { y: 12, opacity: 0, duration: 0.5, ease: "power3.out", stagger: 0.12 }, p.debut + 0.9);
+        // Annotation tracee a la main, puis son etiquette.
+        tl.to(plan + " .a" + p.id, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" }, p.annot);
+        tl.to(plan + " .e" + p.id, { opacity: 1, duration: 0.4 }, p.annot + 0.8);
+      });
+
+      // Fermeture
+      tl.to("#fin", { opacity: 1, duration: 0.6 }, 21.5);
+      tl.from(".signature", { opacity: 0, duration: 0.6 }, 21.7);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

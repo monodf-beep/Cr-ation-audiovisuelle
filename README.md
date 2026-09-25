@@ -32,6 +32,7 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 
 Compositions :
 - `index.html` : carte animée des États de Savoie, post carré 1080 × 1080, 8 s (`node tools/build-carte.mjs`).
+- `cartes-anciennes-16x9.html` : les États de Savoie en quatre cartes d'époque (Gallica) retraitées en bleu Savoie, 23 s (`npx hyperframes render -c cartes-anciennes-16x9.html`).
 - `etats-de-savoie-16x9.html` : infographie 16:9 de 16 s, trois dates, carte en relief, itinéraire du Mont-Cenis (`node tools/build-infographie.mjs`, rendu : `npx hyperframes render -c etats-de-savoie-16x9.html`).
 
 Les tracés sont précalculés par les scripts de `tools/` (après `npm install`).

@@ -77,6 +77,14 @@ Non :
 
 Ce qu'on en tire : la carte porte le récit. Territoires pleins avec un léger relief, repères de villes, itinéraires, caméra qui s'approche puis recule, dates en grand dans une colonne de texte. Exemple : `etats-de-savoie-16x9.html`.
 
+## Cartes anciennes (deuxième piste)
+
+Des cartes d'époque (Gallica), retraitées en bichromie bleu Savoie sur blanc, plein cadre. La caméra
+se déplace lentement (poussée, recul ou travelling), une annotation se trace à la main (cercle ou cadre
+bleu avec liseré blanc), et une fiche blanche donne l'année, le titre d'origine en italique, l'auteur et
+une phrase. La fiche se place là où elle ne cache pas l'annotation. Exemple : `cartes-anciennes-16x9.html`,
+sources dans `assets/cartes/SOURCES.md`.
+
 ## Polices hors dépôt
 
 Le dépôt est public et Semplicità Pro est une police commerciale : les fichiers `.woff` ne sont pas versionnés.
