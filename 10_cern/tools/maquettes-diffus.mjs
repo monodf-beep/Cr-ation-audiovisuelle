@@ -141,7 +141,7 @@ function page(variante) {
       <mask id="fondu-l" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1920"><rect width="1080" height="1920" fill="url(#g-langue)"/></mask>
       <pattern id="points" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="5.5" cy="5.5" r="2.2" fill="#0a36af"/></pattern>
     </defs>
-    ${variante === 'L' ? '' : [ain, isere, hautesAlpes, vaud, valais, geneve, ...autresIt].map(f => `<path class="ctx" d="${round(path(f))}"/>`).join('\n')}
+    ${[ain, isere, hautesAlpes, vaud, valais, geneve, ...autresIt].map(f => `<path class="ctx" d="${round(path(f))}"/>`).join('\n')}
     ${variante === 'L' ? '' : couche}
     ${[aoste, piemont, savoieUnie].map(f => `<path class="sab" d="${round(path(f))}"/>`).join('\n')}
     ${variante === 'L' ? couche : ''}
