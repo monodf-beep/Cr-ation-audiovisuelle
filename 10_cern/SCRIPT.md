@@ -9,12 +9,12 @@ courte, envoyer le fichier : le montage se recale dessus.
 
 | Temps | Image | Voix off |
 |---|---|---|
-| 0 – 2,8 s | Hook : selfie devant le Globe, « Qu'est-ce que le savoyard vient faire au CERN ? » en gros | Qu'est-ce que le savoyard vient faire au CERN ? |
-| 2,8 – 11,8 s | Carte : la Savoie, Genève, limite régionale, puis zoom sur Meyrin | Jeudi 24 septembre. Entre la Savoie et Genève, il y a une frontière. Et une langue qui ne l'a jamais connue. |
+| 0 – 2,8 s | Hook : arrêt sur image devant le logo CERN, « Qu'est-ce que le savoyard vient faire au CERN ? » en gros | Qu'est-ce que le savoyard vient faire au CERN ? |
+| 2,8 – 11,8 s | Carte : Savoie (73 + 74), Vallée d'Aoste, Piémont, traits hiérarchisés, puis zoom sur Meyrin | Jeudi 24 septembre. Entre la Savoie et Genève, il y a une frontière. Et une langue qui ne l'a jamais connue. |
 | 11,8 – 17,8 s | Vue aérienne, zoom sur le Globe du CERN | Direction le CERN, à Meyrin, au pied du Globe de la science et de l'innovation. |
 | 17,8 – 24,4 s | L'affiche animée du projet (vidéo de Franck), bloc « Projet Interreg · France – Suisse » | Au programme : le Projet culturel de territoire du Grand Genève, un projet Interreg entre la France et la Suisse. |
 | 24,4 – 33,4 s | Selfie devant le Globe, bandeau bleu | Une journée pour co-construire sa feuille de route, attendue en 2027. J'y représentais l'Enstitut de la Lengoua Savoyârda. |
-| 33,4 – 41,4 s | « La culture, ici, c'est… » | Car la culture, ici, c'est tout : un festival de jazz, une salle de théâtre, un musée, un orchestre… et une langue. |
+| 33,4 – 41,4 s | « La culture, ici, c'est… » | Car la culture, ici, c'est tout : un festival de jazz, une salle de théâtre, un musée, un orchestre… et une culture commune. |
 | 41,4 – 47,4 s | Le badge, chiffres 160 / 140 / 4, source Nos Alpes | Avant cette journée, 160 acteurs de 140 structures avaient déjà travaillé ensemble, des deux côtés de la frontière. |
 | 47,4 – 56,9 s | Dans l'exposition du Globe | Le savoyard se parle à Genève comme à Chambéry. L'hymne genevois, le Cé qu'è lainô, est écrit dans cette langue. |
 | 56,9 – 64,8 s | Carte : l'aire du Grand Genève apparaît | Une langue commune, un territoire commun. Un projet pour construire un bien commun autour de la culture. |
