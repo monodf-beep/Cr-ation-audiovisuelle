@@ -19,7 +19,7 @@
 
       .plan { position: absolute; inset: 0; overflow: hidden; }
       .clip { position: absolute; inset: 0; }
-      video.plein { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      video.plein, img.plein { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
 
       /* Carte vectorielle */
       #camera { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; }
@@ -270,13 +270,15 @@
       <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="47.4" data-duration="9.5"></video>
       <div class="lieu-fin" id="expo"><span class="l"><span>Dans le Globe,</span></span><span class="l"><span>l'<em>exposition</em></span></span></div>
 
-      <!-- Remerciement en savoyard, « Grant-marci » (62 - 68 s), sur l'affiche animee -->
-      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="64.8" data-duration="6" data-media-start="7"></video>
+      <!-- Remerciement en savoyard, « Grant-marci » (62 - 68 s), en deux plans :
+           1. l'affiche sans son titre (image fixe tiree de la video a 10,4 s, titre efface), le texte seul ;
+           2. la video repart a la meme image (10,4 s) : seul le titre apparait, puis l'animation reprend. -->
+      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="68.2" data-duration="2.6" data-media-start="10.4"></video>
+      <img id="img-merci" class="clip plein" src="assets/affiche-sans-titre.jpg" alt="" data-start="64.8" data-duration="4.2" />
       <div class="plan" id="p-merci">
         <div class="merci">
           <div class="l"><span><em>Grant-marci</em></span></div>
-          <p>à Laetitia, en charge du Projet culturel de territoire du Grand Genève,</p>
-          <p>et à toutes les structures réunies au Globe.</p>
+          <p>à Laetitia et à toutes les structures réunies au Globe.</p>
         </div>
       </div>
 
@@ -414,7 +416,12 @@
       tl.from("#fin-texte h1", { y: 24, opacity: 0, duration: 0.8, ease: "power3.out" }, 54.3);
       tl.from("#fin-texte .sig", { opacity: 0, duration: 0.6 }, 58.2);
 
-      // 62 - 68 s : remerciement.
+      // 62 - 68 s : remerciement. Plan 1 : l'affiche sans titre, poussee lente qui finit a l'echelle 1
+      // pour que l'image colle exactement a la video. Plan 2 (65,4) : le texte sort, le titre apparait en fondu.
+      gsap.set("#img-merci", { transformOrigin: "50% 50%" });
+      tl.fromTo("#img-merci", { scale: 1.05 }, { scale: 1, duration: 3.4, ease: "power1.out" }, 62.0);
+      tl.to(".merci", { y: -30, opacity: 0, duration: 0.5, ease: "power2.in" }, 65.0);
+      tl.to("#img-merci", { opacity: 0, duration: 0.9, ease: "power1.inOut" }, 65.4);
       tl.set("#p-carte", { opacity: 0 }, 62.0);
       tl.set("#p-merci", { opacity: 1 }, 62.0);
       tl.from(".merci", { y: 30, opacity: 0, duration: 0.6, ease: "power3.out" }, 62.1);
