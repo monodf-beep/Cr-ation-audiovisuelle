@@ -10,6 +10,8 @@
       @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Regular.woff') format('woff'); font-weight: 400; }
       @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff'); font-weight: 600; }
       @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Bold.woff') format('woff'); font-weight: 700; }
+      @font-face { font-family: 'Cormorant Garamond'; src: url('assets/fonts/CormorantGaramond-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; }
+      @font-face { font-family: 'Cormorant Garamond'; src: url('assets/fonts/CormorantGaramond-Italic.woff2') format('woff2'); font-weight: 500; font-style: italic; }
       :root { --tint: #e6ebf7; --tint-fort: #b8c5ea; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--fm-bg); }
@@ -58,15 +60,59 @@
 
       /* Sous-titres : zone sure des Reels, au-dessus de l'interface du bas */
       .st { position: absolute; left: 90px; right: 90px; top: 1470px; text-align: center; }
-      .st span { display: inline; background: rgba(23, 23, 25, 0.82); color: #ffffff; font-size: 44px; font-weight: 600; line-height: 1.5; padding: 6px 14px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+      /* S3 (bibliotheque) : texte blanc gras, le mot prononce s'allume en bleu Savoie */
+      .st { font-size: 50px; font-weight: 700; line-height: 1.35; color: #ffffff; text-shadow: 0 0 6px rgba(0,0,0,0.85), 0 2px 14px rgba(0,0,0,0.55); }
+      .st.clair { color: var(--fm-ink-900); text-shadow: none; }
+      .st .m { display: inline-block; padding: 0 8px; border-radius: 8px; }
+      .st .m.actif { background: var(--fm-bleu-savoie); color: #ffffff; text-shadow: none; }
 
       #fin-texte .sig { margin-top: 36px; font-size: 26px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fm-ink-500); }
+    
+      /* Affiche du projet (Interreg), recreee en plein cadre */
+      #p-affiche, #p-culture { background: var(--fm-bg); }
+      #rubans { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+      .pct { position: absolute; left: 70px; top: 190px; color: #1a1a1a; font-weight: 700; font-size: 176px; line-height: 0.93; letter-spacing: 0.01em; }
+      .pct .ligne { overflow: hidden; }
+      .pct .ligne > span { display: inline-block; white-space: nowrap; }
+      .pct small { display: inline-block; font-size: 58px; margin-right: 22px; vertical-align: 0.18em; }
+      .interreg { position: absolute; left: 70px; top: 1290px; display: inline-flex; align-items: center; gap: 18px; background: var(--fm-bleu-savoie); color: #fff; padding: 18px 28px; }
+      .interreg b { font-size: 48px; font-weight: 700; letter-spacing: 0.02em; }
+      .interreg span { font-size: 28px; font-weight: 600; }
+      .partenaires { position: absolute; left: 70px; right: 70px; top: 1390px; font-size: 22px; line-height: 1.35; color: var(--fm-ink-900); background: rgba(255,255,255,0.88); padding: 8px 12px; }
+      .credit-noir { position: absolute; right: 24px; bottom: 24px; font-size: 18px; color: var(--fm-ink-700); background: rgba(255,255,255,0.85); padding: 3px 8px; }
+
+      /* La culture, c'est tout */
+      .culture { position: absolute; left: 90px; right: 90px; top: 250px; }
+      .culture .eyebrow { font-size: 30px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+      .culture ul { list-style: none; margin-top: 30px; }
+      .culture li { font-size: 88px; font-weight: 700; line-height: 1.12; letter-spacing: -0.01em; overflow: hidden; }
+      .culture li span { display: inline-block; }
+      .culture li.langue span { color: var(--fm-bleu-savoie); }
+
+      /* Chiffres sur le badge */
+      .chiffres { position: absolute; left: 60px; right: 60px; top: 230px; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--fm-bg); padding: 30px 20px; }
+      .chiffres div { text-align: center; }
+      .chiffres b { display: block; font-size: 88px; font-weight: 700; line-height: 1; color: var(--fm-bleu-savoie); font-variant-numeric: tabular-nums; }
+      .chiffres span { display: block; margin-top: 8px; font-size: 26px; font-weight: 600; }
+
+
+      /* B4 : bloc bleu pour le nom */
+      .bloc-nom { position: absolute; left: 60px; top: 260px; background: var(--fm-bleu-savoie); color: #ffffff; padding: 22px 32px 24px; }
+      .bloc-nom .n { font-size: 52px; font-weight: 700; line-height: 1.1; }
+      .bloc-nom .r { margin-top: 8px; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+      /* E4 : noms de lieux, serif fine, un mot en italique souligne */
+      .lieu-fin { position: absolute; left: 90px; top: 250px; color: #ffffff; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 92px; line-height: 1.02; text-shadow: 0 0 4px rgba(0,0,0,0.75), 0 2px 24px rgba(0,0,0,0.75); }
+      .lieu-fin .l { display: block; overflow: hidden; padding-bottom: 6px; }
+      .lieu-fin .l > span { display: inline-block; }
+      .lieu-fin em { font-style: italic; border-bottom: 4px solid #ffffff; }
+      /* X8 : flash blanc sur les changements de plan */
+      #flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; pointer-events: none; z-index: 5; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="50" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="62" data-width="1080" data-height="1920">
 
-      <!-- Carte : ouverture (0 - 9,4 s) puis fin (41,5 - 50 s) -->
+      <!-- Carte : ouverture (0 - 9,4 s) puis fin (53,6 - 62 s) -->
       <div class="plan" id="p-carte">
         <div id="camera">
           <!-- carte:start -->
@@ -91,7 +137,7 @@
         <div class="entete" id="ouverture">
           <div class="eyebrow">Reportage · 24 septembre 2026</div>
           <h1>Au CERN, pour la langue savoyarde</h1>
-          <div class="sub">Savoie – Genève · Interreg culture</div>
+          <div class="sub">Projet culturel de territoire du Grand Genève</div>
         </div>
         <div class="entete" id="fin-texte">
           <div class="eyebrow">Grand Genève</div>
@@ -109,43 +155,96 @@
           <circle class="b-fond" cx="540" cy="900" r="150" stroke="#ffffff" stroke-width="12" pathLength="1" />
           <circle class="b-trait" cx="540" cy="900" r="150" stroke="#0a36af" stroke-width="6" pathLength="1" />
         </svg>
-        <div class="pastille" id="pastille-globe" style="left:90px; top:1120px; right:90px;">
-          <div class="k">CERN · Meyrin</div>
-          <div class="v">Globe de la science et de l'innovation</div>
-        </div>
+        <div class="lieu-fin" id="pastille-globe"><span class="l"><span>Le Globe</span></span><span class="l"><span>de la science</span></span><span class="l"><span>et de l'<em>innovation</em></span></span></div>
         <div class="credit">© swisstopo</div>
       </div>
 
-      <!-- Selfie devant le Globe (15 - 26,2 s) -->
-      <video id="v-ext" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="15" data-duration="11.2" data-media-start="0"></video>
-      <div class="pastille" id="nom" style="left:60px; top:260px;">
-        <div class="v">Franck Monod</div>
-        <div class="k" style="margin-top:8px">Enstitut de la Lengoua Savoyârda</div>
+      <!-- Le projet Interreg : l'affiche du Projet culturel de territoire, recreee en plein cadre et animee (15 - 21,6 s) -->
+      <div class="plan" id="p-affiche">
+        <svg id="rubans" viewBox="0 0 1080 1920">
+          <defs>
+            <linearGradient id="g-bleu" gradientUnits="userSpaceOnUse" x1="980" y1="80" x2="560" y2="1250"><stop offset="0" stop-color="#eeedf8"/><stop offset=".45" stop-color="#a9a8e2"/><stop offset="1" stop-color="#5a5cc4"/></linearGradient>
+            <linearGradient id="g-rose" gradientUnits="userSpaceOnUse" x1="250" y1="650" x2="620" y2="1080"><stop offset="0" stop-color="#f58bc2"/><stop offset=".6" stop-color="#c46fd0"/><stop offset="1" stop-color="#7d57c6"/></linearGradient>
+            <linearGradient id="g-orange" gradientUnits="userSpaceOnUse" x1="420" y1="1050" x2="300" y2="1920"><stop offset="0" stop-color="#f4a3b4"/><stop offset=".5" stop-color="#f6b58a"/><stop offset="1" stop-color="#f7cf6a"/></linearGradient>
+            <linearGradient id="g-vert" gradientUnits="userSpaceOnUse" x1="600" y1="1700" x2="1080" y2="1920"><stop offset="0" stop-color="#9fdc9a"/><stop offset="1" stop-color="#6cc28a"/></linearGradient>
+            <!-- Texture pointillee de l'affiche : taches blanches fines posees sur les rubans -->
+            <filter id="grain" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="7" result="bruit"/>
+              <feColorMatrix in="bruit" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 14 -9" result="points"/>
+              <feComposite in="points" in2="SourceGraphic" operator="in" result="points-ruban"/>
+              <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="points-ruban"/></feMerge>
+            </filter>
+          </defs>
+          <g filter="url(#grain)" fill="none" stroke-linecap="round">
+            <path class="ruban" d="M 400 1110 C 380 1400, 300 1650, 330 2000" stroke="url(#g-orange)" stroke-width="230" pathLength="1"/>
+            <path class="ruban" d="M 470 1080 A 250 250 0 1 1 640 700" stroke="url(#g-rose)" stroke-width="230" pathLength="1"/>
+            <path class="ruban" d="M 1010 60 C 1080 420, 880 560, 820 760 C 760 960, 600 1080, 520 1240" stroke="url(#g-bleu)" stroke-width="230" pathLength="1"/>
+            <path class="ruban" d="M 600 2000 A 280 280 0 0 1 1150 1870" stroke="url(#g-vert)" stroke-width="230" pathLength="1"/>
+          </g>
+        </svg>
+        <div class="pct">
+          <div class="ligne"><span>PROJET</span></div>
+          <div class="ligne"><span>CULTUREL</span></div>
+          <div class="ligne"><span><small>DE</small>TERRI—</span></div>
+          <div class="ligne"><span>—TOIRE</span></div>
+          <div class="ligne"><span><small>DU</small>GRAND</span></div>
+          <div class="ligne"><span>GENÈVE</span></div>
+        </div>
+        <div class="interreg" id="interreg"><b>Projet Interreg</b><span>France – Suisse</span></div>
+        <div class="partenaires" id="partenaires">Pôle métropolitain du Genevois français · Canton de Genève · Ville de Genève · Association des communes genevoises · Feuille de route en 2027</div>
+        <div class="credit-noir">D'après l'affiche © Pôle métropolitain du Genevois français</div>
       </div>
 
-      <!-- Le badge (26 - 32,2 s) -->
+      <!-- Selfie devant le Globe (21,6 - 30,6 s) -->
+      <video id="v-ext" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="21.6" data-duration="9" data-media-start="0"></video>
+      <div class="bloc-nom" id="nom">
+        <div class="n">Franck Monod</div>
+        <div class="r">Enstitut de la Lengoua Savoyârda</div>
+      </div>
+
+      <!-- La culture, c'est tout (30,6 - 38,6 s) -->
+      <div class="plan" id="p-culture">
+        <div class="culture">
+          <div class="eyebrow">La culture, ici, c'est…</div>
+          <ul>
+            <li><span>un festival de jazz</span></li>
+            <li><span>une salle de théâtre</span></li>
+            <li><span>un musée</span></li>
+            <li><span>un orchestre</span></li>
+            <li class="langue"><span>et une langue</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Le badge et les chiffres de la concertation (38,6 - 44,6 s) -->
       <div class="plan" id="p-badge">
         <img id="badge-img" src="assets/badge.jpg" width="1125" height="2000" alt="" />
+        <div class="chiffres" id="chiffres">
+          <div><b data-n="160">160</b><span>acteurs</span></div>
+          <div><b data-n="140">140</b><span>structures</span></div>
+          <div><b data-n="4">4</b><span>ateliers</span></div>
+        </div>
       </div>
 
-      <!-- Dans l'exposition (32 - 41,5 s) -->
-      <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="32" data-duration="9.5"></video>
-      <div class="pastille" id="expo" style="left:60px; top:260px;">
-        <div class="k">Dans le Globe</div>
-        <div class="v">L'exposition du CERN</div>
-      </div>
+      <!-- Dans l'exposition (44,6 - 54,1 s) -->
+      <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="44.6" data-duration="9.5"></video>
+      <div class="lieu-fin" id="expo"><span class="l"><span>Dans le Globe,</span></span><span class="l"><span>l'<em>exposition</em></span></span></div>
+
+      <div id="flash"></div>
 
       <!-- Sous-titres de la voix off (texte : SCRIPT.md) -->
-      <div class="st" id="st1"><span>Jeudi 24 septembre. Entre la Savoie et Genève, il y a une frontière.</span></div>
-      <div class="st" id="st2"><span>Et une langue qui ne l'a jamais connue.</span></div>
-      <div class="st" id="st3"><span>Direction le CERN, à Meyrin, au pied du Globe de la science et de l'innovation.</span></div>
-      <div class="st" id="st4"><span>J'y représentais l'Enstitut de la Lengoua Savoyârda,</span></div>
-      <div class="st" id="st5"><span>pour un projet Interreg qui rapproche la Savoie et Genève autour de la culture.</span></div>
-      <div class="st" id="st6"><span>Une journée pour réunir les acteurs culturels du Grand Genève, des deux côtés de la frontière.</span></div>
-      <div class="st" id="st7"><span>Car le savoyard se parlait à Genève comme à Chambéry.</span></div>
-      <div class="st" id="st8"><span>L'hymne genevois, le Cé qu'è lainô, est écrit dans cette langue.</span></div>
-      <div class="st" id="st9"><span>Une langue commune pour un territoire commun.</span></div>
-      <div class="st" id="st10"><span>La suite s'écrit ensemble.</span></div>
+      <div class="st clair" id="st1">Jeudi 24 septembre. Entre la Savoie et Genève, il y a une frontière.</div>
+      <div class="st clair" id="st2">Et une langue qui ne l'a jamais connue.</div>
+      <div class="st" id="st3">Direction le CERN, à Meyrin, au pied du Globe de la science et de l'innovation.</div>
+      <div class="st clair" id="st4">Au programme : le Projet culturel de territoire du Grand Genève, un projet Interreg entre la France et la Suisse.</div>
+      <div class="st" id="st5">Une journée pour co-construire sa feuille de route, attendue en 2027.</div>
+      <div class="st" id="st6">J'y représentais l'Enstitut de la Lengoua Savoyârda.</div>
+      <div class="st clair" id="st7">Car la culture, ici, c'est tout : un festival de jazz, une salle de théâtre, un musée, un orchestre… et une langue.</div>
+      <div class="st" id="st8">Avant cette journée, 160 acteurs de 140 structures avaient déjà travaillé ensemble, des deux côtés de la frontière.</div>
+      <div class="st" id="st9">Le savoyard se parle à Genève comme à Chambéry.</div>
+      <div class="st" id="st10">L'hymne genevois, le Cé qu'è lainô, est écrit dans cette langue.</div>
+      <div class="st clair" id="st11">Une langue commune, un territoire commun.</div>
+      <div class="st clair" id="st12">Un projet pour construire un bien commun autour de la culture.</div>
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });
@@ -157,7 +256,7 @@
       const gg = document.querySelector("#gg").getBBox();
       const ggx = gg.x + gg.width / 2, ggy = gg.y + gg.height / 2;
 
-      gsap.set(["#p-aerien", "#p-badge", "#nom", "#expo", "#fin-texte", ".st", "#pastille-globe", "#gg", "#legende"], { opacity: 0 });
+      gsap.set(["#p-aerien", "#p-affiche", "#p-culture", "#p-badge", "#nom", "#expo", "#fin-texte", ".st", "#pastille-globe", "#gg", "#legende"], { opacity: 0 });
       gsap.set("#z19", { opacity: 0 });
       gsap.set(["#bague .b-fond", "#bague .b-trait"], { strokeDasharray: 1, strokeDashoffset: 1 });
       gsap.set("#cern .onde", { transformOrigin: "50% 50%" });
@@ -167,8 +266,7 @@
       tl.from("#ouverture h1", { y: 24, opacity: 0, duration: 0.8, ease: "power3.out" }, 0.35);
       tl.from("#ouverture .sub", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.8);
       tl.from(".zone", { opacity: 0, duration: 0.8, stagger: 0.08, ease: "power1.out" }, 0.3);
-      const front = document.querySelector("#frontiere");
-      tl.from(front, { opacity: 0, duration: 0.6 }, 1.4);
+      tl.from("#frontiere", { opacity: 0, duration: 0.6 }, 1.4);
       tl.from(".lieu", { opacity: 0, y: 8, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 1.6);
       tl.fromTo("#cern .onde", { scale: 1, opacity: 0.9 }, { scale: 5, opacity: 0, duration: 1.4, ease: "power2.out", repeat: 2 }, 2.4);
       tl.to("#ouverture", { opacity: 0, y: -16, duration: 0.5, ease: "power2.in" }, 4.4);
@@ -177,58 +275,98 @@
       tl.to("#camera", { ...vue(gx, gy, 2.2), duration: 1.6, ease: "power2.inOut" }, 3.6);
       tl.to("#camera", { ...vue(gx, gy, 14), duration: 3.6, ease: "power2.in" }, 5.2);
 
-      // 8,8 - 15,4 s : fondu vers la vue aerienne, zoom sur le Globe.
-      // z17 : Globe en (979, 638) ; z19 : Globe en (845, 505), en pixels des mosaiques.
+      // 8,8 - 15,4 s : vue aerienne, zoom sur le Globe.
       const aerien = (x, y, s) => ({ x: 540 - x * s, y: 900 - y * s, scale: s });
       gsap.set("#z17", aerien(979, 638, 2.5));
       gsap.set("#z19", aerien(845, 505, 1.9));
-      tl.to("#p-aerien", { opacity: 1, duration: 0.6, ease: "power1.inOut" }, 8.8);
-      tl.to("#p-carte", { opacity: 0, duration: 0.3 }, 9.4);
+      tl.set("#p-aerien", { opacity: 1 }, 9.1);
+      tl.set("#p-carte", { opacity: 0 }, 9.1);
       tl.to("#z17", { ...aerien(979, 638, 4.0), duration: 3.2, ease: "power1.inOut" }, 8.8);
       tl.to("#z19", { opacity: 1, duration: 0.8, ease: "power1.inOut" }, 11.4);
       tl.to("#z19", { ...aerien(845, 505, 2.6), duration: 4.0, ease: "power1.out" }, 11.4);
       tl.to(["#bague .b-fond", "#bague .b-trait"], { strokeDashoffset: 0, duration: 1.0, ease: "power2.inOut" }, 12.2);
-      tl.to("#pastille-globe", { opacity: 1, duration: 0.01 }, 12.6);
-      tl.from("#pastille-globe", { y: 20, duration: 0.6, ease: "power3.out" }, 12.6);
-      tl.to("#p-aerien", { opacity: 0, duration: 0.4 }, 14.9);
+      tl.to("#pastille-globe", { opacity: 1, duration: 0.01 }, 12.4);
+      tl.from("#pastille-globe .l > span", { yPercent: 110, duration: 0.8, ease: "power4.out", stagger: 0.15 }, 12.4);
+      tl.set("#p-aerien", { opacity: 0 }, 15.0);
 
-      // 15 - 26,2 s : selfie devant le Globe, bandeau nom.
-      tl.to("#nom", { opacity: 1, duration: 0.01 }, 16.4);
-      tl.from("#nom", { x: -30, duration: 0.6, ease: "power3.out" }, 16.4);
-      tl.to("#nom", { opacity: 0, duration: 0.4 }, 23.6);
+      // 15 - 21,6 s : l'affiche du projet Interreg, rubans puis texte.
+      tl.set("#p-affiche", { opacity: 1 }, 15.0);
+      gsap.set(".ruban", { strokeDasharray: 1, strokeDashoffset: 1 });
+      tl.to(".ruban", { strokeDashoffset: 0, duration: 1.6, ease: "power2.inOut", stagger: 0.25 }, 15.0);
+      tl.from(".pct .ligne > span", { yPercent: 105, duration: 0.7, ease: "power4.out", stagger: 0.14 }, 15.3);
+      tl.fromTo("#rubans", { scale: 1 }, { scale: 1.06, transformOrigin: "50% 50%", duration: 6.6, ease: "none" }, 15.0);
+      tl.fromTo("#interreg", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }, 17.0);
+      tl.from("#partenaires", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 17.6);
+      tl.set("#p-affiche", { opacity: 0 }, 21.6);
 
-      // 26 - 32,2 s : le badge, poussee lente vers la carte de visite.
+      // 21,6 - 30,6 s : selfie devant le Globe, bandeau nom.
+      tl.to("#nom", { opacity: 1, duration: 0.01 }, 26.2);
+      tl.fromTo("#nom", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }, 26.2);
+      tl.to("#nom", { opacity: 0, duration: 0.4 }, 30.0);
+
+      // 30,6 - 38,6 s : la culture, c'est tout. Chaque ligne monte au rythme de la voix.
+      tl.set("#p-culture", { opacity: 1 }, 30.6);
+      tl.from(".culture .eyebrow", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 30.8);
+      [32.4, 33.6, 34.9, 35.8, 36.9].forEach((t, i) => {
+        tl.from(`.culture li:nth-child(${i + 1}) span`, { yPercent: 110, duration: 0.6, ease: "power4.out" }, t);
+      });
+      tl.set("#p-culture", { opacity: 0 }, 38.6);
+
+      // 38,6 - 44,6 s : le badge, poussee lente, et les chiffres qui comptent.
       gsap.set("#badge-img", { x: 0, y: 0, scale: 0.96 });
-      tl.to("#p-badge", { opacity: 1, duration: 0.5 }, 26.0);
+      tl.set("#p-badge", { opacity: 1 }, 38.6);
       // La carte de visite est en (612, 808) sur la photo.
-      tl.to("#badge-img", { x: 540 - 612 * 1.5, y: 900 - 808 * 1.5, scale: 1.5, duration: 6.2, ease: "power1.inOut" }, 26.0);
-      tl.to("#p-badge", { opacity: 0, duration: 0.4 }, 31.8);
+      tl.to("#badge-img", { x: 540 - 612 * 1.5, y: 900 - 808 * 1.5, scale: 1.5, duration: 6.0, ease: "power1.inOut" }, 38.6);
+      tl.from("#chiffres", { y: -30, opacity: 0, duration: 0.6, ease: "power3.out" }, 39.2);
+      document.querySelectorAll("#chiffres b").forEach((b, i) => {
+        const cible = +b.dataset.n, compteur = { v: 0 };
+        tl.to(compteur, { v: cible, duration: 1.4, ease: "power2.out", onUpdate: () => { b.textContent = Math.round(compteur.v); } }, 39.4 + i * 0.3);
+      });
+      tl.set("#p-badge", { opacity: 0 }, 44.6);
 
-      // 32 - 41,5 s : dans l'exposition.
-      tl.to("#expo", { opacity: 1, duration: 0.01 }, 33.0);
-      tl.from("#expo", { x: -30, duration: 0.6, ease: "power3.out" }, 33.0);
-      tl.to("#expo", { opacity: 0, duration: 0.4 }, 37.6);
+      // 44,6 - 54,1 s : dans l'exposition.
+      tl.to("#expo", { opacity: 1, duration: 0.01 }, 45.2);
+      tl.from("#expo .l > span", { yPercent: 110, duration: 0.8, ease: "power4.out", stagger: 0.15 }, 45.2);
+      tl.to("#expo", { opacity: 0, duration: 0.4 }, 50.0);
 
-      // 41,5 - 50 s : retour a la carte, cadree sur le Grand Genève.
-      tl.set("#camera", vue(ggx, ggy - 60, 1.9), 41.0);
-      tl.set("#ouverture", { opacity: 0 }, 41.0);
-      tl.to("#p-carte", { opacity: 1, duration: 0.6 }, 41.4);
-      tl.to("#camera", { ...vue(ggx, ggy - 60, 1.55), duration: 8.6, ease: "power1.out" }, 41.4);
-      tl.to("#gg", { opacity: 1, duration: 1.0, ease: "power1.inOut" }, 42.8);
-      tl.to("#legende", { opacity: 1, duration: 0.01 }, 43.4);
-      tl.from("#legende", { y: 16, duration: 0.6, ease: "power3.out" }, 43.4);
-      tl.set("#voile", { opacity: 1 }, 41.0);
-      tl.to("#fin-texte", { opacity: 1, duration: 0.01 }, 42.4);
-      tl.from("#fin-texte h1", { y: 24, opacity: 0, duration: 0.8, ease: "power3.out" }, 42.4);
-      tl.from("#fin-texte .eyebrow", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 42.3);
-      tl.from("#fin-texte .sig", { opacity: 0, duration: 0.6 }, 46.2);
+      // 53,6 - 62 s : retour a la carte, l'aire du Grand Geneve apparait.
+      tl.set("#camera", vue(ggx, ggy - 60, 1.9), 53.2);
+      tl.set("#ouverture", { opacity: 0 }, 53.2);
+      tl.set("#voile", { opacity: 1 }, 53.2);
+      tl.set("#p-carte", { opacity: 1 }, 53.6);
+      tl.to("#camera", { ...vue(ggx, ggy - 60, 1.55), duration: 8.4, ease: "power1.out" }, 53.6);
+      tl.to("#gg", { opacity: 1, duration: 1.0, ease: "power1.inOut" }, 54.6);
+      tl.to("#legende", { opacity: 1, duration: 0.01 }, 55.2);
+      tl.from("#legende", { y: 16, duration: 0.6, ease: "power3.out" }, 55.2);
+      tl.to("#fin-texte", { opacity: 1, duration: 0.01 }, 54.2);
+      tl.from("#fin-texte .eyebrow", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 54.2);
+      tl.from("#fin-texte h1", { y: 24, opacity: 0, duration: 0.8, ease: "power3.out" }, 54.3);
+      tl.from("#fin-texte .sig", { opacity: 0, duration: 0.6 }, 58.2);
 
       // Sous-titres, cales sur SCRIPT.md.
-      [[1, 0.8, 4.6], [2, 4.6, 8.6], [3, 9.2, 14.8], [4, 15.4, 20.4], [5, 20.4, 25.6],
-       [6, 26.2, 31.6], [7, 32.2, 36.6], [8, 36.6, 41.2], [9, 42.0, 46.0], [10, 46.0, 49.6]]
+      [[1, 0.8, 4.6], [2, 4.6, 8.6], [3, 9.2, 14.8], [4, 15.4, 21.2], [5, 21.8, 26.2], [6, 26.2, 30.4],
+       [7, 30.8, 38.2], [8, 38.8, 44.2], [9, 44.8, 49.2], [10, 49.2, 53.6], [11, 54.2, 57.8], [12, 57.8, 61.8]]
         .forEach(([n, a, b]) => {
-          tl.to("#st" + n, { opacity: 1, duration: 0.2 }, a);
-          tl.to("#st" + n, { opacity: 0, duration: 0.2 }, b - 0.2);
+          const st = document.querySelector("#st" + n);
+          const mots = st.textContent.trim().split(/\s+/);
+          st.innerHTML = mots.map((m) => `<span class="m">${m}</span>`).join(" ");
+          tl.set(st, { opacity: 1 }, a);
+          tl.set(st, { opacity: 0 }, b);
+          // Mots repartis selon leur longueur sur la duree de la phrase.
+          const poids = mots.map((m) => m.length + 2), total = poids.reduce((x, y) => x + y, 0);
+          let t = a;
+          st.querySelectorAll(".m").forEach((el, i) => {
+            const d = (b - a) * poids[i] / total;
+            tl.set(el, { className: "m actif" }, t);
+            tl.set(el, { className: "m" }, t + d);
+            t += d;
+          });
+        });
+
+      // X8 : flash blanc sur chaque changement de plan.
+      [9.1, 15.0, 21.6, 30.6, 38.6, 44.6, 53.6].forEach((t) => {
+          tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, t - 0.07);
+          tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, t);
         });
 
       window.__timelines["main"] = tl;

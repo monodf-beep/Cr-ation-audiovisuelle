@@ -85,6 +85,21 @@ bleu avec liseré blanc), et une fiche blanche donne l'année, le titre d'origin
 une phrase. La fiche se place là où elle ne cache pas l'annotation. Exemple : `cartes-anciennes-16x9.html`,
 sources dans `assets/cartes/SOURCES.md`.
 
+## Sélection de la bibliothèque graphique (25/09/2026)
+
+Tri fait dans la bibliothèque animée (artifact « Bibliothèque vidéo Franck Monod »).
+
+| Famille | Oui | Peut-être | Non |
+|---|---|---|---|
+| Bandeaux de nom | B4 bloc bleu | B5 étiquette papier | |
+| Sous-titres et encarts | S3 mot actif en bleu, E4 fin et élégant (Cormorant Garamond) | | S2 blanc ombré |
+| Cartes | C3 carte ancienne en cyanotype | | C2 relief incliné, C4 zone translucide |
+| Étalonnage | | L3 documentaire neutre, L5 contrasté profond, L7 ombres bleu Savoie | L2 chaud doré, L4 pellicule, L6 pastel |
+| Transitions | | X8 flash blanc | X1 à X7, X9 |
+
+Appliqué au reportage CERN : B4 pour le nom, S3 pour tous les sous-titres, E4 pour les noms de lieux, X8 sur chaque changement de plan.
+Références à creuser : bandes de papier déchiré avec typo à empattements, texte gros et dynamique (voir E1, E2).
+
 ## Polices hors dépôt
 
 Le dépôt est public et Semplicità Pro est une police commerciale : les fichiers `.woff` ne sont pas versionnés.
