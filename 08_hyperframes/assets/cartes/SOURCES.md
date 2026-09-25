@@ -15,4 +15,4 @@ Conditions de Gallica : réutilisation non commerciale libre et gratuite avec la
 « Source gallica.bnf.fr / BnF ». Une réutilisation commerciale (publicité, prestation payante)
 est soumise à redevance : voir https://gallica.bnf.fr/edit/und/conditions-dutilisation-des-contenus-de-gallica
 
-Reproduire le traitement : voir la commande ffmpeg dans l'historique git (commit qui ajoute ce fichier).
+Les `.jpg` sont hors dépôt (`.gitignore`). Pour les régénérer : `bash tools/prepare-cartes.sh` (depuis `08_hyperframes/`).
