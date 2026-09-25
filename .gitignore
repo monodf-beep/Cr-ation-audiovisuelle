@@ -16,3 +16,5 @@ __pycache__/
 *.webp
 04_montage/coupes.json
 22_drapeaux/
+08_hyperframes/renders/
+08_hyperframes/node_modules/
