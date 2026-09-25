@@ -1,5 +1,5 @@
 // Deux maquettes fixes (1080 x 1920) pour comparer le rendu de la « culture savoyarde partagee » :
-// A = lueur douce (flou), B = pointilles qui s'estompent. Meme base : espace sabaudo affirme.
+// A = lueur douce (flou), B = pointilles qui s'estompent, A-langue = lueur sur l'aire linguistique. Meme base : espace sabaudo affirme.
 // Usage : node tools/maquettes-diffus.mjs <dossier de sortie>
 import { readFileSync, writeFileSync } from 'node:fs';
 import * as d3 from 'd3';
@@ -84,14 +84,26 @@ const fonts = `
 @font-face { font-family: 'Semplicita Pro'; src: url('${new URL('assets/fonts/SemplicitaPro-Bold.woff', root)}') format('woff'); font-weight: 700; }
 @font-face { font-family: 'Cormorant Garamond'; src: url('${new URL('assets/fonts/CormorantGaramond-Italic.woff2', root)}') format('woff2'); font-weight: 500; font-style: italic; }`;
 
+// Aire linguistique (approximation a la main, pas de jeu de donnees precis) : Savoie, Aoste, Geneve, Vaud, Ain,
+// Valais francophone (fondu vers l'est), nord de l'Isere avec Grenoble (fondu vers le sud),
+// vallees alpines du Piemont (Orco, Soana, Lanzo, Suse moyenne). Nice et le reste du Piemont restent dehors.
+const vallees = redresse({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[
+  [6.95, 45.55], [7.45, 45.58], [7.62, 45.45], [7.5, 45.3], [7.35, 45.2], [7.2, 45.12], [7.0, 45.08], [6.9, 45.17], [6.9, 45.35], [6.95, 45.55]]] } });
+const langue = [savoieUnie, aoste, geneve, vaud, ain, vallees];
+const [xValais0] = P([7.35, 46.2]), [xValais1] = P([7.75, 46.2]);
+const [, yIsere0] = P([5.7, 45.12]), [, yIsere1] = P([5.7, 44.9]);
+
 const lieuxSabaudo = [['Savoie', [6.38, 45.95]], ["Vallée d'Aoste", [7.4, 45.72]], ['Piémont', [7.55, 45.35]]];
 const lieuxDiffus = [['Genève', [6.12, 46.24]], ['Pays de Vaud', [6.62, 46.62]], ['Pays de Gex', [5.98, 46.4]], ['Bugey', [5.62, 45.86]], ['Bresse', [5.2, 46.3]], ['Dombes', [5.05, 46.02]], ['Bas-Valais', [7.02, 46.27]]];
 
 function page(variante) {
-  const couche = variante === 'A'
+  const couche = variante === 'L'
+    ? `<g filter="url(#flou-l)" opacity="0.4">${langue.map(f => `<path d="${round(path(f))}" fill="#0a36af"/>`).join('')}
+        <path d="${round(path(valais))}" fill="#0a36af" mask="url(#est)"/><path d="${round(path(isere))}" fill="#0a36af" mask="url(#sud)"/></g>`
+    : variante === 'A'
     ? `<g mask="url(#fondu)"><g filter="url(#flou)">${diffus.map(f => `<path d="${round(path(f))}" fill="#0a36af" fill-opacity="0.34"/>`).join('')}</g></g>`
     : `<g mask="url(#fondu)">${diffus.map(f => `<path d="${round(path(f))}" fill="url(#points)"/>`).join('')}</g>`;
-  const pastille = variante === 'A'
+  const pastille = variante !== 'B'
     ? `<span class="sw" style="background: radial-gradient(circle, rgba(10,54,175,.45), rgba(10,54,175,0))"></span>`
     : `<span class="sw" style="background-image: radial-gradient(#0a36af 1.6px, transparent 1.9px); background-size: 9px 9px"></span>`;
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>${fonts}
@@ -121,24 +133,30 @@ function page(variante) {
         <stop offset="0" stop-color="#fff"/><stop offset="0.45" stop-color="#fff" stop-opacity="0.85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
       </radialGradient>
       <mask id="fondu" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1920"><rect width="1080" height="1920" fill="url(#grad)"/></mask>
+      <filter id="flou-l" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="30"/></filter>
+      <linearGradient id="g-est" gradientUnits="userSpaceOnUse" x1="${xValais0}" y1="0" x2="${xValais1}" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <linearGradient id="g-sud" gradientUnits="userSpaceOnUse" x1="0" y1="${yIsere0}" x2="0" y2="${yIsere1}"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <mask id="est" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1920"><rect width="1080" height="1920" fill="url(#g-est)"/></mask>
+      <mask id="sud" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="1920"><rect width="1080" height="1920" fill="url(#g-sud)"/></mask>
       <pattern id="points" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="5.5" cy="5.5" r="2.2" fill="#0a36af"/></pattern>
     </defs>
     ${[ain, isere, hautesAlpes, vaud, valais, geneve, ...autresIt].map(f => `<path class="ctx" d="${round(path(f))}"/>`).join('\n')}
-    ${couche}
+    ${variante === 'L' ? '' : couche}
     ${[aoste, piemont, savoieUnie].map(f => `<path class="sab" d="${round(path(f))}"/>`).join('\n')}
+    ${variante === 'L' ? couche : ''}
     <path class="leger" d="${round(path(limitesLegeres))}"/>
     <path class="interne" d="${round(path(limitesInternes))}"/>
     <path class="contour" d="${round(path(contourSabaudo))}"/>
     ${lieuxSabaudo.map(([t, ll]) => { const [x, y] = P(ll); return `<text class="n-sab" x="${x}" y="${y}">${t}</text>`; }).join('')}
-    ${lieuxDiffus.map(([t, ll]) => { const [x, y] = P(ll); return `<text class="n-dif" x="${x}" y="${y}">${t}</text>`; }).join('')}
+    ${(variante === 'L' ? [...lieuxDiffus, ['Grenoble', [5.72, 45.19]]] : lieuxDiffus).map(([t, ll]) => { const [x, y] = P(ll); return `<text class="n-dif" x="${x}" y="${y}">${t}</text>`; }).join('')}
   </svg>
-  <div class="variante">${variante === 'A' ? 'A · lueur douce' : 'B · pointillés qui s’estompent'}</div>
+  <div class="variante">${{ A: 'A · lueur douce', B: 'B · pointillés qui s’estompent', L: 'A · aire linguistique' }[variante]}</div>
   <div class="tete"><div class="eyebrow">Reportage · 24 septembre 2026</div><h1>Au CERN, pour la langue savoyarde</h1></div>
   <div class="legende">
     <div><span class="sw" style="background:#dfe5f5; border: 3px solid #0a36af"></span>Espace sabaudo</div>
-    <div>${pastille}<em>culture savoyarde partagée</em></div>
+    <div>${pastille}<em>${variante === 'L' ? 'là où se parle la même langue' : 'culture savoyarde partagée'}</em></div>
   </div>
   </body></html>`;
 }
-for (const v of ['A', 'B']) writeFileSync(`${sortie}/maquette-${v}.html`, page(v));
+for (const [v, nom] of [['A', 'A'], ['B', 'B'], ['L', 'A-langue']]) writeFileSync(`${sortie}/maquette-${nom}.html`, page(v));
 console.log('maquettes ecrites dans', sortie);
