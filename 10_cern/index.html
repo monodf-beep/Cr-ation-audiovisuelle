@@ -115,17 +115,33 @@
       .merci em { font-style: italic; border-bottom: 5px solid var(--fm-bleu-savoie); }
       .merci p { margin-top: 20px; font-size: 40px; font-weight: 600; line-height: 1.25; }
       #p-final { background: var(--fm-bg); }
-      .final { position: absolute; left: 0; right: 0; top: 760px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
+      .final { position: absolute; left: 0; right: 0; top: 520px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
       .bloc-final { background: var(--fm-bleu-savoie); color: #fff; padding: 30px 44px 34px; text-align: center; }
       .bloc-final .n { font-size: 76px; font-weight: 700; line-height: 1.05; }
       .bloc-final .r { margin-top: 12px; font-size: 30px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
       .final p { font-size: 30px; color: var(--fm-ink-700); }
+      /* Hook */
+      .hook { position: absolute; left: 70px; right: 70px; top: 330px; font-size: 100px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: #ffffff; text-shadow: 0 0 8px rgba(0,0,0,0.6), 0 4px 24px rgba(0,0,0,0.5); z-index: 4; }
+      .hook .w { display: inline-block; }
+      .hook .b { background: var(--fm-bleu-savoie); padding: 0 14px; text-shadow: none; }
+      /* Nos Alpes */
+      .source-na { position: absolute; right: 60px; top: 470px; display: flex; align-items: center; gap: 14px; background: var(--fm-bg); padding: 10px 16px; font-size: 22px; font-weight: 600; color: var(--fm-ink-700); }
+      .source-na img { height: 54px; width: auto; display: block; }
+      .lire { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 40px; padding-top: 36px; border-top: 2px solid var(--fm-line); width: 860px; }
+      .lire .k { font-size: 26px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-ink-700); }
+      .lire img { height: 120px; width: auto; display: block; }
+      .lire .t { font-size: 34px; font-weight: 600; line-height: 1.25; text-align: center; }
+      .lire .a { font-size: 26px; color: var(--fm-ink-700); }
       /* X8 : flash blanc sur les changements de plan */
       #flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; pointer-events: none; z-index: 5; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="72" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="77" data-width="1080" data-height="1920">
+
+      <!-- Hook (0 - 2,8 s) : selfie devant le Globe et la question -->
+      <video id="v-hook" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="0" data-duration="2.8" data-media-start="0.2"></video>
+      <div class="hook" id="hook"><span class="w">Qu'est-ce</span> <span class="w">que</span> <span class="w">le</span> <span class="w b">savoyard</span> <span class="w">vient</span> <span class="w">faire</span> <span class="w">au</span> <span class="w b">CERN</span> <span class="w">?</span></div>
 
       <!-- Carte : ouverture (0 - 9,4 s) puis fin (53,6 - 62 s) -->
       <div class="plan" id="p-carte">
@@ -176,7 +192,7 @@
       </div>
 
       <!-- Le projet Interreg : l'affiche du Projet culturel de territoire, recreee en plein cadre et animee (15 - 21,6 s) -->
-      <video id="v-affiche" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="15" data-duration="6.6" data-media-start="0"></video>
+      <video id="v-affiche" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="17.8" data-duration="6.6" data-media-start="0"></video>
       <div class="plan" id="p-affiche">
         <div class="interreg" id="interreg"><b>Projet Interreg</b><span>France – Suisse</span></div>
         <div class="partenaires" id="partenaires">Pôle métropolitain du Genevois français · Canton de Genève · Ville de Genève · Association des communes genevoises · Feuille de route en 2027</div>
@@ -184,7 +200,7 @@
       </div>
 
       <!-- Selfie devant le Globe (21,6 - 30,6 s) -->
-      <video id="v-ext" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="21.6" data-duration="9" data-media-start="0"></video>
+      <video id="v-ext" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="24.4" data-duration="9" data-media-start="3"></video>
       <div class="bloc-nom" id="nom">
         <div class="n">Franck Monod</div>
         <div class="r">Enstitut de la Lengoua Savoyârda</div>
@@ -207,6 +223,7 @@
       <!-- Le badge et les chiffres de la concertation (38,6 - 44,6 s) -->
       <div class="plan" id="p-badge">
         <img id="badge-img" src="assets/badge.jpg" width="1125" height="2000" alt="" />
+        <div class="source-na" id="source-na">Source <img src="assets/nosalpes-logo.png" width="500" height="172" alt="Nos Alpes" /></div>
         <div class="chiffres" id="chiffres">
           <div><b data-n="160">160</b><span>acteurs</span></div>
           <div><b data-n="140">140</b><span>structures</span></div>
@@ -215,11 +232,11 @@
       </div>
 
       <!-- Dans l'exposition (44,6 - 54,1 s) -->
-      <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="44.6" data-duration="9.5"></video>
+      <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="47.4" data-duration="9.5"></video>
       <div class="lieu-fin" id="expo"><span class="l"><span>Dans le Globe,</span></span><span class="l"><span>l'<em>exposition</em></span></span></div>
 
       <!-- Remerciement en savoyard, « Grant-marci » (62 - 68 s), sur l'affiche animee -->
-      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="62" data-duration="6" data-media-start="7"></video>
+      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="64.8" data-duration="6" data-media-start="7"></video>
       <div class="plan" id="p-merci">
         <div class="merci">
           <div class="l"><span><em>Grant-marci</em></span></div>
@@ -233,6 +250,12 @@
         <div class="final">
           <div class="bloc-final"><div class="n">Franck Monod</div><div class="r">Enstitut de la Lengoua Savoyârda</div></div>
           <p>Reportage · CERN, Meyrin · 24 septembre 2026</p>
+          <div class="lire" id="lire">
+            <div class="k">À lire sur</div>
+            <img src="assets/nosalpes-logo.png" width="500" height="172" alt="Nos Alpes" />
+            <div class="t">« Grand Genève : un projet culturel transfrontalier d'ici 2027 »</div>
+            <div class="a">par Franck Monod</div>
+          </div>
         </div>
       </div>
 
@@ -267,6 +290,7 @@
       gsap.set("#z19", { opacity: 0 });
       gsap.set(["#bague .b-fond", "#bague .b-trait"], { strokeDasharray: 1, strokeDashoffset: 1 });
       gsap.set("#cern .onde", { transformOrigin: "50% 50%" });
+      gsap.set("#cern", { opacity: 0 });
 
       // 0 - 9,4 s : titre, carte, frontiere, puis zoom jusqu'a Meyrin.
       tl.from("#ouverture .eyebrow", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 0.2);
@@ -275,6 +299,7 @@
       tl.from(".zone", { opacity: 0, duration: 0.8, stagger: 0.08, ease: "power1.out" }, 0.3);
       tl.from("#frontiere", { opacity: 0, duration: 0.6 }, 1.4);
       tl.from(".lieu", { opacity: 0, y: 8, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 1.6);
+      tl.to("#cern", { opacity: 1, duration: 0.4 }, 2.2);
       tl.fromTo("#cern .onde", { scale: 1, opacity: 0.9 }, { scale: 5, opacity: 0, duration: 1.4, ease: "power2.out", repeat: 2 }, 2.4);
       tl.to("#ouverture", { opacity: 0, y: -16, duration: 0.5, ease: "power2.in" }, 4.4);
       tl.to("#voile", { opacity: 0, duration: 0.6 }, 4.6);
@@ -321,6 +346,7 @@
       // La carte de visite est en (612, 808) sur la photo.
       tl.to("#badge-img", { x: 540 - 612 * 1.5, y: 900 - 808 * 1.5, scale: 1.5, duration: 6.0, ease: "power1.inOut" }, 38.6);
       tl.from("#chiffres", { y: -30, opacity: 0, duration: 0.6, ease: "power3.out" }, 39.2);
+      tl.from("#source-na", { opacity: 0, duration: 0.5 }, 40.2);
       document.querySelectorAll("#chiffres b").forEach((b, i) => {
         const cible = +b.dataset.n, compteur = { v: 0 };
         tl.to(compteur, { v: cible, duration: 1.4, ease: "power2.out", onUpdate: () => { b.textContent = Math.round(compteur.v); } }, 39.4 + i * 0.3);
@@ -358,6 +384,7 @@
       tl.set("#p-final", { opacity: 1 }, 68.0);
       tl.fromTo(".bloc-final", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.inOut" }, 68.2);
       tl.from(".final p", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, 68.9);
+      tl.from("#lire", { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" }, 69.4);
 
       // Sous-titres, cales sur SCRIPT.md.
       [[1, 0.8, 4.6], [2, 4.6, 8.6], [3, 9.2, 14.8], [4, 15.4, 21.2], [5, 21.8, 26.2], [6, 26.2, 30.4],
@@ -384,6 +411,17 @@
           tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, t - 0.07);
           tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, t);
         });
+
+      // Tout le montage commence apres le hook de 2.8 s.
+      tl.shiftChildren(2.8, false, 0);
+
+      // 0 - 2.8 s : le hook. Les mots claquent un a un sur le selfie devant le Globe.
+      tl.from("#hook .w", { scale: 0.6, opacity: 0, duration: 0.28, ease: "back.out(2.2)", stagger: 0.12 }, 0.1);
+      tl.set("#hook", { opacity: 0 }, 2.8);
+      gsap.set("#p-carte", { opacity: 0 });
+      tl.set("#p-carte", { opacity: 1 }, 2.8);
+      tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, 2.73);
+      tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, 2.8);
 
       window.__timelines["main"] = tl;
     </script>
