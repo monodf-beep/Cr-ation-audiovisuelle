@@ -21,3 +21,5 @@ __pycache__/
 # Semplicita Pro : police commerciale, depot public
 *.woff
 *.woff2
+10_cern/node_modules/
+10_cern/renders/
