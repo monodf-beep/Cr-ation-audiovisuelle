@@ -27,7 +27,7 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 
 ## HyperFrames
 
-[HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen) décrit une vidéo en HTML + GSAP et la rend en MP4. Projet dans `08_hyperframes/`.
+[HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen) décrit une vidéo en HTML + GSAP et la rend en MP4. Projet dans `08_hyperframes/`, skills Claude dans `.claude/skills/`.
 
 ```bash
 cd 08_hyperframes
@@ -36,4 +36,4 @@ npm run check    # lint + validation
 npm run render   # MP4 dans renders/
 ```
 
-Prérequis : Node ≥ 22, ffmpeg, Chrome headless (`npx hyperframes browser ensure`).
+Prérequis : Node ≥ 22, ffmpeg, Chrome headless (`npx hyperframes browser ensure`). Dans une session Claude Code web, `.claude/hooks/hyperframes-setup.sh` installe tout ça.
