@@ -17,7 +17,7 @@ courte, envoyer le fichier : le montage se recale dessus.
 | 38,6 – 44,6 s | Le badge, chiffres 160 / 140 / 4 | Avant cette journée, 160 acteurs de 140 structures avaient déjà travaillé ensemble, des deux côtés de la frontière. |
 | 44,6 – 54,1 s | Dans l'exposition du Globe | Le savoyard se parle à Genève comme à Chambéry. L'hymne genevois, le Cé qu'è lainô, est écrit dans cette langue. |
 | 54,1 – 62 s | Carte : l'aire du Grand Genève apparaît | Une langue commune, un territoire commun. Un projet pour construire un bien commun autour de la culture. |
-| 62 – 68 s | « Merci » sur l'affiche animée | Merci à Laetitia et à toute l'équipe du Projet culturel de territoire pour cette journée. |
+| 62 – 68 s | « Grant-marci » sur l'affiche animée | Grant-marci à Laetitia et à toute l'équipe du Projet culturel de territoire pour cette journée. |
 | 68 – 72 s | Carton final : Franck Monod, Enstitut de la Lengoua Savoyârda | (silence ou musique) |
 
 ## Sources des faits
@@ -26,7 +26,7 @@ courte, envoyer le fichier : le montage se recale dessus.
 
 ## À vérifier avant publication
 
-- Laetitia : ajouter son nom et sa fonction exacte si elle le souhaite (carton « Merci »).
+- Laetitia : ajouter son nom et sa fonction exacte si elle le souhaite (carton « Grant-marci »).
 
 - « Projet Interreg France – Suisse » : l'article cite Interreg pour l'Orchestre des Alpes du Léman ; confirmer le nom exact du programme qui finance le Projet culturel de territoire.
 
