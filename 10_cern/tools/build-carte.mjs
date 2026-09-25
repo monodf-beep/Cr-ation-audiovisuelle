@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import * as d3 from 'd3';
 import { topology } from 'topojson-server';
-import { merge } from 'topojson-client';
+import { merge, mesh } from 'topojson-client';
 
 const root = new URL('../', import.meta.url);
 const read = p => JSON.parse(readFileSync(new URL(p, root), 'utf8'));
@@ -39,6 +39,11 @@ const savoieUnie = fusion([savoie, hauteSavoie]);
 // Grand Geneve : Pole metropolitain du Genevois francais (8 intercommunalites) + Geneve + district de Nyon.
 const ggFr = fusion(read('data/grand-geneve-fr.geojson').features);
 const ggCh = fusion(read('data/grand-geneve-ch.geojson').features.map(redresse));
+
+// Limites interieures de la Savoie (provinces, approchees par les arrondissements), non nommees.
+const arr = [...read('data/arrondissements-73-savoie.geojson').features, ...read('data/arrondissements-74-haute-savoie.geojson').features];
+const arrTopo = topology({ a: { type: 'FeatureCollection', features: arr } }, 1e6);
+const provinces = mesh(arrTopo, arrTopo.objects.a, (a, b) => a !== b);
 
 // Globe du CERN, position relevee sur l'orthophoto swisstopo.
 const GLOBE = [6.05573, 46.23402];
@@ -73,7 +78,8 @@ const g = [P(box[0]), P(box[1])];
 const out = [
   '<svg id="carte" viewBox="0 0 1080 1920">',
   ...zones.map(z => `  <path class="zone ${z.cls} zone-${z.id}" d="${round(path(z.f))}"/>`),
-  // Frontiere franco-suisse : contour des cantons, en tirets.
+  `  <path id="provinces" d="${round(path(provinces))}"/>`,
+  // Limite Savoie - Suisse : tracee comme une limite regionale, pas comme une frontiere d'Etat.
   `  <path id="frontiere" d="${round(path({ type: 'FeatureCollection', features: [geneve, vaud, valais] }))}"/>`,
   // Aire du Grand Geneve, revelee a la fin du reportage.
   `  <g id="gg"><path class="gg" d="${round(path(ggFr))}"/><path class="gg" d="${round(path(ggCh))}"/></g>`,
