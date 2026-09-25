@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Carte — États de Savoie</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<style>
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Regular.woff') format('woff');font-weight:400}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Medium.woff') format('woff');font-weight:500}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff');font-weight:600}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Bold.woff') format('woff');font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f7f7f8;font-family:'Semplicita Pro',-apple-system,'Helvetica Neue',Arial,sans-serif;color:#171719}
+#root{min-height:100vh}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+
+const TWEAK_DEFAULTS = {
+  fill: false,
+  mergeSavoie: true,
+  showProvinces: true,
+  showCities: true,
+  showUrbanAreas: false,
+  showLabels: true,
+  showContext: false
+};
+
+const CITIES = [
+  ['Chambéry', 5.9186, 45.5646], ['Annecy', 6.1288, 45.8992], ['Turin', 7.6869, 45.0703],
+  ['Aoste', 7.3202, 45.7372], ['Nice', 7.2620, 43.7102], ['Cuneo', 7.5457, 44.3841],
+  ['Alessandria', 8.6152, 44.9133], ['Asti', 8.2065, 44.9008], ['Novara', 8.6222, 45.4469],
+  ['Vercelli', 8.4211, 45.3210], ['Biella', 8.0575, 45.5658], ['Verbania', 8.5514, 45.9219]
+];
+const LABEL_OFFSETS = { Piemonte: [130, -140], "Valle d'Aosta/Vallée d'Aoste": [0, -22] };
+const URBAN_AREAS = [
+  ['Turin', 7.6869, 45.0703, 1700000],
+  ['Nice', 7.2620, 43.7102, 550000],
+  ['Annecy', 6.1288, 45.8992, 230000],
+  ['Chambéry', 5.9186, 45.5646, 127000],
+  ['Aoste', 7.3202, 45.7372, 34000]
+];
+const PROVINCE_OFFSETS = { Torino: [-95, -34], Vercelli: [18, 28], Biella: [-6, -30], Asti: [-4, -26], Novara: [-30, 24], Alessandria: [-46, -28], 'Verbano-Cusio-Ossola': [4, -24] };
+
+function ringPoints(ring) {
+  const pts = ring.slice();
+  const f = pts[0], l = pts[pts.length - 1];
+  if (pts.length > 1 && f[0] === l[0] && f[1] === l[1]) pts.pop();
+  return pts;
+}
+function keyOf(p) { return Math.round(p[0] * 1e5) + '_' + Math.round(p[1] * 1e5); }
+function mergeTwoRings(ringA, ringB) {
+  const ptsA = ringPoints(ringA), ptsB = ringPoints(ringB);
+  const nA = ptsA.length;
+  const keysB = new Map();
+  ptsB.forEach((p, i) => keysB.set(keyOf(p), i));
+  const matchedA = ptsA.map(p => keysB.has(keyOf(p)));
+  let bestLen = 0, bestStart = -1;
+  for (let s = 0; s < nA; s++) {
+    if (!matchedA[s] || matchedA[(s - 1 + nA) % nA]) continue;
+    let len = 0, i = s;
+    while (matchedA[i] && len <= nA) { len++; i = (i + 1) % nA; }
+    if (len > bestLen) { bestLen = len; bestStart = s; }
+  }
+  if (bestStart === -1 || bestLen < 2) return null;
+  const s = bestStart, e = (bestStart + bestLen - 1) % nA;
+  const firstShared = ptsA[s], lastShared = ptsA[e];
+  function sliceCirc(arr, from, to) {
+    const n = arr.length, out = [];
+    let i = from;
+    while (true) { out.push(arr[i]); if (i === to) break; i = (i + 1) % n; }
+    return out;
+  }
+  const midA = sliceCirc(ptsA, (e + 1) % nA, (s - 1 + nA) % nA);
+  const outerA = [lastShared, ...midA, firstShared];
+  const idxFirstB = keysB.get(keyOf(firstShared));
+  const idxLastB = keysB.get(keyOf(lastShared));
+  const sharedSet = new Set();
+  for (let k = 0; k < bestLen; k++) sharedSet.add(keyOf(ptsA[(s + k) % nA]));
+  const cand1 = sliceCirc(ptsB, idxFirstB, idxLastB);
+  const cand2 = sliceCirc(ptsB, idxLastB, idxFirstB);
+  const nonSharedCount = arr => arr.filter(p => !sharedSet.has(keyOf(p))).length;
+  let outerB = nonSharedCount(cand1) > nonSharedCount(cand2) ? cand1 : cand2;
+  if (keyOf(outerB[0]) !== keyOf(firstShared)) outerB = outerB.slice().reverse();
+  return [...outerA, ...outerB.slice(1), outerA[0]];
+}
+
+function drawMap(svgEl, data, t) {
+  const svg = d3.select(svgEl);
+  svg.selectAll('*').remove();
+  const width = 1040, height = 760;
+  const projection = d3.geoMercator();
+  const path = d3.geoPath().projection(projection);
+  const { world, savoie73, savoie74, arr, itTopo, provTopo } = data;
+
+  const countries = topojson.feature(world, world.objects.countries).features
+    .filter(f => ['France', 'Italy', 'Switzerland'].includes(f.properties.name));
+
+  let savoie;
+  if (t.mergeSavoie) {
+    const mergedRing = mergeTwoRings(savoie73.geometry.coordinates[0], savoie74.geometry.coordinates[0]);
+    savoie = mergedRing
+      ? [{ type: 'Feature', properties: { nom: 'Savoie' }, geometry: { type: 'Polygon', coordinates: [mergedRing] } }]
+      : [savoie73, savoie74];
+  } else {
+    savoie = [savoie73, savoie74];
+  }
+  const nice = arr.features.filter(f => f.properties.code === '06002');
+  const itKey = Object.keys(itTopo.objects)[0];
+  const itRegions = topojson.feature(itTopo, itTopo.objects[itKey]).features
+    .filter(f => f.properties.reg_istat_code === '01' || f.properties.reg_istat_code === '02');
+  const provKey = Object.keys(provTopo.objects)[0];
+  const piemonteProvinces = topojson.feature(provTopo, provTopo.objects[provKey]).features
+    .filter(f => f.properties.reg_istat_code === '01');
+
+  const highlighted = [...savoie, ...nice, ...itRegions];
+  const fc = { type: 'FeatureCollection', features: highlighted };
+  projection.fitExtent([[40, 40], [width - 40, height - 40]], fc);
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  if (t.showContext) {
+    svg.append('g').selectAll('path').data(countries).join('path')
+      .attr('fill', 'none').attr('stroke', '#d9d9dc').attr('stroke-width', 0.6);
+  }
+
+  svg.append('g').selectAll('path').data(highlighted).join('path')
+    .attr('d', path)
+    .attr('fill', t.fill ? '#0a36af' : 'none')
+    .attr('fill-opacity', 0.92)
+    .attr('stroke', t.fill ? '#ffffff' : '#0a36af')
+    .attr('stroke-width', t.fill ? 1.2 : 1.3)
+    .attr('stroke-linejoin', 'round');
+
+  if (t.showProvinces) {
+    svg.append('g').selectAll('path').data(piemonteProvinces).join('path')
+      .attr('d', path).attr('fill', 'none').attr('stroke', '#0a36af')
+      .attr('stroke-width', 0.5).attr('stroke-dasharray', '2,2').attr('opacity', 0.6);
+
+    const provinceLabelData = piemonteProvinces.map(f => {
+      const c = path.centroid(f);
+      const [dx, dy] = PROVINCE_OFFSETS[f.properties.prov_name] || [0, -24];
+      return { name: f.properties.prov_name, x: c[0] + dx, y: c[1] + dy };
+    });
+    svg.append('g').selectAll('text').data(provinceLabelData).join('text')
+      .attr('x', d => d.x).attr('y', d => d.y).text(d => d.name)
+      .attr('font-family', "'Semplicita Pro',sans-serif").attr('font-size', 10)
+      .attr('font-style', 'italic').attr('font-weight', 500).attr('fill', '#64646c')
+      .attr('text-anchor', 'middle').attr('paint-order', 'stroke')
+      .attr('stroke', '#f7f7f8').attr('stroke-width', 3);
+  }
+
+  if (t.showLabels) {
+    const labelData = highlighted.map(f => {
+      const name = f.properties.nom || f.properties.reg_name;
+      const c = path.centroid(f);
+      const [dx, dy] = LABEL_OFFSETS[name] || [0, 0];
+      return { name, x: c[0] + dx, y: c[1] + dy };
+    });
+    svg.append('g').selectAll('text').data(labelData).join('text')
+      .attr('x', d => d.x).attr('y', d => d.y).text(d => d.name)
+      .attr('font-family', "'Semplicita Pro',sans-serif").attr('font-size', 13)
+      .attr('font-weight', 600).attr('fill', t.fill ? '#ffffff' : '#171719')
+      .attr('letter-spacing', '0.02em').attr('text-anchor', 'middle')
+      .attr('paint-order', 'stroke').attr('stroke', t.fill ? '#0a36af' : '#f7f7f8').attr('stroke-width', 3);
+  }
+
+  if (t.showUrbanAreas) {
+    const maxPop = d3.max(URBAN_AREAS, d => d[3]);
+    const r = d3.scaleSqrt().domain([0, maxPop]).range([4, 34]);
+    const urbanPoints = URBAN_AREAS.map(([name, lon, lat, pop]) => {
+      const [x, y] = projection([lon, lat]);
+      return { name, x, y, pop, radius: r(pop) };
+    });
+    svg.append('g').selectAll('circle').data(urbanPoints).join('circle')
+      .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', d => d.radius)
+      .attr('fill', '#0a36af').attr('fill-opacity', 0.22)
+      .attr('stroke', '#0a36af').attr('stroke-width', 1.2);
+    svg.append('g').selectAll('circle').data(urbanPoints).join('circle')
+      .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', 2.5)
+      .attr('fill', '#0a36af');
+    svg.append('g').selectAll('text').data(urbanPoints).join('text')
+      .attr('x', d => d.x).attr('y', d => d.y - d.radius - 6).text(d => d.name)
+      .attr('font-family', "'Semplicita Pro',sans-serif").attr('font-size', 12)
+      .attr('font-weight', 700).attr('fill', '#171719').attr('text-anchor', 'middle')
+      .attr('paint-order', 'stroke').attr('stroke', '#f7f7f8').attr('stroke-width', 3);
+  }
+
+  if (t.showCities) {
+    const cityPoints = CITIES.map(([name, lon, lat]) => {
+      const [x, y] = projection([lon, lat]);
+      return { name, x, y };
+    });
+    svg.append('g').selectAll('circle').data(cityPoints).join('circle')
+      .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', 3)
+      .attr('fill', t.fill ? '#ffffff' : '#0a36af').attr('stroke', t.fill ? '#0a36af' : '#f7f7f8').attr('stroke-width', 1);
+    svg.append('g').selectAll('text').data(cityPoints).join('text')
+      .attr('x', d => d.x + 7).attr('y', d => d.y + 4).text(d => d.name)
+      .attr('font-family', "'Semplicita Pro',sans-serif").attr('font-size', 11)
+      .attr('font-weight', 600).attr('fill', t.fill ? '#ffffff' : '#171719')
+      .attr('paint-order', 'stroke').attr('stroke', t.fill ? '#0a36af' : '#f7f7f8').attr('stroke-width', 3);
+  }
+}
+
+function App() {
+  const { useTweaks, TweaksPanel, TweakSection, TweakToggle } = window;
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const svgRef = useRef(null);
+  const dataRef = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    Promise.all([
+      d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json'),
+      d3.json('departements/73-savoie/departement-73-savoie.geojson'),
+      d3.json('departements/74-haute-savoie/departement-74-haute-savoie.geojson'),
+      d3.json('departements/06-alpes-maritimes/arrondissements-06-alpes-maritimes.geojson'),
+      d3.json('topojson/limits_IT_regions.topo.json'),
+      d3.json('topojson/limits_IT_provinces.topo.json')
+    ]).then(([world, savoie73, savoie74, arr, itTopo, provTopo]) => {
+      dataRef.current = { world, savoie73, savoie74, arr, itTopo, provTopo };
+      setLoaded(true);
+    }).catch(e => setError(e.message));
+  }, []);
+
+  useEffect(() => {
+    if (loaded && svgRef.current) drawMap(svgRef.current, dataRef.current, t);
+  }, [loaded, t.fill, t.mergeSavoie, t.showProvinces, t.showCities, t.showUrbanAreas, t.showLabels, t.showContext]);
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 24px' }}>
+        <div style={{ width: '100%', maxWidth: 1040 }}>
+          <h1 style={{ fontSize: '2.75rem', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 8 }}>Les États de Savoie</h1>
+          <p style={{ fontSize: '1.0625rem', color: '#45454c', fontWeight: 400, marginBottom: 32, maxWidth: 640, lineHeight: 1.55 }}>
+            Le territoire historique de la Maison de Savoie avant l'unification italienne et l'annexion de 1860.
+          </p>
+          <div style={{ background: '#ffffff', borderRadius: 2, padding: 8 }}>
+            {error ? <p style={{ color: '#8b0000', padding: 24 }}>Erreur : {error}</p> :
+              <svg ref={svgRef} style={{ display: 'block', width: '100%', height: 'auto' }} />}
+          </div>
+          <div style={{ marginTop: 6, fontSize: '0.75rem', color: '#8c8c94', letterSpacing: '0.02em' }}>
+            Fonds de carte : Natural Earth (world-atlas), France-GeoJSON (gregoiredavid), ISTAT (geojson-italy).
+          </div>
+        </div>
+      </div>
+      <TweaksPanel>
+        <TweakSection label="Affichage" />
+        <TweakToggle label="Remplir les territoires" value={t.fill} onChange={v => setTweak('fill', v)} />
+        <TweakToggle label="Fusionner Savoie / Haute-Savoie" value={t.mergeSavoie} onChange={v => setTweak('mergeSavoie', v)} />
+        <TweakToggle label="Provinces du Piémont" value={t.showProvinces} onChange={v => setTweak('showProvinces', v)} />
+        <TweakToggle label="Villes principales" value={t.showCities} onChange={v => setTweak('showCities', v)} />
+        <TweakToggle label="Aires urbaines (taille ∝ population)" value={t.showUrbanAreas} onChange={v => setTweak('showUrbanAreas', v)} />
+        <TweakToggle label="Noms des territoires" value={t.showLabels} onChange={v => setTweak('showLabels', v)} />
+        <TweakToggle label="Contexte (France / Italie / Suisse)" value={t.showContext} onChange={v => setTweak('showContext', v)} />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

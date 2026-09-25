@@ -7,5 +7,9 @@
     "check": "npx --yes hyperframes@0.8.75 check",
     "render": "npx --yes hyperframes@0.8.75 render",
     "publish": "npx --yes hyperframes@0.8.75 publish"
+  },
+  "devDependencies": {
+    "d3": "^7.9.0",
+    "topojson-client": "^3.1.0"
   }
 }

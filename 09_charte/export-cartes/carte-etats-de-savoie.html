@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Carte — États de Savoie</title>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<style>
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Regular.woff') format('woff');font-weight:400}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Medium.woff') format('woff');font-weight:500}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff');font-weight:600}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Bold.woff') format('woff');font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f7f7f8;font-family:'Semplicita Pro',-apple-system,'Helvetica Neue',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:48px 24px;color:#171719}
+.wrap{width:100%;max-width:1040px}
+h1{font-size:2.75rem;font-weight:700;letter-spacing:-0.01em;margin-bottom:8px}
+.subtitle{font-size:1.0625rem;color:#45454c;font-weight:400;margin-bottom:32px;max-width:640px;line-height:1.55}
+.map-card{background:#ffffff;border-radius:2px;padding:8px}
+svg{display:block;width:100%;height:auto}
+.territory{fill:#0a36af;stroke:#ffffff;stroke-width:1.2;fill-opacity:0.92}
+.territory:hover{fill-opacity:1}
+.context{fill:#ededef;stroke:#d9d9dc;stroke-width:0.6}
+.label{font-family:'Semplicita Pro',sans-serif;font-size:13px;font-weight:600;fill:#171719;letter-spacing:0.02em;text-anchor:middle;paint-order:stroke;stroke:#ffffff;stroke-width:3px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:24px;padding-top:20px;border-top:1px solid #d9d9dc}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:0.875rem;color:#45454c}
+.legend-swatch{width:10px;height:10px;background:#0a36af;flex-shrink:0}
+.caption{margin-top:6px;font-size:0.75rem;color:#8c8c94;letter-spacing:0.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Les États de Savoie</h1>
+<p class="subtitle">Le territoire historique de la Maison de Savoie avant l'unification italienne et l'annexion de 1860 : Savoie, arrondissement de Nice, Piémont et Vallée d'Aoste.</p>
+<div class="map-card"><svg id="map" viewBox="0 0 1040 760"></svg></div>
+<div class="legend" id="legend"></div>
+<div class="caption">Fonds de carte : Natural Earth (world-atlas), France-GeoJSON (gregoiredavid), ISTAT (geojson-italy). Frontières administratives actuelles.</div>
+</div>
+<script>
+const svg = d3.select('#map');
+const width = 1040, height = 760;
+const projection = d3.geoMercator();
+const path = d3.geoPath().projection(projection);
+
+const TERRITORIES = ['Savoie', 'Haute-Savoie', 'Nice (arrondissement)', 'Piémont', 'Vallée d\'Aoste'];
+
+Promise.all([
+  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json'),
+  d3.json('departements/73-savoie/departement-73-savoie.geojson'),
+  d3.json('departements/74-haute-savoie/departement-74-haute-savoie.geojson'),
+  d3.json('departements/06-alpes-maritimes/arrondissements-06-alpes-maritimes.geojson'),
+  d3.json('topojson/limits_IT_regions.topo.json')
+]).then(([world, savoie73, savoie74, arr, itTopo]) => {
+  const countries = topojson.feature(world, world.objects.countries).features
+    .filter(f => ['France', 'Italy', 'Switzerland'].includes(f.properties.name));
+
+  const savoie = [savoie73, savoie74];
+  const nice = arr.features.filter(f => f.properties.code === '06002');
+
+  const itKey = Object.keys(itTopo.objects)[0];
+  const itRegions = topojson.feature(itTopo, itTopo.objects[itKey]).features
+    .filter(f => f.properties.reg_istat_code === '01' || f.properties.reg_istat_code === '02');
+
+  const highlighted = [...savoie, ...nice, ...itRegions];
+  const context = countries;
+
+  const fc = { type: 'FeatureCollection', features: highlighted };
+  projection.fitExtent([[40, 40], [width - 40, height - 40]], fc);
+
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  svg.append('g').selectAll('path').data(context).join('path')
+    .attr('class', 'context').attr('d', path);
+
+  svg.append('g').selectAll('path').data(highlighted).join('path')
+    .attr('class', 'territory').attr('d', path);
+
+  const labelData = highlighted.map(f => {
+    const name = f.properties.nom || f.properties.reg_name;
+    const c = path.centroid(f);
+    return { name, x: c[0], y: c[1] };
+  });
+
+  svg.append('g').selectAll('text').data(labelData).join('text')
+    .attr('class', 'label')
+    .attr('x', d => d.x).attr('y', d => d.y)
+    .text(d => d.name);
+
+  const legend = d3.select('#legend');
+  TERRITORIES.forEach(t => {
+    const item = legend.append('div').attr('class', 'legend-item');
+    item.append('div').attr('class', 'legend-swatch');
+    item.append('span').text(t);
+  });
+}).catch(err => {
+  document.body.insertAdjacentHTML('beforeend', '<p style="color:#8b0000;padding:24px">Erreur de chargement des données géographiques : ' + err.message + '</p>');
+  console.error(err);
+});
+</script>
+
+<div class="wrap" style="margin-top:56px">
+<h1>Les États de Savoie — avec les provinces</h1>
+<p class="subtitle">Contours seuls, avec les provinces du Piémont et leurs noms.</p>
+<div class="map-card"><svg id="map2" viewBox="0 0 1040 760"></svg></div>
+<div class="legend" id="legend2"></div>
+<div class="caption">Fonds de carte : Natural Earth (world-atlas), France-GeoJSON (gregoiredavid), ISTAT (geojson-italy). Frontières administratives actuelles.</div>
+</div>
+<style>
+.context2{fill:none;stroke:#d9d9dc;stroke-width:0.6}
+.outline{fill:none;stroke:#0a36af;stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round}
+.province-line{fill:none;stroke:#0a36af;stroke-width:0.5;stroke-dasharray:2,2;opacity:0.6}
+.province-label{font-family:'Semplicita Pro',sans-serif;font-size:10px;font-weight:500;font-style:italic;fill:#64646c;letter-spacing:0.01em;text-anchor:middle;paint-order:stroke;stroke:#f7f7f8;stroke-width:3px}
+.city-dot{fill:#0a36af;stroke:#f7f7f8;stroke-width:1}
+.city-label{font-family:'Semplicita Pro',sans-serif;font-size:11px;font-weight:600;fill:#171719;letter-spacing:0.01em;paint-order:stroke;stroke:#f7f7f8;stroke-width:3px;text-anchor:start}
+</style>
+<script>
+(function () {
+  const svg2 = d3.select('#map2');
+  const width = 1040, height = 760;
+  const projection2 = d3.geoMercator();
+  const path2 = d3.geoPath().projection(projection2);
+
+  Promise.all([
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json'),
+    d3.json('departements/73-savoie/departement-73-savoie.geojson'),
+    d3.json('departements/74-haute-savoie/departement-74-haute-savoie.geojson'),
+    d3.json('departements/06-alpes-maritimes/arrondissements-06-alpes-maritimes.geojson'),
+    d3.json('topojson/limits_IT_regions.topo.json'),
+    d3.json('topojson/limits_IT_provinces.topo.json')
+  ]).then(([world, savoie73, savoie74, arr, itTopo, provTopo]) => {
+    const countries = topojson.feature(world, world.objects.countries).features
+      .filter(f => ['France', 'Italy', 'Switzerland'].includes(f.properties.name));
+
+    const savoie = [savoie73, savoie74];
+    const nice = arr.features.filter(f => f.properties.code === '06002');
+    const itKey = Object.keys(itTopo.objects)[0];
+    const itRegions = topojson.feature(itTopo, itTopo.objects[itKey]).features
+      .filter(f => f.properties.reg_istat_code === '01' || f.properties.reg_istat_code === '02');
+    const provKey = Object.keys(provTopo.objects)[0];
+    const piemonteProvinces = topojson.feature(provTopo, provTopo.objects[provKey]).features
+      .filter(f => f.properties.reg_istat_code === '01');
+
+    const highlighted = [...savoie, ...nice, ...itRegions];
+    const fc = { type: 'FeatureCollection', features: highlighted };
+    projection2.fitExtent([[40, 40], [width - 40, height - 40]], fc);
+
+    svg2.attr('viewBox', `0 0 ${width} ${height}`);
+
+    svg2.append('g').selectAll('path').data(highlighted).join('path')
+      .attr('class', 'outline').attr('d', path2);
+
+    svg2.append('g').selectAll('path').data(piemonteProvinces).join('path')
+      .attr('class', 'province-line').attr('d', path2);
+
+    const provinceOffsets = { Torino: [-95, -34], Vercelli: [18, 28], Biella: [-6, -30], Asti: [-4, -26], Novara: [-30, 24], Alessandria: [-46, -28], 'Verbano-Cusio-Ossola': [4, -24] };
+    const provinceLabelData = piemonteProvinces.map(f => {
+      const c = path2.centroid(f);
+      const key = (f.properties.prov_name || '').replace(/[^A-Za-z]/g, '_');
+      const [dx, dy] = provinceOffsets[key] || provinceOffsets[f.properties.prov_name] || [0, -24];
+      return { name: f.properties.prov_name, x: c[0] + dx, y: c[1] + dy };
+    });
+    svg2.append('g').selectAll('text').data(provinceLabelData).join('text')
+      .attr('class', 'province-label')
+      .attr('x', d => d.x).attr('y', d => d.y)
+      .text(d => d.name);
+
+    const labelData = highlighted.map(f => {
+      const name = f.properties.nom || f.properties.reg_name;
+      const c = path2.centroid(f);
+      const offsets = { Piemonte: [130, -140], "Valle d'Aosta/Vallée d'Aoste": [0, -22] };
+      const [dx, dy] = offsets[name] || [0, 0];
+      return { name, x: c[0] + dx, y: c[1] + dy };
+    });
+
+    svg2.append('g').selectAll('text').data(labelData).join('text')
+      .attr('class', 'label')
+      .attr('x', d => d.x).attr('y', d => d.y)
+      .text(d => d.name);
+
+    const CITIES = [
+      ['Chambéry', 5.9186, 45.5646],
+      ['Annecy', 6.1288, 45.8992],
+      ['Turin', 7.6869, 45.0703],
+      ['Aoste', 7.3202, 45.7372],
+      ['Nice', 7.2620, 43.7102],
+      ['Cuneo', 7.5457, 44.3841],
+      ['Alessandria', 8.6152, 44.9133],
+      ['Asti', 8.2065, 44.9008],
+      ['Novara', 8.6222, 45.4469],
+      ['Vercelli', 8.4211, 45.3210],
+      ['Biella', 8.0575, 45.5658],
+      ['Verbania', 8.5514, 45.9219]
+    ];
+    const cityPoints = CITIES.map(([name, lon, lat]) => {
+      const [x, y] = projection2([lon, lat]);
+      return { name, x, y };
+    });
+    svg2.append('g').selectAll('circle').data(cityPoints).join('circle')
+      .attr('class', 'city-dot').attr('r', 3)
+      .attr('cx', d => d.x).attr('cy', d => d.y);
+    svg2.append('g').selectAll('text').data(cityPoints).join('text')
+      .attr('class', 'city-label')
+      .attr('x', d => d.x + 7).attr('y', d => d.y + 4)
+      .text(d => d.name);
+
+    const legend2 = d3.select('#legend2');
+    TERRITORIES.forEach(t => {
+      const item = legend2.append('div').attr('class', 'legend-item');
+      item.append('div').attr('class', 'legend-swatch');
+      item.append('span').text(t);
+    });
+  }).catch(err => {
+    document.body.insertAdjacentHTML('beforeend', '<p style="color:#8b0000;padding:24px">Erreur (carte 2) : ' + err.message + '</p>');
+    console.error(err);
+  });
+})();
+</script>
+
+<div class="wrap" style="margin-top:56px">
+<h1>Les États de Savoie — sans les provinces</h1>
+<p class="subtitle">Même contour, sans le découpage provincial.</p>
+<div class="map-card"><svg id="map3" viewBox="0 0 1040 760"></svg></div>
+<div class="legend" id="legend3"></div>
+<div class="caption">Fonds de carte : Natural Earth (world-atlas), France-GeoJSON (gregoiredavid), ISTAT (geojson-italy). Frontières administratives actuelles.</div>
+</div>
+<script>
+(function () {
+  const svg3 = d3.select('#map3');
+  const width = 1040, height = 760;
+  const projection3 = d3.geoMercator();
+  const path3 = d3.geoPath().projection(projection3);
+
+  function ringPoints(ring) {
+    const pts = ring.slice();
+    const f = pts[0], l = pts[pts.length - 1];
+    if (pts.length > 1 && f[0] === l[0] && f[1] === l[1]) pts.pop();
+    return pts;
+  }
+  function keyOf(p) { return Math.round(p[0] * 1e5) + '_' + Math.round(p[1] * 1e5); }
+  function mergeTwoRings(ringA, ringB) {
+    const ptsA = ringPoints(ringA), ptsB = ringPoints(ringB);
+    const nA = ptsA.length;
+    const keysB = new Map();
+    ptsB.forEach((p, i) => keysB.set(keyOf(p), i));
+    const matchedA = ptsA.map(p => keysB.has(keyOf(p)));
+    let bestLen = 0, bestStart = -1;
+    for (let s = 0; s < nA; s++) {
+      if (!matchedA[s] || matchedA[(s - 1 + nA) % nA]) continue;
+      let len = 0, i = s;
+      while (matchedA[i] && len <= nA) { len++; i = (i + 1) % nA; }
+      if (len > bestLen) { bestLen = len; bestStart = s; }
+    }
+    if (bestStart === -1 || bestLen < 2) return null;
+    const s = bestStart, e = (bestStart + bestLen - 1) % nA;
+    const firstShared = ptsA[s], lastShared = ptsA[e];
+    function sliceCirc(arr, from, to) {
+      const n = arr.length, out = [];
+      let i = from;
+      while (true) { out.push(arr[i]); if (i === to) break; i = (i + 1) % n; }
+      return out;
+    }
+    const midA = sliceCirc(ptsA, (e + 1) % nA, (s - 1 + nA) % nA);
+    const outerA = [lastShared, ...midA, firstShared];
+    const idxFirstB = keysB.get(keyOf(firstShared));
+    const idxLastB = keysB.get(keyOf(lastShared));
+    const sharedSet = new Set();
+    for (let k = 0; k < bestLen; k++) sharedSet.add(keyOf(ptsA[(s + k) % nA]));
+    const cand1 = sliceCirc(ptsB, idxFirstB, idxLastB);
+    const cand2 = sliceCirc(ptsB, idxLastB, idxFirstB);
+    const nonSharedCount = arr => arr.filter(p => !sharedSet.has(keyOf(p))).length;
+    let outerB = nonSharedCount(cand1) > nonSharedCount(cand2) ? cand1 : cand2;
+    if (keyOf(outerB[0]) !== keyOf(firstShared)) outerB = outerB.slice().reverse();
+    return [...outerA, ...outerB.slice(1), outerA[0]];
+  }
+
+  Promise.all([
+    d3.json('departements/73-savoie/departement-73-savoie.geojson'),
+    d3.json('departements/74-haute-savoie/departement-74-haute-savoie.geojson'),
+    d3.json('departements/06-alpes-maritimes/arrondissements-06-alpes-maritimes.geojson'),
+    d3.json('topojson/limits_IT_regions.topo.json')
+  ]).then(([savoie73, savoie74, arr, itTopo]) => {
+    const mergedRing = mergeTwoRings(savoie73.geometry.coordinates[0], savoie74.geometry.coordinates[0]);
+    const savoie = mergedRing
+      ? [{ type: 'Feature', properties: { nom: 'Savoie' }, geometry: { type: 'Polygon', coordinates: [mergedRing] } }]
+      : [savoie73, savoie74];
+    const nice = arr.features.filter(f => f.properties.code === '06002');
+    const itKey = Object.keys(itTopo.objects)[0];
+    const itRegions = topojson.feature(itTopo, itTopo.objects[itKey]).features
+      .filter(f => f.properties.reg_istat_code === '01' || f.properties.reg_istat_code === '02');
+
+    const highlighted = [...savoie, ...nice, ...itRegions];
+    const fc = { type: 'FeatureCollection', features: highlighted };
+    projection3.fitExtent([[40, 40], [width - 40, height - 40]], fc);
+
+    svg3.attr('viewBox', `0 0 ${width} ${height}`);
+
+    svg3.append('g').selectAll('path').data(highlighted).join('path')
+      .attr('class', 'outline').attr('d', path3);
+
+    const labelData3 = highlighted.map(f => {
+      const name = f.properties.nom || f.properties.reg_name;
+      const c = path3.centroid(f);
+      return { name, x: c[0], y: c[1] };
+    });
+
+    svg3.append('g').selectAll('text').data(labelData3).join('text')
+      .attr('class', 'label')
+      .attr('x', d => d.x).attr('y', d => d.y)
+      .text(d => d.name);
+
+    const legend3 = d3.select('#legend3');
+    ['Savoie', 'Nice (arrondissement)', 'Piémont', "Vallée d'Aoste"].forEach(t => {
+      const item = legend3.append('div').attr('class', 'legend-item');
+      item.append('div').attr('class', 'legend-swatch');
+      item.append('span').text(t);
+    });
+  }).catch(err => {
+    document.body.insertAdjacentHTML('beforeend', '<p style="color:#8b0000;padding:24px">Erreur (carte 3) : ' + err.message + '</p>');
+    console.error(err);
+  });
+})();
+</script>
+</body>
+</html>

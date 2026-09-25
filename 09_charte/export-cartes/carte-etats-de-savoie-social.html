@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Les États de Savoie — post</title>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" integrity="sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67" crossorigin="anonymous"></script>
+<style>
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Regular.woff') format('woff');font-weight:400}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff');font-weight:600}
+@font-face{font-family:'Semplicita Pro';src:url('assets/fonts/SemplicitaPro-Bold.woff') format('woff');font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f7f7f8;display:flex;justify-content:center;padding:40px}
+#post{width:1080px;height:1080px;background:#ffffff;font-family:'Semplicita Pro',-apple-system,sans-serif;position:relative;overflow:hidden}
+.eyebrow{position:absolute;top:64px;left:64px;font-size:14px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#0a36af;white-space:nowrap}
+h1{position:absolute;top:92px;left:64px;font-size:52px;font-weight:700;letter-spacing:-0.01em;color:#171719;max-width:960px;line-height:1.05;white-space:nowrap}
+.sub{position:absolute;top:220px;left:64px;font-size:17px;font-weight:400;color:#45454c}
+.outline{fill:none;stroke:#0a36af;stroke-linejoin:round;stroke-linecap:round}
+.brand{position:absolute;bottom:56px;right:64px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#8c8c94}
+</style>
+</head>
+<body>
+<div id="post">
+<div class="eyebrow">Histoire &amp; territoire</div>
+<h1>Les États de Savoie</h1>
+<div class="sub">Savoie · Nice · Piémont · Vallée d'Aoste</div>
+<svg id="map" viewBox="0 0 1080 1080" style="position:absolute;inset:0"></svg>
+<div class="brand">Franck Monod</div>
+</div>
+<script>
+const svg = d3.select('#map');
+const W = 1080, H = 1080;
+const projection = d3.geoMercator();
+
+function ringPoints(ring) {
+  const pts = ring.slice();
+  const f = pts[0], l = pts[pts.length - 1];
+  if (pts.length > 1 && f[0] === l[0] && f[1] === l[1]) pts.pop();
+  return pts;
+}
+function keyOf(p) { return Math.round(p[0] * 1e5) + '_' + Math.round(p[1] * 1e5); }
+function mergeTwoRings(ringA, ringB) {
+  const ptsA = ringPoints(ringA), ptsB = ringPoints(ringB);
+  const nA = ptsA.length;
+  const keysB = new Map();
+  ptsB.forEach((p, i) => keysB.set(keyOf(p), i));
+  const matchedA = ptsA.map(p => keysB.has(keyOf(p)));
+  let bestLen = 0, bestStart = -1;
+  for (let s = 0; s < nA; s++) {
+    if (!matchedA[s] || matchedA[(s - 1 + nA) % nA]) continue;
+    let len = 0, i = s;
+    while (matchedA[i] && len <= nA) { len++; i = (i + 1) % nA; }
+    if (len > bestLen) { bestLen = len; bestStart = s; }
+  }
+  if (bestStart === -1 || bestLen < 2) return null;
+  const s = bestStart, e = (bestStart + bestLen - 1) % nA;
+  const firstShared = ptsA[s], lastShared = ptsA[e];
+  function sliceCirc(arr, from, to) {
+    const n = arr.length, out = [];
+    let i = from;
+    while (true) { out.push(arr[i]); if (i === to) break; i = (i + 1) % n; }
+    return out;
+  }
+  const midA = sliceCirc(ptsA, (e + 1) % nA, (s - 1 + nA) % nA);
+  const outerA = [lastShared, ...midA, firstShared];
+  const idxFirstB = keysB.get(keyOf(firstShared));
+  const idxLastB = keysB.get(keyOf(lastShared));
+  const sharedSet = new Set();
+  for (let k = 0; k < bestLen; k++) sharedSet.add(keyOf(ptsA[(s + k) % nA]));
+  const cand1 = sliceCirc(ptsB, idxFirstB, idxLastB);
+  const cand2 = sliceCirc(ptsB, idxLastB, idxFirstB);
+  const nonSharedCount = arr => arr.filter(p => !sharedSet.has(keyOf(p))).length;
+  let outerB = nonSharedCount(cand1) > nonSharedCount(cand2) ? cand1 : cand2;
+  if (keyOf(outerB[0]) !== keyOf(firstShared)) outerB = outerB.slice().reverse();
+  return [...outerA, ...outerB.slice(1)];
+}
+function largestRing(geometry) {
+  const rings = geometry.type === 'Polygon' ? geometry.coordinates : geometry.coordinates.flat();
+  return rings.sort((a, b) => b.length - a.length)[0];
+}
+function thin(points, target) {
+  if (points.length <= target) return points;
+  const step = Math.max(1, Math.floor(points.length / target));
+  return points.filter((_, i) => i % step === 0);
+}
+
+Promise.all([
+  d3.json('departements/73-savoie/departement-73-savoie.geojson'),
+  d3.json('departements/74-haute-savoie/departement-74-haute-savoie.geojson'),
+  d3.json('departements/06-alpes-maritimes/arrondissements-06-alpes-maritimes.geojson'),
+  d3.json('topojson/limits_IT_regions.topo.json')
+]).then(([savoie73, savoie74, arr, itTopo]) => {
+try {
+  const nice = arr.features.find(f => f.properties.code === '06002');
+  const itKey = Object.keys(itTopo.objects)[0];
+  const itRegions = topojson.feature(itTopo, itTopo.objects[itKey]).features;
+  const piemonte = itRegions.find(f => f.properties.reg_istat_code === '01');
+  const valleAosta = itRegions.find(f => f.properties.reg_istat_code === '02');
+
+  const fc = { type: 'FeatureCollection', features: [savoie73, savoie74, nice, piemonte, valleAosta] };
+  projection.fitExtent([[70, 340], [W - 70, H - 90]], fc);
+
+  const mergedSavoieRaw = mergeTwoRings(largestRing(savoie73.geometry), largestRing(savoie74.geometry)) || largestRing(savoie73.geometry);
+  const rawGroups = [
+    { name: 'Savoie', ringRaw: mergedSavoieRaw },
+    { name: 'Nice', ringRaw: largestRing(nice.geometry) },
+    { name: 'Piémont', ringRaw: largestRing(piemonte.geometry) },
+    { name: "Vallée d'Aoste", ringRaw: largestRing(valleAosta.geometry) }
+  ];
+  const byName = Object.fromEntries(rawGroups.map(gr => [gr.name, gr]));
+
+  // Dedup shared borders in geographic (lon/lat) space, so the threshold is
+  // scale-independent — a fixed pixel threshold breaks at different zoom levels.
+  const THR = 0.02; // degrees, ~2km
+  const gridMap = new Map();
+  function cellKey(p) { return Math.floor(p[0] / THR) + '_' + Math.floor(p[1] / THR); }
+  function addRef(points) {
+    for (const p of points) {
+      const k = cellKey(p);
+      if (!gridMap.has(k)) gridMap.set(k, []);
+      gridMap.get(k).push(p);
+    }
+  }
+  function isNear(p) {
+    const gx = Math.floor(p[0] / THR), gy = Math.floor(p[1] / THR);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+      const cell = gridMap.get((gx + dx) + '_' + (gy + dy));
+      if (!cell) continue;
+      for (const q of cell) {
+        const a = p[0] - q[0], b = p[1] - q[1];
+        if (a * a + b * b <= THR * THR) return true;
+      }
+    }
+    return false;
+  }
+  function farRuns(ring) {
+    const n = ring.length;
+    const flag = ring.map(isNear);
+    if (flag.every(f => !f)) return { closed: true, runs: [ring] };
+    if (flag.every(f => f)) return { closed: false, runs: [] };
+    const start = flag.indexOf(true);
+    const runs = [];
+    let cur = null;
+    for (let k = 0; k < n; k++) {
+      const i = (start + k) % n;
+      if (!flag[i]) { if (!cur) { cur = []; runs.push(cur); } cur.push(ring[i]); }
+      else cur = null;
+    }
+    return { closed: false, runs };
+  }
+
+  const lineClosed = d3.line().curve(d3.curveCatmullRomClosed.alpha(0.5));
+  const lineOpen = d3.line().curve(d3.curveCatmullRom.alpha(0.5));
+  const g = svg.append('g');
+  const labelData = [];
+
+  ['Savoie', 'Piémont', 'Nice', "Vallée d'Aoste"].forEach((name, idx) => {
+    const ringRaw = byName[name].ringRaw;
+    const projRing = ringRaw.map(p => projection(p));
+    if (idx === 0) {
+      g.append('path').attr('class', 'outline').attr('stroke-width', 1.8).attr('d', lineClosed(thin(projRing, 100)));
+    } else {
+      const { closed, runs } = farRuns(ringRaw);
+      if (closed) {
+        g.append('path').attr('class', 'outline').attr('stroke-width', 1.8).attr('d', lineClosed(thin(projRing, 100)));
+      } else {
+        runs.forEach(run => {
+          if (run.length < 3) return;
+          const projRun = run.map(p => projection(p));
+          g.append('path').attr('class', 'outline').attr('stroke-width', 1.8).attr('d', lineOpen(thin(projRun, 40)));
+        });
+      }
+    }
+    addRef(ringRaw);
+    const c = d3.polygonCentroid(thin(projRing, 100));
+    labelData.push({ name, x: c[0], y: c[1] });
+  });
+
+  svg.append('g').selectAll('text').data(labelData).join('text')
+    .attr('x', d => d.x).attr('y', d => d.y)
+    .attr('font-family', "'Semplicita Pro',sans-serif").attr('font-size', 20)
+    .attr('font-weight', 600).attr('fill', '#171719').attr('letter-spacing', '0.01em')
+    .attr('text-anchor', 'middle').attr('paint-order', 'stroke')
+    .attr('stroke', '#ffffff').attr('stroke-width', 5)
+    .text(d => d.name);
+} catch (e) { console.error('DRAW ERROR', e.message, e.stack); }
+}).catch(err => {
+  document.body.insertAdjacentHTML('beforeend', '<p style="color:#8b0000;padding:24px">Erreur : ' + err.message + '</p>');
+  console.error(err);
+});
+</script>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#0a36af"/><text x="50" y="55" font-size="14" fill="#fff" text-anchor="middle" font-family="sans-serif">ES</text></svg>
+</template>
+</body>
+</html>

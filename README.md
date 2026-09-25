@@ -17,7 +17,8 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 | `05_plans/` | plans maillot étalonnés *(hors dépôt)* |
 | `06_terrain/` | plans terrain générés *(hors dépôt)* |
 | `07_film/` | **les 22 plans finaux, après passe pellicule** *(hors dépôt)* |
-| `08_hyperframes/` | projet [HyperFrames](https://hyperframes.heygen.com) : compositions vidéo en HTML, rendu MP4 |
+| `08_hyperframes/` | projet [HyperFrames](https://hyperframes.heygen.com) : compositions vidéo en HTML, rendu MP4. Charte vidéo dans `brand/DESIGN.md` |
+| `09_charte/` | export Claude Design de la charte Franck Monod (cartes des États de Savoie). Polices hors dépôt |
 
 ### Deux principes qui tiennent le projet
 
@@ -28,6 +29,8 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 ## HyperFrames
 
 [HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen) décrit une vidéo en HTML + GSAP et la rend en MP4. Projet dans `08_hyperframes/`, skills Claude dans `.claude/skills/`.
+
+Composition actuelle : carte animée des États de Savoie, 1080 × 1080, 8 s. Les tracés sont précalculés par `node tools/build-carte.mjs` (après `npm install`).
 
 ```bash
 cd 08_hyperframes
