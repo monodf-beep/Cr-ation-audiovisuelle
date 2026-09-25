@@ -62,6 +62,21 @@ Déduit de la charte (sobre, cartographique, sans effet). À compléter avec vos
 
 À éviter : rebond, élasticité, rotation, zoom brusque.
 
+## Références retenues (tri du 25/09/2026)
+
+Oui :
+- Infographies documentaires : [Brandon Sugiyama](https://www.behance.net/gallery/19297877/Documentary-and-Animated-Infographics).
+- Style Vox, cartes et annotations : [Sarvesh Humbarkar](https://www.behance.net/gallery/193732619/VOX-Style-MOtion-Graphics).
+- Cartes infographiques avec données et caméra : [zuri.com map animation V2](https://dribbble.com/shots/27581739-zuri-com-map-animation-V2), [3D animated map of earthquake](https://dribbble.com/shots/27619903-3D-animated-map-of-earthquake), [Map Infographic Animation](https://dribbble.com/shots/25001341-Map-Infographic-Animation).
+
+Non :
+- Typographie cinétique pour elle-même, expériences de lettres.
+- Démos techniques d'effets de texte et de révélations d'images.
+- Storyboard de news trop chargé.
+- Simple tracé au trait sur fond blanc : trop pauvre seul, il faut de la donnée, du relief ou de la caméra.
+
+Ce qu'on en tire : la carte porte le récit. Territoires pleins avec un léger relief, repères de villes, itinéraires, caméra qui s'approche puis recule, dates en grand dans une colonne de texte. Exemple : `etats-de-savoie-16x9.html`.
+
 ## Polices hors dépôt
 
 Le dépôt est public et Semplicità Pro est une police commerciale : les fichiers `.woff` ne sont pas versionnés.

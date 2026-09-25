@@ -30,7 +30,11 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 
 [HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen) décrit une vidéo en HTML + GSAP et la rend en MP4. Projet dans `08_hyperframes/`, skills Claude dans `.claude/skills/`.
 
-Composition actuelle : carte animée des États de Savoie, 1080 × 1080, 8 s. Les tracés sont précalculés par `node tools/build-carte.mjs` (après `npm install`).
+Compositions :
+- `index.html` : carte animée des États de Savoie, post carré 1080 × 1080, 8 s (`node tools/build-carte.mjs`).
+- `etats-de-savoie-16x9.html` : infographie 16:9 de 16 s, trois dates, carte en relief, itinéraire du Mont-Cenis (`node tools/build-infographie.mjs`, rendu : `npx hyperframes render -c etats-de-savoie-16x9.html`).
+
+Les tracés sont précalculés par les scripts de `tools/` (après `npm install`).
 
 ```bash
 cd 08_hyperframes
