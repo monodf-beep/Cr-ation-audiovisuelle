@@ -61,6 +61,12 @@ Code : bloc `cadrages` dans `10_cern/index.html`.
 
 ## 4. Voix
 
+- **Débit : Franck parle posément, la vidéo est accélérée** (demande de Franck). Réglage unique dans
+  `10_cern/montage.json` (`vitesse`, 1,2 aujourd'hui : environ 155 mots par minute, le débit courant des formats
+  courts). La voix garde sa hauteur (`atempo`), et tout suit : face caméra, animations, sous-titres, musique,
+  effets. Pour changer : modifier `vitesse`, puis `python3 tools/vitesse.py`, `bash tools/voix-finale.sh`,
+  `bash tools/preparer-medias.sh` (refait ce qui n'a plus la bonne durée).
+
 Outil : `10_cern/tools/voix-finale.sh`. Style reportage : voix proche, naturelle, intelligible sur un téléphone ;
 aucun effet voyant (pas de réverbération, pas de voix radio saturée).
 

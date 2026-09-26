@@ -9,6 +9,8 @@ import json, subprocess, sys
 prise, table, sortie = sys.argv[1:4]
 coupes = json.load(open(table))["coupes"]
 duree = json.load(open(table))["duree"]
+# Acceleree comme la voix (montage.json), pour rester synchrone avec assets/voix-off.mp3.
+VITESSE = json.load(open("montage.json"))["vitesse"]
 
 IMAGE = ("hqdn3d=3:3:4:4,eq=gamma=1.35:contrast=1.06:saturation=1.08:brightness=0.02,"
          "colortemperature=temperature=5200,crop=trunc(ih*9/16/2)*2:ih,scale=1080:1920:flags=lanczos,unsharp=5:5:0.6")
@@ -22,8 +24,8 @@ for i, c in enumerate(coupes):
     n = round(fin_montage * 30) - round(c["montage"][0] * 30)
     filtres.append(f"[s{i}]trim=start_frame={round(x * 30)}:end_frame={round(x * 30) + n},setpts=PTS-STARTPTS[v{i}]")
     entrees.append(f"[v{i}]")
-filtres.append("".join(entrees) + f"concat=n={len(entrees)}:v=1:a=0,{IMAGE}[out]")
+filtres.append("".join(entrees) + f"concat=n={len(entrees)}:v=1:a=0,setpts=PTS/{VITESSE},fps=30,{IMAGE}[out]")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", prise, "-filter_complex", ";".join(filtres), "-map", "[out]",
                 "-an", "-c:v", "libx264", "-crf", "20", "-preset", "medium", "-pix_fmt", "yuv420p", "-r", "30",
                 "-movflags", "+faststart", sortie], check=True)
-print(f"face camera : {sortie} ({duree:.1f} s, {len(coupes)} morceaux)")
+print(f"face camera : {sortie} ({duree / VITESSE:.1f} s, vitesse {VITESSE}, {len(coupes)} morceaux)")

@@ -167,18 +167,18 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="88.5" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-voix-start="0" data-duration="73.75" data-voix-duration="88.5" data-width="1080" data-height="1920">
 
       <!-- Hook (0 - 2,3 s) : selfie devant le Globe, « La langue savoyarde au CERN » -->
       <div class="plan" id="p-hook"><img id="hook-img" src="assets/hook-3.0.png" width="1080" height="1920" alt="" /></div>
       <div class="hook" id="hook"><span class="w">La</span> <span class="w">langue</span> <span class="w b">savoyarde</span> <span class="w">au</span> <span class="w b">CERN</span></div>
 
       <!-- Voix off montee (tools/couper-voix.py) -->
-      <audio id="voix" src="assets/voix-off.mp3" data-start="0" data-duration="77.9" data-track-index="10" data-volume="1"></audio>
+      <audio id="voix" src="assets/voix-off.mp3" data-start="0" data-voix-start="0" data-duration="64.917" data-voix-duration="77.9" data-track-index="10" data-volume="1"></audio>
       <!-- Musique de fond (tools/preparer-medias.sh) : basse sous la voix, remonte sur le carton final -->
-      <audio id="musique" src="assets/musique.mp3" data-start="0" data-duration="88.5" data-track-index="11" data-volume="1"></audio>
+      <audio id="musique" src="assets/musique.mp3" data-start="0" data-voix-start="0" data-duration="73.75" data-voix-duration="88.5" data-track-index="11" data-volume="1"></audio>
       <!-- Habillage sonore (tools/habillage-sonore.py) : declencheur sur la photo du badge, montee vers le titre final, papier sur l'article -->
-      <audio id="effets" src="assets/effets.mp3" data-start="0" data-duration="88.5" data-track-index="12" data-volume="1"></audio>
+      <audio id="effets" src="assets/effets.mp3" data-start="0" data-voix-start="0" data-duration="73.75" data-voix-duration="88.5" data-track-index="12" data-volume="1"></audio>
 
       <!-- Carte : ouverture (0 - 9,4 s) puis fin (53,6 - 62 s) -->
       <div class="plan" id="p-carte">
@@ -257,7 +257,7 @@
       </div>
 
       <!-- Le projet Interreg : l'affiche du Projet culturel de territoire, recreee en plein cadre et animee (15 - 21,6 s) -->
-      <video id="v-affiche" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="19.9" data-duration="10" data-media-start="0"></video>
+      <video id="v-affiche" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="16.583" data-voix-start="19.9" data-duration="8.333" data-voix-duration="10" data-media-start="0" data-voix-media-start="0"></video>
       <div class="plan" id="p-affiche">
         <div class="interreg" id="interreg"><b>Projet Interreg</b><span>France – Suisse</span></div>
         <div class="partenaires" id="partenaires">Pôle métropolitain du Genevois français · Canton de Genève · Ville de Genève · Association des communes genevoises · Feuille de route en 2027</div>
@@ -265,7 +265,7 @@
       </div>
 
       <!-- Selfie devant le Globe (21,6 - 30,6 s) -->
-      <video id="v-ext" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="29.9" data-duration="6" data-media-start="3"></video>
+      <video id="v-ext" class="plein" src="assets/exterieur.mp4" muted playsinline data-start="24.917" data-voix-start="29.9" data-duration="5" data-voix-duration="6" data-media-start="3" data-voix-media-start="3"></video>
       <div class="bloc-nom" id="nom">
         <div class="n">Franck Monod</div>
         <div class="r">Enstitut de la Lengoua Savoyârda</div>
@@ -297,14 +297,14 @@
       </div>
 
       <!-- Dans l'exposition (44,6 - 54,1 s) -->
-      <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="63" data-duration="7.9" data-media-start="0"></video>
+      <video id="v-int" class="plein" src="assets/interieur-lent.mp4" muted playsinline data-start="52.5" data-voix-start="63" data-duration="6.583" data-voix-duration="7.9" data-media-start="0" data-voix-media-start="0"></video>
       <div class="lieu-fin" id="expo"><span class="l"><span>Dans le Globe,</span></span><span class="l"><span>l'<em>exposition</em></span></span></div>
 
       <!-- Remerciement en savoyard, « Grant-marci » (62 - 68 s), en deux plans :
            1. l'affiche sans son titre (image fixe tiree de la video a 10,4 s, titre efface), le texte seul ;
            2. la video repart a la meme image (10,4 s) : seul le titre apparait, puis l'animation reprend. -->
-      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="78.12" data-duration="2.38" data-media-start="10.4"></video>
-      <img id="img-merci" class="clip plein" src="assets/affiche-sans-titre.jpg" alt="" data-start="75" data-duration="3.85" />
+      <video id="v-merci" class="plein" src="assets/affiche-animee.mp4" muted playsinline data-start="65.1" data-voix-start="78.12" data-duration="1.983" data-voix-duration="2.38" data-media-start="10.4" data-voix-media-start="10.4"></video>
+      <img id="img-merci" class="clip plein" src="assets/affiche-sans-titre.jpg" alt="" data-start="62.5" data-voix-start="75" data-duration="3.208" data-voix-duration="3.85" />
       <div class="plan" id="p-merci">
         <div class="merci">
           <div class="l"><span><em>Grant-marci</em></span></div>
@@ -333,8 +333,8 @@
 
       <!-- Face camera : la prise filmee avec la voix (tools/face-voix.py), montee comme elle, donc synchrone.
            data-media-start = data-start : l'image de la prise tombe au meme temps que la voix. -->
-      <video id="v-face1" class="plein face" src="assets/face-voix.mp4" muted playsinline data-start="35.9" data-duration="6.2" data-media-start="35.9"></video>
-      <video id="v-face2" class="plein face" src="assets/face-voix.mp4" muted playsinline data-start="57.9" data-duration="5.1" data-media-start="57.9"></video>
+      <video id="v-face1" class="plein face" src="assets/face-voix.mp4" muted playsinline data-start="29.917" data-voix-start="35.9" data-duration="5.167" data-voix-duration="6.2" data-media-start="29.917" data-voix-media-start="35.9"></video>
+      <video id="v-face2" class="plein face" src="assets/face-voix.mp4" muted playsinline data-start="48.25" data-voix-start="57.9" data-duration="4.25" data-voix-duration="5.1" data-media-start="48.25" data-voix-media-start="57.9"></video>
 
       <div id="flash"></div>
 
@@ -596,7 +596,7 @@
       };
       Object.entries(cadrages).forEach(([id, plans]) => {
         const v = document.querySelector(id);
-        const fin = +v.dataset.start + +v.dataset.duration;
+        const fin = +v.dataset.voixStart + +v.dataset.voixDuration;   // temps de la voix, comme le reste du script
         gsap.set(id, { transformOrigin: "50% 34%" });
         plans.forEach(([t, de, a], i) => {
           const jusqua = i + 1 < plans.length ? plans[i + 1][0] : fin;
@@ -614,6 +614,15 @@
           tl.set(m, { className: c + " actif" }, +m.dataset.a);
           tl.set(m, { className: c }, +m.dataset.b);
         });
+      });
+
+      // Vitesse du montage (montage.json, applique par tools/vitesse.py) : tout est ecrit en temps de la voix,
+      // puis resserre d'un coup. Les temps fixes (data-start des medias) sont deja divises dans le HTML.
+      const VITESSE = 1.2;
+      tl.getChildren(false, true, true).forEach((c) => {
+        const a = c.startTime(), d = c.totalDuration();
+        if (d > 0) c.totalDuration(d / VITESSE);
+        c.startTime(a / VITESSE);
       });
 
       window.__timelines["main"] = tl;

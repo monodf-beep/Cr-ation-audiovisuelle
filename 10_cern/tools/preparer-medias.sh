@@ -13,8 +13,12 @@ ARTICLE=https://nosalpes.eu/fr/2026/05/15/grand-geneve-un-projet-culturel-transf
 # Musique : « Curiosity » de Diego Nava (Mixkit, licence libre, sans attribution), validee par Franck
 # (04_montage/bibliotheque.json). Changer l'adresse pour une autre piste.
 MUSIQUE=${MUSIQUE:-https://assets.mixkit.co/music/480/480.mp3}
-DUREE=88.5      # duree du montage (index.html)
-FIN_VOIX=78.0   # la voix s'arrete : la musique remonte
+# Durees de la video acceleree (montage.json).
+read -r DUREE FIN_VOIX < <(python3 -c 'import json; m = json.load(open("montage.json")); print(round(m["duree"] / m["vitesse"], 3), round((m["duree_voix"] + 0.1) / m["vitesse"], 3))')
+# Un media deja fabrique est refait si sa duree ne correspond plus au montage (vitesse changee).
+perime() { [ ! -f "$1" ] || [ "${FORCER:-}" = 1 ] || python3 -c "import sys; sys.exit(0 if abs(float(sys.argv[1]) - float(sys.argv[2])) > 0.3 else 1)" \
+  "$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1")" "$2"; }
+VOIX_DUREE=$(python3 -c 'import json; m = json.load(open("montage.json")); print(round(m["duree_voix"] / m["vitesse"], 3))')
 
 # Videos du montage : une image cle par seconde, sinon le rendu se fige en cherchant une image (avertissement
 # « sparse keyframes » de HyperFrames). Reencodees une fois, sur place.
@@ -28,7 +32,7 @@ for v in assets/affiche-animee.mp4 assets/exterieur.mp4 assets/interieur-lent.mp
   fi
 done
 
-if [ ! -f assets/face-voix.mp4 ] || [ "${FORCER:-}" = 1 ]; then
+if perime assets/face-voix.mp4 "$VOIX_DUREE"; then
   # voix-montee.json (dans le depot) : les coupes de la voix de assets/voix-off.mp3, appliquees a l'image.
   [ -f "$PRISE" ] || { echo "Prise filmee introuvable : $PRISE (la copier depuis Drive, dossier 10_cern/voix-off)"; exit 1; }
   python3 tools/face-voix.py "$PRISE" voix-montee.json assets/face-voix.mp4
@@ -45,7 +49,7 @@ if [ ! -f assets/article-nosalpes.jpg ] || [ "${FORCER:-}" = 1 ]; then
   rm -rf "$tmp"
 fi
 
-if [ ! -f assets/musique.mp3 ] || [ "${FORCER:-}" = 1 ]; then
+if perime assets/musique.mp3 "$DUREE"; then
   tmp=$(mktemp -d)
   curl -fsSL -o "$tmp/source.mp3" "$MUSIQUE"
   # Environ -32 LUFS sous la voix (-16), puis -24 sur le carton final ; fondus d'entree et de sortie.

@@ -1,0 +1,6 @@
+{
+  "_note": "Réglages communs du montage, lus par les outils (tools/vitesse.py, voix-finale.sh, face-voix.py, habillage-sonore.py, preparer-medias.sh). vitesse : accélération de toute la vidéo (voix sans changement de hauteur, images, sous-titres, musique). Les temps écrits dans index.html (data-voix-*, scripts), voix-mots.json et les outils sont en « temps de la voix » (vitesse 1) ; tools/vitesse.py en déduit les temps de la vidéo.",
+  "vitesse": 1.2,
+  "duree_voix": 77.933,
+  "duree": 88.5
+}
