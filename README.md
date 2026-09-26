@@ -19,6 +19,7 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 | `07_film/` | **les 22 plans finaux, après passe pellicule** *(hors dépôt)* |
 | `08_hyperframes/` | projet [HyperFrames](https://hyperframes.heygen.com) : compositions vidéo en HTML, rendu MP4. Charte vidéo dans `brand/DESIGN.md` |
 | `10_cern/` | reportage vertical 9:16 au CERN (Interreg culture Savoie – Genève), script de voix off dans `SCRIPT.md`. Rushes et médias hors dépôt |
+| `04_montage/BONNES-PRATIQUES.md` | **règles de montage des reportages verticaux** : sous-titres, rythme visuel, voix, musique et effets, demandes de Franck. Bibliothèque validée dans `04_montage/bibliotheque.json` |
 | `09_charte/` | export Claude Design de la charte Franck Monod (cartes des États de Savoie). Polices hors dépôt |
 
 ### Deux principes qui tiennent le projet

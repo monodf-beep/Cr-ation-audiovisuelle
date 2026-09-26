@@ -1,16 +1,120 @@
 {
-  "_note": "Repères de la voix off libre (page enregistrer.html, mode « Repères ») : une entrée par séquence du montage, temps en secondes dans la vidéo rendue (montage recalé sur la voix, 87,6 s). Les mots sont des pistes, pas un texte à lire.",
+  "_note": "Repères de la voix off libre (page enregistrer.html, mode « Repères ») : une entrée par séquence du montage, temps en secondes dans la vidéo rendue (montage recalé sur la voix, 88,5 s). Les mots sont des pistes, pas un texte à lire.",
   "reperes": [
-    {"id": "accroche", "titre": "Accroche", "debut": 0, "fin": 2.3, "mots": ["La langue savoyarde au CERN"]},
-    {"id": "carte", "titre": "La carte", "debut": 2.3, "fin": 13.9, "mots": ["24 septembre", "Savoie · Genève", "une frontière… et une langue qui ne l'a jamais connue"]},
-    {"id": "cern", "titre": "Le CERN", "debut": 13.9, "fin": 20.9, "mots": ["Meyrin", "le Globe de la science et de l'innovation"]},
-    {"id": "projet", "titre": "Le projet", "debut": 20.9, "fin": 30.9, "mots": ["Projet culturel de territoire du Grand Genève", "Interreg France – Suisse"]},
-    {"id": "sur-place", "titre": "Sur place", "debut": 30.9, "fin": 37.5, "mots": ["journée de co-construction", "feuille de route 2027", "l'Enstitut de la Lengoua Savoyârda"]},
-    {"id": "culture", "titre": "La culture, c'est tout", "debut": 37.5, "fin": 51.5, "mots": ["festival de jazz", "salle de théâtre", "musée", "orchestre", "une culture commune"]},
-    {"id": "chiffres", "titre": "Les chiffres", "debut": 51.5, "fin": 59.8, "mots": ["160 acteurs", "140 structures", "des deux côtés de la frontière"]},
-    {"id": "globe", "titre": "Dans le Globe", "debut": 59.8, "fin": 69.3, "mots": ["le savoyard à Genève comme à Chambéry", "le Cé qu'è lainô"]},
-    {"id": "grand-geneve", "titre": "Le Grand Genève", "debut": 69.3, "fin": 76.4, "mots": ["une langue commune, un territoire commun", "un bien commun autour de la culture"]},
-    {"id": "merci", "titre": "Grant-marci", "debut": 76.4, "fin": 81.4, "mots": ["Laetitia", "toute l'équipe du Projet culturel"]},
-    {"id": "fin", "titre": "Fin", "debut": 81.4, "fin": 87.6, "mots": ["à lire sur Nos Alpes"]}
+    {
+      "id": "accroche",
+      "titre": "Accroche",
+      "debut": 0,
+      "fin": 2.0,
+      "mots": [
+        "La langue savoyarde au CERN"
+      ]
+    },
+    {
+      "id": "carte",
+      "titre": "La carte",
+      "debut": 2.0,
+      "fin": 12.9,
+      "mots": [
+        "24 septembre",
+        "Savoie · Genève",
+        "une frontière… et une langue qui ne l'a jamais connue"
+      ]
+    },
+    {
+      "id": "cern",
+      "titre": "Le CERN",
+      "debut": 12.9,
+      "fin": 19.9,
+      "mots": [
+        "Meyrin",
+        "le Globe de la science et de l'innovation"
+      ]
+    },
+    {
+      "id": "projet",
+      "titre": "Le projet",
+      "debut": 19.9,
+      "fin": 29.9,
+      "mots": [
+        "Projet culturel de territoire du Grand Genève",
+        "Interreg France – Suisse (pas Alcotra)"
+      ]
+    },
+    {
+      "id": "sur-place",
+      "titre": "Sur place",
+      "debut": 29.9,
+      "fin": 35.9,
+      "mots": [
+        "journée de co-construction",
+        "feuille de route 2027",
+        "l'Enstitut de la Lengoua Savoyârda"
+      ]
+    },
+    {
+      "id": "culture",
+      "titre": "La culture, c'est tout",
+      "debut": 35.9,
+      "fin": 50.9,
+      "mots": [
+        "festival de jazz",
+        "salle de théâtre",
+        "musée",
+        "orchestre",
+        "une culture commune"
+      ]
+    },
+    {
+      "id": "chiffres",
+      "titre": "Les chiffres",
+      "debut": 50.9,
+      "fin": 57.9,
+      "mots": [
+        "160 acteurs",
+        "140 structures",
+        "des deux côtés de la frontière"
+      ]
+    },
+    {
+      "id": "globe",
+      "titre": "Dans le Globe",
+      "debut": 57.9,
+      "fin": 70.9,
+      "mots": [
+        "le savoyard à Genève comme à Chambéry",
+        "le Cé qu'è lainô"
+      ]
+    },
+    {
+      "id": "grand-geneve",
+      "titre": "Le Grand Genève",
+      "debut": 70.9,
+      "fin": 75.0,
+      "mots": [
+        "une langue commune, un territoire commun",
+        "un bien commun autour de la culture"
+      ]
+    },
+    {
+      "id": "merci",
+      "titre": "Grant-marci",
+      "debut": 75.0,
+      "fin": 80.5,
+      "mots": [
+        "Laetitia",
+        "toute l'équipe du Projet culturel"
+      ]
+    },
+    {
+      "id": "fin",
+      "titre": "Fin",
+      "debut": 80.5,
+      "fin": 88.5,
+      "mots": [
+        "relisez l'article sur le projet",
+        "Nos Alpes, 15 mai 2026"
+      ]
+    }
   ]
 }
