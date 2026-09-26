@@ -144,9 +144,32 @@
     depart.add(new Option(fmt(t) + ' — ' + p.texte.slice(0, 60) + (p.texte.length > 60 ? '…' : ''), String(t)));
   });
 
+  // Horloge : celle du montage s'il est la ; sinon (video absente ou illisible), une horloge interne
+  // fait defiler le prompteur seul, pour que l'enregistrement marche quand meme.
+  let sansMontage = false, horlogeDebut = 0, horlogePos = 0, horlogeMarche = false;
+  const dureeTexte = () => (phrases.length ? phrases[phrases.length - 1].fin + 2 : 80);
+  const tempsActuel = () => !sansMontage ? montage.currentTime
+    : horlogeMarche ? horlogePos + (performance.now() - horlogeDebut) / 1000 : horlogePos;
+  const dureeTotale = () => (sansMontage ? dureeTexte() : montage.duration || 0);
+  function placer(t) { horlogePos = t; horlogeDebut = performance.now(); if (!sansMontage) montage.currentTime = t; }
+  async function jouer() {
+    if (!sansMontage) {
+      try { await montage.play(); return; } catch (e) { passerSansMontage(); }
+    }
+    horlogeDebut = performance.now(); horlogeMarche = true;
+  }
+  function suspendre() { if (sansMontage) { horlogePos = tempsActuel(); horlogeMarche = false; } else montage.pause(); }
+  function passerSansMontage() {
+    if (sansMontage) return;
+    sansMontage = true; horlogePos = montage.currentTime || 0;
+    erreur(MSG_SANS_MONTAGE);
+  }
+  const MSG_SANS_MONTAGE = "Montage vidéo absent (renders/cern-reportage.mp4) : le prompteur défile seul, l'enregistrement marche quand même.";
+
   // Prompteur : phrase en cours (ou a venir) et suivante.
   function prompteur() {
-    const t = montage.currentTime, d = montage.duration || 0;
+    const t = tempsActuel(), d = dureeTotale();
+    if (sansMontage && horlogeMarche && t >= d) arreter();
     $('temps').textContent = fmt(t) + ' / ' + fmt(d);
     $('avance').style.width = d ? (100 * t / d) + '%' : '0';
     const i = phrases.findIndex((p) => t < p.fin);
@@ -212,9 +235,9 @@
     d.style.display = 'none';
   }
   async function lancer(enregistrer) {
-    erreur('');
+    erreur(sansMontage ? MSG_SANS_MONTAGE : '');
     debutPrise = +depart.value;
-    montage.pause(); montage.currentTime = debutPrise;
+    suspendre(); placer(debutPrise);
     $('enregistrer').disabled = true; $('repeter').disabled = true; $('arreter').disabled = false;
     await decompte();
     if (enregistrer) {
@@ -227,13 +250,13 @@
       const rec = new MediaRecorder(flux, { ...(type ? { mimeType: type } : {}), audioBitsPerSecond: 256000, ...(video ? { videoBitsPerSecond: 8000000 } : {}) });
       rec.ondataavailable = (e) => { if (e.data.size) morceaux.push(e.data); };
       rec.onstop = () => ajouterPrise(new Blob(morceaux, { type: rec.mimeType }), debutPrise, video);
-      rec.start();
+      rec.start(1000);
       enregistreur = rec;
     }
-    await montage.play();
+    await jouer();
   }
   function arreter() {
-    montage.pause();
+    suspendre();
     if (enregistreur && enregistreur.state !== 'inactive') enregistreur.stop();
     enregistreur = null;
     $('enregistrer').disabled = false; $('repeter').disabled = false; $('arreter').disabled = true;
@@ -242,8 +265,9 @@
   $('repeter').onclick = () => lancer(false).catch((e) => { erreur(e.message); arreter(); });
   $('arreter').onclick = arreter;
   montage.onended = arreter;
-  montage.onerror = () => erreur("Le montage renders/cern-reportage.mp4 est introuvable ou illisible : décompressez le zip dans 10_cern.");
-  depart.onchange = () => { montage.currentTime = +depart.value; };
+  montage.onerror = passerSansMontage;
+  if (montage.error || montage.networkState === 3) passerSansMontage();
+  depart.onchange = () => placer(+depart.value);
 
   // Liste des prises : telecharger, verifier (rejoue le montage avec la voix, au bon endroit), supprimer.
   function ajouterPrise(blob, t0, video) {
@@ -259,9 +283,9 @@
     const verifier = document.createElement('button'); verifier.textContent = 'Vérifier';
     const media = document.createElement(video ? 'video' : 'audio'); media.src = url;
     verifier.onclick = async () => {
-      montage.currentTime = t0; media.currentTime = 0;
-      await Promise.all([montage.play(), media.play()]);
-      media.onended = () => montage.pause();
+      suspendre(); placer(t0); media.currentTime = 0;
+      await Promise.all([jouer(), media.play()]);
+      media.onended = () => suspendre();
     };
     const suppr = document.createElement('button'); suppr.textContent = 'Supprimer';
     suppr.onclick = () => { URL.revokeObjectURL(url); ligne.remove(); };
