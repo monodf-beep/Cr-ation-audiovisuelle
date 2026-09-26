@@ -5,7 +5,8 @@
 //   <depot>/<projet>/voix-off/, puis les copie aussitot dans Google Drive (rclone).
 // Sans dependance. Variables : DEPOT (chemin du depot), PORT (8090), DRIVE (ex. drive:Videos).
 import { createServer } from 'node:http';
-import { createReadStream, createWriteStream, mkdirSync, statSync } from 'node:fs';
+import { createReadStream, createWriteStream, mkdirSync, statSync, watchFile } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { join, normalize, extname, basename, resolve, sep } from 'node:path';
 
@@ -47,7 +48,7 @@ function servir(req, res) {
 
 function televerser(req, res, projet) {
   const nom = basename(new URL(req.url, 'http://x').searchParams.get('nom') || '').replace(/[^\w.,-]/g, '_');
-  if (!projet || projet.startsWith('.') || !/\.(webm|m4a|mp4|wav)$/i.test(nom)) { res.writeHead(400); return res.end('Nom invalide'); }
+  if (!projet || projet.startsWith('.') || !/\.(webm|m4a|mp4|wav|json)$/i.test(nom)) { res.writeHead(400); return res.end('Nom invalide'); }
   const dossier = join(DEPOT, projet, 'voix-off');
   mkdirSync(dossier, { recursive: true });
   const f = join(dossier, nom);
@@ -67,3 +68,7 @@ createServer((req, res) => {
   if (req.method === 'GET' || req.method === 'HEAD') return servir(req, res);
   res.writeHead(405); res.end();
 }).listen(PORT, '127.0.0.1', () => console.log(`enregistrement : http://127.0.0.1:${PORT} (depot ${DEPOT})`));
+
+// Mise a jour automatique : quand la synchronisation GitHub modifie ce fichier, on quitte ;
+// systemd (Restart=always) relance aussitot la nouvelle version.
+watchFile(fileURLToPath(import.meta.url), { interval: 5000 }, () => { console.log('nouvelle version, redemarrage'); process.exit(0); });

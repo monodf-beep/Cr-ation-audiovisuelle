@@ -1,0 +1,16 @@
+{
+  "_note": "Repères de la voix off libre (page enregistrer.html, mode « Repères ») : une entrée par séquence du montage, temps en secondes dans la vidéo rendue. Les mots sont des pistes, pas un texte à lire.",
+  "reperes": [
+    { "id": "accroche", "titre": "Accroche", "debut": 0, "fin": 2.8, "mots": ["Qu'est-ce que le savoyard vient faire au CERN ?"] },
+    { "id": "carte", "titre": "La carte", "debut": 2.8, "fin": 11.9, "mots": ["24 septembre", "Savoie · Genève", "une frontière… et une langue qui ne l'a jamais connue"] },
+    { "id": "cern", "titre": "Le CERN", "debut": 11.9, "fin": 17.8, "mots": ["Meyrin", "le Globe de la science et de l'innovation"] },
+    { "id": "projet", "titre": "Le projet", "debut": 17.8, "fin": 24.4, "mots": ["Projet culturel de territoire du Grand Genève", "Interreg France – Suisse"] },
+    { "id": "sur-place", "titre": "Sur place", "debut": 24.4, "fin": 33.4, "mots": ["journée de co-construction", "feuille de route 2027", "l'Enstitut de la Lengoua Savoyârda"] },
+    { "id": "culture", "titre": "La culture, c'est tout", "debut": 33.4, "fin": 41.4, "mots": ["festival de jazz", "salle de théâtre", "musée", "orchestre", "une culture commune"] },
+    { "id": "chiffres", "titre": "Les chiffres", "debut": 41.4, "fin": 47.4, "mots": ["160 acteurs", "140 structures", "des deux côtés de la frontière"] },
+    { "id": "globe", "titre": "Dans le Globe", "debut": 47.4, "fin": 56.4, "mots": ["le savoyard à Genève comme à Chambéry", "le Cé qu'è lainô"] },
+    { "id": "grand-geneve", "titre": "Le Grand Genève", "debut": 56.4, "fin": 64.8, "mots": ["une langue commune, un territoire commun", "un bien commun autour de la culture"] },
+    { "id": "merci", "titre": "Grant-marci", "debut": 64.8, "fin": 70.8, "mots": ["Laetitia", "toute l'équipe du Projet culturel"] },
+    { "id": "fin", "titre": "Fin", "debut": 70.8, "fin": 77, "mots": ["à lire sur Nos Alpes"] }
+  ]
+}
