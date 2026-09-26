@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enregistrer la voix off</title>
+<!--
+  Page d'enregistrement de la voix off du reportage CERN (hors composition, pas rendue en video).
+  Elle lit le montage sans le son, affiche chaque phrase au bon moment (prompteur) et enregistre
+  le micro, et la webcam si on le souhaite, pendant la lecture. Les phrases et leurs temps sont lus
+  dans index.html : si le montage change, le prompteur suit.
+  Lancer depuis 10_cern :  npx --yes http-server -p 8080 -c-1   puis ouvrir http://localhost:8080/enregistrer.html
+  (le micro et la camera ne sont autorises que sur localhost ou en https).
+-->
+<link rel="stylesheet" href="brand/tokens.css" />
+<style>
+  @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Regular.woff') format('woff'); font-weight: 400; }
+  @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff'); font-weight: 600; }
+  @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Bold.woff') format('woff'); font-weight: 700; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: var(--fm-font); color: var(--fm-ink-900); background: var(--fm-bg-soft); min-height: 100vh; }
+  header { padding: 20px 28px; background: var(--fm-bg); border-bottom: 1px solid var(--fm-line); display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  header .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+  header h1 { font-size: 24px; font-weight: 700; }
+  main { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 24px 28px; align-items: start; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .ecran { position: relative; height: calc(100vh - 140px); min-height: 480px; aspect-ratio: 9 / 16; background: #000; }
+  .ecran video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+  #camera { position: absolute; right: 10px; bottom: 10px; width: 28%; height: auto; aspect-ratio: auto; border: 2px solid #fff; display: none; }
+  #decompte { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 160px; font-weight: 700; color: #fff; background: rgba(10,54,175,.55); }
+  .panneau { display: flex; flex-direction: column; gap: 20px; max-width: 860px; }
+  .prompteur { background: var(--fm-bg); padding: 28px 32px; min-height: 300px; display: flex; flex-direction: column; gap: 18px; border-left: 6px solid var(--fm-bleu-savoie); }
+  .prompteur .temps { font-size: 14px; font-weight: 600; letter-spacing: .08em; color: var(--fm-ink-500); font-variant-numeric: tabular-nums; }
+  #phrase { font-size: 44px; font-weight: 700; line-height: 1.2; min-height: 2.4em; }
+  #phrase.attente { color: var(--fm-ink-500); font-weight: 600; font-size: 30px; }
+  #suivante { font-size: 22px; color: var(--fm-ink-500); line-height: 1.35; }
+  #suivante::before { content: 'Ensuite : '; font-weight: 600; }
+  .barre { height: 6px; background: var(--fm-line); }
+  .barre i { display: block; height: 100%; width: 0; background: var(--fm-bleu-savoie); }
+  .commandes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  button { font: inherit; font-size: 17px; font-weight: 600; padding: 12px 20px; border: 2px solid var(--fm-bleu-savoie); background: var(--fm-bg); color: var(--fm-bleu-savoie); cursor: pointer; }
+  button.principal { background: var(--fm-bleu-savoie); color: #fff; }
+  button.stop { background: var(--fm-error); border-color: var(--fm-error); color: #fff; }
+  button:disabled { opacity: .4; cursor: default; }
+  label, select { font: inherit; font-size: 15px; }
+  select { padding: 8px; border: 1px solid var(--fm-line); background: var(--fm-bg); max-width: 100%; }
+  .reglages { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; background: var(--fm-bg); padding: 16px 20px; }
+  .niveau { width: 140px; height: 10px; background: var(--fm-line); }
+  .niveau i { display: block; height: 100%; width: 0; background: #1e8e3e; }
+  .prises { background: var(--fm-bg); padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .prises h2 { font-size: 15px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--fm-ink-700); }
+  .prise { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-top: 1px solid var(--fm-line); padding-top: 10px; }
+  .prise b { min-width: 170px; }
+  .prise a { color: var(--fm-bleu-savoie); font-weight: 600; }
+  .aide { font-size: 14px; color: var(--fm-ink-700); line-height: 1.5; }
+  #erreur { color: var(--fm-error); font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <span class="eyebrow">Reportage CERN</span>
+  <h1>Enregistrer la voix off</h1>
+</header>
+<main>
+  <div class="ecran">
+    <video id="montage" src="renders/cern-reportage.mp4" muted playsinline preload="auto"></video>
+    <video id="camera" muted playsinline></video>
+    <div id="decompte"></div>
+  </div>
+  <div class="panneau">
+    <div class="prompteur">
+      <div class="temps" id="temps">0,0 s / 0,0 s</div>
+      <div class="barre"><i id="avance"></i></div>
+      <div id="phrase" class="attente">Choisissez le point de départ, puis cliquez sur « Enregistrer ».</div>
+      <div id="suivante"></div>
+    </div>
+
+    <div class="commandes">
+      <button id="enregistrer" class="principal">● Enregistrer</button>
+      <button id="arreter" class="stop" disabled>■ Arrêter</button>
+      <button id="repeter">▶ Répéter sans enregistrer</button>
+      <label>Départ :
+        <select id="depart"></select>
+      </label>
+    </div>
+
+    <div class="reglages">
+      <label>Micro : <select id="micro"></select></label>
+      <span class="niveau" title="Niveau du micro"><i id="niveau"></i></span>
+      <label><input type="checkbox" id="avecCamera" /> Filmer aussi avec la webcam</label>
+      <label><input type="checkbox" id="decompteActif" checked /> Décompte de 3 s</label>
+    </div>
+
+    <div class="prises">
+      <h2>Prises</h2>
+      <div id="listePrises" class="aide">Aucune prise pour l'instant.</div>
+    </div>
+
+    <p class="aide">
+      Le montage défile sans le son : parlez en suivant la phrase en gros. Chaque prise commence
+      exactement au point de départ choisi, et son nom l'indique (par exemple « depuis-24,4s »).
+      Pour corriger une seule phrase, choisissez-la comme départ et arrêtez après. Écoutez une prise
+      avec « Vérifier » : elle rejoue le montage avec votre voix. Envoyez ensuite le fichier téléchargé.
+    </p>
+    <p id="erreur"></p>
+  </div>
+</main>
+
+<script>
+(async function () {
+  const $ = (id) => document.getElementById(id);
+  const montage = $('montage'), camera = $('camera');
+  const fmt = (t) => t.toFixed(1).replace('.', ',') + ' s';
+  const erreur = (m) => { $('erreur').textContent = m; };
+
+  // Phrases et temps lus dans la composition : sous-titres #stN, tableau [[n, debut, fin], ...],
+  // decalage du hook (shiftChildren), et la phrase du hook elle-meme.
+  let phrases = [];
+  try {
+    const html = await (await fetch('index.html', { cache: 'no-store' })).text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const decalage = +((html.match(/shiftChildren\(([\d.]+)/) || [])[1] || 0);
+    const tableau = html.match(/\[\[1,\s*[\d.]+[\s\S]*?\]\]/);
+    const temps = JSON.parse(tableau[0]);
+    const hook = doc.querySelector('#hook');
+    if (hook) phrases.push({ t: 0.1, fin: decalage, texte: hook.textContent.replace(/\s+/g, ' ').trim() });
+    for (const [n, a, b] of temps) {
+      const el = doc.querySelector('#st' + n);
+      if (el) phrases.push({ t: a + decalage, fin: b + decalage, texte: el.textContent.trim() });
+    }
+    phrases.sort((x, y) => x.t - y.t);
+  } catch (e) {
+    erreur("Impossible de lire les phrases dans index.html (" + e.message + "). Lancez la page depuis 10_cern avec http-server.");
+  }
+
+  // Points de depart : debut, puis chaque phrase (un peu avant, pour avoir l'elan).
+  const depart = $('depart');
+  depart.add(new Option('Début du montage (0 s)', '0'));
+  phrases.forEach((p, i) => {
+    const t = Math.max(0, p.t - 1);
+    depart.add(new Option(fmt(t) + ' — ' + p.texte.slice(0, 60) + (p.texte.length > 60 ? '…' : ''), String(t)));
+  });
+
+  // Prompteur : phrase en cours (ou a venir) et suivante.
+  function prompteur() {
+    const t = montage.currentTime, d = montage.duration || 0;
+    $('temps').textContent = fmt(t) + ' / ' + fmt(d);
+    $('avance').style.width = d ? (100 * t / d) + '%' : '0';
+    const i = phrases.findIndex((p) => t < p.fin);
+    const el = $('phrase');
+    if (i === -1) { el.textContent = 'Fin du texte.'; el.className = 'attente'; $('suivante').textContent = ''; return; }
+    const p = phrases[i];
+    if (t >= p.t - 0.15) { el.textContent = p.texte; el.className = ''; $('suivante').textContent = phrases[i + 1] ? phrases[i + 1].texte : ''; }
+    else { el.textContent = 'Dans ' + fmt(p.t - t) + ' : ' + p.texte; el.className = 'attente'; $('suivante').textContent = ''; }
+  }
+  (function boucle() { prompteur(); requestAnimationFrame(boucle); })();
+
+  // Micro, camera, vumetre.
+  let flux = null, analyseur = null;
+  async function ouvrirFlux() {
+    const idMicro = $('micro').value;
+    const audio = { deviceId: idMicro ? { exact: idMicro } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false };
+    const video = $('avecCamera').checked ? { width: 1280, height: 720 } : false;
+    if (flux) flux.getTracks().forEach((t) => t.stop());
+    flux = await navigator.mediaDevices.getUserMedia({ audio, video });
+    camera.srcObject = video ? flux : null;
+    camera.style.display = video ? 'block' : 'none';
+    if (video) camera.play();
+    const ctx = new AudioContext();
+    analyseur = ctx.createAnalyser(); analyseur.fftSize = 512;
+    ctx.createMediaStreamSource(flux).connect(analyseur);
+  }
+  const donnees = new Uint8Array(512);
+  (function vumetre() {
+    if (analyseur) {
+      analyseur.getByteTimeDomainData(donnees);
+      let m = 0; for (const v of donnees) m = Math.max(m, Math.abs(v - 128));
+      $('niveau').style.width = Math.min(100, m / 1.28) + '%';
+    }
+    requestAnimationFrame(vumetre);
+  })();
+
+  async function listerMicros() {
+    const appareils = await navigator.mediaDevices.enumerateDevices();
+    const sel = $('micro'), actuel = sel.value; sel.innerHTML = '';
+    appareils.filter((a) => a.kind === 'audioinput').forEach((a, i) => sel.add(new Option(a.label || 'Micro ' + (i + 1), a.deviceId)));
+    if (actuel) sel.value = actuel;
+  }
+  try { await ouvrirFlux(); await listerMicros(); }
+  catch (e) { erreur("Accès au micro refusé ou impossible (" + e.message + "). Autorisez le micro dans le navigateur, sur http://localhost."); }
+  $('micro').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
+  $('avecCamera').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
+
+  // Enregistrement : decompte, puis lecture du montage et enregistrement demarrent ensemble.
+  let enregistreur = null, morceaux = [], debutPrise = 0, numero = 0;
+  const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function decompte() {
+    if (!$('decompteActif').checked) return;
+    const d = $('decompte'); d.style.display = 'flex';
+    for (const n of [3, 2, 1]) { d.textContent = n; await attendre(1000); }
+    d.style.display = 'none';
+  }
+  async function lancer(enregistrer) {
+    erreur('');
+    debutPrise = +depart.value;
+    montage.pause(); montage.currentTime = debutPrise;
+    $('enregistrer').disabled = true; $('repeter').disabled = true; $('arreter').disabled = false;
+    await decompte();
+    if (enregistrer) {
+      if (!flux) await ouvrirFlux();
+      const video = flux.getVideoTracks().length > 0;
+      const type = ['video/webm;codecs=vp9,opus', 'video/webm', 'audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
+        .find((t) => (video ? t.startsWith('video') : t.startsWith('audio')) && MediaRecorder.isTypeSupported(t)) || '';
+      morceaux = [];
+      const rec = new MediaRecorder(flux, type ? { mimeType: type } : undefined);
+      rec.ondataavailable = (e) => { if (e.data.size) morceaux.push(e.data); };
+      rec.onstop = () => ajouterPrise(new Blob(morceaux, { type: rec.mimeType }), debutPrise, video);
+      rec.start();
+      enregistreur = rec;
+    }
+    await montage.play();
+  }
+  function arreter() {
+    montage.pause();
+    if (enregistreur && enregistreur.state !== 'inactive') enregistreur.stop();
+    enregistreur = null;
+    $('enregistrer').disabled = false; $('repeter').disabled = false; $('arreter').disabled = true;
+  }
+  $('enregistrer').onclick = () => lancer(true).catch((e) => { erreur(e.message); arreter(); });
+  $('repeter').onclick = () => lancer(false).catch((e) => { erreur(e.message); arreter(); });
+  $('arreter').onclick = arreter;
+  montage.onended = arreter;
+  montage.onerror = () => erreur("Le montage renders/cern-reportage.mp4 est introuvable ou illisible : décompressez le zip dans 10_cern.");
+  depart.onchange = () => { montage.currentTime = +depart.value; };
+
+  // Liste des prises : telecharger, verifier (rejoue le montage avec la voix, au bon endroit), supprimer.
+  function ajouterPrise(blob, t0, video) {
+    numero += 1;
+    const ext = blob.type.includes('mp4') ? 'm4a' : 'webm';
+    const nom = `voix-off-cern-prise-${numero}-depuis-${t0.toFixed(1).replace('.', ',')}s.${ext}`;
+    const url = URL.createObjectURL(blob);
+    const liste = $('listePrises');
+    if (numero === 1) liste.textContent = '';
+    const ligne = document.createElement('div'); ligne.className = 'prise';
+    ligne.innerHTML = `<b>Prise ${numero} · depuis ${fmt(t0)}</b>`;
+    const lien = document.createElement('a'); lien.href = url; lien.download = nom; lien.textContent = 'Télécharger';
+    const verifier = document.createElement('button'); verifier.textContent = 'Vérifier';
+    const media = document.createElement(video ? 'video' : 'audio'); media.src = url;
+    verifier.onclick = async () => {
+      montage.currentTime = t0; media.currentTime = 0;
+      await Promise.all([montage.play(), media.play()]);
+      media.onended = () => montage.pause();
+    };
+    const suppr = document.createElement('button'); suppr.textContent = 'Supprimer';
+    suppr.onclick = () => { URL.revokeObjectURL(url); ligne.remove(); };
+    ligne.append(lien, verifier, suppr);
+    liste.prepend(ligne);
+  }
+})();
+</script>
+</body>
+</html>
