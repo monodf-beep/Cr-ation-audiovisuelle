@@ -88,9 +88,11 @@ if os.path.exists(rendu):
                                  capture_output=True, text=True).stdout)
     mesure("duree_video", round(duree, 1), "s")
     # Changements francs d'image (coupes, flashs, punch-in) : detection de scene sur une image reduite.
-    log = subprocess.run(["ffmpeg", "-hide_banner", "-i", rendu, "-vf", "scale=270:-1,select='gt(scene,0.08)',showinfo",
+    log = subprocess.run(["ffmpeg", "-hide_banner", "-i", rendu, "-vf", "scale=270:-1,select='gt(scene,0.03)',showinfo",
                           "-an", "-f", "null", "-"], capture_output=True, text=True).stderr
-    # Seuil bas : un flash blanc etale la coupe sur plusieurs images. Les sous-titres restent en dessous.
+    # Seuil bas (0,03) : un flash blanc etale la coupe, un punch-in sur un mur ou un fond pale change peu les pixels.
+    # Un plan tenu a la main qui bouge compte aussi comme changement : la regle vise les images figees.
+    # Les sous-titres restent en dessous.
     # Detections a moins de 0,4 s l'une de l'autre = une seule coupe.
     coupes = [0.0]
     for x in (float(x) for x in re.findall(r"pts_time:([\d.]+)", log)):
