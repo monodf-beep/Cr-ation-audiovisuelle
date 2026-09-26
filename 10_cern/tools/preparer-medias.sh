@@ -37,9 +37,11 @@ fi
 if [ ! -f assets/article-nosalpes.jpg ] || [ "${FORCER:-}" = 1 ]; then
   tmp=$(mktemp -d)
   # Capture pleine page a 540 px de large (x2), comme sur un telephone, puis le haut de l'article.
-  npx --yes playwright@1.56.1 screenshot --full-page --viewport-size=540,960 --device="Pixel 7" --wait-for-timeout=2000 "$ARTICLE" "$tmp/page.png" \
-    || { npx --yes playwright@1.56.1 install chromium && npx --yes playwright@1.56.1 screenshot --full-page --device="Pixel 7" --wait-for-timeout=2000 "$ARTICLE" "$tmp/page.png"; }
-  ffmpeg -v error -y -i "$tmp/page.png" -vf "scale=1080:-1,crop=1080:4000:0:0" -q:v 3 assets/article-nosalpes.jpg
+  # Non bloquant : si la capture echoue, le reste est quand meme fabrique.
+  { npx --yes playwright@1.56.1 screenshot --full-page --device="Pixel 7" --wait-for-timeout=2000 "$ARTICLE" "$tmp/page.png" \
+      || { npx --yes playwright@1.56.1 install chromium && npx --yes playwright@1.56.1 screenshot --full-page --device="Pixel 7" --wait-for-timeout=2000 "$ARTICLE" "$tmp/page.png"; }; } \
+    && ffmpeg -v error -y -i "$tmp/page.png" -vf "scale=1080:-1,crop=1080:4000:0:0" -q:v 3 assets/article-nosalpes.jpg \
+    || echo "ATTENTION : capture de l'article impossible ; deposer assets/article-nosalpes.jpg a la main (Drive, 10_cern/assets)."
   rm -rf "$tmp"
 fi
 
