@@ -1,0 +1,405 @@
+{
+ "duree": 77.933,
+ "sections": [
+  {
+   "sequence": "accroche",
+   "debut": 0.0,
+   "fin": 5.593,
+   "texte": "La langue savoyarde au CERN ! Eh oui, jeudi dernier, le 24 septembre,"
+  },
+  {
+   "sequence": "carte",
+   "debut": 5.593,
+   "fin": 12.756,
+   "texte": "je suis allé au CERN, à Genève, dans un projet Interreg du Grand Genève,"
+  },
+  {
+   "sequence": "cern",
+   "debut": 12.756,
+   "fin": 19.511,
+   "texte": "et ça s'est passé ici, au Globe du CERN, le Globe de la science et de l'innovation."
+  },
+  {
+   "sequence": "projet",
+   "debut": 19.511,
+   "fin": 29.926,
+   "texte": "Ce projet culturel, c'est sur ce territoire du Grand Genève, un territoire à cheval entre le Pays de Gex, la Haute-Savoie et Genève."
+  },
+  {
+   "sequence": "sur-place",
+   "debut": 29.926,
+   "fin": 36.291,
+   "texte": "Et pourquoi j'étais là ? Justement pour représenter l'Enstitut de la Lengoua Savoyârda."
+  },
+  {
+   "sequence": "culture",
+   "debut": 36.291,
+   "fin": 57.587,
+   "texte": "Ce projet Interreg sur la culture, c'est les festivals de jazz, les salles de théâtre, les musées, les orchestres, mais aussi travailler sur un bien commun, une culture commune : déjà 160 acteurs, 140 structures, des deux côtés de la frontière."
+  },
+  {
+   "sequence": "globe",
+   "debut": 57.587,
+   "fin": 74.573,
+   "texte": "Et qu'en est-il du savoyard ? Eh bien le savoyard est aussi une langue de Genève, pas seulement de Savoie : le Cé qu'è lainô, l'hymne de Genève, est écrit en savoyard. C'est une langue commune à nos territoires, un bien commun."
+  },
+  {
+   "sequence": "merci",
+   "debut": 74.573,
+   "fin": 77.933,
+   "texte": "Et je remercie Laetitia Picard pour son invitation."
+  }
+ ],
+ "coupes": [
+  {
+   "source": [
+    0.897,
+    2.65
+   ],
+   "montage": [
+    0.0,
+    1.753
+   ]
+  },
+  {
+   "source": [
+    4.443,
+    6.222
+   ],
+   "montage": [
+    2.103,
+    3.883
+   ]
+  },
+  {
+   "source": [
+    6.732,
+    8.092
+   ],
+   "montage": [
+    4.233,
+    5.593
+   ]
+  },
+  {
+   "source": [
+    10.908,
+    11.905
+   ],
+   "montage": [
+    6.153,
+    7.15
+   ]
+  },
+  {
+   "source": [
+    12.392,
+    14.151
+   ],
+   "montage": [
+    7.5,
+    9.259
+   ]
+  },
+  {
+   "source": [
+    15.293,
+    16.34
+   ],
+   "montage": [
+    9.609,
+    10.656
+   ]
+  },
+  {
+   "source": [
+    16.94,
+    17.799
+   ],
+   "montage": [
+    10.656,
+    11.514
+   ]
+  },
+  {
+   "source": [
+    18.608,
+    19.5
+   ],
+   "montage": [
+    11.864,
+    12.756
+   ]
+  },
+  {
+   "source": [
+    26.245,
+    28.419
+   ],
+   "montage": [
+    13.316,
+    15.49
+   ]
+  },
+  {
+   "source": [
+    28.929,
+    29.669
+   ],
+   "montage": [
+    15.84,
+    16.58
+   ]
+  },
+  {
+   "source": [
+    30.719,
+    33.3
+   ],
+   "montage": [
+    16.93,
+    19.511
+   ]
+  },
+  {
+   "source": [
+    35.703,
+    39.517
+   ],
+   "montage": [
+    20.071,
+    23.886
+   ]
+  },
+  {
+   "source": [
+    40.873,
+    44.572
+   ],
+   "montage": [
+    24.236,
+    27.935
+   ]
+  },
+  {
+   "source": [
+    46.233,
+    47.874
+   ],
+   "montage": [
+    28.285,
+    29.926
+   ]
+  },
+  {
+   "source": [
+    64.496,
+    65.846
+   ],
+   "montage": [
+    30.486,
+    31.836
+   ]
+  },
+  {
+   "source": [
+    66.281,
+    68.067
+   ],
+   "montage": [
+    32.186,
+    33.973
+   ]
+  },
+  {
+   "source": [
+    68.425,
+    69.925
+   ],
+   "montage": [
+    34.323,
+    35.823
+   ]
+  },
+  {
+   "source": [
+    72.282,
+    72.4
+   ],
+   "montage": [
+    36.173,
+    36.291
+   ]
+  },
+  {
+   "source": [
+    72.4,
+    74.641
+   ],
+   "montage": [
+    36.851,
+    39.091
+   ]
+  },
+  {
+   "source": [
+    75.391,
+    77.365
+   ],
+   "montage": [
+    39.441,
+    41.415
+   ]
+  },
+  {
+   "source": [
+    77.792,
+    79.371
+   ],
+   "montage": [
+    41.765,
+    43.344
+   ]
+  },
+  {
+   "source": [
+    80.352,
+    82.806
+   ],
+   "montage": [
+    43.694,
+    46.148
+   ]
+  },
+  {
+   "source": [
+    83.81,
+    84.601
+   ],
+   "montage": [
+    46.498,
+    47.289
+   ]
+  },
+  {
+   "source": [
+    85.219,
+    88.362
+   ],
+   "montage": [
+    47.639,
+    50.781
+   ]
+  },
+  {
+   "source": [
+    90.564,
+    92.34
+   ],
+   "montage": [
+    51.131,
+    52.907
+   ]
+  },
+  {
+   "source": [
+    93.42,
+    95.693
+   ],
+   "montage": [
+    53.257,
+    55.53
+   ]
+  },
+  {
+   "source": [
+    97.093,
+    98.8
+   ],
+   "montage": [
+    55.88,
+    57.587
+   ]
+  },
+  {
+   "source": [
+    102.2,
+    102.329
+   ],
+   "montage": [
+    58.147,
+    58.276
+   ]
+  },
+  {
+   "source": [
+    103.788,
+    108.459
+   ],
+   "montage": [
+    58.626,
+    63.297
+   ]
+  },
+  {
+   "source": [
+    109.436,
+    111.164
+   ],
+   "montage": [
+    63.647,
+    65.375
+   ]
+  },
+  {
+   "source": [
+    111.712,
+    111.88
+   ],
+   "montage": [
+    65.725,
+    65.893
+   ]
+  },
+  {
+   "source": [
+    117.853,
+    118.924
+   ],
+   "montage": [
+    66.243,
+    67.314
+   ]
+  },
+  {
+   "source": [
+    119.845,
+    123.277
+   ],
+   "montage": [
+    67.664,
+    71.096
+   ]
+  },
+  {
+   "source": [
+    125.733,
+    128.86
+   ],
+   "montage": [
+    71.446,
+    74.573
+   ]
+  },
+  {
+   "source": [
+    180.6,
+    183.4
+   ],
+   "montage": [
+    75.133,
+    77.933
+   ]
+  }
+ ]
+}

@@ -98,7 +98,7 @@ Au montage : respirations ramenées à 0,35 s, pauses un peu plus longues entre 
 ## 7. Chaîne de fabrication (10_cern)
 
 ```bash
-python3 tools/couper-voix.py voix-off/<prise>.wav voix-off/voix-montee.wav voix-off/voix-montee.json
+python3 tools/couper-voix.py voix-off/<prise>.wav voix-off/voix-montee.wav voix-montee.json
 bash tools/voix-finale.sh                 # voix traitée -> assets/voix-off.mp3
 npx hyperframes transcribe ...            # mots -> voix-mots.json (orthographe corrigée à la main)
 python3 tools/sous-titres.py              # sous-titres dans index.html

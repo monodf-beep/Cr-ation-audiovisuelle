@@ -29,8 +29,9 @@ for v in assets/affiche-animee.mp4 assets/exterieur.mp4 assets/interieur-lent.mp
 done
 
 if [ ! -f assets/face-voix.mp4 ] || [ "${FORCER:-}" = 1 ]; then
-  [ -f voix-off/voix-montee.json ] || python3 tools/couper-voix.py "${PRISE%.*}.wav" voix-off/voix-montee.wav voix-off/voix-montee.json
-  python3 tools/face-voix.py "$PRISE" voix-off/voix-montee.json assets/face-voix.mp4
+  # voix-montee.json (dans le depot) : les coupes de la voix de assets/voix-off.mp3, appliquees a l'image.
+  [ -f "$PRISE" ] || { echo "Prise filmee introuvable : $PRISE (la copier depuis Drive, dossier 10_cern/voix-off)"; exit 1; }
+  python3 tools/face-voix.py "$PRISE" voix-montee.json assets/face-voix.mp4
 fi
 
 if [ ! -f assets/article-nosalpes.jpg ] || [ "${FORCER:-}" = 1 ]; then

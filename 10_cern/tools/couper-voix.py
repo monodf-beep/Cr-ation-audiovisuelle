@@ -1,7 +1,8 @@
 """Montage de la voix off a partir d'une prise libre : garde les passages choisis et ramene
 chaque silence a une courte respiration. Ecrit la voix montee (wav) et la table de correspondance
 source -> montage (json), qui sert a recaler les images et les sous-titres.
-Usage : python3 tools/couper-voix.py <prise.wav> <sortie.wav> <sortie.json>"""
+Usage : python3 tools/couper-voix.py <prise.wav> <sortie.wav> <sortie.json>
+(table du montage actuel : voix-montee.json, a la racine du projet, suivie par git)"""
 import json, re, subprocess, sys
 
 src, sortie, table = sys.argv[1:4]
