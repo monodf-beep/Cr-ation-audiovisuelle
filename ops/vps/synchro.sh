@@ -10,6 +10,10 @@ source /etc/studio/studio.env
 cd "$DEPOT" || exit 1
 git fetch -q origin "$BRANCHE" && git merge -q --ff-only "origin/$BRANCHE" || echo "git : avance rapide impossible, a regarder"
 
+# Google Drive accepte deux dossiers du meme nom cote a cote (glisser un dossier deja present en cree
+# un second) : on les fusionne avant chaque copie, sans rien supprimer d'autre.
+rclone dedupe --dedupe-mode merge "$DRIVE" -q || echo "rclone : fusion des dossiers en double en erreur"
+
 MEDIAS='*.{mp4,mov,m4v,webm,wav,mp3,m4a,aac,flac,ogg,jpg,jpeg,png,webp,gif,svg,woff,woff2,otf,ttf}'
 rclone copy "$DRIVE" "$DEPOT" --update --include "$MEDIAS" --exclude 'node_modules/**' --exclude '.git/**' \
   --drive-skip-gdocs --fast-list -q || echo "rclone : Drive -> VPS en erreur"
