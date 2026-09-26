@@ -161,16 +161,10 @@
   try { reperes = (await (await fetch('reperes.json', { cache: 'no-store' })).json()).reperes; }
   catch (e) { erreur("reperes.json introuvable (" + e.message + ")."); }
   try {
+    // Phrases du texte : les sous-titres de la composition (.st, avec leurs temps data-a / data-b).
     const html = await (await fetch('index.html', { cache: 'no-store' })).text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const decalage = +((html.match(/shiftChildren\(([\d.]+)/) || [])[1] || 0);
-    const temps = JSON.parse(html.match(/\[\[1,\s*[\d.]+[\s\S]*?\]\]/)[0]);
-    const hook = doc.querySelector('#hook');
-    if (hook) phrases.push({ t: 0.1, fin: decalage, texte: hook.textContent.replace(/\s+/g, ' ').trim() });
-    for (const [n, a, b] of temps) {
-      const el = doc.querySelector('#st' + n);
-      if (el) phrases.push({ t: a + decalage, fin: b + decalage, texte: el.textContent.trim() });
-    }
+    doc.querySelectorAll('.st').forEach((st) => phrases.push({ t: +st.dataset.a, fin: +st.dataset.b, texte: st.textContent.replace(/\s+/g, ' ').trim() }));
     phrases.sort((x, y) => x.t - y.t);
   } catch (e) { /* le mode texte sera simplement vide */ }
 
