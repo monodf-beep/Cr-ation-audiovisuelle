@@ -33,7 +33,7 @@ HF=hyperframes@0.8.75
 echo "== Paquets systeme"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
-apt-get install -yq curl git ffmpeg ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https ufw fuse3
+apt-get install -yq curl git ffmpeg unzip ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https ufw fuse3
 if ! command -v node >/dev/null || [ "$(node -v | cut -d. -f1 | tr -d v)" -lt 22 ]; then
   curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   apt-get install -yq nodejs
