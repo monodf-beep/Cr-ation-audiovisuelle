@@ -48,6 +48,8 @@ fi
 npx --yes playwright@1.56.1 install-deps chromium
 
 echo "== Utilisateur et depot"
+# Les commandes lancees en tant que « studio » ne peuvent pas rester dans /root : on part de /tmp.
+cd /tmp
 id studio >/dev/null 2>&1 || useradd --system --create-home --home-dir /home/studio --shell /bin/bash studio
 mkdir -p "$RACINE" /etc/studio
 chown studio:studio "$RACINE"
@@ -59,7 +61,7 @@ fi
 for p in 08_hyperframes 10_cern; do
   [ -f "$DEPOT/$p/package.json" ] && sudo -u studio bash -c "cd '$DEPOT/$p' && npm install --silent"
 done
-sudo -u studio npx --yes "$HF" browser ensure
+sudo -u studio -H bash -c "cd ~ && npx --yes $HF browser ensure"
 
 cat > /etc/studio/studio.env <<EOF
 DEPOT=$DEPOT
@@ -159,7 +161,7 @@ echo
 echo "Studio      : https://$DOMAINE/"
 echo "Voix off    : https://$DOMAINE/enregistrement/$PROJET/enregistrer.html"
 echo "Identifiant : $UTILISATEUR (mot de passe choisi)"
-if ! sudo -u studio rclone listremotes | grep -q "^${DRIVE%%:*}:"; then
+if ! sudo -u studio -H rclone listremotes | grep -q "^${DRIVE%%:*}:"; then
   echo
   echo "Derniere etape, une seule fois : relier Google Drive."
   echo "  sudo -u studio rclone config create ${DRIVE%%:*} drive scope=drive config_is_local=false"
