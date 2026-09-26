@@ -20,7 +20,9 @@ BAS = []
 # Pas de sous-titres quand un titre a l'ecran dit deja la meme chose (citation « un bien commun, une culture commune »).
 SANS = [(46.08, 50.9)]
 # Changements de plan : un groupe ne les chevauche jamais.
-PLANS = [2.0, 6.66, 8.6, 12.9, 19.9, 29.9, 35.9, 42.1, 46.08, 50.9, 57.9, 63.0, 70.9, 75.0]
+# (62.9 et 74.9 : « Elle » et « Et je remercie » commencent juste avant le changement de plan depuis la coupe du
+# premier « 140 » ; le groupe part avec eux au lieu de clignoter seul.)
+PLANS = [2.0, 6.66, 8.6, 12.9, 19.9, 29.9, 35.9, 42.1, 46.08, 50.9, 57.9, 62.9, 70.9, 74.9]
 EXPRESSIONS = ["Grand Genève", "Pays de Gex", "Lengoua Savoyârda", "Cé qu'è lainô", "Laetitia Picard",
                "24 septembre", "bien commun", "culture commune", "langue commune", "projet culturel"]
 # Mots-cles : peu nombreux, sinon plus rien ne ressort (un groupe sur trois environ). La liste de la
