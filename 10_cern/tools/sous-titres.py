@@ -14,11 +14,13 @@ MOTS = json.load(open("voix-mots.json"))["mots"]
 DEBUT = 5                 # les cinq premiers mots sont le titre du hook, deja a l'ecran
 MAX_MOTS, MAX_CARS = 3, 20
 # Plans clairs (texte sombre) : carte, affiche, liste de la culture, carte du Grand Genève, remerciement.
-CLAIRS = [(2.0, 12.9), (19.9, 29.9), (42.1, 50.9), (70.9, 80.5)]
+CLAIRS = [(2.0, 6.66), (8.6, 12.9), (19.9, 29.9), (42.1, 50.9), (70.9, 80.5)]
 # Plans ou le bas du cadre porte deja du texte (affiche : bandeau Interreg) : sous-titres plus bas.
 BAS = [(19.9, 29.9)]
+# Pas de sous-titres quand un titre a l'ecran dit deja la meme chose (citation « un bien commun, une culture commune »).
+SANS = [(46.08, 50.9)]
 # Changements de plan : un groupe ne les chevauche jamais.
-PLANS = [2.0, 12.9, 19.9, 29.9, 35.9, 42.1, 50.9, 57.9, 63.0, 70.9, 75.0]
+PLANS = [2.0, 6.66, 8.6, 12.9, 19.9, 29.9, 35.9, 42.1, 46.08, 50.9, 57.9, 63.0, 70.9, 75.0]
 EXPRESSIONS = ["Grand Genève", "Pays de Gex", "Lengoua Savoyârda", "Cé qu'è lainô", "Laetitia Picard",
                "24 septembre", "bien commun", "culture commune", "langue commune", "projet culturel"]
 # Mots-cles : peu nombreux, sinon plus rien ne ressort (un groupe sur trois environ). La liste de la
@@ -63,6 +65,8 @@ for k, u in enumerate(unites):
             groupes.append(g); g = report
     g.append(u)
 groupes.append(g)
+
+groupes = [g for g in groupes if not any(a <= g[0][1] < b for a, b in SANS)]
 
 # 2 bis. Pas de groupe qui clignote : moins de 0,45 s a l'ecran (temps de la video acceleree, montage.json),
 # il rejoint le suivant, ou a defaut le precedent, si la ligne reste courte et sans changement de plan.

@@ -1,6 +1,18 @@
 {
-  "_note": "Réglages communs du montage, lus par les outils (tools/vitesse.py, voix-finale.sh, face-voix.py, habillage-sonore.py, preparer-medias.sh). vitesse : accélération de toute la vidéo (voix sans changement de hauteur, images, sous-titres, musique). Les temps écrits dans index.html (data-voix-*, scripts), voix-mots.json et les outils sont en « temps de la voix » (vitesse 1) ; tools/vitesse.py en déduit les temps de la vidéo.",
+  "_note": "Réglages communs du montage, lus par les outils (tools/vitesse.py, voix-finale.sh, face-voix.py, habillage-sonore.py, preparer-medias.sh). vitesse : accélération de toute la vidéo (voix sans changement de hauteur, images, sous-titres, musique). Les temps écrits dans index.html (data-voix-*, scripts), voix-mots.json et les outils sont en « temps de la voix » (vitesse 1) ; tools/vitesse.py en déduit les temps de la vidéo. exceptions_rythme : passages (temps de la voix) où un plan long est voulu ; 04_montage/metriques.py ne les signale pas.",
   "vitesse": 1.2,
   "duree_voix": 77.933,
-  "duree": 88.5
+  "duree": 88.5,
+  "exceptions_rythme": [
+    {
+      "de": 75.0,
+      "a": 80.5,
+      "raison": "remerciement en deux plans (fondu de l'affiche validé par Franck)"
+    },
+    {
+      "de": 80.5,
+      "a": 88.5,
+      "raison": "carton final à lire, la page de l'article défile"
+    }
+  ]
 }

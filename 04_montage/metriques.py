@@ -96,9 +96,13 @@ if os.path.exists(rendu):
     for x in (float(x) for x in re.findall(r"pts_time:([\d.]+)", log)):
         if x - coupes[-1] > 0.4: coupes.append(x)
     coupes.append(duree)
+    # Plans longs voulus (montage.json, exceptions_rythme, en temps de la voix) : notes, pas signales.
+    exceptions = [(e["de"] / V, e["a"] / V, e["raison"]) for e in montage.get("exceptions_rythme", [])]
     for a, b in zip(coupes, coupes[1:]):
         if b - a > SEUILS["plan_sans_coupe"][1]:
-            mesure("plan_sans_coupe", round(b - a, 1), "s", f"de {a:.1f} a {b:.1f} s")
+            voulu = next((r for x, y, r in exceptions if min(b, y) - max(a, x) > 0.5 * (b - a)), None)
+            if voulu: lignes.append(f"| plan_sans_coupe | {b - a:.1f} s | voulu | ok | de {a:.1f} a {b:.1f} s : {voulu} |")
+            else: mesure("plan_sans_coupe", round(b - a, 1), "s", f"de {a:.1f} a {b:.1f} s")
     lignes.append(f"| coupes detectees | {len(coupes) - 2} | | | une toutes les {duree / max(1, len(coupes) - 2):.1f} s en moyenne |")
     ebu = subprocess.run(["ffmpeg", "-hide_banner", "-i", rendu, "-vn", "-af", "ebur128=peak=true", "-f", "null", "-"],
                          capture_output=True, text=True).stderr

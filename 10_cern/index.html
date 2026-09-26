@@ -100,6 +100,17 @@
       .culture li span { display: inline-block; }
       .culture li.langue span { color: var(--fm-bleu-savoie); }
 
+      /* Citation (bibliotheque : « citation ») */
+      #p-citation { background: #e6ebf7; }
+      .citation { position: absolute; left: 90px; right: 90px; top: 420px; }
+      .citation .guill { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 360px; line-height: 0.8; color: var(--fm-bleu-savoie); }
+      .citation p { margin-top: 10px; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 104px; line-height: 1.02; }
+      .citation .l { display: block; overflow: hidden; padding-bottom: 8px; }
+      .citation .l > span { display: inline-block; }
+      .citation em { font-style: italic; color: var(--fm-bleu-savoie); }
+      .citation .sig { margin-top: 36px; font-size: 28px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+      #aerien-cadre, #badge-cadre { overflow: hidden; }
+
       /* Chiffres sur le badge */
       .chiffres { position: absolute; left: 60px; right: 60px; top: 230px; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--fm-bg); padding: 30px 20px; }
       .chiffres div { text-align: center; }
@@ -241,14 +252,19 @@
         <div class="legende" id="legende"><i></i>Grand Genève : Genève, district de Nyon, Genevois français</div>
       </div>
 
+      <!-- « je suis alle au CERN » : la preuve, Franck devant le Globe (coupe franche dans l'ouverture sur la carte) -->
+      <img id="insert-cern" class="clip plein" src="assets/hook-3.2.png" alt="" data-start="5.55" data-voix-start="6.66" data-duration="1.617" data-voix-duration="1.94" />
+
       <!-- Vue aerienne swisstopo (8,8 - 15,4 s) -->
       <div class="plan" id="p-aerien">
+        <div class="clip" id="aerien-cadre">
         <img class="aerien" id="z17" src="assets/aerien-z17.jpg" width="1536" height="1024" alt="" />
         <img class="aerien" id="z19" src="assets/aerien-z19.jpg" width="1536" height="1024" alt="" />
         <svg id="bague" viewBox="0 0 1080 1920">
           <circle class="b-fond" cx="540" cy="900" r="150" stroke="#ffffff" stroke-width="12" pathLength="1" />
           <circle class="b-trait" cx="540" cy="900" r="150" stroke="#0a36af" stroke-width="6" pathLength="1" />
         </svg>
+        </div>
         <div class="lieu-fin" id="pastille-globe"><span class="l"><span>Le Globe</span></span><span class="l"><span>de la science</span></span><span class="l"><span>et de l'<em>innovation</em></span></span></div>
         <div class="credit">© swisstopo</div>
       </div>
@@ -277,14 +293,18 @@
             <li><span>une salle de théâtre</span></li>
             <li><span>un musée</span></li>
             <li><span>un orchestre</span></li>
-            <li class="langue"><span>et une culture commune</span></li>
           </ul>
         </div>
       </div>
 
+      <!-- Citation : « un bien commun, une culture commune » (rythme : coupe franche au milieu de la culture) -->
+      <div class="plan" id="p-citation">
+        <div class="citation"><div class="guill">“</div><p><span class="l"><span>Un bien commun,</span></span><span class="l"><span>une <em>culture commune</em>.</span></span></p><div class="sig">Projet culturel du Grand Genève</div></div>
+      </div>
+
       <!-- Le badge et les chiffres de la concertation (38,6 - 44,6 s) -->
       <div class="plan" id="p-badge">
-        <img id="badge-img" src="assets/badge.jpg" width="1125" height="2000" alt="" />
+        <div class="clip" id="badge-cadre"><img id="badge-img" src="assets/badge.jpg" width="1125" height="2000" alt="" /></div>
         <div class="source-na" id="source-na">Source <img src="assets/nosalpes-logo.png" width="500" height="172" alt="Nos Alpes" /></div>
         <div class="chiffres" id="chiffres">
           <div><b data-n="160">160</b><span>acteurs</span></div>
@@ -340,9 +360,9 @@
       <div class="st clair" data-a="2.08" data-b="2.73"><span class="m" data-a="2.08" data-b="2.21">Eh</span> <span class="m" data-a="2.21" data-b="2.73">oui</span></div>
       <div class="st clair" data-a="2.73" data-b="4.21"><span class="m" data-a="2.73" data-b="3.25">jeudi</span> <span class="m" data-a="3.25" data-b="4.21">dernier</span></div>
       <div class="st clair" data-a="4.21" data-b="6.08"><span class="m" data-a="4.21" data-b="4.41">le</span> <span class="m cle" data-a="4.41" data-b="6.00">24 septembre</span></div>
-      <div class="st clair" data-a="6.08" data-b="7.10"><span class="m" data-a="6.08" data-b="6.22">je</span> <span class="m" data-a="6.22" data-b="6.66">suis</span> <span class="m" data-a="6.66" data-b="7.10">allé</span></div>
-      <div class="st clair" data-a="7.10" data-b="8.00"><span class="m" data-a="7.10" data-b="7.32">au</span> <span class="m cle" data-a="7.32" data-b="8.00">CERN</span></div>
-      <div class="st clair" data-a="8.00" data-b="9.08"><span class="m" data-a="8.00" data-b="8.18">à</span> <span class="m" data-a="8.18" data-b="9.00">Genève</span></div>
+      <div class="st clair" data-a="6.08" data-b="6.66"><span class="m" data-a="6.08" data-b="6.22">je</span> <span class="m" data-a="6.22" data-b="6.66">suis</span></div>
+      <div class="st" data-a="6.66" data-b="8.00"><span class="m" data-a="6.66" data-b="7.10">allé</span> <span class="m" data-a="7.10" data-b="7.32">au</span> <span class="m cle" data-a="7.32" data-b="8.00">CERN</span></div>
+      <div class="st" data-a="8.00" data-b="9.08"><span class="m" data-a="8.00" data-b="8.18">à</span> <span class="m" data-a="8.18" data-b="9.00">Genève</span></div>
       <div class="st clair" data-a="9.08" data-b="10.49"><span class="m" data-a="9.08" data-b="9.50">dans</span> <span class="m" data-a="9.50" data-b="9.75">un</span> <span class="m" data-a="9.75" data-b="10.49">projet</span></div>
       <div class="st clair" data-a="10.49" data-b="12.00"><span class="m cle" data-a="10.49" data-b="12.00">Interreg</span></div>
       <div class="st clair" data-a="12.00" data-b="13.08"><span class="m" data-a="12.00" data-b="12.15">du</span> <span class="m cle" data-a="12.15" data-b="13.00">Grand Genève</span></div>
@@ -372,11 +392,7 @@
       <div class="st" data-a="41.08" data-b="43.18"><span class="m" data-a="41.08" data-b="41.50">c'est</span> <span class="m" data-a="41.50" data-b="41.91">pour</span> <span class="m" data-a="41.91" data-b="42.21">les</span> <span class="m" data-a="42.21" data-b="42.65">festivals</span></div>
       <div class="st clair" data-a="43.18" data-b="44.00"><span class="m" data-a="43.18" data-b="43.35">de</span> <span class="m" data-a="43.35" data-b="44.00">jazz</span></div>
       <div class="st clair" data-a="44.00" data-b="45.00"><span class="m" data-a="44.00" data-b="44.15">des</span> <span class="m" data-a="44.15" data-b="44.44">salles</span> <span class="m" data-a="44.44" data-b="44.53">de</span> <span class="m" data-a="44.53" data-b="45.00">théâtre</span></div>
-      <div class="st clair" data-a="45.00" data-b="46.08"><span class="m" data-a="45.00" data-b="45.22">de</span> <span class="m" data-a="45.22" data-b="45.44">musées</span> <span class="m" data-a="45.44" data-b="46.00">d'orchestres</span></div>
-      <div class="st clair" data-a="46.08" data-b="46.70"><span class="m" data-a="46.08" data-b="46.31">mais</span> <span class="m" data-a="46.31" data-b="46.70">aussi</span></div>
-      <div class="st clair" data-a="46.70" data-b="47.63"><span class="m" data-a="46.70" data-b="46.85">de</span> <span class="m" data-a="46.85" data-b="47.63">travailler</span></div>
-      <div class="st clair" data-a="47.63" data-b="49.00"><span class="m" data-a="47.63" data-b="47.67">sur</span> <span class="m" data-a="47.67" data-b="48.18">un</span> <span class="m cle" data-a="48.18" data-b="49.00">bien commun</span></div>
-      <div class="st clair" data-a="49.00" data-b="51.08"><span class="m" data-a="49.00" data-b="49.30">une</span> <span class="m cle" data-a="49.30" data-b="51.00">culture commune</span></div>
+      <div class="st clair" data-a="45.00" data-b="46.25"><span class="m" data-a="45.00" data-b="45.22">de</span> <span class="m" data-a="45.22" data-b="45.44">musées</span> <span class="m" data-a="45.44" data-b="46.00">d'orchestres</span></div>
       <div class="st" data-a="51.08" data-b="53.16"><span class="m" data-a="51.08" data-b="51.54">Déjà</span> <span class="m cle" data-a="51.54" data-b="52.64">160</span></div>
       <div class="st" data-a="53.16" data-b="54.00"><span class="m" data-a="53.16" data-b="54.00">acteurs</span></div>
       <div class="st" data-a="54.00" data-b="55.31"><span class="m cle" data-a="54.00" data-b="54.47">140</span> <span class="m" data-a="54.47" data-b="55.24">structures</span></div>
@@ -559,9 +575,38 @@
 
       // La culture, c'est tout : chaque ligne monte quand le mot est dit (voix-mots.json).
       tl.from(".culture .eyebrow", { y: 14, opacity: 0, duration: 0.5, ease: "power3.out" }, 42.1);
-      [42.3, 44.3, 45.05, 45.35, 49.1].forEach((t, i) => {
+      [42.3, 44.3, 45.05, 45.35].forEach((t, i) => {
         tl.from(`.culture li:nth-child(${i + 1}) span`, { yPercent: 110, duration: 0.6, ease: "power4.out" }, t);
       });
+
+      // Rythme (04_montage/metriques.py : pas plus de 4 s sans changement franc), avec les effets gardes par Franck.
+      const flash = (t) => {
+        tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, t - 0.07);
+        tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, t);
+      };
+      // Ouverture : « je suis alle au CERN » -> la photo devant le Globe, poussee lente, puis retour a la carte.
+      gsap.set("#insert-cern", { transformOrigin: "60% 45%" });
+      tl.fromTo("#insert-cern", { scale: 1.08 }, { scale: 1, duration: 1.94, ease: "none", immediateRender: false }, 6.66);
+      flash(6.66); flash(8.6);
+      // Vue aerienne : punch-in sur « Le Globe de la science ».
+      gsap.set("#aerien-cadre", { transformOrigin: "50% 47%" });
+      tl.set("#aerien-cadre", { scale: 1.18 }, 17.08);
+      // Affiche : punch-in sur « un territoire a cheval », retour au large sur « la Haute-Savoie ».
+      gsap.set("#v-affiche", { transformOrigin: "50% 64%" });   // le titre de l'affiche remonte, loin du bandeau Interreg
+      tl.set("#v-affiche", { scale: 1.16 }, 24.08);
+      tl.set("#v-affiche", { scale: 1 }, 27.7);
+      // Culture : citation plein cadre sur « mais aussi... un bien commun, une culture commune ».
+      gsap.set("#p-citation", { opacity: 0 });
+      tl.set("#p-citation", { opacity: 1 }, 46.08);
+      tl.set("#p-culture", { opacity: 0 }, 46.08);
+      tl.from(".citation .guill", { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" }, 46.2);
+      tl.from(".citation .l > span", { yPercent: 110, duration: 0.7, ease: "power4.out", stagger: 0.8 }, 46.3);
+      tl.from(".citation .sig", { opacity: 0, duration: 0.5 }, 47.8);
+      tl.set("#p-citation", { opacity: 0 }, 50.9);
+      flash(46.08);
+      // Chiffres : punch-in sur le badge a « 140 ».
+      gsap.set("#badge-cadre", { transformOrigin: "55% 42%" });
+      tl.set("#badge-cadre", { scale: 1.15 }, 54.0);
 
       // Dans l'exposition (63 - 70,9).
       tl.to("#expo", { opacity: 1, duration: 0.01 }, 63.4);
