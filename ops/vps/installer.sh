@@ -72,7 +72,9 @@ HF=$HF
 EOF
 
 echo "== Services"
-install -m 755 "$DEPOT/ops/vps/synchro.sh" /usr/local/bin/studio-synchro
+# Lien vers le depot : chaque mise a jour du script arrive avec la synchronisation GitHub.
+chmod 755 "$DEPOT/ops/vps/synchro.sh"
+ln -sf "$DEPOT/ops/vps/synchro.sh" /usr/local/bin/studio-synchro
 cat > /usr/local/bin/studio-projet <<'EOF'
 #!/usr/bin/env bash
 # Change le projet ouvert dans le Studio : studio-projet 08_hyperframes
