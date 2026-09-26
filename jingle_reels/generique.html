@@ -1,0 +1,405 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Anton; src: url(fonts/Anton-Regular.ttf); }
+@font-face { font-family: InstSerif; font-style: italic; src: url(fonts/InstrumentSerif-Italic.ttf); }
+html, body { margin: 0; background: #000; }
+canvas { display: block; }
+</style></head>
+<body><canvas id="c"></canvas>
+<script>
+/*
+  Generique CULTURA SABAUDA, 30 i/s, tempo 128,57 : un temps = 14 images.
+
+  f000  la grille de + eclate depuis le centre
+  f014  les + pivotent en x
+  f021  le + central avale l'ecran
+  f028  8 cartes, une par demi-temps (7 images)
+  f084  acceleration : 4 verbes, un par quart de temps
+  f098  montee : tunnel de +
+  f108  silence, noir
+  f112  DROP : le logo
+  f210  fin
+*/
+const P = new URLSearchParams(location.search);
+const W = +(P.get('w') || 1080), H = +(P.get('h') || 1920);
+const U = Math.min(W, H) / 1080;           // unite de mise en page
+const PORTRAIT = H > W;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const out = cv.getContext('2d');
+const off = document.createElement('canvas'); off.width = W; off.height = H;
+const ctx = off.getContext('2d');
+
+const C = {
+  rouge: '#E0262E', creme: '#F4EEE2', nuit: '#0C0E19',
+  bleu: '#2440DF', moutarde: '#F2B22E', rougeSombre: '#B81D25',
+};
+
+// ---------------------------------------------------------------- courbes
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const expo = p => p >= 1 ? 1 : 1 - Math.pow(2, -10 * p);
+const expoIn = p => p <= 0 ? 0 : Math.pow(2, 10 * p - 10);
+const back = (p, s = 1.9) => { p -= 1; return 1 + (s + 1) * p * p * p + s * p * p; };
+const lerp = (a, b, p) => a + (b - a) * p;
+function hash(n) { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); }
+
+// ---------------------------------------------------------------- outils
+function fond(c) { ctx.fillStyle = c; ctx.fillRect(0, 0, W, H); }
+
+function plus(x, y, s, rot, col, ep = 0.26) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = col;
+  const a = s * ep;
+  ctx.fillRect(-s / 2, -a / 2, s, a); ctx.fillRect(-a / 2, -s / 2, a, s);
+  ctx.restore();
+}
+
+const fonte = (police, t) => police === 'InstSerif' ? `italic ${t}px InstSerif` : `${t}px ${police}`;
+function taillePour(texte, police, largeur) {
+  ctx.font = fonte(police, 100);
+  return 100 * largeur / ctx.measureText(texte).width;
+}
+
+function mot(texte, police, taille, x, y, col, align = 'center', base = 'middle') {
+  ctx.font = fonte(police, taille);
+  ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = base;
+  ctx.fillText(texte, x, y);
+}
+
+// glisse rapide puis derive lente : jamais immobile
+function glisse(lt, dist, dur = 5) {
+  return dist * (1 - expo(prog(lt, 0, dur))) - lt * dist * 0.012;
+}
+
+// ---------------------------------------------------------------- motifs
+const motifs = {
+  arcades(lt, col) {
+    const n = 4, w = W * 0.9 / n, x0 = W * 0.05, yb = H * (PORTRAIT ? 0.86 : 0.9);
+    const h = w * 1.5;
+    ctx.strokeStyle = col; ctx.lineWidth = 16 * U; ctx.lineCap = 'butt';
+    for (let i = 0; i < n; i++) {
+      const p = expo(prog(lt, i * 0.7, i * 0.7 + 5));
+      const cx = x0 + w * (i + 0.5), r = w * 0.38;
+      ctx.beginPath();
+      ctx.moveTo(cx - r, yb);
+      ctx.lineTo(cx - r, lerp(yb, yb - h + r, p));
+      if (p > 0.6) ctx.arc(cx, yb - h + r, r, Math.PI, Math.PI + Math.PI * prog(p, 0.6, 1));
+      ctx.stroke();
+      if (p > 0.95) { ctx.beginPath(); ctx.moveTo(cx + r, yb - h + r); ctx.lineTo(cx + r, yb); ctx.stroke(); }
+    }
+  },
+  guillemets(lt, col) {
+    const s = 1100 * U * (0.9 + 0.1 * expo(prog(lt, 0, 6)));
+    const dx = glisse(lt, -W * 0.5, 6);
+    mot('«', 'InstSerif', s, W * 0.28 + dx, H * (PORTRAIT ? 0.72 : 0.62), col);
+    mot('»', 'InstSerif', s, W * 0.72 - dx, H * (PORTRAIT ? 0.72 : 0.62), col);
+  },
+  meule(lt, col) {
+    const r = Math.min(W, H) * 0.36 * back(prog(lt, 0, 6), 1.4);
+    const cx = W / 2, cy = H * (PORTRAIT ? 0.66 : 0.58);
+    const a0 = -0.9 + lt * 0.09, coin = 0.9 * expo(prog(lt, 1, 6));
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, a0 + coin, a0 + Math.PI * 2); ctx.closePath(); ctx.fill();
+    // la part coupee, qui s'ecarte
+    const mid = a0 + coin / 2, ec = r * 0.18 * expo(prog(lt, 2, 7));
+    ctx.beginPath(); ctx.moveTo(cx + Math.cos(mid) * ec, cy + Math.sin(mid) * ec);
+    ctx.arc(cx + Math.cos(mid) * ec, cy + Math.sin(mid) * ec, r, a0, a0 + coin); ctx.closePath(); ctx.fill();
+  },
+  vinyle(lt, col, col2) {
+    const cx = W / 2, cy = H * (PORTRAIT ? 0.66 : 0.58);
+    const R = Math.min(W, H) * 0.42;
+    for (let i = 0; i < 7; i++) {
+      const p = expo(prog(lt, i * 0.4, i * 0.4 + 5));
+      ctx.strokeStyle = col; ctx.lineWidth = 10 * U;
+      ctx.beginPath(); ctx.arc(cx, cy, R * (0.3 + i * 0.1) * p, 0, Math.PI * 2); ctx.stroke();
+    }
+    const n = 13, bw = W * 0.8 / n;
+    ctx.fillStyle = col2;
+    for (let i = 0; i < n; i++) {
+      const h = (0.25 + 0.75 * Math.abs(Math.sin(i * 1.7 + lt * 0.9))) * H * 0.14 * expo(prog(lt, 0, 4));
+      ctx.fillRect(W * 0.1 + i * bw + bw * 0.15, H * (PORTRAIT ? 0.95 : 0.97) - h, bw * 0.7, h);
+    }
+  },
+  grille(lt, col) {
+    const pas = 150 * U;
+    for (let y = pas / 2; y < H + pas; y += pas)
+      for (let x = pas / 2; x < W + pas; x += pas) {
+        const d = Math.hypot(x - W / 2, y - H / 2) / Math.hypot(W, H);
+        const p = back(prog(lt, d * 8, d * 8 + 4));
+        if (p > 0) plus(x, y - lt * 3 * U, 46 * U * p, lt * 0.05, col);
+      }
+  },
+  frise(lt, col) {
+    ctx.fillStyle = col;
+    const rangs = PORTRAIT ? 4 : 2, pas = 120 * U;
+    for (let r = 0; r < rangs; r++) {
+      const y = H * (PORTRAIT ? 0.6 : 0.62) + r * pas * 0.9;
+      const dir = r % 2 ? 1 : -1, dx = dir * lt * 14 * U + (r % 2) * pas / 2;
+      const p = expo(prog(lt, r * 0.8, r * 0.8 + 4));
+      ctx.beginPath(); ctx.moveTo(-pas, y + pas * 0.4);
+      for (let x = -pas * 2 + (dx % pas); x < W + pas * 2; x += pas) {
+        ctx.lineTo(x, y + pas * 0.4); ctx.lineTo(x + pas / 2, y + pas * 0.4 - pas * 0.7 * p);
+      }
+      ctx.lineTo(W + pas * 2, y + pas * 0.4); ctx.lineTo(W + pas * 2, y + pas * 0.52);
+      ctx.lineTo(-pas * 2, y + pas * 0.52); ctx.closePath(); ctx.fill();
+    }
+  },
+  sommets(lt, col) {
+    // ligne de cretes qui se dessine d'un trait
+    const pts = [[0, .78], [.14, .62], [.24, .7], [.4, .44], [.52, .6], [.62, .52], [.8, .7], [.9, .6], [1, .72]];
+    const p = expo(prog(lt, 0, 6));
+    ctx.strokeStyle = col; ctx.lineWidth = 14 * U; ctx.lineJoin = 'miter';
+    ctx.beginPath();
+    const yb = PORTRAIT ? H * 0.28 : H * 0.12, hh = PORTRAIT ? H * 0.62 : H * 0.95;
+    let total = 0; const seg = [];
+    for (let i = 1; i < pts.length; i++) { const d = Math.hypot((pts[i][0] - pts[i - 1][0]) * W, (pts[i][1] - pts[i - 1][1]) * hh); seg.push(d); total += d; }
+    let reste = total * p;
+    ctx.moveTo(pts[0][0] * W, yb + pts[0][1] * hh);
+    for (let i = 1; i < pts.length && reste > 0; i++) {
+      const q = Math.min(1, reste / seg[i - 1]); reste -= seg[i - 1];
+      ctx.lineTo(lerp(pts[i - 1][0], pts[i][0], q) * W, yb + lerp(pts[i - 1][1], pts[i][1], q) * hh);
+    }
+    ctx.stroke();
+  },
+  croix(lt, col) {
+    const s = Math.min(W, H) * 0.95 * back(prog(lt, 0, 6), 1.3);
+    plus(W / 2, H * (PORTRAIT ? 0.66 : 0.56), s, (1 - expo(prog(lt, 0, 7))) * Math.PI / 2 + lt * 0.01, col, 0.3);
+  },
+};
+
+// ---------------------------------------------------------------- cartes
+const CARTES = [
+  { mot: 'HISTOIRE',   bg: C.nuit,     fg: C.creme,    m: 'arcades',    mc: C.rouge },
+  { mot: 'LANGUE',     bg: C.bleu,     fg: C.creme,    m: 'guillemets', mc: C.moutarde },
+  { mot: 'CUISINE',    bg: C.rouge,    fg: C.creme,    m: 'meule',      mc: C.moutarde, entree: 'iris' },
+  { mot: 'MUSIQUE',    bg: C.nuit,     fg: C.moutarde, m: 'vinyle',     mc: C.bleu, mc2: C.rouge },
+  { mot: 'PATRIMOINE', bg: C.bleu,     fg: C.creme,    m: 'grille',     mc: '#3A57F0', entree: 'biais', vertical: true },
+  { mot: 'TRADITIONS', bg: C.rouge,    fg: C.creme,    m: 'frise',      mc: C.nuit },
+  { mot: 'PAYSAGES',   bg: C.nuit,     fg: C.creme,    m: 'sommets',    mc: C.moutarde, entree: 'cretes' },
+  { mot: 'IDÉES',      bg: C.moutarde, fg: C.nuit,     m: 'croix',      mc: C.rouge },
+];
+const VERBES = [
+  { mot: 'LIRE', bg: C.rouge, fg: C.creme, d: 84 },
+  { mot: 'VOIR', bg: C.bleu, fg: C.creme, d: 88 },
+  { mot: 'GOÛTER', bg: C.rouge, fg: C.creme, d: 91 },
+  { mot: 'ÉCOUTER', bg: C.bleu, fg: C.creme, d: 95 },
+];
+
+function carte(k, lt) {
+  const c = CARTES[k];
+  fond(c.bg);
+  motifs[c.m](lt, c.mc, c.mc2);
+  const sens = k % 2 ? 1 : -1;
+  if (c.vertical && PORTRAIT) {
+    const t = taillePour(c.mot, 'Anton', H * 0.94);
+    ctx.save(); ctx.translate(W * 0.5, H / 2 + glisse(lt, H * 0.5 * sens));
+    ctx.rotate(-Math.PI / 2); mot(c.mot, 'Anton', t, 0, 0, c.fg); ctx.restore();
+  } else {
+    const t = taillePour(c.mot, 'Anton', W * (PORTRAIT ? 0.92 : 0.7));
+    const y = PORTRAIT ? H * 0.3 : H * 0.4;
+    mot(c.mot, 'Anton', t, W / 2 + glisse(lt, W * 0.6 * sens), y, c.fg);
+  }
+  // numero editorial
+  const n = String(k + 1).padStart(2, '0');
+  mot('n°' + n, 'InstSerif', 64 * U, 60 * U + glisse(lt, -80 * U, 4), 90 * U, c.fg, 'left', 'top');
+}
+
+function entree(type, p) {
+  ctx.beginPath();
+  if (type === 'iris') {
+    ctx.arc(W / 2, H * (PORTRAIT ? 0.66 : 0.58), Math.hypot(W, H) * p, 0, Math.PI * 2);
+  } else if (type === 'biais') {
+    const x = lerp(-W * 1.2, W * 1.2, p);
+    ctx.moveTo(x - W, 0); ctx.lineTo(x + W * 0.6, 0); ctx.lineTo(x, H); ctx.lineTo(x - W * 1.6, H);
+  } else if (type === 'cretes') {
+    const y = lerp(H * 1.25, -H * 0.3, p), pas = 220 * U;
+    ctx.moveTo(0, H); ctx.lineTo(0, y);
+    for (let x = 0; x <= W + pas; x += pas) { ctx.lineTo(x + pas / 2, y - pas * 0.8); ctx.lineTo(x + pas, y); }
+    ctx.lineTo(W, H);
+  }
+  ctx.closePath(); ctx.clip();
+}
+
+// ---------------------------------------------------------------- sequences
+function intro(t) {
+  fond(C.nuit);
+  const pas = 135 * U;
+  const rot = (Math.PI / 4) * expo(prog(t, 14, 19)) - (Math.PI / 4) * expo(prog(t, 21, 25));
+  const avale = expoIn(prog(t, 21, 28));
+  for (let y = H / 2 % pas - pas; y < H + pas; y += pas)
+    for (let x = W / 2 % pas - pas; x < W + pas; x += pas) {
+      const d = Math.hypot(x - W / 2, y - H / 2) / Math.hypot(W / 2, H / 2);
+      const p = back(prog(t, d * 9, d * 9 + 5), 2.4);
+      if (p <= 0) continue;
+      const centre = Math.abs(x - W / 2) < 1 && Math.abs(y - H / 2) < 1;
+      if (centre) continue;
+      const i = Math.round(x / pas) * 31 + Math.round(y / pas);
+      const col = hash(i) < 0.18 ? C.rouge : C.creme;
+      // ils fuient vers l'exterieur quand le centre avale tout
+      const fx = (x - W / 2) * (1 + avale * 3), fy = (y - H / 2) * (1 + avale * 3);
+      plus(W / 2 + fx, H / 2 + fy, 44 * U * p * (1 + avale), rot, col);
+    }
+  // le + central, carre rouge, qui grossit jusqu'a remplir l'ecran de ses bras
+  const p0 = back(prog(t, 0, 6), 2.6);
+  const s = 150 * U * p0 * (1 + avale * 60);
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.rotate(rot);
+  ctx.fillStyle = C.bleu; ctx.fillRect(-s * 0.62, -s * 0.62, s * 1.24, s * 1.24);
+  ctx.fillStyle = C.rouge; ctx.fillRect(-s * 0.54, -s * 0.54, s * 1.08, s * 1.08);
+  ctx.restore();
+  plus(W / 2, H / 2, s * 1.08, rot, C.creme, 0.24);
+}
+
+function tunnel(t) {
+  const lt = t - 98;
+  fond(C.nuit);
+  const vitesse = expoIn(prog(lt, 0, 10));
+  for (let r = 0; r < 14; r++) {
+    const z = ((r / 14 + lt * 0.02 + vitesse * 1.2) % 1);
+    const rayon = Math.pow(z, 2.4) * Math.hypot(W, H) * 0.9;
+    const n = 10, s = 16 * U + z * z * 150 * U;
+    for (let i = 0; i < n; i++) {
+      const a = i / n * Math.PI * 2 + r * 0.31 + lt * 0.06;
+      plus(W / 2 + Math.cos(a) * rayon, H / 2 + Math.sin(a) * rayon, s, a, r % 4 === 0 ? C.rouge : C.creme);
+    }
+  }
+  plus(W / 2, H / 2, 120 * U * (1 + vitesse * 0.6), lt * 0.25, C.rouge);
+}
+
+// --- le logo
+const LOGO = 'CULTURA';
+function logo(t) {
+  const lt = t - 112;
+  fond(C.rouge);
+  // grille de + qui derive, tres discrete
+  const pas = 150 * U;
+  for (let y = -pas; y < H + pas * 2; y += pas)
+    for (let x = pas / 2; x < W + pas; x += pas) {
+      const p = expo(prog(lt, 14 + (y / H) * 6, 20 + (y / H) * 6));
+      if (p > 0) plus(x, y - (lt * 1.2 * U) % pas, 30 * U * p, 0, C.rougeSombre);
+    }
+  const zoom = 1 + lt * 0.0004;
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H / 2);
+
+  const larg = W * (PORTRAIT ? 0.78 : 0.52);
+  const t1 = taillePour(LOGO, 'Anton', larg);
+  const y1 = H * (PORTRAIT ? 0.44 : 0.42);
+  ctx.font = `${t1}px Anton`;
+  let x = W / 2 - larg / 2;
+  for (let i = 0; i < LOGO.length; i++) {
+    const ch = LOGO[i], w = ctx.measureText(ch).width;
+    const p = prog(lt, i * 0.9, i * 0.9 + 4);
+    if (p > 0) {
+      const e = expo(p);
+      const dy = (1 - e) * -H * 0.45;
+      // ecrasement a l'arrivee
+      const imp = Math.max(0, 1 - Math.abs(lt - (i * 0.9 + 3)) / 2.5);
+      ctx.save(); ctx.translate(x + w / 2, y1 + dy); ctx.scale(1 + imp * 0.12, 1 - imp * 0.12);
+      mot(ch, 'Anton', t1, 0, 0, C.creme, 'center', 'alphabetic'); ctx.restore();
+    }
+    x += w;
+  }
+  // Sabauda, en italique, qui glisse et chevauche
+  const t2 = taillePour('Sabauda', 'InstSerif', larg * 0.98);
+  const p2 = prog(lt, 7, 13);
+  if (p2 > 0) {
+    const dx = (1 - expo(p2)) * W * 1.1;
+    ctx.save(); ctx.translate(W / 2 + dx, y1 + t2 * 0.62);
+    ctx.transform(1, 0, -0.25 * (1 - expo(p2)), 1, 0, 0);
+    mot('Sabauda', 'InstSerif', t2, 0, 0, C.nuit, 'center', 'alphabetic');
+    ctx.restore();
+  }
+  // la marque : petit drapeau borde de bleu, en exposant
+  const p3 = prog(lt, 14, 20);
+  if (p3 > 0) {
+    const s = 118 * U * back(p3, 2.2);
+    const pulse = 1 + 0.12 * Math.max(0, 1 - Math.abs(lt - 84) / 4);
+    const mx = W / 2 + larg / 2 - s * 0.5, my = y1 - t1 * 0.74 - s * 0.72;
+    ctx.save(); ctx.translate(mx, my); ctx.rotate((1 - expo(p3)) * Math.PI); ctx.scale(pulse, pulse);
+    ctx.fillStyle = C.bleu; ctx.fillRect(-s / 2, -s / 2, s, s);
+    ctx.fillStyle = C.rouge; ctx.fillRect(-s * 0.41, -s * 0.41, s * 0.82, s * 0.82);
+    ctx.restore();
+    plus(mx, my, s * 0.82 * pulse, (1 - expo(p3)) * Math.PI, C.creme, 0.24);
+  }
+  // la ligne de cretes qui souligne
+  const p4 = expo(prog(lt, 16, 26));
+  if (p4 > 0) {
+    const yb = y1 + t2 * 0.95, x0 = W / 2 - larg / 2, pas = larg / 9;
+    ctx.strokeStyle = C.creme; ctx.lineWidth = 9 * U; ctx.lineJoin = 'miter';
+    ctx.beginPath(); ctx.moveTo(x0, yb);
+    const fin = x0 + larg * p4;
+    for (let xx = x0; xx < fin; xx += pas / 2) {
+      const k = Math.round((xx - x0) / (pas / 2));
+      const nx = Math.min(fin, xx + pas / 2);
+      const haut = (k % 2 === 0) ? (k % 6 === 2 ? 1.6 : 1) : 0;
+      ctx.lineTo(nx, yb - (k % 2 === 0 ? haut * pas * 0.45 * ((nx - xx) / (pas / 2)) : 0));
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ---------------------------------------------------------------- scene
+function scene(t) {
+  ctx.save();
+  if (t < 28) intro(t);
+  else if (t < 84) {
+    const k = Math.floor((t - 28) / 7), lt = t - 28 - k * 7;
+    const c = CARTES[k];
+    if (c.entree && lt < 4 && k > 0) {
+      carte(k - 1, lt + 7);
+      ctx.save(); entree(c.entree, expo(prog(lt, 0, 4))); carte(k, lt); ctx.restore();
+    } else carte(k, lt);
+  } else if (t < 98) {
+    let k = 0; while (k < 3 && t >= VERBES[k + 1].d) k++;
+    const v = VERBES[k], lt = t - v.d;
+    fond(v.bg);
+    const taille = taillePour(v.mot, 'Anton', W * 1.15);
+    mot(v.mot, 'Anton', taille, W / 2 + glisse(lt, (k % 2 ? 1 : -1) * W * 0.3, 3), H / 2, v.fg);
+    plus(W / 2, H / 2 + taille * 0.75, 60 * U, lt * 0.4, v.fg);
+  } else if (t < 108) tunnel(t);
+  else if (t < 112) fond(C.nuit);
+  else logo(t);
+  ctx.restore();
+}
+
+// secousse de camera sur les impacts
+function secousse(t) {
+  let dx = 0, dy = 0;
+  for (const [t0, a] of [[0, 10], [28, 14], [112, 26], [126, 10]]) {
+    if (t >= t0) { const d = t - t0, k = a * U * Math.exp(-d / 2.2); dx += k * Math.sin(d * 3.1); dy += k * Math.cos(d * 2.3); }
+  }
+  return [dx, dy];
+}
+
+// grain : quelques trames de bruit precalculees
+const GRAINS = [];
+for (let g = 0; g < 6; g++) {
+  const c = document.createElement('canvas'); c.width = W / 2; c.height = H / 2;
+  const x = c.getContext('2d'), im = x.createImageData(c.width, c.height);
+  for (let i = 0; i < im.data.length; i += 4) {
+    const v = 128 + (Math.random() - 0.5) * 120;
+    im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255;
+  }
+  x.putImageData(im, 0, 0); GRAINS.push(c);
+}
+
+const SOUS = +(P.get('sous') || 5);
+window.dessiner = function (f) {
+  out.globalCompositeOperation = 'source-over';
+  for (let k = 0; k < SOUS; k++) {
+    const t = f + (k / SOUS) * 0.5;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const [dx, dy] = secousse(t);
+    ctx.translate(dx, dy);
+    ctx.fillStyle = '#000'; ctx.fillRect(-100, -100, W + 200, H + 200);
+    scene(t);
+    out.globalAlpha = 1 / (k + 1);
+    out.drawImage(off, 0, 0);
+  }
+  out.globalAlpha = 0.16;
+  out.globalCompositeOperation = 'overlay';
+  out.drawImage(GRAINS[f % GRAINS.length], 0, 0, W, H);
+  out.globalCompositeOperation = 'source-over'; out.globalAlpha = 1;
+};
+window.pret = document.fonts.load('100px Anton').then(() => document.fonts.load('italic 100px InstSerif')).then(() => true);
+</script></body></html>
