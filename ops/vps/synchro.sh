@@ -8,7 +8,12 @@ set -uo pipefail
 source /etc/studio/studio.env
 
 cd "$DEPOT" || exit 1
-git fetch -q origin "$BRANCHE" && git merge -q --ff-only "origin/$BRANCHE" || echo "git : avance rapide impossible, a regarder"
+# Le VPS est une copie de GitHub : les modifications se font dans le depot (par Claude), pas sur le VPS.
+# Le Studio HyperFrames reecrit index.html quand il l'ouvre (reperes techniques) : ces reecritures sont
+# ecartees a chaque mise a jour, sinon git refuserait de recuperer la nouvelle version.
+if git fetch -q origin "$BRANCHE" && [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/$BRANCHE")" ]; then
+  git reset -q --hard "origin/$BRANCHE" || echo "git : mise a jour impossible, a regarder"
+fi
 
 # Google Drive accepte deux dossiers du meme nom cote a cote (glisser un dossier deja present en cree
 # un second) : on les fusionne avant chaque copie, sans rien supprimer d'autre.
