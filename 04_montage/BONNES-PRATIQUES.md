@@ -99,7 +99,8 @@ Au montage : respirations ramenées à 0,35 s, pauses un peu plus longues entre 
 Dans le studio (VPS) : **`https://<adresse du studio>/enregistrement/bibliotheque/`** (même mot de passe),
 lien aussi en haut de la page d'enregistrement.
 
-- Trois onglets : **Sons et musiques** (écoute), **Effets graphiques** (démos animées), **Téléverser**.
+- Quatre onglets : **Sons et musiques** (écoute), **Effets graphiques** (démos animées), **Styles et skills**
+  (fiches des styles, `styles/`), **Téléverser** (son, musique, effet graphique, ou style / skill en .zip, .md, .pdf, image).
 - Chaque élément se garde ou s'écarte ; le choix est enregistré sur le studio.
 - **Téléverser** ajoute un fichier à la bibliothèque (son, musique, ou effet graphique en vidéo ou image), avec
   titre, catégorie, usage, source et licence. Un ajout est gardé d'office et peut être retiré.

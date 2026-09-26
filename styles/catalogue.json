@@ -1,0 +1,35 @@
+{
+  "_note": "Styles et skills de la bibliothèque (onglet « Styles et skills » du studio). Fiche : styles/<id>.md ; skill : .claude/skills/<skill>/.",
+  "styles": [
+    {
+      "id": "style-reportage-franck",
+      "nom": "Reportage Franck Monod",
+      "skill": "reportage-franck",
+      "fiche": "reportage-franck.md",
+      "resume": "Reportage de terrain sobre, porté par la voix libre de Franck ; chaque image prouve la voix.",
+      "quand": "Événement, lieu, rencontre, projet, avec de vraies images.",
+      "couleurs": ["#0a36af", "#171719", "#ffffff", "#f7f7f8"],
+      "maison": true
+    },
+    {
+      "id": "style-vox-collage",
+      "nom": "Vox — collage éditorial",
+      "skill": "vox-animation",
+      "fiche": "vox-collage.md",
+      "resume": "Explication animée en collage : découpages photo, aplats, annotations au feutre, narration documentaire.",
+      "quand": "Sujet sans tournage : histoire, concept, donnée surprenante.",
+      "couleurs": ["#f2c230", "#f4efe3", "#1f2a4d", "#e8604c"],
+      "maison": false
+    },
+    {
+      "id": "style-vox-diorama",
+      "nom": "Vox — diorama de papier",
+      "skill": "vox-animation",
+      "fiche": "vox-diorama.md",
+      "resume": "Documentaire en diorama de papier journal sépia, silhouettes aux yeux barrés, un accent orange brûlé.",
+      "quand": "Enquête, sujet politique ou grave.",
+      "couleurs": ["#b59a73", "#e3d5b8", "#3b2f22", "#c8561d"],
+      "maison": false
+    }
+  ]
+}

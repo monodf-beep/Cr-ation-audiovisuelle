@@ -19,7 +19,8 @@ const DRIVE = process.env.DRIVE || '';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript',
   '.json': 'application/json', '.mp4': 'video/mp4', '.webm': 'video/webm', '.m4a': 'audio/mp4', '.wav': 'audio/wav',
   '.mp3': 'audio/mpeg', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
-  '.svg': 'image/svg+xml', '.woff': 'font/woff', '.woff2': 'font/woff2' };
+  '.svg': 'image/svg+xml', '.woff': 'font/woff', '.woff2': 'font/woff2', '.md': 'text/plain; charset=utf-8',
+  '.pdf': 'application/pdf', '.zip': 'application/zip' };
 
 // Chemin sur, sans sortie du depot ni fichiers caches (.git, .env...).
 function chemin(url) {
@@ -68,7 +69,7 @@ function televerser(req, res, projet) {
 const BIBLIO = join(DEPOT, 'bibliotheque');
 const ETAT = join(BIBLIO, 'donnees', 'etat.json');
 const TYPES_BIBLIO = { son: /\.(mp3|wav|m4a|aac|ogg|flac)$/i, musique: /\.(mp3|wav|m4a|aac|ogg|flac)$/i,
-  graphique: /\.(mp4|webm|mov|png|jpe?g|gif|webp|svg)$/i };
+  graphique: /\.(mp4|webm|mov|png|jpe?g|gif|webp|svg)$/i, style: /\.(zip|md|pdf|png|jpe?g|webp)$/i };
 const lireEtat = () => { try { return JSON.parse(readFileSync(ETAT, 'utf8')); } catch { return { choix: {}, televerses: [] }; } };
 const versDrive = (local, distant) => { if (DRIVE) spawn('rclone', ['copyto', local, `${DRIVE}/bibliotheque/${distant}`], { stdio: 'ignore', detached: true }).unref(); };
 function ecrireEtat(etat) {

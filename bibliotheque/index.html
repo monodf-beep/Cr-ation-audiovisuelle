@@ -73,6 +73,19 @@ button:focus-visible,.scene:focus-visible{outline:2px solid var(--bleu);outline-
 .corps .u{font-size:14px;color:var(--encre-2)}
 .corps .choix{margin-top:auto;padding-top:6px}
 .corps .choix button.g,.corps .choix button.e{flex:1}
+/* Styles et skills */
+.style{display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:start;background:var(--carte);border:1px solid var(--trait);border-left:4px solid transparent;padding:14px;margin-bottom:10px}
+.style.garde{border-left-color:var(--garde)}
+.style.ecarte{border-left-color:var(--ecarte);opacity:.6}
+.nuancier{display:grid;grid-template-columns:repeat(2,1fr);width:120px;aspect-ratio:1}
+.nuancier i{display:block}
+.style .apercu{width:120px;aspect-ratio:1;object-fit:cover;background:var(--fond)}
+.style .t{font-weight:800;font-size:18px}
+.style .u{font-size:14px;color:var(--encre-2)}
+.style .s{font-size:13px;color:var(--encre-3)}
+.style .s a{color:var(--bleu)}
+.style code{font-size:13px}
+@media (max-width:620px){ .style{grid-template-columns:80px 1fr} .nuancier,.style .apercu{width:80px} .style .choix{grid-column:1/-1} }
 /* Televerser */
 form{background:var(--carte);border:1px solid var(--trait);padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 18px;max-width:900px}
 label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600;color:var(--encre-2)}
@@ -111,11 +124,12 @@ progress{width:220px;height:8px}
     <nav><a href="../10_cern/enregistrer.html">Enregistrer la voix off</a></nav>
     <div class="eyebrow">Studio · bibliothèque de montage</div>
     <h1>Bibliothèque de montage</h1>
-    <p>Sons, musiques et effets graphiques pour les reportages. Gardez ce qui colle au style, écartez le reste, ajoutez vos propres fichiers. Les choix sont enregistrés sur le studio et copiés dans Google Drive (dossier <code>bibliotheque</code>). Un élément gardé n'entre dans un montage que s'il y est pertinent.</p>
+    <p>Sons, musiques, effets graphiques, styles et skills pour les vidéos. Gardez ce qui colle au style, écartez le reste, ajoutez vos propres fichiers. Les choix sont enregistrés sur le studio et copiés dans Google Drive (dossier <code>bibliotheque</code>). Un élément gardé n'entre dans un montage que s'il y est pertinent.</p>
   </header>
   <div class="onglets" role="tablist">
     <button role="tab" id="o-sons" aria-selected="true" data-o="sons">Sons et musiques</button>
     <button role="tab" id="o-graphiques" aria-selected="false" data-o="graphiques">Effets graphiques</button>
+    <button role="tab" id="o-styles" aria-selected="false" data-o="styles">Styles et skills</button>
     <button role="tab" id="o-ajouter" aria-selected="false" data-o="ajouter">Téléverser</button>
   </div>
 
@@ -131,6 +145,7 @@ progress{width:220px;height:8px}
 
   <section id="p-sons" role="tabpanel"></section>
   <section id="p-graphiques" role="tabpanel" hidden></section>
+  <section id="p-styles" role="tabpanel" hidden></section>
   <section id="p-ajouter" role="tabpanel" hidden>
     <form id="form">
       <label>Type
@@ -138,6 +153,7 @@ progress{width:220px;height:8px}
           <option value="son">Effet sonore</option>
           <option value="musique">Musique</option>
           <option value="graphique">Effet graphique (vidéo ou image)</option>
+          <option value="style">Style ou skill (.zip, fiche .md ou .pdf, planche en image)</option>
         </select>
       </label>
       <label>Fichier
@@ -324,7 +340,7 @@ const boutons = (id, ajout) => `<div class="choix"><button class="g" aria-presse
 function rendreSons() {
   const p = document.getElementById("p-sons"); p.innerHTML = "";
   const tous = [...donnees.sons.map((s) => ({ ...s, ajout: false })),
-    ...donnees.televerses.filter((t) => t.type !== "graphique").map((t) => ({ ...t, ajout: true, present: true }))];
+    ...donnees.televerses.filter((t) => t.type === "son" || t.type === "musique").map((t) => ({ ...t, ajout: true, present: true }))];
   const groupes = {};
   tous.filter((s) => visible(s.id, s.ajout)).forEach((s) => (groupes[(s.type === "musique" ? "Musique · " : "") + (s.categorie || "Sans catégorie")] ||= []).push(s));
   if (!Object.keys(groupes).length) p.innerHTML = '<p class="vide">Rien ici pour ce filtre.</p>';
@@ -349,6 +365,28 @@ function rendreSons() {
 }
 audio.ontimeupdate = () => { const b = document.querySelector(`.son[data-id="${enCours}"] .barre`); if (b && audio.duration) b.style.width = (100 * audio.currentTime / audio.duration) + "%"; };
 audio.onended = () => { enCours = null; if (onglet === "sons") rendreSons(); };
+
+// ---- Styles et skills (styles/catalogue.json du depot + ajouts televerses) ----
+let styles = [];
+fetch("../styles/catalogue.json", { cache: "no-store" }).then((r) => r.json()).then((d) => { styles = d.styles; if (onglet === "styles") rendre(); }).catch(() => {});
+function rendreStyles() {
+  const p = document.getElementById("p-styles"); p.innerHTML = "";
+  p.insertAdjacentHTML("beforeend", '<p class="vide">Un style fixe le rendu d\'une vidéo ; son skill apprend à Claude à la fabriquer. Pour en ajouter un, onglet Téléverser (type « Style ou skill ») : Claude l\'installera ensuite dans le dépôt.</p>');
+  const liste = [...styles.map((x) => ({ ...x, ajout: false })), ...donnees.televerses.filter((t) => t.type === "style").map((t) => ({ ...t, nom: t.titre, resume: t.usage, ajout: true }))]
+    .filter((x) => visible(x.id, x.ajout));
+  if (!liste.length) p.insertAdjacentHTML("beforeend", '<p class="vide">Rien ici pour ce filtre.</p>');
+  liste.forEach((x) => {
+    const c = donnees.choix[x.id];
+    const visuel = x.ajout ? (/\.(png|jpe?g|webp)$/i.test(x.fichier) ? `<img class="apercu" src="${esc(x.fichier)}" alt="">` : `<div class="nuancier">${["#e6ebf7", "#0a36af", "#0a36af", "#e6ebf7"].map((k) => `<i style="background:${k}"></i>`).join("")}</div>`)
+      : `<div class="nuancier">${(x.couleurs || []).map((k) => `<i style="background:${esc(k)}"></i>`).join("")}</div>`;
+    const lien = x.ajout ? `<a href="${esc(x.fichier)}" target="_blank" rel="noopener">ouvrir le fichier</a>` : `<a href="../styles/${esc(x.fiche)}" target="_blank" rel="noopener">lire la fiche</a> · skill <code>${esc(x.skill)}</code>`;
+    p.insertAdjacentHTML("beforeend", `<div class="style${c === "garde" ? " garde" : c === "ecarte" ? " ecarte" : ""}">${visuel}
+      <div class="info"><div><span class="etiq${x.ajout ? " ajout" : x.maison ? "" : " neuf"}">${x.ajout ? "Mon ajout" : x.maison ? "Style maison" : "Style importé"}</span></div>
+      <div class="t">${esc(x.nom)}</div><div class="u">${esc(x.resume || "")}</div>${x.quand ? `<div class="s">Quand : ${esc(x.quand)}</div>` : ""}<div class="s">${lien}</div></div>
+      ${boutons(x.id, x.ajout)}</div>`);
+  });
+  brancher(p);
+}
 
 const timelines = [];
 function rendreGraphiques() {
@@ -390,14 +428,15 @@ function brancher(p) {
   p.querySelectorAll("[data-retirer]").forEach((b) => b.onclick = () => retirer(b.dataset.retirer));
 }
 function compter() {
-  const ids = onglet === "graphiques" ? [...EFFETS.map((e) => e.id), ...donnees.televerses.filter((t) => t.type === "graphique").map((t) => t.id)]
-    : [...donnees.sons.map((s) => s.id), ...donnees.televerses.filter((t) => t.type !== "graphique").map((t) => t.id)];
+  const ids = onglet === "styles" ? [...styles.map((x) => x.id), ...donnees.televerses.filter((t) => t.type === "style").map((t) => t.id)]
+    : onglet === "graphiques" ? [...EFFETS.map((e) => e.id), ...donnees.televerses.filter((t) => t.type === "graphique").map((t) => t.id)]
+    : [...donnees.sons.map((s) => s.id), ...donnees.televerses.filter((t) => t.type === "son" || t.type === "musique").map((t) => t.id)];
   const g = ids.filter((i) => donnees.choix[i] === "garde").length, x = ids.filter((i) => donnees.choix[i] === "ecarte").length;
   document.getElementById("compte").innerHTML = `<b>${g}</b> gardés · <b>${x}</b> écartés · <b>${ids.length - g - x}</b> à trier`;
 }
 function rendre() {
   document.getElementById("outils").hidden = onglet === "ajouter";
-  if (onglet === "sons") rendreSons(); else if (onglet === "graphiques") rendreGraphiques();
+  if (onglet === "sons") rendreSons(); else if (onglet === "graphiques") rendreGraphiques(); else if (onglet === "styles") rendreStyles();
   if (onglet !== "ajouter") compter();
   const cats = new Set([...donnees.sons.map((s) => s.categorie), ...EFFETS.map((e) => e.famille), ...donnees.televerses.map((t) => t.categorie)].filter(Boolean));
   document.getElementById("categories").innerHTML = [...cats].map((c) => `<option value="${esc(c)}">`).join("");
@@ -405,7 +444,7 @@ function rendre() {
 document.querySelectorAll(".onglets button").forEach((b) => b.onclick = () => {
   onglet = b.dataset.o;
   document.querySelectorAll(".onglets button").forEach((y) => y.setAttribute("aria-selected", y === b));
-  ["sons", "graphiques", "ajouter"].forEach((o) => document.getElementById("p-" + o).hidden = o !== onglet);
+  ["sons", "graphiques", "styles", "ajouter"].forEach((o) => document.getElementById("p-" + o).hidden = o !== onglet);
   if (onglet !== "sons") audio.pause();
   rendre();
 });
@@ -415,7 +454,8 @@ document.querySelectorAll(".filtres button").forEach((b) => b.onclick = () => {
 
 // ---- Televerser ----
 const ACCEPTE = { son: ["audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac", "mp3, wav, m4a, aac, ogg, flac"], musique: ["audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac", "mp3, wav, m4a, aac, ogg, flac"],
-  graphique: ["video/*,image/*,.mp4,.webm,.mov,.png,.jpg,.jpeg,.gif,.webp,.svg", "vidéo (mp4, webm, mov) ou image (png, jpg, gif, webp, svg)"] };
+  graphique: ["video/*,image/*,.mp4,.webm,.mov,.png,.jpg,.jpeg,.gif,.webp,.svg", "vidéo (mp4, webm, mov) ou image (png, jpg, gif, webp, svg)"],
+  style: [".zip,.md,.pdf,.png,.jpg,.jpeg,.webp", "skill en .zip, fiche en .md ou .pdf, planche de référence en image"] };
 const typeSel = document.getElementById("type");
 typeSel.onchange = () => { const [acc, aide] = ACCEPTE[typeSel.value]; document.getElementById("fichier").accept = acc; document.getElementById("aide-fichier").textContent = aide; };
 document.getElementById("form").onsubmit = (ev) => {
