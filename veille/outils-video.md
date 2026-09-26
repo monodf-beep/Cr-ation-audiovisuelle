@@ -34,3 +34,14 @@ Trois familles d'outils qui se suivent dans une chaîne de production sans se re
 - Le reel « Claude Edit » (@mr.paidsocial) : le montage y est fait par Claude Code en
   8 itérations, Arcads ne sert qu'à générer les plans. C'est un reel d'appât à commentaires
   (3 785 commentaires pour 978 likes).
+
+## Installé dans le dépôt (26/09/2026)
+
+- Skills HyperFrames dans `.claude/skills/` (commit amont `984ad28`, Apache 2.0) :
+  le routeur `hyperframes`, les skills de base, `media-use` et quatre workflows
+  (`embedded-captions`, `talking-head-recut`, `motion-graphics`, `general-video`).
+  Les autres workflows s'installent à la demande via le routeur.
+- Skill `motion-design` de LottieFiles (commit amont `f9a8a04`, MIT).
+- `.claude/hooks/session-start.sh` : installe FFmpeg, Chrome headless et les
+  dépendances de `reels-templates` au démarrage des sessions web.
+- Mise à jour : `npx hyperframes skills update`, puis recopier dans `.claude/skills/`.
