@@ -111,3 +111,23 @@ python3 tools/sous-titres.py              # sous-titres dans index.html
 bash tools/preparer-medias.sh             # face caméra, capture de l'article, musique (hors dépôt)
 npx hyperframes check && npx hyperframes render -o renders/cern-reportage.mp4
 ```
+
+## 8. Métriques à surveiller (alertes)
+
+Outil : `python3 04_montage/metriques.py 10_cern` (après le rendu). Rapport : `10_cern/metriques.md`,
+avec une ligne « ALERTE » pour chaque valeur hors des seuils. À lancer avant chaque publication (demande de Franck).
+
+| Métrique | Seuil | Pourquoi |
+|---|---|---|
+| Débit de la voix | 150 à 185 mots/min (un nombre compte 2 mots) | En dessous, on décroche ; au-dessus, on ne suit plus. Formats courts : 160-180. |
+| Débit par séquence | 135 à 200 mots/min | Repère la séquence qui traîne ou qui se précipite. |
+| Pause dans une phrase | ≤ 0,6 s (≤ 0,9 s entre deux séquences) | Au-delà, le blanc s'entend et l'attention tombe. |
+| Accroche | premier mot avant 0,5 s ; sujet dit en ≤ 3 s | Tout se joue dans les 2-3 premières secondes. |
+| Sous-titres : taille | 1 à 4 unités, ≤ 24 caractères | Une ligne, lue d'un coup d'œil. |
+| Sous-titres : durée à l'écran | 0,4 à 3 s | Moins : le groupe clignote ; plus : l'image paraît figée. |
+| Sous-titres : lecture | ≤ 25 caractères/s | Groupes lus en même temps qu'entendus (la norme de 17 car./s vaut pour les sous-titres en phrases). |
+| Mots-clés en valeur | 15 à 40 % des groupes | Trop peu : rien ne ressort ; trop : plus rien ne ressort. |
+| Plan sans changement franc | ≤ 4 s | Coupe, punch-in ou nouveau titre toutes les 2 à 4 s (mesuré sur le rendu). |
+| Durée de la vidéo | 15 à 90 s | Reels et Shorts. |
+| Volume | −16,5 à −13,5 LUFS ; crête ≤ −1 dBTP | Niveau des plateformes, sans saturation au réencodage. |
+| Musique sous la voix | 12 à 22 dB en dessous | Présente sans gêner la compréhension. |

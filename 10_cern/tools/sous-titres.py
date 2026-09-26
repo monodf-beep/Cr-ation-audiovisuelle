@@ -64,6 +64,25 @@ for k, u in enumerate(unites):
     g.append(u)
 groupes.append(g)
 
+# 2 bis. Pas de groupe qui clignote : moins de 0,45 s a l'ecran (temps de la video acceleree, montage.json),
+# il rejoint le suivant, ou a defaut le precedent, si la ligne reste courte et sans changement de plan.
+VITESSE = json.load(open("montage.json"))["vitesse"]
+MIN_ECRAN, MAX_FUSION, MAX_UNITES = 0.45, 24, 4
+texte_de = lambda g: " ".join(nu(u[0]) for u in g)
+coupe_plan = lambda g, h: any(g[0][1] < p <= h[0][1] + 0.05 for p in PLANS)
+k = 0
+while k < len(groupes):
+    g = groupes[k]
+    fin = groupes[k + 1][0][1] if k + 1 < len(groupes) else g[-1][2] + 0.25
+    if (fin - g[0][1]) / VITESSE < MIN_ECRAN:
+        if k + 1 < len(groupes) and len(g + groupes[k + 1]) <= MAX_UNITES and len(texte_de(g + groupes[k + 1])) <= MAX_FUSION and not coupe_plan(g, groupes[k + 1]) \
+                and sum(cle(u[0]) for u in g + groupes[k + 1]) <= 1:
+            groupes[k:k + 2] = [g + groupes[k + 1]]; continue
+        if k > 0 and len(groupes[k - 1] + g) <= MAX_UNITES and len(texte_de(groupes[k - 1] + g)) <= MAX_FUSION and not coupe_plan(groupes[k - 1], g) \
+                and sum(cle(u[0]) for u in groupes[k - 1] + g) <= 1:
+            groupes[k - 1:k + 1] = [groupes[k - 1] + g]; k -= 1; continue
+    k += 1
+
 # 3. HTML.
 lignes = []
 for k, g in enumerate(groupes):
