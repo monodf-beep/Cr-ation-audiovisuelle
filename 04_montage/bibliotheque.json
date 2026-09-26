@@ -1,6 +1,73 @@
 {
   "_note": "Bibliothèque de montage validée par Franck (voir BONNES-PRATIQUES.md, section 6). Seuls les éléments gardés sur la page de sélection entrent ici. Fichiers dans Google Drive (Vidéos/bibliotheque/), pas dans le dépôt.",
-  "sons": [],
-  "musiques": [],
+  "sons": [
+    {
+      "id": "declencheur-photo-1",
+      "titre": "Camera shutter click",
+      "categorie": "Déclencheur photo",
+      "duree": 0.39,
+      "source": "Mixkit",
+      "licence": "Mixkit Free License (Sound Effects)",
+      "auteur": "Mixkit",
+      "page": "https://mixkit.co/free-sound-effects/camera/",
+      "fichier_source": "https://assets.mixkit.co/active_storage/sfx/1133/1133.wav",
+      "usage": "Arrêt sur image ou apparition d'une photo d'archive.",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "page-papier-2",
+      "titre": "Paper slide",
+      "categorie": "Papier / page tournée",
+      "duree": 1.12,
+      "source": "Mixkit",
+      "licence": "Mixkit Free License (Sound Effects)",
+      "auteur": "Mixkit",
+      "page": "https://mixkit.co/free-sound-effects/paper/",
+      "fichier_source": "https://assets.mixkit.co/active_storage/sfx/1530/1530.wav",
+      "usage": "Glissement d'un document, d'une coupure de presse à l'écran.",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "riser-doux-1",
+      "titre": "Cinematic trailer riser",
+      "categorie": "Riser doux",
+      "duree": 2.61,
+      "source": "Mixkit",
+      "licence": "Mixkit Free License (Sound Effects)",
+      "auteur": "Mixkit",
+      "page": "https://mixkit.co/free-sound-effects/riser/",
+      "fichier_source": "https://assets.mixkit.co/active_storage/sfx/790/790.wav",
+      "usage": "Montée juste avant un titre ou une révélation.",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "ambiance-foule-2",
+      "titre": "Big crowd talking loop",
+      "categorie": "Ambiance foule / murmure salle",
+      "duree": 59.79,
+      "source": "Mixkit",
+      "licence": "Mixkit Free License (Sound Effects)",
+      "auteur": "Mixkit",
+      "page": "https://mixkit.co/free-sound-effects/crowd/",
+      "fichier_source": "https://assets.mixkit.co/active_storage/sfx/364/364.wav",
+      "usage": "Fond sonore d'une salle animée ou d'un salon.",
+      "valide": "2026-09-26"
+    }
+  ],
+  "musiques": [
+    {
+      "id": "musique-corporate-legere-2",
+      "titre": "Curiosity",
+      "categorie": "Corporate / documentaire léger",
+      "duree": 90.04,
+      "source": "Mixkit",
+      "licence": "Mixkit Free License (Stock Music)",
+      "auteur": "Diego Nava",
+      "page": "https://mixkit.co/free-stock-music/tag/corporate/",
+      "fichier_source": "https://assets.mixkit.co/music/480/480.mp3",
+      "usage": "Fond détendu et curieux pour une présentation de projet ou d'association.",
+      "valide": "2026-09-26"
+    }
+  ],
   "effets_graphiques": []
 }

@@ -28,3 +28,5 @@ __pycache__/
 
 # Musique de fond (licence Mixkit : pas de redistribution) ; refaite par 10_cern/tools/preparer-medias.sh
 10_cern/assets/musique.mp3
+10_cern/assets/sons/
+10_cern/assets/effets.mp3

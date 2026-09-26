@@ -21,6 +21,7 @@ et des pratiques courantes des formats courts. Chaque règle renvoie à l'outil 
   journée »). La page réelle défile à l'écran (capture de l'article, `tools/preparer-medias.sh`).
 - **Pas de zoom pour faire apparaître un titre sur une image** : on retouche l'image (titre effacé) et on enchaîne
   deux plans (cas du « Grant-marci »).
+- **Un son n'entre dans le montage que s'il est pertinent pour ce montage**, même s'il est dans la bibliothèque.
 - **Une bibliothèque de montage validée à la main.** Effets sonores, musiques et effets graphiques sont proposés
   en sélection ; Franck garde ou rejette. Seul ce qui est validé entre dans la bibliothèque (section 6).
 
@@ -78,6 +79,9 @@ Au montage : respirations ramenées à 0,35 s, pauses un peu plus longues entre 
 - **Musique de fond instrumentale** (pas de paroles sous une voix). Environ −32 LUFS sous la voix (16 dB
   en dessous), elle remonte sur le carton final quand la voix s'arrête, fondu d'entrée et de sortie
   (`tools/preparer-medias.sh`).
+- **Un effet sonore doit être justifié par l'image** : il accompagne quelque chose qu'on voit (une photo qui
+  apparaît → déclencheur ; une page qui glisse → papier ; une révélation → montée). Pas d'ambiance de foule sur un
+  plan où l'on est seul : un son qui ne correspond pas à l'image sonne faux. (Demande de Franck.)
 - **Effets sonores rares et doux** : un « whoosh » léger sur une vraie transition, un « pop » discret sur un
   titre, un compteur sur des chiffres. Jamais sur chaque coupe. Style reportage, pas dessin animé.
 - **Licences** : seulement des sons libres pour la publication (Mixkit, Freesound CC0). La bibliothèque de CapCut

@@ -4,15 +4,29 @@
 #   assets/face-voix.mp4        image de la prise filmee, montee comme la voix (tools/face-voix.py)
 #   assets/article-nosalpes.jpg capture de l'article de Nos Alpes (haut de page, 1080 px de large)
 #   assets/musique.mp3          musique de fond : basse sous la voix, remonte sur le carton final
+#   assets/effets.mp3           habillage sonore (tools/habillage-sonore.py)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PRISE=${PRISE:-voix-off/cern-reperes-2026-09-26_17h32m13.webm}
 ARTICLE=https://nosalpes.eu/fr/2026/05/15/grand-geneve-un-projet-culturel-transfrontalier-dici-2027/
-# Musique : « Discover » (Mixkit, licence libre Mixkit, sans attribution). Changer l'adresse pour une autre piste.
-MUSIQUE=${MUSIQUE:-https://assets.mixkit.co/music/587/587.mp3}
+# Musique : « Curiosity » de Diego Nava (Mixkit, licence libre, sans attribution), validee par Franck
+# (04_montage/bibliotheque.json). Changer l'adresse pour une autre piste.
+MUSIQUE=${MUSIQUE:-https://assets.mixkit.co/music/480/480.mp3}
 DUREE=88.5      # duree du montage (index.html)
 FIN_VOIX=78.0   # la voix s'arrete : la musique remonte
+
+# Videos du montage : une image cle par seconde, sinon le rendu se fige en cherchant une image (avertissement
+# « sparse keyframes » de HyperFrames). Reencodees une fois, sur place.
+for v in assets/affiche-animee.mp4 assets/exterieur.mp4 assets/interieur-lent.mp4 assets/interieur.mp4; do
+  [ -f "$v" ] || continue
+  ecart=$(ffprobe -v error -select_streams v -skip_frame nokey -show_entries frame=pts_time -of csv=p=0 "$v" \
+    | awk 'NR>1 && $1-p>m {m=$1-p} {p=$1} END {print (m>1.1)}')
+  if [ "$ecart" = 1 ]; then
+    echo "images cles : $v"
+    ffmpeg -v error -y -i "$v" -c:v libx264 -crf 18 -preset medium -r 30 -g 30 -keyint_min 30 -pix_fmt yuv420p -movflags +faststart -an "$v.tmp.mp4" && mv "$v.tmp.mp4" "$v"
+  fi
+done
 
 if [ ! -f assets/face-voix.mp4 ] || [ "${FORCER:-}" = 1 ]; then
   [ -f voix-off/voix-montee.json ] || python3 tools/couper-voix.py "${PRISE%.*}.wav" voix-off/voix-montee.wav voix-off/voix-montee.json
@@ -36,4 +50,5 @@ if [ ! -f assets/musique.mp3 ] || [ "${FORCER:-}" = 1 ]; then
     -ar 48000 -b:a 192k assets/musique.mp3
   rm -rf "$tmp"
 fi
-ls -la assets/face-voix.mp4 assets/article-nosalpes.jpg assets/musique.mp3
+python3 tools/habillage-sonore.py
+ls -la assets/face-voix.mp4 assets/effets.mp3 assets/article-nosalpes.jpg assets/musique.mp3
