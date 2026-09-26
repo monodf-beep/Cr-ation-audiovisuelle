@@ -36,7 +36,7 @@ Outil : `10_cern/tools/sous-titres.py` (depuis `voix-mots.json`), style dans `10
 - **Un mot-clé au plus par groupe, et peu de mots-clés en tout** (environ un groupe sur trois) : noms propres,
   chiffres, idées fortes. Il est plus gros (1,3×) et posé sur un bloc bleu Savoie. Si tout est souligné,
   rien ne ressort.
-- **Le mot prononcé s'allume**, les autres restent légèrement atténués.
+- **Pas de mot qui s'allume au rythme de la voix** : effet écarté par Franck ; le groupe entier reste lisible.
 - **Chaque groupe apparaît avec un petit « pop »** (échelle 0,86 → 1 en 0,14 s).
 - **Pas de ponctuation affichée**, sauf ? et !
 - **Lisibilité** : 66 px, gras, blanc avec ombre sur les images ; texte sombre sur les plans clairs (`CLAIRS`).

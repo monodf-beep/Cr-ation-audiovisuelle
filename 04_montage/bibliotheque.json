@@ -1,5 +1,5 @@
 {
-  "_note": "Bibliothèque de montage validée par Franck (voir BONNES-PRATIQUES.md, section 6). Seuls les éléments gardés sur la page de sélection entrent ici. Fichiers dans Google Drive (Vidéos/bibliotheque/), pas dans le dépôt.",
+  "_note": "Bibliothèque de montage validée par Franck (voir BONNES-PRATIQUES.md, section 6). Éléments gardés sur la page de la bibliothèque ; « ecartes » : éléments rejetés (à ne pas proposer). Fichiers dans Google Drive (Vidéos/bibliotheque/), pas dans le dépôt.",
   "sons": [
     {
       "id": "declencheur-photo-1",
@@ -69,5 +69,155 @@
       "valide": "2026-09-26"
     }
   ],
-  "effets_graphiques": []
+  "effets_graphiques": [
+    {
+      "id": "flash-blanc",
+      "nom": "Flash blanc de transition",
+      "famille": "Transitions",
+      "usage": "Changement de plan net et lumineux (0,07 s d'entrée, 0,35 s de sortie).",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "fondu-enchaine",
+      "nom": "Fondu enchaîné",
+      "famille": "Transitions",
+      "usage": "Passage doux entre deux images d'une même séquence, sans rupture.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "punch-in",
+      "nom": "Punch-in sur le visage",
+      "famille": "Mouvements de caméra",
+      "usage": "Zoom sec de 15 à 20 % à chaque idée forte, comme une deuxième caméra.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "poussee-lente",
+      "nom": "Poussée lente (Ken Burns)",
+      "famille": "Mouvements de caméra",
+      "usage": "Une photo fixe avance doucement : l'image ne paraît jamais figée.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "cercle-dessine",
+      "nom": "Cercle qui se dessine",
+      "famille": "Mouvements de caméra",
+      "usage": "Désigne un lieu sur une vue aérienne ou une photo (le Globe du CERN).",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "ecran-partage",
+      "nom": "Écran partagé",
+      "famille": "Mouvements de caméra",
+      "usage": "Deux images face à face : avant / après, France / Suisse, deux intervenants.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "sous-titres-pop",
+      "nom": "Sous-titres par groupes, mot-clé en bloc",
+      "famille": "Texte",
+      "usage": "1 à 3 mots, petit « pop » d'entrée ; un mot-clé plus gros sur fond bleu.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "hook-mots",
+      "nom": "Titre d'accroche qui claque",
+      "famille": "Texte",
+      "usage": "Les mots du titre arrivent un à un sur l'image d'ouverture (moins de 2 s).",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "bandeau-nom",
+      "nom": "Bandeau nom en bloc bleu",
+      "famille": "Texte",
+      "usage": "Présente qui parle ; s'ouvre de gauche à droite, reste 3 à 4 s.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "liste-montante",
+      "nom": "Liste qui monte au rythme de la voix",
+      "famille": "Texte",
+      "usage": "Une énumération (jazz, théâtre, musées…) : chaque ligne quand elle est dite.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "soulignement-trace",
+      "nom": "Soulignement qui se trace",
+      "famille": "Texte",
+      "usage": "Insiste sur un mot d'un titre sans le changer de couleur.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "surligneur",
+      "nom": "Surligneur sur une phrase",
+      "famille": "Texte",
+      "usage": "Met en valeur une phrase d'un document ou d'un article (comme au feutre).",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "citation",
+      "nom": "Citation mise en page",
+      "famille": "Texte",
+      "usage": "Une phrase forte d'un intervenant, en grand, avec son nom.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "compteur",
+      "nom": "Chiffres qui comptent",
+      "famille": "Données",
+      "usage": "Un chiffre clé qui défile jusqu'à sa valeur (160 acteurs, 140 structures).",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "epingle-carte",
+      "nom": "Épingle qui tombe sur la carte",
+      "famille": "Données",
+      "usage": "Situe un lieu précis (le CERN, une salle) avec une onde qui se propage.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "page-defilante",
+      "nom": "Page web qui défile, date encadrée",
+      "famille": "Données",
+      "usage": "Présente un article ou un site réel ; un cadre bleu pointe l'essentiel (auteur, date).",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "barre-chapitres",
+      "nom": "Barre de chapitres en haut",
+      "famille": "Données",
+      "usage": "Montre où l'on en est (Le projet · Sur place · La langue) ; aide à rester jusqu'au bout.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    },
+    {
+      "id": "glitch-leger",
+      "nom": "Glitch léger",
+      "famille": "Textures",
+      "usage": "Saccade numérique brève. Plutôt style tech ou jeu vidéo que reportage.",
+      "source": "bibliotheque/index.html (démo intégrée)",
+      "valide": "2026-09-26"
+    }
+  ],
+  "ecartes": [
+    "grain-film",
+    "mot-allume",
+    "volet-bleu"
+  ]
 }

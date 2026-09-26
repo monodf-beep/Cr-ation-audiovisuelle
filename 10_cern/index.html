@@ -67,15 +67,12 @@
 
       /* Sous-titres : zone sure des Reels, au-dessus de l'interface du bas */
       /* Groupes de 1 a 3 mots sur une ligne (tools/sous-titres.py). Le mot-cle du groupe est plus gros,
-         sur un bloc bleu Savoie ; le mot prononce s'allume. */
+         sur un bloc bleu Savoie. (Mot prononce allume : ecarte par Franck, 04_montage/bibliotheque.json.) */
       .st { position: absolute; left: 40px; right: 40px; top: 1400px; display: flex; justify-content: center; align-items: center; gap: 0 18px; white-space: nowrap; transform-origin: 50% 50%; }
       .st { font-size: 66px; font-weight: 700; line-height: 1.2; color: #ffffff; text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 3px 18px rgba(0,0,0,0.6); }
       .st.clair { color: var(--fm-ink-900); text-shadow: 0 0 10px rgba(255,255,255,0.9); }
-      .st .m { display: inline-block; opacity: 0.8; }
-      .st .m.actif { opacity: 1; color: #c9d4f5; }
-      .st.clair .m.actif { color: var(--fm-bleu-savoie); }
+      .st .m { display: inline-block; }
       .st .m.cle { opacity: 1; font-size: 1.3em; background: var(--fm-bleu-savoie); color: #ffffff; padding: 0 16px 4px; text-shadow: none; }
-      .st .m.cle.actif, .st.clair .m.cle.actif { color: #ffffff; }
       /* Sur l'affiche, sous le bandeau Interreg */
       .st.bas { top: 1530px; }
 
@@ -598,16 +595,11 @@
         });
       });
 
-      // Sous-titres : groupes de 1 a 3 mots, chacun apparait avec un petit pop ; le mot dit s'allume.
+      // Sous-titres : groupes de 1 a 4 mots, chacun apparait avec un petit pop.
       document.querySelectorAll(".st").forEach((st) => {
         tl.set(st, { opacity: 1 }, +st.dataset.a);
         tl.fromTo(st, { scale: 0.86 }, { scale: 1, duration: 0.14, ease: "back.out(2.5)", immediateRender: false }, +st.dataset.a);
         tl.set(st, { opacity: 0 }, +st.dataset.b);
-        st.querySelectorAll(".m").forEach((m) => {
-          const c = m.className;
-          tl.set(m, { className: c + " actif" }, +m.dataset.a);
-          tl.set(m, { className: c }, +m.dataset.b);
-        });
       });
 
       // Vitesse du montage (montage.json, applique par tools/vitesse.py) : tout est ecrit en temps de la voix,

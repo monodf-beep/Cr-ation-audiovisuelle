@@ -4,7 +4,7 @@ Regles des formats verticaux (Reels, TikTok, Shorts) :
 - des groupes de 1 a 3 mots, une seule ligne, coupes aux pauses et a la ponctuation, jamais la phrase entiere ;
 - un mot-cle au plus par groupe, mis en valeur (plus gros, bloc bleu Savoie) ; les expressions
   (Grand Genève, Pays de Gex...) restent d'un seul tenant ;
-- le mot prononce s'allume ; chaque groupe apparait avec un petit « pop » (index.html) ;
+- chaque groupe apparait avec un petit « pop » (index.html) ; pas de mot allume (ecarte par Franck) ;
 - pas de ponctuation affichee sauf ? et ! ;
 - texte sombre (.clair) sur les plans clairs, blanc sur les images.
 Usage : python3 tools/sous-titres.py"""

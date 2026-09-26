@@ -1,7 +1,7 @@
 """Installe les sons candidats de la bibliotheque sur le VPS (appele par ops/vps/synchro.sh ; rapide si tout est la).
 Pour chaque son de catalogue.json absent de fichiers/sons/ : telechargement a la source, puis mp3 normalise
 (effets : -16 LUFS ; musiques : -20 LUFS, 90 s au plus avec fondu de sortie ; ambiances : 60 s au plus).
-Cree aussi donnees/etat.json au premier passage, avec les choix deja faits (04_montage/bibliotheque.json).
+Reporte aussi dans donnees/etat.json les choix notes dans 04_montage/bibliotheque.json (sans ecraser la page).
 Usage : python3 bibliotheque/installer-sons.py"""
 import json, os, subprocess, tempfile, urllib.request
 
@@ -32,12 +32,18 @@ for s in json.load(open(os.path.join(ICI, "catalogue.json")))["sons"]:
         if ok: os.replace(sortie + ".tmp.mp3", sortie); nouveaux += 1
         else: print(f"conversion impossible : {s['id']}")
 
-if not os.path.exists(ETAT):
-    choix = {}
-    try:
-        b = json.load(open(os.path.join(ICI, "..", "04_montage", "bibliotheque.json")))
-        for cle in ("sons", "musiques", "effets_graphiques"):
-            for x in b.get(cle, []): choix[x["id"]] = "garde"
-    except Exception: pass
-    json.dump({"choix": choix, "televerses": []}, open(ETAT, "w"), ensure_ascii=False, indent=1)
+# Choix notes dans le depot (04_montage/bibliotheque.json, par exemple une selection collee dans la conversation
+# avec Claude) : reportes dans le studio pour les elements pas encore tries ; un choix fait sur la page n'est
+# jamais ecrase.
+try: etat = json.load(open(ETAT))
+except Exception: etat = {"choix": {}, "televerses": []}
+avant = dict(etat["choix"])
+try:
+    b = json.load(open(os.path.join(ICI, "..", "04_montage", "bibliotheque.json")))
+    for cle in ("sons", "musiques", "effets_graphiques"):
+        for x in b.get(cle, []): etat["choix"].setdefault(x["id"], "garde")
+    for i in b.get("ecartes", []): etat["choix"].setdefault(i, "ecarte")
+except Exception: pass
+if etat["choix"] != avant or not os.path.exists(ETAT):
+    json.dump(etat, open(ETAT, "w"), ensure_ascii=False, indent=1)
 if nouveaux: print(f"bibliotheque : {nouveaux} son(s) installe(s)")
