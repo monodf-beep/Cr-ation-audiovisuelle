@@ -26,7 +26,7 @@ systemd-run --unit=studio-rendu --description="Rendu $PROJET" --property=KillMod
     trap 'systemctl start studio-hf' EXIT
     cd '$DEPOT' && sudo -u studio git fetch -q origin '$BRANCHE' && sudo -u studio git reset -q --hard 'origin/$BRANCHE'
     cd '$DEPOT/$PROJET'
-    echo '== medias'; sudo -u studio -H bash tools/preparer-medias.sh
+    echo '== medias'; sudo -u studio -H bash tools/preparer-medias.sh || { echo 'MEDIAS EN ECHEC'; exit 1; }
     echo '== rendu'; sudo -u studio -H npx --yes $HF render -o renders/$SORTIE . || { echo 'RENDU EN ECHEC'; exit 1; }
     echo '== metriques'; cd '$DEPOT' && sudo -u studio -H python3 04_montage/metriques.py '$PROJET' || true
     echo \"== termine \$(date '+%H:%M') : $PROJET/renders/$SORTIE (copie dans Drive sous 3 minutes)\"
