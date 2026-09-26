@@ -147,6 +147,8 @@
       .ecran .barre i { width: 14px; height: 14px; border-radius: 50%; background: var(--fm-line); }
       .ecran .barre span { margin-left: 16px; font-size: 22px; color: var(--fm-ink-500); }
       .ecran .fenetre { position: absolute; left: 0; top: 58px; width: 800px; height: 742px; overflow: hidden; }
+      .entete-site { position: absolute; left: 0; top: 0; width: 800px; height: 95px; background: #ffffff; border-bottom: 1px solid #e3e3e6; display: flex; align-items: center; justify-content: center; z-index: 2; }
+      .entete-site img { height: 66px; width: auto; display: block; }
       .defile { position: absolute; left: 0; top: 0; width: 1080px; transform-origin: 0 0; transform: scale(0.7407); }
       .defile img { display: block; width: 1080px; height: 4000px; }
       /* Autour de « Franck Monod | 15 mai 2026 » sur la page (coordonnees de la capture, 1080 px de large) */
@@ -342,6 +344,9 @@
               <img src="assets/article-nosalpes.jpg" width="1080" height="4000" alt="Grand Genève : un projet culturel transfrontalier d'ici 2027" />
               <div class="surligne" id="surligne"></div>
             </div>
+            <!-- En-tete fixe du site (comme sur telephone) : le logo Nos Alpes reste visible pendant le defilement.
+                 Meme hauteur que l'en-tete de la capture (128 px x 0,7407) : au depart, les deux se confondent. -->
+            <div class="entete-site"><img src="assets/nosalpes-logo.png" width="500" height="172" alt="Nos Alpes" /></div>
           </div>
         </div>
       </div>
