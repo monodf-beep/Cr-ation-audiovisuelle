@@ -30,3 +30,5 @@ __pycache__/
 10_cern/assets/musique.mp3
 10_cern/assets/sons/
 10_cern/assets/effets.mp3
+# Rapport de metriques, refait a chaque passage (04_montage/metriques.py)
+*/metriques.md
