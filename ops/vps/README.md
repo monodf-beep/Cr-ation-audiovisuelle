@@ -66,3 +66,14 @@ Page : `https://<adresse>/enregistrement/bibliotheque/` (sons, musiques, effets 
 ajouts téléversés). API dans `serveur-enregistrement.mjs` (`/bibliotheque/api/catalogue`, `choix`, `televerser`,
 `retirer`). Données : `bibliotheque/donnees/etat.json` et `bibliotheque/fichiers/` sur le VPS, copiés dans Drive
 (`bibliotheque/`) par le serveur et par `synchro.sh`, qui lance aussi `bibliotheque/installer-sons.py`.
+
+## Rendre un montage (en arrière-plan)
+
+```bash
+sudo bash /srv/studio/depot/ops/vps/rendre.sh 10_cern
+tail -f /srv/studio/depot/10_cern/renders/rendu.log
+```
+
+Met le dépôt à jour, fabrique les médias hors dépôt, rend et lance les métriques, dans un service
+temporaire (`studio-rendu`) : le rendu continue si le terminal se ferme ou si la connexion saute.
+Le Studio est arrêté pendant le rendu (mémoire) et relancé à la fin, même en cas d'échec.
