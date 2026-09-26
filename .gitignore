@@ -16,3 +16,7 @@ __pycache__/
 *.webp
 04_montage/coupes.json
 22_drapeaux/
+
+# Skill reels-templates : analyses d'autres créateurs et cookies, hors dépôt
+reels_analyses/
+cookies*.txt
