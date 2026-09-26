@@ -2,7 +2,7 @@
 # Synchronisation du VPS, lancee toutes les 3 minutes par studio-synchro.timer.
 #  1. GitHub -> VPS : le code des montages (avance rapide seulement, jamais d'ecrasement).
 #  2. Drive -> VPS : les medias (videos, images, sons, polices), copies a la meme place que dans le depot.
-#  3. VPS -> Drive : les rendus (renders/) et les prises de voix off (voix-off/).
+#  3. VPS -> Drive : les rendus (renders/), les prises de voix off (voix-off/), la bibliotheque de montage.
 # Rien n'est jamais supprime d'un cote ou de l'autre : les copies ne font qu'ajouter ou mettre a jour.
 set -uo pipefail
 source /etc/studio/studio.env
@@ -22,6 +22,12 @@ rclone dedupe --dedupe-mode merge "$DRIVE" -q || echo "rclone : fusion des dossi
 MEDIAS='*.{mp4,mov,m4v,webm,wav,mp3,m4a,aac,flac,ogg,jpg,jpeg,png,webp,gif,svg,woff,woff2,otf,ttf}'
 rclone copy "$DRIVE" "$DEPOT" --update --include "$MEDIAS" --exclude 'node_modules/**' --exclude '.git/**' \
   --drive-skip-gdocs --fast-list -q || echo "rclone : Drive -> VPS en erreur"
+
+# Bibliotheque de montage : sons candidats telecharges a la source (une fois), choix et ajouts copies dans Drive.
+python3 "$DEPOT/bibliotheque/installer-sons.py" || echo "bibliotheque : installation des sons en erreur"
+for sous in donnees fichiers/televerses; do
+  [ -d "$DEPOT/bibliotheque/$sous" ] && rclone copy "$DEPOT/bibliotheque/$sous" "$DRIVE/bibliotheque/$sous" --update -q || true
+done
 
 # Prises filmees : version eclaircie et verticale, a cote de la prise brute.
 DEPOT="$DEPOT" "$DEPOT/ops/vps/traiter-prises.sh" || echo "traitement des prises en erreur"

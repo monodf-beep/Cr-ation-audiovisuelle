@@ -96,10 +96,19 @@ Au montage : respirations ramenées à 0,35 s, pauses un peu plus longues entre 
 
 ## 6. Bibliothèque de montage
 
-- Les candidats (sons, musiques, effets graphiques) sont proposés sur une page de sélection ; Franck écoute,
-  garde ou rejette.
-- Ce qui est validé est noté dans `04_montage/bibliotheque.json` (nom, catégorie, source, licence, usage).
-  Les fichiers eux-mêmes vont dans Google Drive (`Vidéos/bibliotheque/`), pas dans le dépôt.
+Dans le studio (VPS) : **`https://<adresse du studio>/enregistrement/bibliotheque/`** (même mot de passe),
+lien aussi en haut de la page d'enregistrement.
+
+- Trois onglets : **Sons et musiques** (écoute), **Effets graphiques** (démos animées), **Téléverser**.
+- Chaque élément se garde ou s'écarte ; le choix est enregistré sur le studio.
+- **Téléverser** ajoute un fichier à la bibliothèque (son, musique, ou effet graphique en vidéo ou image), avec
+  titre, catégorie, usage, source et licence. Un ajout est gardé d'office et peut être retiré.
+- Stockage : catalogue des candidats dans `bibliotheque/catalogue.json` (dépôt, métadonnées seulement) ;
+  fichiers dans `bibliotheque/fichiers/`, choix et ajouts dans `bibliotheque/donnees/etat.json` (VPS, hors dépôt),
+  copiés dans Google Drive (`bibliotheque/`). Les sons candidats sont téléchargés à la source par
+  `bibliotheque/installer-sons.py` (lancé par la synchronisation).
+- `04_montage/bibliotheque.json` garde la trace, dans le dépôt, des éléments validés utilisés par les outils.
+- Un élément gardé n'entre dans un montage que s'il y est pertinent.
 
 ## 7. Chaîne de fabrication (10_cern)
 

@@ -59,3 +59,10 @@ Le VPS n'a pas de navigateur : on autorise Google depuis l'ordinateur.
   (le MP4 part ensuite dans `Videos/10_cern/renders/`).
 - **Voix off** : chaque prise est envoyée sur le serveur dès qu'on clique sur « Arrêter », puis
   copiée dans `Videos/10_cern/voix-off/`.
+
+## Bibliothèque de montage
+
+Page : `https://<adresse>/enregistrement/bibliotheque/` (sons, musiques, effets graphiques à garder ou écarter,
+ajouts téléversés). API dans `serveur-enregistrement.mjs` (`/bibliotheque/api/catalogue`, `choix`, `televerser`,
+`retirer`). Données : `bibliotheque/donnees/etat.json` et `bibliotheque/fichiers/` sur le VPS, copiés dans Drive
+(`bibliotheque/`) par le serveur et par `synchro.sh`, qui lance aussi `bibliotheque/installer-sons.py`.

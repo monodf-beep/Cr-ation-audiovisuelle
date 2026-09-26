@@ -2,10 +2,12 @@
 // - sert les fichiers du depot (pages d'enregistrement, montages rendus, polices), avec les requetes
 //   partielles (Range) pour que la video du montage se deplace sans tout telecharger ;
 // - recoit les prises de voix off : POST /<projet>/televerser?nom=<fichier> les ecrit dans
-//   <depot>/<projet>/voix-off/, puis les copie aussitot dans Google Drive (rclone).
+//   <depot>/<projet>/voix-off/, puis les copie aussitot dans Google Drive (rclone) ;
+// - la bibliotheque de montage (/bibliotheque/) : catalogue, choix (garder / ecarter) et fichiers
+//   televerses, gardes dans <depot>/bibliotheque/donnees et fichiers/, copies dans Drive.
 // Sans dependance. Variables : DEPOT (chemin du depot), PORT (8090), DRIVE (ex. drive:Videos).
 import { createServer } from 'node:http';
-import { createReadStream, createWriteStream, mkdirSync, statSync, watchFile } from 'node:fs';
+import { createReadStream, createWriteStream, mkdirSync, statSync, watchFile, readFileSync, writeFileSync, renameSync, unlinkSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { join, normalize, extname, basename, resolve, sep } from 'node:path';
@@ -62,7 +64,70 @@ function televerser(req, res, projet) {
   sortie.on('error', (e) => { res.writeHead(500); res.end(e.message); });
 }
 
+// --- Bibliotheque de montage ---
+const BIBLIO = join(DEPOT, 'bibliotheque');
+const ETAT = join(BIBLIO, 'donnees', 'etat.json');
+const TYPES_BIBLIO = { son: /\.(mp3|wav|m4a|aac|ogg|flac)$/i, musique: /\.(mp3|wav|m4a|aac|ogg|flac)$/i,
+  graphique: /\.(mp4|webm|mov|png|jpe?g|gif|webp|svg)$/i };
+const lireEtat = () => { try { return JSON.parse(readFileSync(ETAT, 'utf8')); } catch { return { choix: {}, televerses: [] }; } };
+const versDrive = (local, distant) => { if (DRIVE) spawn('rclone', ['copyto', local, `${DRIVE}/bibliotheque/${distant}`], { stdio: 'ignore', detached: true }).unref(); };
+function ecrireEtat(etat) {
+  mkdirSync(join(BIBLIO, 'donnees'), { recursive: true });
+  writeFileSync(ETAT + '.tmp', JSON.stringify(etat, null, 1)); renameSync(ETAT + '.tmp', ETAT);
+  versDrive(ETAT, 'donnees/etat.json');
+}
+const json = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }); res.end(JSON.stringify(obj)); };
+const corps = (req) => new Promise((ok, ko) => { let d = ''; req.on('data', (c) => { d += c; if (d.length > 1e6) req.destroy(); }); req.on('end', () => ok(d)); req.on('error', ko); });
+
+async function bibliotheque(req, res, route) {
+  const url = new URL(req.url, 'http://x');
+  if (req.method === 'GET' && route === 'catalogue') {
+    let catalogue = { sons: [] };
+    try { catalogue = JSON.parse(readFileSync(join(BIBLIO, 'catalogue.json'), 'utf8')); } catch {}
+    const sons = catalogue.sons.map((s) => ({ ...s, fichier: `fichiers/sons/${s.id}.mp3`, present: existsSync(join(BIBLIO, 'fichiers', 'sons', s.id + '.mp3')) }));
+    return json(res, 200, { sons, ...lireEtat() });
+  }
+  if (req.method === 'POST' && route === 'choix') {
+    const { id, choix } = JSON.parse(await corps(req) || '{}');
+    if (!id || !/^[\w.-]+$/.test(id) || ![null, 'garde', 'ecarte'].includes(choix ?? null)) return json(res, 400, { erreur: 'choix invalide' });
+    const etat = lireEtat();
+    if (choix) etat.choix[id] = choix; else delete etat.choix[id];
+    ecrireEtat(etat); return json(res, 200, { ok: true });
+  }
+  if (req.method === 'POST' && route === 'televerser') {
+    const type = url.searchParams.get('type');
+    const nom = basename(url.searchParams.get('nom') || '').replace(/[^\w.,-]/g, '_');
+    if (!TYPES_BIBLIO[type] || !TYPES_BIBLIO[type].test(nom)) return json(res, 400, { erreur: 'type de fichier non accepte' });
+    const id = `ajout-${Date.now().toString(36)}`;
+    const dossier = join(BIBLIO, 'fichiers', 'televerses');
+    mkdirSync(dossier, { recursive: true });
+    const f = join(dossier, `${id}-${nom}`);
+    const sortie = createWriteStream(f);
+    req.pipe(sortie);
+    sortie.on('error', (e) => json(res, 500, { erreur: e.message }));
+    return sortie.on('finish', () => {
+      const champ = (k, max = 300) => (url.searchParams.get(k) || '').slice(0, max);
+      const entree = { id, type, fichier: `fichiers/televerses/${id}-${nom}`, titre: champ('titre') || nom, categorie: champ('categorie'),
+        usage: champ('usage', 600), source: champ('source'), licence: champ('licence'), date: new Date().toISOString().slice(0, 10) };
+      const etat = lireEtat(); etat.televerses.push(entree); etat.choix[id] = 'garde'; ecrireEtat(etat);
+      versDrive(f, `fichiers/televerses/${id}-${nom}`);
+      json(res, 200, { ok: true, entree });
+    });
+  }
+  if (req.method === 'POST' && route === 'retirer') {
+    const { id } = JSON.parse(await corps(req) || '{}');
+    const etat = lireEtat(); const e = etat.televerses.find((x) => x.id === id);
+    if (!e) return json(res, 404, { erreur: 'introuvable' });
+    etat.televerses = etat.televerses.filter((x) => x.id !== id); delete etat.choix[id]; ecrireEtat(etat);
+    try { unlinkSync(join(BIBLIO, e.fichier)); } catch {}
+    return json(res, 200, { ok: true });
+  }
+  json(res, 404, { erreur: 'inconnu' });
+}
+
 createServer((req, res) => {
+  const b = /^\/bibliotheque\/api\/(\w+)/.exec(req.url);
+  if (b) return bibliotheque(req, res, b[1]).catch((e) => json(res, 500, { erreur: e.message }));
   const m = /^\/([^/?]+)\/televerser(\?|$)/.exec(req.url);
   if (req.method === 'POST' && m) return televerser(req, res, decodeURIComponent(m[1]));
   if (req.method === 'GET' || req.method === 'HEAD') return servir(req, res);

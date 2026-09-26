@@ -32,3 +32,6 @@ __pycache__/
 10_cern/assets/effets.mp3
 # Rapport de metriques, refait a chaque passage (04_montage/metriques.py)
 */metriques.md
+# Bibliotheque de montage : fichiers et choix vivent sur le VPS (et Drive), pas dans le depot public
+bibliotheque/fichiers/
+bibliotheque/donnees/

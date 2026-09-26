@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibliothèque de montage</title>
+<!-- Page du studio (VPS) : sons, musiques et effets graphiques a garder ou ecarter, et ajouts televerses.
+     Donnees : /bibliotheque/api/ (ops/vps/serveur-enregistrement.mjs). Genere depuis le gabarit de Claude. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --bleu:#0a36af; --bleu-doux:#e6ebf7; --encre:#171719; --encre-2:#45454c; --encre-3:#6b6b76;
+  --fond:#f6f7fa; --carte:#ffffff; --trait:#dcdde4; --garde:#1c7a4a; --garde-doux:#e3f3ea; --ecarte:#a23a2c; --ecarte-doux:#f7e6e3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){ :root{
+  --bleu:#8fa6ec; --bleu-doux:#1b2340; --encre:#ececf2; --encre-2:#c4c4ce; --encre-3:#9696a3;
+  --fond:#121318; --carte:#1a1b22; --trait:#2d2f3a; --garde:#6fcf9b; --garde-doux:#15301f; --ecarte:#ee8a7c; --ecarte-doux:#3a1b17; color-scheme: dark; } }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--fond);color:var(--encre);font:16px/1.5 Figtree,system-ui,sans-serif;padding-inline:20px;padding-block:24px 60px}
+.page{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:6px}
+header nav{display:flex;gap:14px;font-size:14px}
+header nav a{color:var(--encre-3)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bleu)}
+h1{font-size:32px;line-height:1.1;margin:0}
+header p{margin:0;color:var(--encre-2);max-width:68ch}
+.onglets{display:flex;gap:0;border-bottom:1px solid var(--trait);flex-wrap:wrap}
+.onglets button{font:inherit;font-weight:700;background:none;border:none;border-bottom:3px solid transparent;padding:10px 16px;color:var(--encre-3);cursor:pointer}
+.onglets button[aria-selected="true"]{color:var(--encre);border-bottom-color:var(--bleu)}
+.outils{display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;top:0;background:var(--fond);padding-block:10px;z-index:5}
+.filtres{display:flex;flex-wrap:wrap;gap:6px}
+.filtres button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--trait);background:var(--carte);color:var(--encre-2);padding:6px 12px;cursor:pointer}
+.filtres button[aria-pressed="true"]{background:var(--bleu);border-color:var(--bleu);color:#fff}
+.compte{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--encre-3);font-variant-numeric:tabular-nums}
+.compte b{color:var(--encre)}
+h2{font-size:15px;margin:14px 0 8px;font-weight:700;color:var(--encre-2);letter-spacing:.02em}
+.etiq{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;background:var(--bleu-doux);color:var(--bleu)}
+.etiq.neuf{background:transparent;border:1px solid var(--trait);color:var(--encre-3)}
+.etiq.ajout{background:#fff4d6;color:#7a5a00}
+.choix{display:flex;gap:6px}
+.choix button{font:inherit;font-size:13px;font-weight:600;padding:7px 10px;border:1px solid var(--trait);background:transparent;color:var(--encre-2);cursor:pointer}
+.choix button.g[aria-pressed="true"]{background:var(--garde-doux);border-color:var(--garde);color:var(--garde)}
+.choix button.e[aria-pressed="true"]{background:var(--ecarte-doux);border-color:var(--ecarte);color:var(--ecarte)}
+.choix button.r{flex:0 0 auto;color:var(--encre-3)}
+button:focus-visible,.scene:focus-visible{outline:2px solid var(--bleu);outline-offset:2px}
+/* Sons */
+.son{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;background:var(--carte);border:1px solid var(--trait);padding:12px 14px;border-left:4px solid transparent;margin-bottom:8px}
+.son.garde,.effet.garde{border-left-color:var(--garde);border-top-color:var(--garde)}
+.son.ecarte{border-left-color:var(--ecarte);opacity:.6}
+.jouer{width:52px;height:52px;border:none;background:var(--bleu-doux);color:var(--bleu);cursor:pointer;display:grid;place-items:center;position:relative;overflow:hidden}
+.jouer svg{width:20px;height:20px}
+.jouer .barre{position:absolute;left:0;bottom:0;height:4px;background:var(--bleu);width:0}
+.jouer[disabled]{opacity:.4;cursor:default}
+.info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.info .t{font-weight:700;overflow-wrap:anywhere}
+.info .t small{font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:12px;color:var(--encre-3);margin-left:6px}
+.info .u{font-size:14px;color:var(--encre-2)}
+.info .s{font-size:12px;color:var(--encre-3)}
+.info .s a{color:inherit}
+/* Effets graphiques */
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.effet{background:var(--carte);border:1px solid var(--trait);display:flex;flex-direction:column;border-top:4px solid transparent}
+.effet.ecarte .cadre{opacity:.45}
+.cadre{background:#101114;display:grid;place-items:center;padding:14px}
+.scene{position:relative;width:min(100%,190px);aspect-ratio:9/16;overflow:hidden;background:#fff;container-type:inline-size;font-family:Figtree,sans-serif;color:#171719;cursor:pointer}
+.scene > *,.ph > *,.abs{position:absolute}
+.scene > video.apercu,.scene > img.apercu{inset:0;width:100%;height:100%;object-fit:cover}
+.corps{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.corps .t{font-weight:700;line-height:1.25}
+.corps .u{font-size:14px;color:var(--encre-2)}
+.corps .choix{margin-top:auto;padding-top:6px}
+.corps .choix button.g,.corps .choix button.e{flex:1}
+/* Televerser */
+form{background:var(--carte);border:1px solid var(--trait);padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 18px;max-width:900px}
+label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600;color:var(--encre-2)}
+input,select,textarea{font:inherit;font-weight:400;color:var(--encre);background:var(--fond);border:1px solid var(--trait);padding:8px 10px}
+.large{grid-column:1/-1}
+.envoyer{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.envoyer button{font:inherit;font-weight:700;background:var(--bleu);color:#fff;border:none;padding:11px 18px;cursor:pointer}
+.envoyer button[disabled]{opacity:.5}
+progress{width:220px;height:8px}
+.aide{font-size:13px;color:var(--encre-3);font-weight:400}
+.message{font-size:14px}
+.vide{color:var(--encre-3);font-size:14px}
+@media (max-width:560px){ .son{grid-template-columns:52px 1fr} .son .choix{grid-column:1/-1} .compte{margin-left:0;width:100%} }
+/* Elements communs des scenes */
+.ph{inset:0;background:linear-gradient(160deg,#5b6f8f,#2d3a52 55%,#1c2433)}
+.ph.b{background:linear-gradient(200deg,#c9b89a,#8a7a5f 60%,#4f4636)}
+.ph.c{background:linear-gradient(170deg,#9fc3a0,#4e7b5a 60%,#27402e)}
+.ph.carte{background:#eef1f8}
+.visage{left:30%;top:18%;width:40%;aspect-ratio:1;border-radius:50%;background:#e6c2a6;box-shadow:0 0 0 2.5cqw #3b2d25 inset}
+.buste{left:14%;top:52%;width:72%;height:60%;border-radius:40% 40% 0 0;background:#5a7bb5}
+.micro{left:18%;top:56%;width:22%;height:14%;border-radius:40%;background:#1d1d22}
+.st{left:4%;right:4%;top:73%;display:flex;justify-content:center;gap:0 2cqw;font-weight:800;font-size:7.5cqw;color:#fff;text-shadow:0 0 1cqw rgba(0,0,0,.9);white-space:nowrap}
+.st span,.mots span{position:static;display:inline-block}
+.cle{background:#0a36af;color:#fff;padding:0 1.6cqw .4cqw;font-size:1.25em;text-shadow:none}
+.flash{inset:0;background:#fff;opacity:0}
+.bloc{background:#0a36af;color:#fff;padding:2.5cqw 3.5cqw;font-weight:700}
+.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500}
+.ligne{position:relative!important;display:block;overflow:hidden}
+.ligne>span{position:relative!important;display:inline-block}
+
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <nav><a href="../10_cern/enregistrer.html">Enregistrer la voix off</a></nav>
+    <div class="eyebrow">Studio · bibliothèque de montage</div>
+    <h1>Bibliothèque de montage</h1>
+    <p>Sons, musiques et effets graphiques pour les reportages. Gardez ce qui colle au style, écartez le reste, ajoutez vos propres fichiers. Les choix sont enregistrés sur le studio et copiés dans Google Drive (dossier <code>bibliotheque</code>). Un élément gardé n'entre dans un montage que s'il y est pertinent.</p>
+  </header>
+  <div class="onglets" role="tablist">
+    <button role="tab" id="o-sons" aria-selected="true" data-o="sons">Sons et musiques</button>
+    <button role="tab" id="o-graphiques" aria-selected="false" data-o="graphiques">Effets graphiques</button>
+    <button role="tab" id="o-ajouter" aria-selected="false" data-o="ajouter">Téléverser</button>
+  </div>
+
+  <div class="outils" id="outils">
+    <div class="filtres" role="group" aria-label="Filtrer">
+      <button data-f="tout" aria-pressed="true">Tout</button>
+      <button data-f="garde" aria-pressed="false">Gardés</button>
+      <button data-f="trier" aria-pressed="false">À trier</button>
+      <button data-f="ajout" aria-pressed="false">Mes ajouts</button>
+    </div>
+    <div class="compte" id="compte"></div>
+  </div>
+
+  <section id="p-sons" role="tabpanel"></section>
+  <section id="p-graphiques" role="tabpanel" hidden></section>
+  <section id="p-ajouter" role="tabpanel" hidden>
+    <form id="form">
+      <label>Type
+        <select id="type" name="type">
+          <option value="son">Effet sonore</option>
+          <option value="musique">Musique</option>
+          <option value="graphique">Effet graphique (vidéo ou image)</option>
+        </select>
+      </label>
+      <label>Fichier
+        <input id="fichier" type="file" required accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac">
+        <span class="aide" id="aide-fichier">mp3, wav, m4a, aac, ogg, flac</span>
+      </label>
+      <label>Titre <input id="titre" required placeholder="Ex. Whoosh papier doux"></label>
+      <label>Catégorie <input id="categorie" list="categories" placeholder="Ex. Transitions, Pop doux…"></label>
+      <datalist id="categories"></datalist>
+      <label class="large">Usage dans un montage <input id="usage" placeholder="Ex. quand un document glisse à l'écran"></label>
+      <label>Source <input id="source" placeholder="Site, auteur, ou « création Franck »"></label>
+      <label>Licence
+        <select id="licence">
+          <option>Création personnelle</option>
+          <option>CC0 (domaine public)</option>
+          <option>Licence Mixkit</option>
+          <option>Licence Pixabay</option>
+          <option>Autorisation de l'auteur</option>
+          <option>À vérifier</option>
+        </select>
+      </label>
+      <div class="envoyer large"><button id="envoyer" type="submit">Ajouter à la bibliothèque</button><progress id="progres" max="1" value="0" hidden></progress><span class="message" id="message"></span></div>
+    </form>
+  </section>
+</div>
+
+<script>
+const h = (parent, cls, html = "", style = "") => { const d = document.createElement("div"); d.className = cls; d.innerHTML = html; if (style) d.style.cssText = style; parent.appendChild(d); return d; };
+const personne = (s, cls = "ph") => { const p = h(s, cls); h(p, "visage"); h(p, "buste"); h(p, "micro"); return p; };
+const boucle = () => gsap.timeline({ repeat: -1, repeatDelay: 0.9 });
+
+// Chaque effet : id, nom, famille, cern (deja utilise), usage, construire(scene) -> timeline.
+const EFFETS = [
+  { id: "flash-blanc", nom: "Flash blanc de transition", famille: "Transitions", cern: true,
+    usage: "Changement de plan net et lumineux (0,07 s d'entrée, 0,35 s de sortie).",
+    f(s) { const a = h(s, "ph"), b = h(s, "ph b"), fl = h(s, "flash"); const t = boucle();
+      t.set(b, { opacity: 0 }).set(a, { opacity: 1 }).to(fl, { opacity: 1, duration: .07 }, 1.2).set(a, { opacity: 0 }, 1.27).set(b, { opacity: 1 }, 1.27)
+       .to(fl, { opacity: 0, duration: .35, ease: "power2.out" }, 1.27).to({}, { duration: 1.2 }); return t; } },
+  { id: "fondu-enchaine", nom: "Fondu enchaîné", famille: "Transitions", cern: false,
+    usage: "Passage doux entre deux images d'une même séquence, sans rupture.",
+    f(s) { const a = h(s, "ph c"), b = h(s, "ph b"); const t = boucle();
+      t.set(b, { opacity: 0 }).to(b, { opacity: 1, duration: .8, ease: "power1.inOut" }, 1.2).to({}, { duration: 1.2 }); return t; } },
+  { id: "volet-bleu", nom: "Volet bleu Savoie", famille: "Transitions", cern: false,
+    usage: "Un aplat bleu balaie l'écran : changement de chapitre, marque visuelle forte.",
+    f(s) { const a = h(s, "ph"), b = h(s, "ph c"), v = h(s, "", "", "inset:0;background:#0a36af"); const t = boucle();
+      t.set(b, { opacity: 0 }).set(v, { xPercent: -100 }).to(v, { xPercent: 0, duration: .35, ease: "power3.in" }, 1.1)
+       .set(b, { opacity: 1 }).to(v, { xPercent: 100, duration: .35, ease: "power3.out" }).to({}, { duration: 1.2 }); return t; } },
+  { id: "zoom-traversant", nom: "Zoom traversant", famille: "Transitions", cern: false,
+    usage: "On « entre » dans l'image suivante : énergique, à réserver à l'accroche.",
+    f(s) { const a = h(s, "ph"), b = h(s, "ph b"); const t = boucle();
+      t.set(b, { opacity: 0, scale: .7 }).set(a, { opacity: 1, scale: 1 })
+       .to(a, { scale: 2.6, opacity: 0, duration: .45, ease: "power2.in" }, 1.1).to(b, { opacity: 1, scale: 1, duration: .45, ease: "power2.out" }, 1.4).to({}, { duration: 1.2 }); return t; } },
+
+  { id: "punch-in", nom: "Punch-in sur le visage", famille: "Mouvements de caméra", cern: true,
+    usage: "Zoom sec de 15 à 20 % à chaque idée forte, comme une deuxième caméra.",
+    f(s) { const p = personne(s); gsap.set(p, { transformOrigin: "50% 30%" }); const t = boucle();
+      t.fromTo(p, { scale: 1 }, { scale: 1.04, duration: 1.6, ease: "none" }).set(p, { scale: 1.18 }).to(p, { scale: 1.22, duration: 1.6, ease: "none" }); return t; } },
+  { id: "poussee-lente", nom: "Poussée lente (Ken Burns)", famille: "Mouvements de caméra", cern: true,
+    usage: "Une photo fixe avance doucement : l'image ne paraît jamais figée.",
+    f(s) { const p = h(s, "ph b"); h(p, "", "", "left:20%;top:30%;width:60%;height:28%;background:#f4efe6;border-radius:2cqw"); const t = boucle();
+      t.fromTo(p, { scale: 1, x: 0 }, { scale: 1.12, x: "-4%", duration: 3.5, ease: "none" }); return t; } },
+  { id: "cercle-dessine", nom: "Cercle qui se dessine", famille: "Mouvements de caméra", cern: true,
+    usage: "Désigne un lieu sur une vue aérienne ou une photo (le Globe du CERN).",
+    f(s) { const p = h(s, "ph c"); s.insertAdjacentHTML("beforeend", '<svg viewBox="0 0 100 178" style="inset:0;width:100%;height:100%"><circle cx="50" cy="80" r="18" fill="none" stroke="#fff" stroke-width="3" pathLength="1" stroke-dasharray="1"/><circle cx="50" cy="80" r="18" fill="none" stroke="#0a36af" stroke-width="1.6" pathLength="1" stroke-dasharray="1"/></svg>');
+      const c = s.querySelectorAll("circle"); const t = boucle(); t.fromTo(c, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1, ease: "power2.inOut" }, .4).to({}, { duration: 1.4 }); return t; } },
+  { id: "ecran-partage", nom: "Écran partagé", famille: "Mouvements de caméra", cern: false,
+    usage: "Deux images face à face : avant / après, France / Suisse, deux intervenants.",
+    f(s) { const a = h(s, "ph", "", "inset:0 0 50% 0"), b = h(s, "ph b", "", "inset:50% 0 0 0"); h(s, "", "", "left:0;right:0;top:calc(50% - .6cqw);height:1.2cqw;background:#fff"); const t = boucle();
+      t.fromTo(a, { xPercent: -100 }, { xPercent: 0, duration: .5, ease: "power3.out" }, .3).fromTo(b, { xPercent: 100 }, { xPercent: 0, duration: .5, ease: "power3.out" }, .45).to({}, { duration: 1.6 }); return t; } },
+
+  { id: "sous-titres-pop", nom: "Sous-titres par groupes, mot-clé en bloc", famille: "Texte", cern: true,
+    usage: "1 à 3 mots, petit « pop » d'entrée ; un mot-clé plus gros sur fond bleu.",
+    f(s) { personne(s); const groupes = ['au <span class="cle">CERN</span>', "à Genève", 'un projet <span class="cle">Interreg</span>'];
+      const st = h(s, "st"); const t = boucle();
+      groupes.forEach((g, i) => { t.call(() => { st.innerHTML = g; }, null, i * .8).fromTo(st, { scale: .86 }, { scale: 1, duration: .14, ease: "back.out(2.5)" }, i * .8); });
+      t.to({}, { duration: .8 }, 2.4); return t; } },
+  { id: "mot-allume", nom: "Mot prononcé qui s'allume", famille: "Texte", cern: true,
+    usage: "Le mot dit à la voix change de couleur : on suit la parole sans effort.",
+    f(s) { personne(s); const st = h(s, "st mots", "<span>une</span><span>langue</span><span>commune</span>"); const w = st.querySelectorAll("span"); const t = boucle();
+      w.forEach((m, i) => t.set(w, { color: "#fff", opacity: .8 }, i * .45).set(m, { color: "#c9d4f5", opacity: 1 }, i * .45)); t.to({}, { duration: .6 }); return t; } },
+  { id: "hook-mots", nom: "Titre d'accroche qui claque", famille: "Texte", cern: true,
+    usage: "Les mots du titre arrivent un à un sur l'image d'ouverture (moins de 2 s).",
+    f(s) { const p = h(s, "ph"); const tt = h(s, "mots", "<span>La</span> <span>langue</span> <span style='background:#0a36af;padding:0 1cqw'>savoyarde</span> <span>au</span> <span style='background:#0a36af;padding:0 1cqw'>CERN</span>",
+      "left:7%;right:7%;top:14%;font-weight:800;font-size:11cqw;line-height:1.3;color:#fff"); const w = tt.querySelectorAll("span"); const t = boucle();
+      t.from(w, { scale: .6, opacity: 0, duration: .28, ease: "back.out(2.2)", stagger: .12 }, .2).to({}, { duration: 1.6 }); return t; } },
+  { id: "bandeau-nom", nom: "Bandeau nom en bloc bleu", famille: "Texte", cern: true,
+    usage: "Présente qui parle ; s'ouvre de gauche à droite, reste 3 à 4 s.",
+    f(s) { personne(s, "ph b"); const b = h(s, "bloc", "<div style='position:static;font-size:6cqw'>Franck Monod</div><div style='position:static;font-size:3cqw;letter-spacing:.1em;text-transform:uppercase;margin-top:1cqw'>Enstitut de la Lengoua Savoyârda</div>", "left:6%;top:12%"); const t = boucle();
+      t.fromTo(b, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: .6, ease: "power3.inOut" }, .4).to({}, { duration: 1.8 }); return t; } },
+  { id: "titre-lieu-serif", nom: "Titre de lieu en serif italique", famille: "Texte", cern: true,
+    usage: "Nomme un lieu, avec élégance : les lignes montent l'une après l'autre.",
+    f(s) { h(s, "ph"); const tt = h(s, "serif", "<span class='ligne'><span>Dans le Globe,</span></span><span class='ligne'><span>l'<em>exposition</em></span></span>", "left:8%;top:14%;font-size:12cqw;line-height:1.05;color:#fff;text-shadow:0 0 2cqw rgba(0,0,0,.7)");
+      const l = tt.querySelectorAll(".ligne>span"); const t = boucle(); t.from(l, { yPercent: 110, duration: .8, ease: "power4.out", stagger: .15 }, .3).to({}, { duration: 1.8 }); return t; } },
+  { id: "liste-montante", nom: "Liste qui monte au rythme de la voix", famille: "Texte", cern: true,
+    usage: "Une énumération (jazz, théâtre, musées…) : chaque ligne quand elle est dite.",
+    f(s) { const l = h(s, "", "<span class='ligne'><span>un festival de jazz</span></span><span class='ligne'><span>une salle de théâtre</span></span><span class='ligne'><span>un musée</span></span><span class='ligne'><span style='color:#0a36af'>une culture commune</span></span>", "left:8%;right:4%;top:22%;font-weight:700;font-size:7.6cqw;line-height:1.15");
+      const w = l.querySelectorAll(".ligne>span"); const t = boucle(); t.from(w, { yPercent: 110, duration: .6, ease: "power4.out", stagger: .45 }, .3).to({}, { duration: 1.4 }); return t; } },
+  { id: "soulignement-trace", nom: "Soulignement qui se trace", famille: "Texte", cern: false,
+    usage: "Insiste sur un mot d'un titre sans le changer de couleur.",
+    f(s) { const tt = h(s, "", "Un territoire <span style='position:relative;display:inline-block'>commun<i style='position:absolute;left:0;bottom:-.5cqw;height:1.4cqw;width:100%;background:#0a36af;transform-origin:0 50%'></i></span>", "left:8%;right:8%;top:34%;font-weight:800;font-size:10cqw;line-height:1.15");
+      const u = tt.querySelector("i"); const t = boucle(); t.fromTo(u, { scaleX: 0 }, { scaleX: 1, duration: .6, ease: "power3.inOut" }, .5).to({}, { duration: 1.6 }); return t; } },
+  { id: "surligneur", nom: "Surligneur sur une phrase", famille: "Texte", cern: false,
+    usage: "Met en valeur une phrase d'un document ou d'un article (comme au feutre).",
+    f(s) { const tt = h(s, "", "Les élus des deux côtés de la frontière ont réaffirmé <span style='background:linear-gradient(#ffe45c,#ffe45c) no-repeat 0 85%/0% 55%'>leur volonté de coopérer</span>.", "left:8%;right:8%;top:30%;font-size:7cqw;line-height:1.35;color:#222");
+      const m = tt.querySelector("span"); const t = boucle(); t.to(m, { backgroundSize: "100% 55%", duration: .8, ease: "power2.inOut" }, .5).to({}, { duration: 1.6 }).set(m, { backgroundSize: "0% 55%" }); return t; } },
+  { id: "citation", nom: "Citation mise en page", famille: "Texte", cern: false,
+    usage: "Une phrase forte d'un intervenant, en grand, avec son nom.",
+    f(s) { s.style.background = "#e6ebf7"; const q = h(s, "serif", "“", "left:8%;top:12%;font-size:40cqw;line-height:1;color:#0a36af");
+      const c = h(s, "", "<div style='position:static' class='serif'>La culture, ici, c'est un bien commun.</div><div style='position:static;margin-top:3cqw;font-size:4cqw;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a36af'>Franck Monod</div>", "left:10%;right:10%;top:38%;font-size:10cqw;line-height:1.1");
+      const t = boucle(); t.from(q, { opacity: 0, y: 10, duration: .5 }, .2).from(c, { opacity: 0, y: 14, duration: .6, ease: "power3.out" }, .5).to({}, { duration: 1.8 }); return t; } },
+
+  { id: "compteur", nom: "Chiffres qui comptent", famille: "Données", cern: true,
+    usage: "Un chiffre clé qui défile jusqu'à sa valeur (160 acteurs, 140 structures).",
+    f(s) { s.style.background = "#d9d2c4"; const b = h(s, "", "<div style='position:static;display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center'><div style='position:static'><b style='display:block;font-size:13cqw;color:#0a36af'>0</b><span style='font-size:4cqw;font-weight:600'>acteurs</span></div><div style='position:static'><b style='display:block;font-size:13cqw;color:#0a36af'>0</b><span style='font-size:4cqw;font-weight:600'>structures</span></div><div style='position:static'><b style='display:block;font-size:13cqw;color:#0a36af'>0</b><span style='font-size:4cqw;font-weight:600'>ateliers</span></div></div>", "left:6%;right:6%;top:14%;background:#fff;padding:3cqw 1cqw");
+      const n = b.querySelectorAll("b"), cib = [160, 140, 4]; const t = boucle();
+      n.forEach((x, i) => { const c = { v: 0 }; t.to(c, { v: cib[i], duration: 1.4, ease: "power2.out", onUpdate: () => x.textContent = Math.round(c.v) }, .3 + i * .3); }); t.to({}, { duration: 1.2 }); return t; } },
+  { id: "lueur-carte", nom: "Lueur diffuse sur une carte", famille: "Données", cern: true,
+    usage: "Une aire sans frontière nette (une langue, une influence) s'étend en douceur.",
+    f(s) { h(s, "ph carte"); s.insertAdjacentHTML("beforeend", '<svg viewBox="0 0 100 178" style="inset:0;width:100%;height:100%"><path d="M20 40 L55 30 L80 55 L70 95 L85 130 L45 150 L25 120 L30 80 Z" fill="none" stroke="#0a36af" stroke-width="1.2"/></svg>');
+      const g = h(s, "", "", "left:5%;top:20%;width:90%;height:60%;border-radius:50%;background:radial-gradient(#0a36af 0,rgba(10,54,175,.45) 40%,rgba(10,54,175,0) 70%);filter:blur(4cqw)"); const t = boucle();
+      t.fromTo(g, { opacity: 0, scale: .55 }, { opacity: .8, scale: 1, duration: 2.2, ease: "power2.out" }, .3).to({}, { duration: 1.2 }); return t; } },
+  { id: "epingle-carte", nom: "Épingle qui tombe sur la carte", famille: "Données", cern: false,
+    usage: "Situe un lieu précis (le CERN, une salle) avec une onde qui se propage.",
+    f(s) { h(s, "ph carte"); const o = h(s, "", "", "left:calc(50% - 6cqw);top:calc(50% - 6cqw);width:12cqw;height:12cqw;border-radius:50%;border:.8cqw solid #0a36af");
+      const p = h(s, "", "", "left:calc(50% - 4cqw);top:calc(50% - 12cqw);width:8cqw;height:8cqw;border-radius:50% 50% 50% 0;background:#0a36af;transform:rotate(-45deg)"); const t = boucle();
+      t.fromTo(p, { y: -60, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: "bounce.out" }, .3).fromTo(o, { scale: .3, opacity: 1 }, { scale: 3, opacity: 0, duration: 1.2, ease: "power2.out" }, .8).to({}, { duration: 1 }); return t; } },
+  { id: "page-defilante", nom: "Page web qui défile, date encadrée", famille: "Données", cern: true,
+    usage: "Présente un article ou un site réel ; un cadre bleu pointe l'essentiel (auteur, date).",
+    f(s) { s.style.background = "#fff"; const e = h(s, "", "", "left:8%;right:8%;top:18%;bottom:14%;border:1px solid #ddd;box-shadow:0 2cqw 5cqw rgba(0,0,0,.15);overflow:hidden");
+      const d = h(e, "abs", "<div style='position:static;height:5cqw;width:30%;background:#d33;margin-bottom:3cqw'></div><div style='position:static;font-weight:800;font-size:6.5cqw;line-height:1.15'>Grand Genève : un projet culturel transfrontalier</div><div style='position:static;margin:3cqw 0;font-size:3.6cqw;display:inline-block;padding:1cqw;border:.8cqw solid transparent' class='date'>FRANCK MONOD · 15 mai 2026</div>" + Array.from({ length: 14 }, () => "<div style='position:static;height:2.4cqw;background:#e4e4e8;margin:2.2cqw 0'></div>").join(""), "left:5cqw;right:5cqw;top:5cqw");
+      const c = d.querySelector(".date"); const t = boucle();
+      t.set(d, { y: 0 }).to(c, { borderColor: "#0a36af", duration: .01 }, .5).fromTo(c, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: .5 }, .5).to(d, { y: "-45%", duration: 2.2, ease: "power1.inOut" }, 1.4).to({}, { duration: .6 }).set(c, { borderColor: "transparent" }); return t; } },
+  { id: "barre-chapitres", nom: "Barre de chapitres en haut", famille: "Données", cern: false,
+    usage: "Montre où l'on en est (Le projet · Sur place · La langue) ; aide à rester jusqu'au bout.",
+    f(s) { personne(s); const b = h(s, "", "", "left:4%;right:4%;top:4%;height:1.4cqw;background:rgba(255,255,255,.35)");
+      const r = h(b, "abs", "", "left:0;top:0;bottom:0;width:0;background:#fff"); const l = h(s, "", "Le projet", "left:4%;top:7%;font-size:4.2cqw;font-weight:700;color:#fff;text-shadow:0 0 1cqw rgba(0,0,0,.8)"); const t = boucle();
+      t.set(r, { width: "0%" }).call(() => l.textContent = "Le projet").to(r, { width: "33%", duration: 1.2, ease: "none" }).call(() => l.textContent = "Sur place").to(r, { width: "66%", duration: 1.2, ease: "none" }).call(() => l.textContent = "La langue").to(r, { width: "100%", duration: 1.2, ease: "none" }); return t; } },
+
+  { id: "glitch-leger", nom: "Glitch léger", famille: "Textures", cern: false,
+    usage: "Saccade numérique brève. Plutôt style tech ou jeu vidéo que reportage.",
+    f(s) { const p = h(s, "ph"); const tt = h(s, "", "CERN", "left:0;right:0;top:40%;text-align:center;font-weight:800;font-size:22cqw;color:#fff"); const t = boucle();
+      [0, .08, .16, .24].forEach((d, i) => t.set(tt, { x: i % 2 ? -6 : 6, textShadow: i % 2 ? "3px 0 #f0f,-3px 0 #0ff" : "-3px 0 #f0f,3px 0 #0ff" }, 1 + d));
+      t.set(tt, { x: 0, textShadow: "none" }, 1.32).to({}, { duration: 1.2 }); return t; } },
+  { id: "grain-film", nom: "Grain de film", famille: "Textures", cern: false,
+    usage: "Texture argentique discrète sur tout le film : lie des images d'origines différentes.",
+    f(s) { h(s, "ph b"); const c = document.createElement("canvas"); c.width = 90; c.height = 160; c.style.cssText = "inset:0;width:100%;height:100%;opacity:.35;mix-blend-mode:overlay;image-rendering:pixelated"; s.appendChild(c);
+      const x = c.getContext("2d"); const bruit = () => { const im = x.createImageData(90, 160); for (let i = 0; i < im.data.length; i += 4) { const v = Math.random() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } x.putImageData(im, 0, 0); };
+      const t = gsap.timeline({ repeat: -1 }); t.call(bruit).to({}, { duration: 1 / 12 }); return t; } },
+];
+
+
+// ---- Donnees du studio ----
+let donnees = { sons: [], choix: {}, televerses: [] };
+let onglet = "sons", filtre = "tout";
+const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const audio = new Audio(); let enCours = null;
+const ICON_JOUER = '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 3l12 7-12 7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 20 20" fill="currentColor"><rect x="4" y="3" width="4" height="14"/><rect x="12" y="3" width="4" height="14"/></svg>';
+const fmt = (d) => !d ? "" : d >= 60 ? `${Math.floor(d / 60)} min ${String(Math.round(d % 60)).padStart(2, "0")}` : `${(+d).toFixed(1).replace(".", ",")} s`;
+const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+async function charger() {
+  try { const r = await fetch("api/catalogue", { cache: "no-store" }); donnees = await r.json(); }
+  catch (e) { document.getElementById("p-sons").innerHTML = '<p class="vide">Impossible de joindre le studio. Rechargez la page.</p>'; return; }
+  rendre();
+}
+async function choisir(id, valeur) {
+  const actuel = donnees.choix[id]; const nouveau = actuel === valeur ? null : valeur;
+  if (nouveau) donnees.choix[id] = nouveau; else delete donnees.choix[id];
+  rendre();
+  try { await fetch("api/choix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, choix: nouveau }) }); }
+  catch (e) { alerteMsg("Choix non enregistré : vérifiez la connexion."); }
+}
+async function retirer(id) {
+  const btn = document.querySelector(`[data-retirer="${id}"]`);
+  if (btn && btn.dataset.confirme !== "1") { btn.dataset.confirme = "1"; btn.textContent = "Confirmer ?"; return; }
+  await fetch("api/retirer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+  charger();
+}
+const alerteMsg = (t) => { document.getElementById("compte").textContent = t; };
+const visible = (id, ajout) => filtre === "tout" || (filtre === "garde" && donnees.choix[id] === "garde") || (filtre === "trier" && !donnees.choix[id]) || (filtre === "ajout" && ajout);
+const boutons = (id, ajout) => `<div class="choix"><button class="g" aria-pressed="${donnees.choix[id] === "garde"}" data-c="${id}" data-v="garde">Garder</button><button class="e" aria-pressed="${donnees.choix[id] === "ecarte"}" data-c="${id}" data-v="ecarte">Écarter</button>${ajout ? `<button class="r" data-retirer="${id}">Retirer</button>` : ""}</div>`;
+
+function rendreSons() {
+  const p = document.getElementById("p-sons"); p.innerHTML = "";
+  const tous = [...donnees.sons.map((s) => ({ ...s, ajout: false })),
+    ...donnees.televerses.filter((t) => t.type !== "graphique").map((t) => ({ ...t, ajout: true, present: true }))];
+  const groupes = {};
+  tous.filter((s) => visible(s.id, s.ajout)).forEach((s) => (groupes[(s.type === "musique" ? "Musique · " : "") + (s.categorie || "Sans catégorie")] ||= []).push(s));
+  if (!Object.keys(groupes).length) p.innerHTML = '<p class="vide">Rien ici pour ce filtre.</p>';
+  Object.entries(groupes).forEach(([cat, sons]) => {
+    p.insertAdjacentHTML("beforeend", `<h2>${esc(cat)}</h2>`);
+    sons.forEach((s) => {
+      const c = donnees.choix[s.id];
+      p.insertAdjacentHTML("beforeend", `<div class="son${c === "garde" ? " garde" : c === "ecarte" ? " ecarte" : ""}" data-id="${s.id}">
+        <button class="jouer" data-jouer="${s.id}" ${s.present ? "" : "disabled"} aria-label="Écouter ${esc(s.titre)}">${enCours === s.id ? ICON_PAUSE : ICON_JOUER}<span class="barre"></span></button>
+        <div class="info"><div class="t">${esc(s.titre)}<small>${fmt(s.duree)}</small> ${s.ajout ? '<span class="etiq ajout">Mon ajout</span>' : ""}</div>
+        <div class="u">${esc(s.usage || "")}${s.present ? "" : " — installation en cours sur le studio"}</div>
+        <div class="s">${esc([s.source, s.licence, s.auteur].filter(Boolean).join(" · "))}${s.page ? ` · <a href="${esc(s.page)}" target="_blank" rel="noopener">source</a>` : ""}</div></div>
+        ${boutons(s.id, s.ajout)}</div>`);
+    });
+  });
+  p.querySelectorAll("[data-jouer]").forEach((b) => b.onclick = () => {
+    const s = tous.find((x) => x.id === b.dataset.jouer);
+    if (enCours === s.id && !audio.paused) { audio.pause(); enCours = null; } else { audio.src = s.fichier; audio.play().catch(() => {}); enCours = s.id; }
+    rendreSons(); brancher(p);
+  });
+  brancher(p);
+}
+audio.ontimeupdate = () => { const b = document.querySelector(`.son[data-id="${enCours}"] .barre`); if (b && audio.duration) b.style.width = (100 * audio.currentTime / audio.duration) + "%"; };
+audio.onended = () => { enCours = null; if (onglet === "sons") rendreSons(); };
+
+const timelines = [];
+function rendreGraphiques() {
+  timelines.splice(0).forEach((t) => t.kill());
+  const p = document.getElementById("p-graphiques"); p.innerHTML = "";
+  const ajouts = donnees.televerses.filter((t) => t.type === "graphique");
+  const familles = [...new Set([...EFFETS.map((e) => e.famille), ...ajouts.map((a) => a.categorie || "Mes ajouts")])];
+  let rien = true;
+  familles.forEach((fam) => {
+    const integres = EFFETS.filter((e) => e.famille === fam && visible(e.id, false));
+    const mes = ajouts.filter((a) => (a.categorie || "Mes ajouts") === fam && visible(a.id, true));
+    if (!integres.length && !mes.length) return; rien = false;
+    p.insertAdjacentHTML("beforeend", `<h2>${esc(fam)}</h2>`);
+    const g = document.createElement("div"); g.className = "grille"; p.appendChild(g);
+    [...integres.map((e) => ({ e, ajout: false })), ...mes.map((e) => ({ e, ajout: true }))].forEach(({ e, ajout }) => {
+      const c = donnees.choix[e.id];
+      const art = document.createElement("article"); art.className = "effet" + (c === "garde" ? " garde" : c === "ecarte" ? " ecarte" : "");
+      art.innerHTML = `<div class="cadre"><div class="scene" tabindex="0" role="button" aria-label="Rejouer : ${esc(e.nom || e.titre)}"></div></div>
+        <div class="corps"><div><span class="etiq${ajout ? " ajout" : e.cern ? "" : " neuf"}">${ajout ? "Mon ajout" : e.cern ? "Dans le reportage CERN" : "Proposé"}</span></div>
+        <div class="t">${esc(e.nom || e.titre)}</div><div class="u">${esc(e.usage || "")}</div>${boutons(e.id, ajout)}</div>`;
+      g.appendChild(art);
+      const scene = art.querySelector(".scene");
+      if (ajout) {
+        const video = /\.(mp4|webm|mov)$/i.test(e.fichier);
+        scene.innerHTML = video ? `<video class="apercu" src="${esc(e.fichier)}" muted loop playsinline autoplay></video>` : `<img class="apercu" src="${esc(e.fichier)}" alt="">`;
+        scene.onclick = () => { const v = scene.querySelector("video"); if (v) { v.currentTime = 0; v.play(); } };
+      } else {
+        const tl = e.f(scene); timelines.push(tl); if (reduit) tl.progress(.6).pause();
+        scene.onclick = () => tl.restart();
+        scene.onkeydown = (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); tl.restart(); } };
+      }
+    });
+  });
+  if (rien) p.innerHTML = '<p class="vide">Rien ici pour ce filtre.</p>';
+  brancher(p);
+}
+function brancher(p) {
+  p.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => choisir(b.dataset.c, b.dataset.v));
+  p.querySelectorAll("[data-retirer]").forEach((b) => b.onclick = () => retirer(b.dataset.retirer));
+}
+function compter() {
+  const ids = onglet === "graphiques" ? [...EFFETS.map((e) => e.id), ...donnees.televerses.filter((t) => t.type === "graphique").map((t) => t.id)]
+    : [...donnees.sons.map((s) => s.id), ...donnees.televerses.filter((t) => t.type !== "graphique").map((t) => t.id)];
+  const g = ids.filter((i) => donnees.choix[i] === "garde").length, x = ids.filter((i) => donnees.choix[i] === "ecarte").length;
+  document.getElementById("compte").innerHTML = `<b>${g}</b> gardés · <b>${x}</b> écartés · <b>${ids.length - g - x}</b> à trier`;
+}
+function rendre() {
+  document.getElementById("outils").hidden = onglet === "ajouter";
+  if (onglet === "sons") rendreSons(); else if (onglet === "graphiques") rendreGraphiques();
+  if (onglet !== "ajouter") compter();
+  const cats = new Set([...donnees.sons.map((s) => s.categorie), ...EFFETS.map((e) => e.famille), ...donnees.televerses.map((t) => t.categorie)].filter(Boolean));
+  document.getElementById("categories").innerHTML = [...cats].map((c) => `<option value="${esc(c)}">`).join("");
+}
+document.querySelectorAll(".onglets button").forEach((b) => b.onclick = () => {
+  onglet = b.dataset.o;
+  document.querySelectorAll(".onglets button").forEach((y) => y.setAttribute("aria-selected", y === b));
+  ["sons", "graphiques", "ajouter"].forEach((o) => document.getElementById("p-" + o).hidden = o !== onglet);
+  if (onglet !== "sons") audio.pause();
+  rendre();
+});
+document.querySelectorAll(".filtres button").forEach((b) => b.onclick = () => {
+  filtre = b.dataset.f; document.querySelectorAll(".filtres button").forEach((y) => y.setAttribute("aria-pressed", y === b)); rendre();
+});
+
+// ---- Televerser ----
+const ACCEPTE = { son: ["audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac", "mp3, wav, m4a, aac, ogg, flac"], musique: ["audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac", "mp3, wav, m4a, aac, ogg, flac"],
+  graphique: ["video/*,image/*,.mp4,.webm,.mov,.png,.jpg,.jpeg,.gif,.webp,.svg", "vidéo (mp4, webm, mov) ou image (png, jpg, gif, webp, svg)"] };
+const typeSel = document.getElementById("type");
+typeSel.onchange = () => { const [acc, aide] = ACCEPTE[typeSel.value]; document.getElementById("fichier").accept = acc; document.getElementById("aide-fichier").textContent = aide; };
+document.getElementById("form").onsubmit = (ev) => {
+  ev.preventDefault();
+  const f = document.getElementById("fichier").files[0]; if (!f) return;
+  const q = new URLSearchParams({ type: typeSel.value, nom: f.name });
+  ["titre", "categorie", "usage", "source", "licence"].forEach((k) => q.set(k, document.getElementById(k).value.trim()));
+  const msg = document.getElementById("message"), prog = document.getElementById("progres"), btn = document.getElementById("envoyer");
+  const xhr = new XMLHttpRequest(); xhr.open("POST", "api/televerser?" + q);
+  xhr.upload.onprogress = (e) => { if (e.lengthComputable) prog.value = e.loaded / e.total; };
+  xhr.onload = () => {
+    btn.disabled = false; prog.hidden = true;
+    let r = {}; try { r = JSON.parse(xhr.responseText); } catch (e) {}
+    if (xhr.status === 200) { msg.textContent = `« ${r.entree.titre} » ajouté et gardé. Il est aussi copié dans Drive.`; document.getElementById("form").reset(); typeSel.onchange(); charger(); }
+    else msg.textContent = "Envoi refusé : " + (r.erreur || xhr.status) + ".";
+  };
+  xhr.onerror = () => { btn.disabled = false; prog.hidden = true; msg.textContent = "Envoi impossible : vérifiez la connexion, puis réessayez."; };
+  btn.disabled = true; prog.hidden = false; prog.value = 0; msg.textContent = "Envoi en cours…";
+  xhr.send(f);
+};
+charger();
+</script>
+</body>
+</html>
