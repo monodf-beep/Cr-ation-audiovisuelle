@@ -16,3 +16,6 @@ __pycache__/
 *.webp
 04_montage/coupes.json
 22_drapeaux/
+jingle_reels/out/
+jingle_reels/fonts/
+*.mov
