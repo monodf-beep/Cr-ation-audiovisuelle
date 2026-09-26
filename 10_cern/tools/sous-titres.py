@@ -15,8 +15,8 @@ DEBUT = 5                 # les cinq premiers mots sont le titre du hook, deja a
 MAX_MOTS, MAX_CARS = 3, 20
 # Plans clairs (texte sombre) : carte, affiche, liste de la culture, carte du Grand Genève, remerciement.
 CLAIRS = [(2.0, 6.66), (8.6, 12.9), (19.9, 29.9), (42.1, 50.9), (70.9, 80.5)]
-# Plans ou le bas du cadre porte deja du texte (affiche : bandeau Interreg) : sous-titres plus bas.
-BAS = [(19.9, 29.9)]
+# Plans ou les sous-titres doivent se placer autrement (aucun depuis que le bandeau Interreg est en haut).
+BAS = []
 # Pas de sous-titres quand un titre a l'ecran dit deja la meme chose (citation « un bien commun, une culture commune »).
 SANS = [(46.08, 50.9)]
 # Changements de plan : un groupe ne les chevauche jamais.

@@ -1,5 +1,5 @@
 {
- "duree": 77.933,
+ "duree": 77.813,
  "sections": [
   {
    "sequence": "accroche",
@@ -34,19 +34,19 @@
   {
    "sequence": "culture",
    "debut": 36.291,
-   "fin": 57.587,
+   "fin": 57.467,
    "texte": "Ce projet Interreg sur la culture, c'est les festivals de jazz, les salles de théâtre, les musées, les orchestres, mais aussi travailler sur un bien commun, une culture commune : déjà 160 acteurs, 140 structures, des deux côtés de la frontière."
   },
   {
    "sequence": "globe",
-   "debut": 57.587,
-   "fin": 74.573,
+   "debut": 57.467,
+   "fin": 74.453,
    "texte": "Et qu'en est-il du savoyard ? Eh bien le savoyard est aussi une langue de Genève, pas seulement de Savoie : le Cé qu'è lainô, l'hymne de Genève, est écrit en savoyard. C'est une langue commune à nos territoires, un bien commun."
   },
   {
    "sequence": "merci",
-   "debut": 74.573,
-   "fin": 77.933,
+   "debut": 74.453,
+   "fin": 77.813,
    "texte": "Et je remercie Laetitia Picard pour son invitation."
   }
  ],
@@ -294,11 +294,11 @@
   {
    "source": [
     90.564,
-    92.34
+    92.22
    ],
    "montage": [
     51.131,
-    52.907
+    52.787
    ]
   },
   {
@@ -307,8 +307,8 @@
     95.693
    ],
    "montage": [
-    53.257,
-    55.53
+    53.137,
+    55.41
    ]
   },
   {
@@ -317,8 +317,8 @@
     98.8
    ],
    "montage": [
-    55.88,
-    57.587
+    55.76,
+    57.467
    ]
   },
   {
@@ -327,8 +327,8 @@
     102.329
    ],
    "montage": [
-    58.147,
-    58.276
+    58.027,
+    58.156
    ]
   },
   {
@@ -337,8 +337,8 @@
     108.459
    ],
    "montage": [
-    58.626,
-    63.297
+    58.506,
+    63.177
    ]
   },
   {
@@ -347,8 +347,8 @@
     111.164
    ],
    "montage": [
-    63.647,
-    65.375
+    63.527,
+    65.255
    ]
   },
   {
@@ -357,8 +357,8 @@
     111.88
    ],
    "montage": [
-    65.725,
-    65.893
+    65.605,
+    65.773
    ]
   },
   {
@@ -367,8 +367,8 @@
     118.924
    ],
    "montage": [
-    66.243,
-    67.314
+    66.123,
+    67.194
    ]
   },
   {
@@ -377,8 +377,8 @@
     123.277
    ],
    "montage": [
-    67.664,
-    71.096
+    67.544,
+    70.976
    ]
   },
   {
@@ -387,8 +387,8 @@
     128.86
    ],
    "montage": [
-    71.446,
-    74.573
+    71.326,
+    74.453
    ]
   },
   {
@@ -397,8 +397,8 @@
     183.4
    ],
    "montage": [
-    75.133,
-    77.933
+    75.013,
+    77.813
    ]
   }
  ]

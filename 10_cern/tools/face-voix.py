@@ -4,7 +4,7 @@ Chaque morceau garde l'image jusqu'au morceau suivant : les respirations ajoutee
 la suite naturelle de la prise, sans image figee. Image traitee comme ops/vps/traiter-prises.sh
 (eclaircie, rechauffee, recadree en vertical 1080 x 1920, 30 images/s). Pas de son : il est dans voix-off.mp3.
 Usage : python3 tools/face-voix.py <prise.webm> <voix-montee.json> <sortie.mp4>"""
-import json, subprocess, sys
+import hashlib, json, subprocess, sys
 
 prise, table, sortie = sys.argv[1:4]
 coupes = json.load(open(table))["coupes"]
@@ -28,4 +28,6 @@ filtres.append("".join(entrees) + f"concat=n={len(entrees)}:v=1:a=0,setpts=PTS/{
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", prise, "-filter_complex", ";".join(filtres), "-map", "[out]",
                 "-an", "-c:v", "libx264", "-crf", "20", "-preset", "medium", "-pix_fmt", "yuv420p", "-r", "30",
                 "-movflags", "+faststart", sortie], check=True)
+# Empreinte (coupes + vitesse) : tools/preparer-medias.sh refait la video si elle change.
+open(sortie + ".empreinte", "w").write(hashlib.sha1((open(table).read() + str(VITESSE)).encode()).hexdigest())
 print(f"face camera : {sortie} ({duree / VITESSE:.1f} s, vitesse {VITESSE}, {len(coupes)} morceaux)")

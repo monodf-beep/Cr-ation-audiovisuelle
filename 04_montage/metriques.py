@@ -113,6 +113,20 @@ if os.path.exists(rendu):
 else:
     lignes.append(f"| rendu | absent | | | {rendu} : metriques du rendu non calculees |")
 
+# --- Zones masquees par Instagram et TikTok (texte visible dedans) : 04_montage/zones-sures.cjs ---
+try:
+    z = subprocess.run(["node", os.path.join(os.path.dirname(os.path.abspath(__file__)), "zones-sures.cjs"), projet],
+                       capture_output=True, text=True, timeout=600)
+    problemes = json.loads(z.stdout) if z.returncode == 0 else None
+except Exception:
+    problemes = None
+if problemes is None:
+    lignes.append("| zones_masquees | non mesure | | | Chrome ou playwright indisponible pour zones-sures.cjs |")
+else:
+    for x in problemes:
+        mesure("zones_masquees", 1, "texte", f"« {x['texte']} » en zone {x['zone']} de {x['de']:.1f} a {x['a']:.1f} s", seuil=(None, 0))
+    if not problemes: lignes.append("| zones_masquees | 0 texte | aucun | ok | haut 250 px, bas 480 px, colonne de droite 140 px |")
+
 def lufs(f, fin):
     e = subprocess.run(["ffmpeg", "-hide_banner", "-t", str(fin), "-i", f, "-af", "ebur128", "-f", "null", "-"],
                        capture_output=True, text=True).stderr

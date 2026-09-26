@@ -34,7 +34,7 @@
       .bord.leger { stroke: var(--fm-bleu-savoie); stroke-width: 1.3px; stroke-opacity: 0.4; stroke-dasharray: 2 5; }
       .geneve { fill: var(--tint-fort); stroke: var(--fm-line); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
       .gg { fill: rgba(10, 54, 175, 0.22); stroke: var(--fm-bleu-savoie); stroke-width: 3.5px; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-      .legende { position: absolute; left: 90px; top: 540px; display: flex; align-items: center; gap: 16px; font-size: 28px; font-weight: 600; color: var(--fm-ink-900); background: var(--fm-bg); padding: 12px 18px 12px 14px; }
+      .legende { position: absolute; left: 90px; top: 640px; display: flex; align-items: center; gap: 16px; font-size: 28px; font-weight: 600; color: var(--fm-ink-900); background: var(--fm-bg); padding: 12px 18px 12px 14px; }
       .legende i { width: 34px; height: 24px; background: rgba(10, 54, 175, 0.22); border: 3px solid var(--fm-bleu-savoie); }
 
 
@@ -46,8 +46,8 @@
       #cern .onde { fill: none; stroke: var(--fm-bleu-savoie); stroke-width: 2px; vector-effect: non-scaling-stroke; }
 
       /* Titrage d'ouverture et de fin, en haut du cadre */
-      .voile { position: absolute; left: 0; right: 0; top: 0; height: 720px; background: linear-gradient(#ffffff 0%, #ffffff 62%, rgba(255,255,255,0) 100%); }
-      .entete { position: absolute; left: 90px; top: 200px; width: 900px; }
+      .voile { position: absolute; left: 0; right: 0; top: 0; height: 800px; background: linear-gradient(#ffffff 0%, #ffffff 62%, rgba(255,255,255,0) 100%); }
+      .entete { position: absolute; left: 90px; top: 280px; width: 840px; }
       .entete .eyebrow { font-size: 26px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
       .entete h1 { margin-top: 18px; font-size: 80px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-wrap: balance; }
       .entete .sub { margin-top: 20px; font-size: 32px; color: var(--fm-ink-700); }
@@ -56,7 +56,7 @@
       .pastille { position: absolute; background: var(--fm-bg); padding: 18px 26px; }
       .pastille .k { font-size: 22px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
       .pastille .v { margin-top: 6px; font-size: 36px; font-weight: 700; line-height: 1.15; }
-      .credit { position: absolute; right: 24px; bottom: 24px; font-size: 18px; color: #ffffff; background: rgba(23, 23, 25, 0.75); padding: 4px 10px; }
+      .credit { position: absolute; right: 24px; top: 262px; font-size: 18px; color: #ffffff; background: rgba(23, 23, 25, 0.75); padding: 4px 10px; }
 
       /* Vue aerienne */
       .aerien { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
@@ -68,13 +68,15 @@
       /* Sous-titres : zone sure des Reels, au-dessus de l'interface du bas */
       /* Groupes de 1 a 3 mots sur une ligne (tools/sous-titres.py). Le mot-cle du groupe est plus gros,
          sur un bloc bleu Savoie. (Mot prononce allume : ecarte par Franck, 04_montage/bibliotheque.json.) */
-      .st { position: absolute; left: 40px; right: 40px; top: 1400px; display: flex; justify-content: center; align-items: center; gap: 0 18px; white-space: nowrap; transform-origin: 50% 50%; }
-      .st { font-size: 66px; font-weight: 700; line-height: 1.2; color: #ffffff; text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 3px 18px rgba(0,0,0,0.6); }
+      /* Zone sure Instagram / TikTok (04_montage/BONNES-PRATIQUES.md, section 9) : sous 1440 px et dans la colonne
+         de droite (x > 940), l'interface couvre l'image. */
+      .st { position: absolute; left: 60px; right: 140px; bottom: 490px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; transform-origin: 50% 100%; }
+      .st .m { white-space: nowrap; }   /* un groupe trop large passe sur deux lignes, en montant (ancre en bas) */
+      .st { font-size: 60px; font-weight: 700; line-height: 1.2; color: #ffffff; text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 3px 18px rgba(0,0,0,0.6); }
       .st.clair { color: var(--fm-ink-900); text-shadow: 0 0 10px rgba(255,255,255,0.9); }
       .st .m { display: inline-block; }
       .st .m.cle { opacity: 1; font-size: 1.3em; background: var(--fm-bleu-savoie); color: #ffffff; padding: 0 16px 4px; text-shadow: none; }
       /* Sur l'affiche, sous le bandeau Interreg */
-      .st.bas { top: 1530px; }
 
       #fin-texte .sig { margin-top: 36px; font-size: 26px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fm-ink-500); }
     
@@ -86,11 +88,11 @@
       .pct .ligne { overflow: hidden; }
       .pct .ligne > span { display: inline-block; white-space: nowrap; }
       .pct small { display: inline-block; font-size: 58px; margin-right: 22px; vertical-align: 0.18em; }
-      .interreg { position: absolute; left: 70px; top: 1290px; display: inline-flex; align-items: center; gap: 18px; background: var(--fm-bleu-savoie); color: #fff; padding: 18px 28px; }
+      .interreg { position: absolute; left: 70px; top: 300px; display: inline-flex; align-items: center; gap: 18px; background: var(--fm-bleu-savoie); color: #fff; padding: 18px 28px; }
       .interreg b { font-size: 48px; font-weight: 700; letter-spacing: 0.02em; }
       .interreg span { font-size: 28px; font-weight: 600; }
-      .partenaires { position: absolute; left: 70px; right: 70px; top: 1390px; font-size: 22px; line-height: 1.35; color: var(--fm-ink-900); background: rgba(255,255,255,0.88); padding: 8px 12px; }
-      .credit-noir { position: absolute; right: 24px; bottom: 24px; font-size: 18px; color: var(--fm-ink-700); background: rgba(255,255,255,0.85); padding: 3px 8px; }
+      .partenaires { position: absolute; left: 70px; right: 150px; top: 400px; font-size: 22px; line-height: 1.35; color: var(--fm-ink-900); background: rgba(255,255,255,0.88); padding: 8px 12px; }
+      .credit-noir { position: absolute; right: 24px; top: 262px; font-size: 18px; color: var(--fm-ink-700); background: rgba(255,255,255,0.85); padding: 3px 8px; }
 
       /* La culture, c'est tout */
       .culture { position: absolute; left: 80px; right: 60px; top: 330px; }
@@ -112,7 +114,7 @@
       #aerien-cadre, #badge-cadre { overflow: hidden; }
 
       /* Chiffres sur le badge */
-      .chiffres { position: absolute; left: 60px; right: 60px; top: 230px; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--fm-bg); padding: 30px 20px; }
+      .chiffres { position: absolute; left: 60px; right: 140px; top: 280px; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--fm-bg); padding: 30px 20px; }
       .chiffres div { text-align: center; }
       .chiffres b { display: block; font-size: 88px; font-weight: 700; line-height: 1; color: var(--fm-bleu-savoie); font-variant-numeric: tabular-nums; }
       .chiffres span { display: block; margin-top: 8px; font-size: 26px; font-weight: 600; }
@@ -123,35 +125,32 @@
       .bloc-nom .n { font-size: 52px; font-weight: 700; line-height: 1.1; }
       .bloc-nom .r { margin-top: 8px; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
       /* E4 : noms de lieux, serif fine, un mot en italique souligne */
-      .lieu-fin { position: absolute; left: 90px; top: 250px; color: #ffffff; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 92px; line-height: 1.02; text-shadow: 0 0 4px rgba(0,0,0,0.75), 0 2px 24px rgba(0,0,0,0.75); }
+      .lieu-fin { position: absolute; left: 90px; top: 290px; color: #ffffff; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 92px; line-height: 1.02; text-shadow: 0 0 4px rgba(0,0,0,0.75), 0 2px 24px rgba(0,0,0,0.75); }
       .lieu-fin .l { display: block; overflow: hidden; padding-bottom: 6px; }
       .lieu-fin .l > span { display: inline-block; }
       .lieu-fin em { font-style: italic; border-bottom: 4px solid #ffffff; }
       /* Remerciement et carton final */
       #p-merci { background: transparent; }
-      .merci { position: absolute; left: 70px; right: 70px; top: 110px; background: rgba(255,255,255,0.92); padding: 40px 50px 50px; }
+      .merci { position: absolute; left: 70px; right: 70px; top: 280px; background: rgba(255,255,255,0.92); padding: 40px 50px 50px; }
       .merci .l { overflow: hidden; }
       .merci .l > span { display: inline-block; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 150px; line-height: 1.05; color: var(--fm-bleu-savoie); white-space: nowrap; }
       .merci em { font-style: italic; border-bottom: 5px solid var(--fm-bleu-savoie); }
       .merci p { margin-top: 20px; font-size: 40px; font-weight: 600; line-height: 1.25; }
       #p-final { background: var(--fm-bg); }
       /* Carton final : relire l'article */
-      .relire { position: absolute; left: 90px; right: 90px; top: 150px; }
+      .relire { position: absolute; left: 90px; right: 140px; top: 280px; }
       .relire .eyebrow { font-size: 26px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
       .relire h2 { margin-top: 14px; font-size: 68px; font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; }
       .relire .date { margin-top: 16px; font-size: 30px; font-weight: 600; color: var(--fm-ink-700); }
-      .ecran { position: absolute; left: 110px; top: 520px; width: 860px; height: 980px; background: #fff; border: 2px solid var(--fm-line); box-shadow: 0 24px 60px rgba(23, 23, 25, 0.18); overflow: hidden; }
+      .ecran { position: absolute; left: 110px; top: 620px; width: 800px; height: 800px; background: #fff; border: 2px solid var(--fm-line); box-shadow: 0 24px 60px rgba(23, 23, 25, 0.18); overflow: hidden; }
       .ecran .barre { height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 20px; background: var(--fm-bg-soft); border-bottom: 2px solid var(--fm-line); }
       .ecran .barre i { width: 14px; height: 14px; border-radius: 50%; background: var(--fm-line); }
       .ecran .barre span { margin-left: 16px; font-size: 22px; color: var(--fm-ink-500); }
-      .ecran .fenetre { position: absolute; left: 0; top: 58px; width: 860px; height: 922px; overflow: hidden; }
-      .defile { position: absolute; left: 0; top: 0; width: 1080px; transform-origin: 0 0; transform: scale(0.7963); }
+      .ecran .fenetre { position: absolute; left: 0; top: 58px; width: 800px; height: 742px; overflow: hidden; }
+      .defile { position: absolute; left: 0; top: 0; width: 1080px; transform-origin: 0 0; transform: scale(0.7407); }
       .defile img { display: block; width: 1080px; height: 4000px; }
       /* Autour de « Franck Monod | 15 mai 2026 » sur la page (coordonnees de la capture, 1080 px de large) */
       .surligne { position: absolute; left: 112px; top: 588px; width: 380px; height: 64px; border: 5px solid var(--fm-bleu-savoie); }
-      .signature { position: absolute; left: 0; right: 0; top: 1560px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-      .signature img { height: 64px; width: auto; display: block; }
-      .signature span { font-size: 26px; font-weight: 600; color: var(--fm-ink-700); }
       .final { position: absolute; left: 0; right: 0; top: 520px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
       .bloc-final { background: var(--fm-bleu-savoie); color: #fff; padding: 30px 44px 34px; text-align: center; }
       .bloc-final .n { font-size: 76px; font-weight: 700; line-height: 1.05; }
@@ -163,7 +162,7 @@
       #hook-img { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 72% 90%; }
       .hook .b { background: var(--fm-bleu-savoie); padding: 0 14px; text-shadow: none; }
       /* Nos Alpes */
-      .source-na { position: absolute; right: 60px; top: 470px; display: flex; align-items: center; gap: 14px; background: var(--fm-bg); padding: 10px 16px; font-size: 22px; font-weight: 600; color: var(--fm-ink-700); }
+      .source-na { position: absolute; right: 140px; top: 520px; display: flex; align-items: center; gap: 14px; background: var(--fm-bg); padding: 10px 16px; font-size: 22px; font-weight: 600; color: var(--fm-ink-700); }
       .source-na img { height: 54px; width: auto; display: block; }
       .lire { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 40px; padding-top: 36px; border-top: 2px solid var(--fm-line); width: 860px; }
       .lire .k { font-size: 26px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-ink-700); }
@@ -182,7 +181,7 @@
       <div class="hook" id="hook"><span class="w">La</span> <span class="w">langue</span> <span class="w b">savoyarde</span> <span class="w">au</span> <span class="w b">CERN</span></div>
 
       <!-- Voix off montee (tools/couper-voix.py) -->
-      <audio id="voix" src="assets/voix-off.mp3" data-start="0" data-voix-start="0" data-duration="64.917" data-voix-duration="77.9" data-track-index="10" data-volume="1"></audio>
+      <audio id="voix" src="assets/voix-off.mp3" data-start="0" data-voix-start="0" data-duration="64.842" data-voix-duration="77.81" data-track-index="10" data-volume="1"></audio>
       <!-- Musique de fond (tools/preparer-medias.sh) : basse sous la voix, remonte sur le carton final -->
       <audio id="musique" src="assets/musique.mp3" data-start="0" data-voix-start="0" data-duration="73.75" data-voix-duration="88.5" data-track-index="11" data-volume="1"></audio>
       <!-- Habillage sonore (tools/habillage-sonore.py) : declencheur sur la photo du badge, montee vers le titre final, papier sur l'article -->
@@ -345,7 +344,6 @@
             </div>
           </div>
         </div>
-        <div class="signature" id="signature"><img src="assets/nosalpes-logo.png" width="500" height="172" alt="Nos Alpes" /><span>par Franck Monod · Enstitut de la Lengoua Savoyârda</span></div>
       </div>
 
       <!-- Face camera : la prise filmee avec la voix (tools/face-voix.py), montee comme elle, donc synchrone.
@@ -372,14 +370,14 @@
       <div class="st" data-a="17.08" data-b="17.56"><span class="m" data-a="17.08" data-b="17.16">Le</span> <span class="m cle" data-a="17.16" data-b="17.56">Globe</span></div>
       <div class="st" data-a="17.56" data-b="18.44"><span class="m" data-a="17.56" data-b="17.72">de</span> <span class="m" data-a="17.72" data-b="17.88">la</span> <span class="m" data-a="17.88" data-b="18.44">science</span></div>
       <div class="st" data-a="18.44" data-b="20.08"><span class="m" data-a="18.44" data-b="18.60">et</span> <span class="m" data-a="18.60" data-b="18.66">de</span> <span class="m" data-a="18.84" data-b="20.00">l'innovation</span></div>
-      <div class="st clair bas" data-a="20.08" data-b="21.02"><span class="m" data-a="20.08" data-b="20.11">Ce</span> <span class="m cle" data-a="20.11" data-b="20.95">projet culturel</span></div>
-      <div class="st clair bas" data-a="21.02" data-b="23.00"><span class="m" data-a="21.02" data-b="21.48">c'est</span> <span class="m" data-a="21.48" data-b="21.65">sur</span> <span class="m" data-a="21.65" data-b="22.18">ce</span> <span class="m" data-a="22.18" data-b="23.00">territoire</span></div>
-      <div class="st clair bas" data-a="23.00" data-b="24.08"><span class="m" data-a="23.00" data-b="23.15">du</span> <span class="m cle" data-a="23.15" data-b="24.00">Grand Genève</span></div>
-      <div class="st clair bas" data-a="24.08" data-b="25.21"><span class="m" data-a="24.08" data-b="24.20">Un</span> <span class="m" data-a="24.20" data-b="25.18">territoire</span></div>
-      <div class="st clair bas" data-a="25.21" data-b="26.18"><span class="m" data-a="25.21" data-b="25.27">à</span> <span class="m" data-a="25.30" data-b="25.66">cheval</span></div>
-      <div class="st clair bas" data-a="26.18" data-b="27.70"><span class="m" data-a="26.18" data-b="26.40">entre</span> <span class="m" data-a="26.40" data-b="26.43">le</span> <span class="m cle" data-a="26.43" data-b="27.70">Pays de Gex</span></div>
-      <div class="st clair bas" data-a="27.70" data-b="29.14"><span class="m" data-a="27.70" data-b="27.78">la</span> <span class="m cle" data-a="28.10" data-b="29.02">Haute-Savoie</span></div>
-      <div class="st clair bas" data-a="29.14" data-b="30.08"><span class="m" data-a="29.14" data-b="29.30">et</span> <span class="m" data-a="29.30" data-b="30.00">Genève</span></div>
+      <div class="st clair" data-a="20.08" data-b="21.02"><span class="m" data-a="20.08" data-b="20.11">Ce</span> <span class="m cle" data-a="20.11" data-b="20.95">projet culturel</span></div>
+      <div class="st clair" data-a="21.02" data-b="23.00"><span class="m" data-a="21.02" data-b="21.48">c'est</span> <span class="m" data-a="21.48" data-b="21.65">sur</span> <span class="m" data-a="21.65" data-b="22.18">ce</span> <span class="m" data-a="22.18" data-b="23.00">territoire</span></div>
+      <div class="st clair" data-a="23.00" data-b="24.08"><span class="m" data-a="23.00" data-b="23.15">du</span> <span class="m cle" data-a="23.15" data-b="24.00">Grand Genève</span></div>
+      <div class="st clair" data-a="24.08" data-b="25.21"><span class="m" data-a="24.08" data-b="24.20">Un</span> <span class="m" data-a="24.20" data-b="25.18">territoire</span></div>
+      <div class="st clair" data-a="25.21" data-b="26.18"><span class="m" data-a="25.21" data-b="25.27">à</span> <span class="m" data-a="25.30" data-b="25.66">cheval</span></div>
+      <div class="st clair" data-a="26.18" data-b="27.70"><span class="m" data-a="26.18" data-b="26.40">entre</span> <span class="m" data-a="26.40" data-b="26.43">le</span> <span class="m cle" data-a="26.43" data-b="27.70">Pays de Gex</span></div>
+      <div class="st clair" data-a="27.70" data-b="29.14"><span class="m" data-a="27.70" data-b="27.78">la</span> <span class="m cle" data-a="28.10" data-b="29.02">Haute-Savoie</span></div>
+      <div class="st clair" data-a="29.14" data-b="30.08"><span class="m" data-a="29.14" data-b="29.30">et</span> <span class="m" data-a="29.30" data-b="30.00">Genève</span></div>
       <div class="st" data-a="30.08" data-b="31.53"><span class="m" data-a="30.08" data-b="30.18">Et</span> <span class="m" data-a="30.18" data-b="30.90">pourquoi</span> <span class="m" data-a="30.90" data-b="31.53">j'étais</span></div>
       <div class="st" data-a="31.53" data-b="32.08"><span class="m" data-a="31.53" data-b="32.00">là ?</span></div>
       <div class="st" data-a="32.08" data-b="32.74"><span class="m" data-a="32.08" data-b="32.74">Justement</span></div>
@@ -393,29 +391,29 @@
       <div class="st clair" data-a="43.18" data-b="44.00"><span class="m" data-a="43.18" data-b="43.35">de</span> <span class="m" data-a="43.35" data-b="44.00">jazz</span></div>
       <div class="st clair" data-a="44.00" data-b="45.00"><span class="m" data-a="44.00" data-b="44.15">des</span> <span class="m" data-a="44.15" data-b="44.44">salles</span> <span class="m" data-a="44.44" data-b="44.53">de</span> <span class="m" data-a="44.53" data-b="45.00">théâtre</span></div>
       <div class="st clair" data-a="45.00" data-b="46.25"><span class="m" data-a="45.00" data-b="45.22">de</span> <span class="m" data-a="45.22" data-b="45.44">musées</span> <span class="m" data-a="45.44" data-b="46.00">d'orchestres</span></div>
-      <div class="st" data-a="51.08" data-b="53.16"><span class="m" data-a="51.08" data-b="51.54">Déjà</span> <span class="m cle" data-a="51.54" data-b="52.64">160</span></div>
-      <div class="st" data-a="53.16" data-b="54.00"><span class="m" data-a="53.16" data-b="54.00">acteurs</span></div>
-      <div class="st" data-a="54.00" data-b="55.31"><span class="m cle" data-a="54.00" data-b="54.47">140</span> <span class="m" data-a="54.47" data-b="55.24">structures</span></div>
-      <div class="st" data-a="55.31" data-b="57.00"><span class="m" data-a="55.31" data-b="55.61">des</span> <span class="m" data-a="55.61" data-b="56.01">deux</span> <span class="m" data-a="56.13" data-b="57.00">côtés</span></div>
-      <div class="st" data-a="57.00" data-b="58.08"><span class="m" data-a="57.00" data-b="57.14">de</span> <span class="m" data-a="57.14" data-b="57.28">la</span> <span class="m cle" data-a="57.28" data-b="58.00">frontière</span></div>
-      <div class="st" data-a="58.08" data-b="59.02"><span class="m" data-a="58.08" data-b="58.15">Et</span> <span class="m" data-a="58.15" data-b="58.52">qu'en</span> <span class="m" data-a="58.52" data-b="58.95">est-il</span></div>
-      <div class="st" data-a="59.02" data-b="60.52"><span class="m" data-a="59.02" data-b="59.12">du</span> <span class="m cle" data-a="59.12" data-b="60.00">savoyard ?</span> <span class="m" data-a="60.08" data-b="60.13">Eh</span> <span class="m" data-a="60.13" data-b="60.52">bien</span></div>
-      <div class="st" data-a="60.52" data-b="61.35"><span class="m" data-a="60.52" data-b="60.65">le</span> <span class="m cle" data-a="60.65" data-b="61.16">savoyard</span> <span class="m" data-a="61.16" data-b="61.35">est</span></div>
-      <div class="st" data-a="61.35" data-b="62.18"><span class="m" data-a="61.35" data-b="61.54">une</span> <span class="m" data-a="61.54" data-b="61.66">langue</span></div>
-      <div class="st" data-a="62.18" data-b="63.08"><span class="m" data-a="62.18" data-b="62.25">aussi</span> <span class="m" data-a="62.25" data-b="62.38">de</span> <span class="m" data-a="62.38" data-b="63.00">Genève</span></div>
-      <div class="st" data-a="63.08" data-b="63.91"><span class="m" data-a="63.08" data-b="63.31">Elle</span> <span class="m" data-a="63.31" data-b="63.68">n'est</span> <span class="m" data-a="63.68" data-b="63.91">pas</span></div>
-      <div class="st" data-a="63.91" data-b="65.18"><span class="m" data-a="63.91" data-b="64.62">seulement</span> <span class="m" data-a="64.62" data-b="65.08">parlée</span></div>
-      <div class="st" data-a="65.18" data-b="66.08"><span class="m" data-a="65.18" data-b="65.23">en</span> <span class="m" data-a="65.23" data-b="66.00">Savoie</span></div>
-      <div class="st" data-a="66.08" data-b="67.21"><span class="m" data-a="66.08" data-b="66.20">Le</span> <span class="m cle" data-a="66.20" data-b="67.19">Cé qu'è lainô</span></div>
-      <div class="st" data-a="67.21" data-b="69.00"><span class="m" data-a="67.21" data-b="67.90">l'hymne</span> <span class="m" data-a="67.90" data-b="68.18">de</span> <span class="m" data-a="68.18" data-b="69.00">Genève</span></div>
-      <div class="st" data-a="69.00" data-b="69.75"><span class="m" data-a="69.00" data-b="69.28">est</span> <span class="m" data-a="69.28" data-b="69.75">écrit</span></div>
-      <div class="st" data-a="69.75" data-b="71.05"><span class="m" data-a="69.75" data-b="69.79">en</span> <span class="m cle" data-a="70.22" data-b="71.00">savoyard</span></div>
-      <div class="st clair" data-a="71.05" data-b="72.07"><span class="m" data-a="71.05" data-b="71.25">C'est</span> <span class="m" data-a="71.25" data-b="71.38">une</span> <span class="m cle" data-a="71.44" data-b="72.07">langue commune</span></div>
-      <div class="st clair" data-a="72.07" data-b="73.18"><span class="m" data-a="72.07" data-b="72.12">à</span> <span class="m" data-a="72.12" data-b="72.27">nos</span> <span class="m" data-a="72.27" data-b="73.00">territoires</span></div>
-      <div class="st clair" data-a="73.18" data-b="75.08"><span class="m" data-a="73.18" data-b="73.26">un</span> <span class="m cle" data-a="73.26" data-b="74.78">bien commun</span></div>
-      <div class="st clair" data-a="75.08" data-b="75.91"><span class="m" data-a="75.08" data-b="75.15">Et</span> <span class="m" data-a="75.15" data-b="75.30">je</span> <span class="m" data-a="75.30" data-b="75.91">remercie</span></div>
-      <div class="st clair" data-a="75.91" data-b="77.18"><span class="m cle" data-a="75.91" data-b="77.00">Laetitia Picard</span></div>
-      <div class="st clair" data-a="77.18" data-b="78.25"><span class="m" data-a="77.18" data-b="77.23">pour</span> <span class="m" data-a="77.23" data-b="77.40">son</span> <span class="m" data-a="77.40" data-b="78.00">invitation</span></div>
+      <div class="st" data-a="51.08" data-b="53.88"><span class="m" data-a="51.08" data-b="51.54">Déjà</span> <span class="m cle" data-a="51.54" data-b="52.64">160</span> <span class="m" data-a="53.04" data-b="53.88">acteurs</span></div>
+      <div class="st" data-a="53.88" data-b="55.19"><span class="m cle" data-a="53.88" data-b="54.35">140</span> <span class="m" data-a="54.35" data-b="55.12">structures</span></div>
+      <div class="st" data-a="55.19" data-b="56.88"><span class="m" data-a="55.19" data-b="55.49">des</span> <span class="m" data-a="55.49" data-b="55.89">deux</span> <span class="m" data-a="56.01" data-b="56.88">côtés</span></div>
+      <div class="st" data-a="56.88" data-b="57.96"><span class="m" data-a="56.88" data-b="57.02">de</span> <span class="m" data-a="57.02" data-b="57.16">la</span> <span class="m cle" data-a="57.16" data-b="57.88">frontière</span></div>
+      <div class="st" data-a="57.96" data-b="58.90"><span class="m" data-a="57.96" data-b="58.03">Et</span> <span class="m" data-a="58.03" data-b="58.40">qu'en</span> <span class="m" data-a="58.40" data-b="58.83">est-il</span></div>
+      <div class="st" data-a="58.90" data-b="60.40"><span class="m" data-a="58.90" data-b="59.00">du</span> <span class="m cle" data-a="59.00" data-b="59.88">savoyard ?</span> <span class="m" data-a="59.96" data-b="60.01">Eh</span> <span class="m" data-a="60.01" data-b="60.40">bien</span></div>
+      <div class="st" data-a="60.40" data-b="61.23"><span class="m" data-a="60.40" data-b="60.53">le</span> <span class="m cle" data-a="60.53" data-b="61.04">savoyard</span> <span class="m" data-a="61.04" data-b="61.23">est</span></div>
+      <div class="st" data-a="61.23" data-b="62.06"><span class="m" data-a="61.23" data-b="61.42">une</span> <span class="m" data-a="61.42" data-b="61.54">langue</span></div>
+      <div class="st" data-a="62.06" data-b="62.96"><span class="m" data-a="62.06" data-b="62.13">aussi</span> <span class="m" data-a="62.13" data-b="62.26">de</span> <span class="m" data-a="62.26" data-b="62.88">Genève</span></div>
+      <div class="st" data-a="62.96" data-b="63.19"><span class="m" data-a="62.96" data-b="63.19">Elle</span></div>
+      <div class="st" data-a="63.19" data-b="64.50"><span class="m" data-a="63.19" data-b="63.56">n'est</span> <span class="m" data-a="63.56" data-b="63.79">pas</span> <span class="m" data-a="63.79" data-b="64.50">seulement</span></div>
+      <div class="st" data-a="64.50" data-b="65.96"><span class="m" data-a="64.50" data-b="64.96">parlée</span> <span class="m" data-a="65.06" data-b="65.11">en</span> <span class="m" data-a="65.11" data-b="65.88">Savoie</span></div>
+      <div class="st" data-a="65.96" data-b="67.09"><span class="m" data-a="65.96" data-b="66.08">Le</span> <span class="m cle" data-a="66.08" data-b="67.07">Cé qu'è lainô</span></div>
+      <div class="st" data-a="67.09" data-b="68.88"><span class="m" data-a="67.09" data-b="67.78">l'hymne</span> <span class="m" data-a="67.78" data-b="68.06">de</span> <span class="m" data-a="68.06" data-b="68.88">Genève</span></div>
+      <div class="st" data-a="68.88" data-b="69.63"><span class="m" data-a="68.88" data-b="69.16">est</span> <span class="m" data-a="69.16" data-b="69.63">écrit</span></div>
+      <div class="st" data-a="69.63" data-b="70.93"><span class="m" data-a="69.63" data-b="69.67">en</span> <span class="m cle" data-a="70.10" data-b="70.88">savoyard</span></div>
+      <div class="st clair" data-a="70.93" data-b="71.95"><span class="m" data-a="70.93" data-b="71.13">C'est</span> <span class="m" data-a="71.13" data-b="71.26">une</span> <span class="m cle" data-a="71.32" data-b="71.95">langue commune</span></div>
+      <div class="st clair" data-a="71.95" data-b="73.06"><span class="m" data-a="71.95" data-b="72.00">à</span> <span class="m" data-a="72.00" data-b="72.15">nos</span> <span class="m" data-a="72.15" data-b="72.88">territoires</span></div>
+      <div class="st clair" data-a="73.06" data-b="74.96"><span class="m" data-a="73.06" data-b="73.14">un</span> <span class="m cle" data-a="73.14" data-b="74.66">bien commun</span></div>
+      <div class="st clair" data-a="74.96" data-b="75.03"><span class="m" data-a="74.96" data-b="75.03">Et</span></div>
+      <div class="st clair" data-a="75.03" data-b="75.79"><span class="m" data-a="75.03" data-b="75.18">je</span> <span class="m" data-a="75.18" data-b="75.79">remercie</span></div>
+      <div class="st clair" data-a="75.79" data-b="77.06"><span class="m cle" data-a="75.79" data-b="76.88">Laetitia Picard</span></div>
+      <div class="st clair" data-a="77.06" data-b="78.13"><span class="m" data-a="77.06" data-b="77.11">pour</span> <span class="m" data-a="77.11" data-b="77.28">son</span> <span class="m" data-a="77.28" data-b="77.88">invitation</span></div>
       <!-- st:end -->
     </div>
     <script>
@@ -619,21 +617,22 @@
       tl.from("#ecran", { y: 80, opacity: 0, duration: 0.8, ease: "power3.out" }, 81.0);
       tl.from(".relire .date", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, 81.5);
       tl.fromTo("#surligne", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }, 82.0);
-      tl.from("#signature", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, 82.4);
       tl.to("#defile", { y: -2100, duration: 4.6, ease: "power1.inOut" }, 83.3);
 
       // Rythme des plans filmes (docs : 04_montage/BONNES-PRATIQUES.md) : jamais d'image figee, une poussee lente
       // en continu, et un « punch-in » sec (zoom de 15 a 20 %, cadre sur le visage) a chaque nouvelle idee,
       // comme une deuxieme camera ; retour au large quand l'idee change. [temps, echelle de depart, d'arrivee].
       const cadrages = {
-        "#v-ext":   [[29.9, 1.0, 1.04], [32.08, 1.14, 1.18]],                     // « Justement pour representer... »
+        // Selfie exterieur filme visage bas : zoom ancre en bas (origine 50% 100%) pour remonter les yeux au-dessus
+        // de la zone masquee du bas (1440 px) sans ouvrir de vide en bas du cadre.
+        "#v-ext":   [[29.9, 1.36, 1.4], [32.08, 1.5, 1.54]],                      // « Justement pour representer... »
         "#v-face1": [[35.9, 1.0, 1.04], [37.62, 1.16, 1.19], [39.0, 1.0, 1.03], [40.31, 1.2, 1.23]], // Interreg / culture
         "#v-face2": [[57.9, 1.16, 1.2], [60.08, 1.0, 1.04], [62.18, 1.2, 1.24]],  // question serree, reponse large, « aussi de Geneve »
       };
       Object.entries(cadrages).forEach(([id, plans]) => {
         const v = document.querySelector(id);
         const fin = +v.dataset.voixStart + +v.dataset.voixDuration;   // temps de la voix, comme le reste du script
-        gsap.set(id, { transformOrigin: "50% 34%" });
+        gsap.set(id, { transformOrigin: id === "#v-ext" ? "50% 100%" : "50% 34%" });
         plans.forEach(([t, de, a], i) => {
           const jusqua = i + 1 < plans.length ? plans[i + 1][0] : fin;
           tl.fromTo(id, { scale: de }, { scale: a, duration: jusqua - t, ease: "none", immediateRender: false }, t);

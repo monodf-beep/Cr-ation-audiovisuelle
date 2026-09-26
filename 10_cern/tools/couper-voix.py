@@ -20,7 +20,7 @@ PASSAGES = [
 ]
 # Reprises a enlever (faux departs, phrases dites deux fois), calees sur les silences de la prise.
 EXCLURE = [(24.1, 26.3), (58.7, 64.45), (111.8, 117.85),
-           (92.26, 93.5)]            # « 140… » dit une premiere fois, avant « 140 structures »
+           (92.14, 93.5)]            # « 140… » dit une premiere fois (des le « s » de « cent »), avant « 140 structures »
 # Mots retires au milieu d'une phrase : coupe franche, sans marge ni respiration.
 RETIRER = [(16.34, 16.94)]           # « Alcotra » (erreur : le projet est Interreg France-Suisse)
 RESPIRATION = 0.35   # duree maximale d'un silence garde

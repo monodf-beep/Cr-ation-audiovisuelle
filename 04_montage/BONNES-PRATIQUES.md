@@ -141,3 +141,22 @@ avec une ligne « ALERTE » pour chaque valeur hors des seuils. À lancer avant 
 | Durée de la vidéo | 15 à 90 s | Reels et Shorts. |
 | Volume | −16,5 à −13,5 LUFS ; crête ≤ −1 dBTP | Niveau des plateformes, sans saturation au réencodage. |
 | Musique sous la voix | 12 à 22 dB en dessous | Présente sans gêner la compréhension. |
+
+## 9. Zones masquées par Instagram et TikTok
+
+Sur 1080 × 1920, l'interface des réseaux couvre une partie de l'image (valeurs combinées Reels et TikTok,
+un peu larges pour couvrir les variations d'appareils) :
+
+| Zone | Où | Ce qui la couvre |
+|---|---|---|
+| Haut | y < 250 px | onglets, nom du compte |
+| Bas | y > 1440 px | légende, nom, musique, barre de navigation |
+| Droite | x > 940 px, de y 700 à 1440 px | boutons j'aime, commentaires, partage, profil |
+
+- **Au tournage** (demande de Franck) : la page d'enregistrement hachure ces zones en rouge, sur le montage et
+  en plein cadre ; visage et gestes en dehors, idéalement le visage au tiers haut.
+- **Au montage** : aucun texte ni élément important dedans. Sous-titres ancrés au-dessus de 1440 px, entre
+  60 et 940 px de large (ils montent sur deux lignes si besoin) ; titres à partir de 280 px ; crédits photo en
+  haut à droite, pas en bas.
+- **Contrôle** : `04_montage/zones-sures.cjs` joue la timeline et signale tout texte visible dans une zone
+  (inclus dans `metriques.py`, ligne `zones_masquees`).

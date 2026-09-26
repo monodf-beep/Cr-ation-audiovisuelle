@@ -48,6 +48,16 @@
   .ecran.cadrage #montage { visibility: hidden; }
   .ecran .etiquette { position: absolute; left: 12px; top: 12px; z-index: 3; display: none; font-size: 14px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); padding: 4px 10px; }
   .ecran.cadrage .etiquette { display: block; }
+  /* Zones masquees par l'interface d'Instagram (Reels) et de TikTok, sur 1080 x 1920 : haut 250 px, bas 480 px,
+     colonne de droite 140 px (boutons) de 700 a 1440 px. Rien d'important dedans : ni visage, ni texte.
+     Memes valeurs dans 04_montage/zones-sures.cjs et 04_montage/BONNES-PRATIQUES.md. */
+  .zones { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  .zones i { position: absolute; background: repeating-linear-gradient(135deg, rgba(220,40,40,.38) 0 8px, rgba(220,40,40,.16) 8px 16px); outline: 1px solid rgba(255,90,90,.9); }
+  .zones .z-haut { left: 0; right: 0; top: 0; height: 13.02%; }
+  .zones .z-bas { left: 0; right: 0; bottom: 0; height: 25%; }
+  .zones .z-droite { right: 0; width: 12.96%; top: 36.46%; bottom: 25%; }
+  .zones span { position: absolute; left: 6px; font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 0 3px #000; }
+  .sans-zones .zones { display: none; }
   #decompte { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 160px; font-weight: 700; color: #fff; background: rgba(10,54,175,.55); z-index: 3; }
   .panneau { display: flex; flex-direction: column; gap: 18px; max-width: 880px; }
   .prompteur { background: var(--fm-bg); padding: 26px 32px; min-height: 320px; display: flex; flex-direction: column; gap: 16px; border-left: 6px solid var(--fm-bleu-savoie); }
@@ -96,7 +106,7 @@
 <main>
   <div class="ecran">
     <video id="montage" src="renders/cern-reportage.mp4" muted playsinline preload="auto"></video>
-    <div class="apercu" id="apercu"><video id="camera" muted playsinline></video><div class="cadre"></div><div class="rec" id="rec">● REC</div></div>
+    <div class="apercu" id="apercu"><video id="camera" muted playsinline></video><div class="cadre"><div class="zones"><i class="z-haut"></i><i class="z-droite"></i><i class="z-bas"></i></div></div><div class="rec" id="rec">● REC</div></div>
     <div class="etiquette">Aperçu de la vidéo finale</div>
     <div id="decompte"></div>
   </div>
@@ -124,6 +134,7 @@
       <label><input type="checkbox" id="decompteActif" checked /> Décompte de 3 s</label>
       <label><input type="checkbox" id="apercuCorrige" checked /> Aperçu avec la lumière corrigée</label>
       <button id="cadrer" type="button">Me cadrer en plein écran</button>
+      <label><input type="checkbox" id="voirZones" checked /> Zones masquées par Instagram et TikTok</label>
     </div>
 
     <div class="prises">
@@ -138,7 +149,8 @@
       reprises ne gênent pas : je garde les meilleurs passages et je recale le montage sur votre voix. La webcam
       filme aussi : le cadre en pointillés montre ce qui restera dans la vidéo verticale. Avant d'enregistrer,
       « Me cadrer en plein écran » montre votre image telle qu'elle sera dans la vidéo, lumière corrigée comprise :
-      réglez votre place, la lampe et le micro, puis revenez au montage.
+      réglez votre place, la lampe et le micro, puis revenez au montage. Les zones hachurées en rouge seront
+      cachées par Instagram et TikTok : gardez votre visage et vos gestes en dehors, idéalement le visage au tiers haut.
     </p>
     <p class="aide" id="aideTexte" hidden>
       <b>Texte complet :</b> le montage défile sans le son et chaque phrase s'affiche au bon moment. Chaque
@@ -296,6 +308,11 @@
     $('cadrer').textContent = oui ? 'Revenir au montage' : 'Me cadrer en plein écran';
   }
   $('cadrer').onclick = () => cadrer(!document.querySelector('.ecran').classList.contains('cadrage'));
+  // Zones masquees par l'interface des reseaux : sur l'ecran vertical (montage ou plein cadre) et dans le cadre 9:16.
+  document.querySelector('.ecran').insertAdjacentHTML('beforeend',
+    '<div class="zones"><i class="z-haut"><span>masqué : en-tête</span></i><i class="z-droite"></i><i class="z-bas"><span>masqué : légende, boutons</span></i></div>');
+  const voirZones = () => document.body.classList.toggle('sans-zones', !$('voirZones').checked);
+  $('voirZones').onchange = voirZones; voirZones();
 
   // --- Lancer, arreter. ---
   let enregistreur = null, morceaux = [];

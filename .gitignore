@@ -38,3 +38,5 @@ bibliotheque/donnees/
 # Studio Vox : clips, voix et montages hors depot
 11_vox/projects/*/clips/
 11_vox/projects/*/voice/
+# Empreinte des coupes de la face camera (tools/face-voix.py)
+*.empreinte
