@@ -130,11 +130,9 @@ OnUnitActiveSec=3min
 WantedBy=timers.target
 EOF
 
-echo "== Caddy (https + mot de passe)"
+echo "== Caddy (mot de passe et aiguillage)"
 HASH=$(caddy hash-password --plaintext "$MOT_DE_PASSE")
-cat > /etc/caddy/Caddyfile <<EOF
-$DOMAINE {
-	basic_auth {
+ROUTES="	basic_auth {
 		$UTILISATEUR $HASH
 	}
 	handle_path /enregistrement/* {
@@ -147,11 +145,45 @@ $DOMAINE {
 		reverse_proxy 127.0.0.1:3002 {
 			header_up Host 127.0.0.1:3002
 		}
-	}
+	}"
+TRAEFIK_DYN=${TRAEFIK_DYN:-/docker/traefik/dynamic}
+if [ -d "$TRAEFIK_DYN" ]; then
+  # Un Traefik (installation Docker d'Hostinger) tient deja les ports 80 et 443 : il fait le https
+  # pour notre adresse et passe la main a Caddy, qui reste en coulisses sur 127.0.0.1:8480.
+  echo "   Traefik detecte : le studio passe par lui ($TRAEFIK_DYN)."
+  cat > /etc/caddy/Caddyfile <<EOF
+{
+	auto_https off
+}
+http://:8480 {
+	bind 127.0.0.1
+$ROUTES
 }
 EOF
-
-ufw allow OpenSSH >/dev/null; ufw allow 80,443/tcp >/dev/null; ufw --force enable >/dev/null
+  cat > "$TRAEFIK_DYN/studio-video.yml" <<EOF
+# Studio video (ops/vps/installer.sh) : https par Traefik, puis Caddy sur 127.0.0.1:8480.
+http:
+  routers:
+    studio-video:
+      rule: "Host(\`$DOMAINE\`)"
+      entryPoints: [websecure]
+      service: studio-video
+      tls:
+        certResolver: letsencrypt
+  services:
+    studio-video:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:8480"
+EOF
+else
+  cat > /etc/caddy/Caddyfile <<EOF
+$DOMAINE {
+$ROUTES
+}
+EOF
+  ufw allow OpenSSH >/dev/null; ufw allow 80,443/tcp >/dev/null; ufw --force enable >/dev/null
+fi
 
 systemctl daemon-reload
 systemctl enable --now studio-hf studio-enregistrement studio-synchro.timer
