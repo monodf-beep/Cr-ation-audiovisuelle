@@ -88,6 +88,7 @@
       <label>Micro : <select id="micro"></select></label>
       <span class="niveau" title="Niveau du micro"><i id="niveau"></i></span>
       <label><input type="checkbox" id="avecCamera" /> Filmer aussi avec la webcam</label>
+      <label id="choixCamera" style="display:none">Caméra : <select id="cam"></select></label>
       <label><input type="checkbox" id="decompteActif" checked /> Décompte de 3 s</label>
     </div>
 
@@ -159,8 +160,11 @@
   let flux = null, analyseur = null;
   async function ouvrirFlux() {
     const idMicro = $('micro').value;
-    const audio = { deviceId: idMicro ? { exact: idMicro } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false };
-    const video = $('avecCamera').checked ? { width: 1280, height: 720 } : false;
+    // Son brut du micro : sans annulation d'echo, reduction de bruit ni gain automatique du navigateur.
+    const audio = { deviceId: idMicro ? { exact: idMicro } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false, sampleRate: 48000, channelCount: { ideal: 2 } };
+    const idCam = $('cam').value;
+    const video = $('avecCamera').checked ? { width: 1920, height: 1080, deviceId: idCam ? { exact: idCam } : undefined } : false;
+    $('choixCamera').style.display = video ? '' : 'none';
     if (flux) flux.getTracks().forEach((t) => t.stop());
     flux = await navigator.mediaDevices.getUserMedia({ audio, video });
     camera.srcObject = video ? flux : null;
@@ -185,11 +189,16 @@
     const sel = $('micro'), actuel = sel.value; sel.innerHTML = '';
     appareils.filter((a) => a.kind === 'audioinput').forEach((a, i) => sel.add(new Option(a.label || 'Micro ' + (i + 1), a.deviceId)));
     if (actuel) sel.value = actuel;
+    const cam = $('cam'), camActuelle = cam.value; cam.innerHTML = '';
+    appareils.filter((a) => a.kind === 'videoinput').forEach((a, i) => cam.add(new Option(a.label || 'Caméra ' + (i + 1), a.deviceId)));
+    if (camActuelle) cam.value = camActuelle;
   }
   try { await ouvrirFlux(); await listerMicros(); }
   catch (e) { erreur("Accès au micro refusé ou impossible (" + e.message + "). Autorisez le micro dans le navigateur, sur http://localhost."); }
   $('micro').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
-  $('avecCamera').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
+  $('avecCamera').onchange = () => ouvrirFlux().then(listerMicros).catch((e) => erreur(e.message));
+  $('cam').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
+  navigator.mediaDevices.addEventListener('devicechange', () => listerMicros());
 
   // Enregistrement : decompte, puis lecture du montage et enregistrement demarrent ensemble.
   let enregistreur = null, morceaux = [], debutPrise = 0, numero = 0;
@@ -212,7 +221,8 @@
       const type = ['video/webm;codecs=vp9,opus', 'video/webm', 'audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
         .find((t) => (video ? t.startsWith('video') : t.startsWith('audio')) && MediaRecorder.isTypeSupported(t)) || '';
       morceaux = [];
-      const rec = new MediaRecorder(flux, type ? { mimeType: type } : undefined);
+      // Son en haute qualite (256 kb/s) pour un micro de studio ; video a 8 Mb/s si la webcam filme.
+      const rec = new MediaRecorder(flux, { ...(type ? { mimeType: type } : {}), audioBitsPerSecond: 256000, ...(video ? { videoBitsPerSecond: 8000000 } : {}) });
       rec.ondataavailable = (e) => { if (e.data.size) morceaux.push(e.data); };
       rec.onstop = () => ajouterPrise(new Blob(morceaux, { type: rec.mimeType }), debutPrise, video);
       rec.start();
