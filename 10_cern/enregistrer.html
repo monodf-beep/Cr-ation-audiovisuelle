@@ -40,6 +40,14 @@
   .apercu .cadre { position: absolute; top: 0; bottom: 0; left: 50%; width: 31.64%; transform: translateX(-50%);
     border-left: 2px dashed #fff; border-right: 2px dashed #fff; box-shadow: 0 0 0 999px rgba(0,0,0,.45); pointer-events: none; }
   .apercu .rec { position: absolute; left: 8px; top: 6px; font-size: 13px; font-weight: 700; color: #fff; background: var(--fm-error); padding: 2px 8px; display: none; }
+  /* Apercu corrige : a peu pres le traitement applique ensuite a la prise (ops/vps/traiter-prises.sh). */
+  .corrige video#camera { filter: brightness(1.28) contrast(1.06) saturate(1.1) sepia(0.12); }
+  /* Plein cadre : la camera occupe tout l'ecran vertical, recadree comme dans la video finale. */
+  .ecran.cadrage .apercu { inset: 0; width: 100%; aspect-ratio: auto; border: 0; }
+  .ecran.cadrage .apercu .cadre { display: none; }
+  .ecran.cadrage #montage { visibility: hidden; }
+  .ecran .etiquette { position: absolute; left: 12px; top: 12px; z-index: 3; display: none; font-size: 14px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); padding: 4px 10px; }
+  .ecran.cadrage .etiquette { display: block; }
   #decompte { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 160px; font-weight: 700; color: #fff; background: rgba(10,54,175,.55); z-index: 3; }
   .panneau { display: flex; flex-direction: column; gap: 18px; max-width: 880px; }
   .prompteur { background: var(--fm-bg); padding: 26px 32px; min-height: 320px; display: flex; flex-direction: column; gap: 16px; border-left: 6px solid var(--fm-bleu-savoie); }
@@ -89,6 +97,7 @@
   <div class="ecran">
     <video id="montage" src="renders/cern-reportage.mp4" muted playsinline preload="auto"></video>
     <div class="apercu" id="apercu"><video id="camera" muted playsinline></video><div class="cadre"></div><div class="rec" id="rec">● REC</div></div>
+    <div class="etiquette">Aperçu de la vidéo finale</div>
     <div id="decompte"></div>
   </div>
   <div class="panneau">
@@ -113,6 +122,8 @@
       <label><input type="checkbox" id="avecCamera" checked /> Filmer avec la webcam</label>
       <label id="choixCamera">Caméra : <select id="cam"></select></label>
       <label><input type="checkbox" id="decompteActif" checked /> Décompte de 3 s</label>
+      <label><input type="checkbox" id="apercuCorrige" checked /> Aperçu avec la lumière corrigée</label>
+      <button id="cadrer" type="button">Me cadrer en plein écran</button>
     </div>
 
     <div class="prises">
@@ -125,7 +136,9 @@
       suivante quand vous voulez avec <kbd>→</kbd> ou « Suivant » (<kbd>←</kbd> pour revenir) ; l'image montre la
       séquence puis s'arrête sur sa dernière image, rien ne vous presse. <kbd>Échap</kbd> arrête. Hésitations et
       reprises ne gênent pas : je garde les meilleurs passages et je recale le montage sur votre voix. La webcam
-      filme aussi : le cadre en pointillés montre ce qui restera dans la vidéo verticale.
+      filme aussi : le cadre en pointillés montre ce qui restera dans la vidéo verticale. Avant d'enregistrer,
+      « Me cadrer en plein écran » montre votre image telle qu'elle sera dans la vidéo, lumière corrigée comprise :
+      réglez votre place, la lampe et le micro, puis revenez au montage.
     </p>
     <p class="aide" id="aideTexte" hidden>
       <b>Texte complet :</b> le montage défile sans le son et chaque phrase s'affiche au bon moment. Chaque
@@ -281,6 +294,15 @@
   $('avecCamera').onchange = () => ouvrirFlux().then(listerAppareils).catch((e) => erreur(e.message));
   navigator.mediaDevices.addEventListener('devicechange', listerAppareils);
 
+  // --- Previsualiser avant d'enregistrer : lumiere corrigee et plein cadre vertical. ---
+  const appliquerCorrection = () => $('apercu').classList.toggle('corrige', $('apercuCorrige').checked);
+  $('apercuCorrige').onchange = appliquerCorrection; appliquerCorrection();
+  function cadrer(oui) {
+    document.querySelector('.ecran').classList.toggle('cadrage', oui);
+    $('cadrer').textContent = oui ? 'Revenir au montage' : 'Me cadrer en plein écran';
+  }
+  $('cadrer').onclick = () => cadrer(!document.querySelector('.ecran').classList.contains('cadrage'));
+
   // --- Lancer, arreter. ---
   let enregistreur = null, morceaux = [];
   const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -292,6 +314,7 @@
   }
   async function lancer(avecEnregistrement) {
     erreur(sansMontage ? MSG_SANS_MONTAGE : '');
+    cadrer(false);
     suspendre();
     if (libre) allerAuRepere(+depart.value || 0, false); else placer(+depart.value || 0);
     $('enregistrer').disabled = true; $('repeter').disabled = true; $('arreter').disabled = false;

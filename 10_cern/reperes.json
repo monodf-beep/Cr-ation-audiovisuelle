@@ -1,7 +1,7 @@
 {
   "_note": "Repères de la voix off libre (page enregistrer.html, mode « Repères ») : une entrée par séquence du montage, temps en secondes dans la vidéo rendue. Les mots sont des pistes, pas un texte à lire.",
   "reperes": [
-    { "id": "accroche", "titre": "Accroche", "debut": 0, "fin": 2.8, "mots": ["Qu'est-ce que le savoyard vient faire au CERN ?"] },
+    { "id": "accroche", "titre": "Accroche", "debut": 0, "fin": 2.8, "mots": ["La langue savoyarde au CERN"] },
     { "id": "carte", "titre": "La carte", "debut": 2.8, "fin": 11.9, "mots": ["24 septembre", "Savoie · Genève", "une frontière… et une langue qui ne l'a jamais connue"] },
     { "id": "cern", "titre": "Le CERN", "debut": 11.9, "fin": 17.8, "mots": ["Meyrin", "le Globe de la science et de l'innovation"] },
     { "id": "projet", "titre": "Le projet", "debut": 17.8, "fin": 24.4, "mots": ["Projet culturel de territoire du Grand Genève", "Interreg France – Suisse"] },

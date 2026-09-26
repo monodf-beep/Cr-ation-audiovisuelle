@@ -18,6 +18,9 @@ MEDIAS='*.{mp4,mov,m4v,webm,wav,mp3,m4a,aac,flac,ogg,jpg,jpeg,png,webp,gif,svg,w
 rclone copy "$DRIVE" "$DEPOT" --update --include "$MEDIAS" --exclude 'node_modules/**' --exclude '.git/**' \
   --drive-skip-gdocs --fast-list -q || echo "rclone : Drive -> VPS en erreur"
 
+# Prises filmees : version eclaircie et verticale, a cote de la prise brute.
+DEPOT="$DEPOT" "$DEPOT/ops/vps/traiter-prises.sh" || echo "traitement des prises en erreur"
+
 for projet in "$DEPOT"/*/; do
   p=$(basename "$projet")
   for sous in renders voix-off; do
