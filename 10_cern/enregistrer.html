@@ -11,6 +11,8 @@
   dans index.html : si le montage change, le prompteur suit.
   Lancer depuis 10_cern :  npx --yes http-server -p 8080 -c-1   puis ouvrir http://localhost:8080/enregistrer.html
   (le micro et la camera ne sont autorises que sur localhost ou en https).
+  Sur le VPS (ops/vps/), la page est servie sous /enregistrement/10_cern/ et chaque prise est envoyee
+  automatiquement sur le serveur puis dans Google Drive.
 -->
 <link rel="stylesheet" href="brand/tokens.css" />
 <style>
@@ -263,8 +265,24 @@
     };
     const suppr = document.createElement('button'); suppr.textContent = 'Supprimer';
     suppr.onclick = () => { URL.revokeObjectURL(url); ligne.remove(); };
-    ligne.append(lien, verifier, suppr);
+    const etat = document.createElement('span'); etat.className = 'aide';
+    ligne.append(lien, verifier, suppr, etat);
     liste.prepend(ligne);
+    televerser(blob, nom, etat);
+  }
+
+  // Sur le VPS (ops/vps/serveur-enregistrement.mjs), la prise part aussitot sur le serveur puis dans
+  // Google Drive. En local (http-server), le serveur refuse l'envoi : on garde seulement le telechargement.
+  async function televerser(blob, nom, etat) {
+    etat.textContent = 'Envoi…';
+    try {
+      const r = await fetch('televerser?nom=' + encodeURIComponent(nom), { method: 'POST', body: blob });
+      if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      etat.textContent = j.drive ? '✓ Envoyée dans le Drive (' + j.fichier + ')' : '✓ Enregistrée sur le serveur (' + j.fichier + ')';
+    } catch (e) {
+      etat.textContent = 'Pas de serveur : pensez à télécharger la prise.';
+    }
   }
 })();
 </script>

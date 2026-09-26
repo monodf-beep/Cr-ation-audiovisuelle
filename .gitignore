@@ -23,3 +23,5 @@ __pycache__/
 *.woff2
 10_cern/node_modules/
 10_cern/renders/
+# Prises de voix off (dans Google Drive, pas dans le depot)
+*/voix-off/
