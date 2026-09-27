@@ -27,7 +27,7 @@ EXPRESSIONS = ["Grand Genève", "Pays de Gex", "Lengoua Savoyârda", "Cé qu'è 
                "24 septembre", "bien commun", "culture commune", "langue commune", "projet culturel"]
 # Mots-cles : peu nombreux, sinon plus rien ne ressort (un groupe sur trois environ). La liste de la
 # culture (jazz, theatre...) est deja a l'ecran en grand : pas besoin de la souligner.
-CLES = ["CERN", "Interreg", "Grand Genève", "Globe", "Pays de Gex", "Haute-Savoie", "Lengoua Savoyârda",
+CLES = ["CERN", "Interreg", "Grand Genève", "Pays de Gex", "Haute-Savoie", "Lengoua Savoyârda",
         "bien commun", "culture commune", "160", "140", "frontière", "savoyard", "Cé qu'è lainô",
         "langue commune", "Laetitia Picard", "24 septembre", "projet culturel"]
 # Petits mots qui ne finissent pas un groupe : ils passent au debut du suivant.

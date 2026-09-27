@@ -5,7 +5,7 @@
       "id": "accroche",
       "titre": "Accroche",
       "debut": 0.0,
-      "fin": 1.67,
+      "fin": 1.48,
       "mots": [
         "La langue savoyarde au CERN"
       ],
@@ -15,8 +15,8 @@
     {
       "id": "carte",
       "titre": "La carte",
-      "debut": 1.67,
-      "fin": 10.75,
+      "debut": 1.48,
+      "fin": 9.56,
       "mots": [
         "24 septembre",
         "Savoie · Genève",
@@ -28,8 +28,8 @@
     {
       "id": "cern",
       "titre": "Le CERN",
-      "debut": 10.75,
-      "fin": 16.58,
+      "debut": 9.56,
+      "fin": 14.74,
       "mots": [
         "Meyrin",
         "le Globe de la science et de l'innovation"
@@ -40,8 +40,8 @@
     {
       "id": "projet",
       "titre": "Le projet",
-      "debut": 16.58,
-      "fin": 24.92,
+      "debut": 14.74,
+      "fin": 22.15,
       "mots": [
         "Projet culturel de territoire du Grand Genève",
         "Interreg France – Suisse (pas Alcotra)"
@@ -52,8 +52,8 @@
     {
       "id": "sur-place",
       "titre": "Sur place",
-      "debut": 24.92,
-      "fin": 29.92,
+      "debut": 22.15,
+      "fin": 26.59,
       "mots": [
         "journée de co-construction",
         "feuille de route 2027",
@@ -65,8 +65,8 @@
     {
       "id": "culture",
       "titre": "La culture, c'est tout",
-      "debut": 29.92,
-      "fin": 42.42,
+      "debut": 26.59,
+      "fin": 37.7,
       "mots": [
         "festival de jazz",
         "salle de théâtre",
@@ -80,8 +80,8 @@
     {
       "id": "chiffres",
       "titre": "Les chiffres",
-      "debut": 42.42,
-      "fin": 48.25,
+      "debut": 37.7,
+      "fin": 42.89,
       "mots": [
         "160 acteurs",
         "140 structures",
@@ -93,8 +93,8 @@
     {
       "id": "globe",
       "titre": "Dans le Globe",
-      "debut": 48.25,
-      "fin": 59.08,
+      "debut": 42.89,
+      "fin": 52.52,
       "mots": [
         "le savoyard à Genève comme à Chambéry",
         "le Cé qu'è lainô"
@@ -105,8 +105,8 @@
     {
       "id": "grand-geneve",
       "titre": "Le Grand Genève",
-      "debut": 59.08,
-      "fin": 62.5,
+      "debut": 52.52,
+      "fin": 55.56,
       "mots": [
         "une langue commune, un territoire commun",
         "un bien commun autour de la culture"
@@ -117,8 +117,8 @@
     {
       "id": "merci",
       "titre": "Grant-marci",
-      "debut": 62.5,
-      "fin": 67.08,
+      "debut": 55.56,
+      "fin": 59.63,
       "mots": [
         "Laetitia",
         "toute l'équipe du Projet culturel"
@@ -129,8 +129,8 @@
     {
       "id": "fin",
       "titre": "Fin",
-      "debut": 67.08,
-      "fin": 73.75,
+      "debut": 59.63,
+      "fin": 65.56,
       "mots": [
         "relisez l'article sur le projet",
         "Nos Alpes, 15 mai 2026"
