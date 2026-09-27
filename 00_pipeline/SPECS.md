@@ -167,11 +167,12 @@ L'atelier (`00_pipeline/atelier/`) choisit et ordonne les rushes et produit `pla
 
 ## 15. Votre carnet : références, moodboards, documents, principes (votre demande du 27/09)
 
-**Obsidian et Drive stockent, le studio relie.** Obsidian : vos notes en texte, déjà synchronisées sur votre serveur (CouchDB, à côté du studio). Drive : vos fichiers (PDF, vidéos, captures, formations achetées, prompts, méthodes). Le studio lit les deux par connecteur, fabrique des vignettes, et garde seulement les liens entre les éléments et les projets. Il n'écrit jamais chez vous, et vous restez propriétaire.
+**On écrit dans le studio ; il envoie dans le dossier Obsidian.** Obsidian n'est qu'un dossier de fichiers texte sur votre serveur (synchronisé par CouchDB) : le studio y écrit chaque note, personne ne l'ouvre. Drive garde les fichiers (PDF, vidéos, captures, formations achetées, prompts, méthodes). Vous restez propriétaire, tout est lisible sans le studio.
 
 | # | Spécification | État |
 |---|---|---|
-| 15.1 | Le carnet relie, il ne stocke pas : notes dans Obsidian, fichiers dans Drive, le studio indexe. | ○ |
+| 15.1 | On écrit dans le studio (saisie simple : titre, texte, étiquettes, pièce jointe Drive). Le studio envoie chaque note en fichier texte dans le dossier Obsidian de votre serveur. Personne n'ouvre Obsidian : ce n'est qu'un dossier de fichiers texte, à vous et lisibles sans le studio. | ○ |
+| 15.9 | Un seul sens d'écriture : le studio écrit. Une note corrigée directement dans le dossier est relue ; en cas de conflit, la dernière version gagne et la précédente est conservée. | ○ |
 | 15.2 | Quatre types : référence (lien + votre capture + « pourquoi j'aime ça » + contexte), document (fichier Drive), moodboard (collection rattachée à un projet ou un brief), principe (règle en brouillon avec son contexte). | ○ |
 | 15.3 | Une référence sans note « pourquoi » n'est pas acceptée : la note a la valeur, le lien meurt. | ○ |
 | 15.4 | Étiquette portée : personnel (vous seul et votre Claude), média, réseau. | ○ |
@@ -179,6 +180,29 @@ L'atelier (`00_pipeline/atelier/`) choisit et ordonne les rushes et produit `pla
 | 15.6 | Un savoir acheté (ex. humains générés ultra-réalistes) peut servir à un B-roll d'illustration dans une rédaction, sous la règle de sortie : image générée signalée, jamais un fait, un lieu ou une personne réels. La règle porte sur l'image produite, pas sur la source du savoir. | ○ |
 | 15.7 | Chaque carte affiche « utilisé dans » (brief, plan, règle) ; un moodboard non rattaché est signalé comme orphelin. | ○ |
 | 15.8 | Grille de cartes avec vignettes, filtres par contexte, type, portée ; un principe se promeut en règle par la voie 14.3. | ○ |
+
+## 16. Valeur réelle et résistance au changement (27/09)
+
+Votre question : « utiliser la plateforme pour valoriser nos territoires, ou passer six mois à tout apprendre ? » Ni l'un ni l'autre : ce qui vaut, ce sont les données et la ligne.
+
+| Couche | Durée de vie | Verdict |
+|---|---|---|
+| Bibliothèque d'images du territoire (rushes, B-roll étiqueté, notes, droits) | s'accumule | **l'actif** |
+| Doctrine et réseau | durable, à partir de 3 rédactions | avec une seule rédaction, un document |
+| Méthode (chronologie, plan validé, portes, versions) | moyenne | l'idée se copie, l'exécution non |
+| Intégration technique (VPS, Claude Code, MCP, ffmpeg) | courte | coût d'entrée évité, pas un avantage |
+| Savoir-faire prompts (recettes, méthodes achetées) | périssable | jamais un prix là-dessus |
+
+| # | Spécification | État |
+|---|---|---|
+| 16.1 | Ce qui se vend : la bibliothèque et le réseau avec sa doctrine. L'outil n'existe que pour les faire exister. | règle |
+| 16.2 | Prix sur un résultat mesuré (« de vos rushes à un montage validé en une heure »), jamais sur la technologie. | règle |
+| 16.3 | Trois rédactions pilotes avec leurs vrais rushes avant toute nouvelle construction. | règle |
+| 16.4 | La méthode et les données ne dépendent d'aucun modèle. | ○ |
+| 16.5 | Chaque fonction (plan, B-roll, regard, transcription) passe par un adaptateur ; le modèle est un réglage. | ○ |
+| 16.6 | Jeu de vidéos de référence rejoué à chaque changement de modèle, avec tableau de revue ; on ne bascule qu'après. | ○ |
+| 16.7 | Veille tenue dans le carnet : pour chaque nouveauté, ce qu'elle remplace, à quel coût, testée ou non. | ○ |
+| 16.8 | Le risque principal est humain (tourner autrement) : chaque rédaction démarre par un premier projet accompagné. | règle |
 
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
@@ -217,7 +241,7 @@ Tous `○`. À valider un par un.
 | 8.13 | Votre propre Claude branché sur le studio ? | Oui : le studio devient un connecteur MCP, votre Claude garde contexte, skills, connecteurs et forfait ; le studio garde les validations (§ 12). |
 | 8.14 | Higgsfield dans le studio ? | Intégré par l'API Higgsfield (paiement à l'usage, environ 5 $ les 100 crédits ; image Nano Banana Pro ≈ 2 crédits, vidéo 8 s ≈ 14), crédits refacturés avec plafond par client ; conditions de revente à vérifier. |
 | 8.15 | Génération et calculs : fal.ai ou Higgsfield ? | Les deux, chacun à sa place : fal.ai dans le studio (1 000+ modèles à l'usage, et nos propres traitements comme la correction du regard ou le floutage hébergés sur GPU à la seconde, sans louer de serveur) ; Higgsfield par votre propre Claude pour vos créations. |
-| 8.16 | Votre carnet : construit dans le studio, ou indexé depuis Drive et Obsidian ? | Indexé : ne pas construire un quatrième endroit où écrire (§ 15). |
+| 8.16 | Votre carnet : où écrit-on, où est-ce stocké ? | **Tranché le 27/09 :** on écrit dans le studio, il envoie des fichiers texte dans le dossier Obsidian ; personne n'ouvre Obsidian (§ 15). |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
