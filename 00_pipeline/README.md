@@ -16,6 +16,23 @@ Ce processus reprend celui du studio journalistique (`studio-cultura-sabauda`), 
 
 ## 0. Rushes — l'équivalent des sujets proposés
 
+### L'atelier : la vue d'ensemble
+
+Ouvrez `00_pipeline/atelier/index.html` dans Chrome, Edge ou Safari. Il n'y a rien à installer, et les fichiers restent sur votre ordinateur.
+
+- **Ouvrir un dossier**, ou le glisser sur la page. Toutes les photos et vidéos apparaissent, sous-dossiers compris, regroupées en moments de tournage.
+- **Aperçu** : une vignette par fichier, qui est la première image pour une vidéo, avec la durée. Un clic ouvre le lecteur ; les flèches passent au rush suivant ou précédent.
+- **Métadonnées** : l'heure de prise de vue est lue dans le fichier (EXIF, QuickTime Apple, MP4), sinon dans son nom. Chaque rush affiche la fiabilité de cette heure ; la source s'affiche au survol.
+- **Deux modes** :
+  - **Je choisis** : vous ajoutez les rushes au montage avec « + » ou par glisser-déposer, puis vous les réordonnez à la main.
+  - **Confiance à Claude** : un premier tri automatique écarte les doublons, les vidéos de moins d'une seconde et les rafales, et met le reste dans l'ordre. « Préparer l'envoi à Claude » télécharge un fichier avec une vignette et les métadonnées de chaque rush. Claude y répond par un plan, que vous réimportez avec « Importer le plan de Claude ».
+- **Ordre chronologique** : un bouton trie le montage selon l'heure de prise de vue, à tout moment. Les rushes sans heure fiable passent en fin de liste.
+- **Exporter le plan** : produit un `plan.json` au format de l'étape 2.
+
+L'ordre du montage est gardé dans le navigateur d'une session à l'autre.
+
+### Le script : la même lecture, en ligne de commande
+
 Pour le studio, la matière première, ce sont les sources. Pour une vidéo, ce sont les photos et les vidéos. On commence par les inventorier :
 
 ```

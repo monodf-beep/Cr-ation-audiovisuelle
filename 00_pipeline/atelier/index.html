@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier rushes</title>
+<style>
+:root {
+  --bg: #f6f5f2; --surface: #ffffff; --surface-2: #efede8; --ink: #1c1b19; --muted: #6b6860;
+  --line: #dcd9d1; --accent: #b3261e; --accent-ink: #ffffff; --ok: #2e7d32; --warn: #b26a00; --bad: #9e2a2a;
+  --drop: #b3261e22; --shadow: 0 1px 2px #0000001a, 0 4px 12px #0000000d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151412; --surface: #1f1e1b; --surface-2: #2a2925; --ink: #eceae4; --muted: #a29f96;
+    --line: #3a3833; --accent: #e5534b; --accent-ink: #1a0f0e; --ok: #66bb6a; --warn: #ffb74d; --bad: #ef7a7a;
+    --drop: #e5534b33; --shadow: 0 1px 2px #00000066;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151412; --surface: #1f1e1b; --surface-2: #2a2925; --ink: #eceae4; --muted: #a29f96;
+  --line: #3a3833; --accent: #e5534b; --accent-ink: #1a0f0e; --ok: #66bb6a; --warn: #ffb74d; --bad: #ef7a7a;
+  --drop: #e5534b33; --shadow: 0 1px 2px #00000066;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+h1 { font-size: 16px; margin: 0 8px 0 0; letter-spacing: .02em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0; font-weight: 600; }
+button, .btn { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+button:hover, .btn:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.grow { flex: 1; }
+.stat { color: var(--muted); font-size: 13px; }
+main { padding: 16px; display: grid; gap: 20px; }
+section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.sec-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 12px; }
+#vide { text-align: center; padding: 56px 16px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); }
+#vide.survol, #montage.survol { background: var(--drop); border-color: var(--accent); }
+#vide p { margin: 8px 0; }
+#montage { display: flex; gap: 8px; overflow-x: auto; min-height: 132px; padding: 8px; border: 2px dashed var(--line); border-radius: 10px; align-items: flex-start; }
+#montage:empty::before { content: "Glissez des rushes ici, ou cliquez sur « + » dans la bibliothèque."; color: var(--muted); margin: auto; }
+.clip { flex: 0 0 150px; position: relative; background: var(--surface-2); border-radius: 8px; overflow: hidden; cursor: grab; user-select: none; }
+.clip.drag { opacity: .35; }
+.clip .num { position: absolute; top: 4px; left: 4px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 700; border-radius: 4px; padding: 0 5px; }
+.clip .x { position: absolute; top: 3px; right: 3px; padding: 0 6px; font-size: 12px; line-height: 18px; }
+.insert { flex: 0 0 3px; align-self: stretch; background: var(--accent); border-radius: 2px; }
+.moment { margin-top: 14px; }
+.moment:first-child { margin-top: 0; }
+.moment h3 { font-size: 13px; margin: 0 0 8px; font-weight: 600; }
+.moment h3 span { color: var(--muted); font-weight: 400; }
+.grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.carte { background: var(--surface-2); border-radius: 8px; overflow: hidden; position: relative; border: 2px solid transparent; }
+.carte.pris { border-color: var(--accent); }
+.carte.ecarte { opacity: .45; }
+.vignette { aspect-ratio: 16/10; background: #0003; display: grid; place-items: center; overflow: hidden; cursor: zoom-in; position: relative; }
+.vignette img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vignette .ph { color: var(--muted); font-size: 12px; font-weight: 600; padding: 0 8px; text-align: center; }
+.badge { position: absolute; bottom: 4px; right: 4px; background: #000b; color: #fff; font-size: 11px; border-radius: 4px; padding: 0 5px; }
+.lire { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 26px; text-shadow: 0 1px 4px #000; opacity: .85; pointer-events: none; }
+.meta { padding: 6px 8px; font-size: 12px; }
+.meta .nom { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta .ligne { display: flex; justify-content: space-between; gap: 6px; color: var(--muted); }
+.fiab { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.fiab.haute { color: var(--ok); } .fiab.moyenne { color: var(--warn); } .fiab.basse { color: var(--bad); }
+.plus { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; }
+.carte.pris .plus { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.avert { margin: 0; padding-left: 18px; color: var(--warn); font-size: 13px; }
+.avert:empty { display: none; }
+dialog { border: 0; padding: 0; background: #000; max-width: min(96vw, 1200px); width: 100%; border-radius: 10px; color: #fff; }
+dialog::backdrop { background: #000c; }
+dialog .scene { display: grid; place-items: center; background: #000; max-height: 78vh; }
+dialog video, dialog img { max-width: 100%; max-height: 78vh; display: block; }
+dialog .barre { display: flex; gap: 8px; align-items: center; padding: 8px 10px; font-size: 13px; background: #111; flex-wrap: wrap; }
+dialog .barre button { background: #222; color: #fff; border-color: #444; }
+dialog .barre .grow { color: #bbb; }
+label.inline { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; }
+input[type=number] { width: 56px; font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
+.cache { display: none !important; }
+.note { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+@media (max-width: 600px) {
+  header { padding: 10px 16px; }
+  main { padding: 12px 16px; }
+  .grille { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .clip { flex-basis: 120px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Atelier rushes</h1>
+  <button id="ouvrir" class="primary">Ouvrir un dossier</button>
+  <input id="choixDossier" type="file" webkitdirectory multiple class="cache">
+  <div class="seg" role="group" aria-label="Mode">
+    <button id="modeMoi" aria-pressed="true">Je choisis</button>
+    <button id="modeClaude" aria-pressed="false">Confiance à Claude</button>
+  </div>
+  <span class="grow"></span>
+  <span id="stat" class="stat"></span>
+  <button id="theme" title="Thème clair / sombre">◐</button>
+</header>
+
+<main>
+  <div id="vide">
+    <p><strong>Déposez ici un dossier de photos et de vidéos</strong>, ou cliquez sur « Ouvrir un dossier ».</p>
+    <p>Tout reste sur votre ordinateur : rien n'est envoyé en ligne.</p>
+  </div>
+
+  <section id="secMontage" class="cache">
+    <div class="sec-head">
+      <h2>Montage</h2>
+      <span id="statMontage" class="stat"></span>
+      <span class="grow"></span>
+      <button id="chrono">Ordre chronologique</button>
+      <button id="vider">Vider</button>
+      <button id="exporter">Exporter le plan</button>
+    </div>
+    <div id="montage" aria-label="Ordre du montage"></div>
+    <p class="note">Glissez pour réordonner. « Ordre chronologique » trie selon l'heure de prise de vue ; les rushes sans heure fiable passent en fin de liste.</p>
+  </section>
+
+  <section id="secClaude" class="cache">
+    <div class="sec-head">
+      <h2>Confiance à Claude</h2>
+      <span class="grow"></span>
+      <button id="exportClaude" class="primary">Préparer l'envoi à Claude</button>
+      <button id="importPlan">Importer le plan de Claude</button>
+      <input id="fichierPlan" type="file" accept=".json,application/json" class="cache">
+    </div>
+    <p class="note" style="margin-top:0">Un premier tri automatique est déjà appliqué : doublons, vidéos de moins d'une seconde et rafales de photos sont écartés, le reste est mis dans l'ordre de prise de vue.
+    « Préparer l'envoi à Claude » télécharge un fichier avec une vignette et les métadonnées de chaque rush. Donnez-le à Claude : il choisit, ordonne et découpe en séquences.
+    Réimportez sa réponse avec « Importer le plan de Claude ».</p>
+  </section>
+
+  <section id="secBiblio" class="cache">
+    <div class="sec-head">
+      <h2>Tous les rushes</h2>
+      <span class="grow"></span>
+      <label class="inline">Nouveau moment après <input id="ecart" type="number" min="1" value="20"> min</label>
+      <button id="toutPrendre">Tout ajouter</button>
+    </div>
+    <ul id="avert" class="avert"></ul>
+    <div id="biblio"></div>
+  </section>
+</main>
+
+<dialog id="lecteur">
+  <div class="scene" id="scene"></div>
+  <div class="barre">
+    <button id="prec" aria-label="Précédent">←</button>
+    <button id="suiv" aria-label="Suivant">→</button>
+    <span id="legende" class="grow"></span>
+    <button id="prendre">Ajouter au montage</button>
+    <button id="fermer">Fermer</button>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+const PHOTO = /\.(jpe?g|png|heic|heif|webp|gif|tiff?|dng)$/i;
+const VIDEO = /\.(mp4|mov|m4v|webm|mkv|avi|3gp|mts)$/i;
+const $ = s => document.querySelector(s);
+
+let rushes = [];            // { id, file, nom, chemin, nature, date, source, fiab, appareil, duree, l, h, vignette, url }
+let montage = [];           // ids dans l'ordre
+let ecartes = new Set();    // ids écartés par le tri automatique
+let mode = "moi";
+let dossier = "";
+let courant = null;         // id affiché dans le lecteur
+
+// ---------- stockage local (confort seulement) ----------
+const cle = () => "atelier:" + dossier + ":" + rushes.length;
+function sauver() { try { localStorage.setItem(cle(), JSON.stringify({ montage: montage.map(id => byId(id).chemin), mode })); } catch (e) {} }
+function restaurer() {
+  try {
+    const s = JSON.parse(localStorage.getItem(cle()) || "null");
+    if (!s) return false;
+    const parChemin = new Map(rushes.map(r => [r.chemin, r.id]));
+    montage = s.montage.map(c => parChemin.get(c)).filter(Boolean);
+    return true;
+  } catch (e) { return false; }
+}
+try { const t = localStorage.getItem("atelier:theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+$("#theme").onclick = () => {
+  const sombre = document.documentElement.dataset.theme
+    ? document.documentElement.dataset.theme === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.dataset.theme = sombre ? "light" : "dark";
+  try { localStorage.setItem("atelier:theme", document.documentElement.dataset.theme); } catch (e) {}
+};
+
+// ---------- lecture des métadonnées ----------
+const lat1 = b => { let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return s; };
+
+function dateExif(txt, offset) {
+  const m = /^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/.exec(txt || "");
+  if (!m || m[1] === "0000") return null;
+  if (offset && /^[+-]\d{2}:\d{2}$/.test(offset)) return new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}${offset}`);
+  return new Date(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +m[6]);   // heure locale, sans fuseau connu
+}
+
+function lireTiff(buf, t0) {
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const le = dv.getUint16(t0) === 0x4949;
+  const u16 = o => dv.getUint16(t0 + o, le), u32 = o => dv.getUint32(t0 + o, le);
+  const ifd = off => {
+    const out = {}; if (t0 + off + 2 > buf.length) return out;
+    const n = u16(off);
+    for (let i = 0; i < n; i++) {
+      const e = off + 2 + i * 12; if (t0 + e + 12 > buf.length) break;
+      const tag = u16(e), type = u16(e + 2), cnt = u32(e + 4);
+      if (type === 2) {
+        const at = cnt <= 4 ? t0 + e + 8 : t0 + u32(e + 8);
+        out[tag] = lat1(buf.subarray(at, at + cnt)).replace(/\0.*$/, "").trim();
+      } else if (type === 4 || type === 13) out[tag] = u32(e + 8);
+    }
+    return out;
+  };
+  const i0 = ifd(u32(4));
+  const ex = i0[0x8769] ? ifd(i0[0x8769]) : {};
+  return {
+    date: dateExif(ex[0x9003] || ex[0x9004] || i0[0x0132], ex[0x9011]),
+    offset: !!ex[0x9011],
+    appareil: [i0[0x010F], i0[0x0110]].filter(Boolean).join(" ") || null,
+  };
+}
+
+function chercherExif(buf) {
+  for (let i = 0; i < buf.length - 10; i++) {
+    if (buf[i] === 0x45 && buf[i+1] === 0x78 && buf[i+2] === 0x69 && buf[i+3] === 0x66 && buf[i+4] === 0 && buf[i+5] === 0) {
+      const t = i + 6;
+      if ((buf[t] === 0x49 && buf[t+1] === 0x49 && buf[t+2] === 0x2A) || (buf[t] === 0x4D && buf[t+1] === 0x4D && buf[t+3] === 0x2A)) {
+        try { return lireTiff(buf, t); } catch (e) { return null; }
+      }
+    }
+  }
+  return null;
+}
+
+async function metaPhoto(file) {
+  const debut = new Uint8Array(await file.slice(0, 512 * 1024).arrayBuffer());
+  let r = chercherExif(debut);
+  if (!r && /\.hei[cf]$/i.test(file.name) && file.size > 512 * 1024)
+    r = chercherExif(new Uint8Array(await file.slice(Math.max(0, file.size - 1024 * 1024)).arrayBuffer()));
+  if (!r || !r.date) return r ? { appareil: r.appareil } : {};
+  return { date: r.date, source: "EXIF", fiab: r.offset ? "haute" : "moyenne", appareil: r.appareil };
+}
+
+async function lireMoov(file) {
+  let pos = 0;
+  for (let n = 0; n < 200 && pos + 8 <= file.size; n++) {
+    const h = new DataView(await file.slice(pos, pos + 16).arrayBuffer());
+    let taille = h.getUint32(0);
+    const type = String.fromCharCode(h.getUint8(4), h.getUint8(5), h.getUint8(6), h.getUint8(7));
+    if (taille === 1) taille = h.getUint32(8) * 2 ** 32 + h.getUint32(12);
+    else if (taille === 0) taille = file.size - pos;
+    if (taille < 8) return null;
+    if (type === "moov") return new Uint8Array(await file.slice(pos, pos + Math.min(taille, 64 * 1024 * 1024)).arrayBuffer());
+    pos += taille;
+  }
+  return null;
+}
+
+async function metaVideo(file) {
+  let moov;
+  try { moov = await lireMoov(file); } catch (e) { moov = null; }
+  if (!moov) return {};
+  const txt = lat1(moov);
+  const base = (() => { const i = txt.indexOf("mvhd"); if (i < 0) return {}; const dv = new DataView(moov.buffer, moov.byteOffset), v = moov[i + 4];
+    const e = dv.getUint32(i + (v === 1 ? 24 : 16)), u = v === 1 ? dv.getUint32(i + 28) * 2 ** 32 + dv.getUint32(i + 32) : dv.getUint32(i + 20);
+    return e ? { duree: u / e } : {}; })();
+  // Apple : heure locale avec fuseau, la plus fiable
+  const a = /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})([+-]\d{2}):?(\d{2})/.exec(txt);
+  const mod = /com\.apple\.quicktime\.model/.test(txt);
+  if (a) return { ...base, date: new Date(`${a[1]}${a[2]}:${a[3]}`), source: "QuickTime (Apple)", fiab: "haute", appareil: mod ? "iPhone / Apple" : null };
+  const i = txt.indexOf("mvhd");
+  if (i > 0) {
+    const dv = new DataView(moov.buffer, moov.byteOffset);
+    const v = moov[i + 4];
+    const u64 = o => dv.getUint32(o) * 2 ** 32 + dv.getUint32(o + 4);
+    const s = v === 1 ? u64(i + 8) : dv.getUint32(i + 8);
+    const echelle = dv.getUint32(i + (v === 1 ? 24 : 16));
+    const unites = v === 1 ? u64(i + 28) : dv.getUint32(i + 20);
+    const duree = echelle ? unites / echelle : null;
+    if (s > 0) {
+      const d = new Date(Date.UTC(1904, 0, 1) + s * 1000);
+      if (d.getFullYear() > 1990 && d.getFullYear() < 2100) return { date: d, source: "MP4 creation_time (UTC)", fiab: "haute", duree };
+    }
+    return { duree };
+  }
+  return {};
+}
+
+const MOTIFS = [
+  [/PXL_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/, true],
+  [/(?:IMG|VID|MVIMG|PANO)_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/, false],
+  [/(?:Screenshot|Capture)[_ -](\d{4})-(\d{2})-(\d{2})[_ -](\d{2})-(\d{2})-(\d{2})/, false],
+  [/(?<!\d)(\d{4})(\d{2})(\d{2})[_-](\d{2})(\d{2})(\d{2})(?!\d)/, false],
+];
+function metaNom(nom) {
+  for (const [re, utc] of MOTIFS) {
+    const m = re.exec(nom); if (!m) continue;
+    const p = m.slice(1).map(Number);
+    const d = utc ? new Date(Date.UTC(p[0], p[1] - 1, p[2], p[3], p[4], p[5])) : new Date(p[0], p[1] - 1, p[2], p[3], p[4], p[5]);
+    if (!isNaN(d)) return { date: d, source: "nom du fichier", fiab: "moyenne" };
+  }
+  const w = /(?:IMG|VID|AUD)-(\d{4})(\d{2})(\d{2})-WA\d+/.exec(nom);
+  if (w) return { date: new Date(+w[1], w[2] - 1, +w[3]), source: "nom WhatsApp (date seule)", fiab: "basse" };
+  return null;
+}
+
+// ---------- vignettes et durée ----------
+function infosVideo(r) {
+  return new Promise(res => {
+    const v = document.createElement("video");
+    v.muted = true; v.preload = "metadata"; v.playsInline = true; v.src = r.url;
+    const fin = () => { v.removeAttribute("src"); v.load(); res(); };
+    const t = setTimeout(fin, 15000);
+    v.onloadedmetadata = () => { if (isFinite(v.duration)) r.duree = v.duration; r.l = v.videoWidth; r.h = v.videoHeight; v.currentTime = Math.min(0.1, (v.duration || 1) / 2); };
+    v.onseeked = () => {
+      try {
+        const c = document.createElement("canvas"), k = 360 / Math.max(v.videoWidth, v.videoHeight, 1);
+        c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+        c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+        r.vignette = c.toDataURL("image/jpeg", 0.75);
+      } catch (e) {}
+      clearTimeout(t); fin();
+    };
+    v.onerror = () => { clearTimeout(t); r.illisible = true; fin(); };
+  });
+}
+function infosPhoto(r) {
+  return new Promise(res => {
+    const im = new Image();
+    im.onload = () => {
+      r.l = im.naturalWidth; r.h = im.naturalHeight;
+      try {
+        const c = document.createElement("canvas"), k = 360 / Math.max(r.l, r.h, 1);
+        c.width = Math.round(r.l * k); c.height = Math.round(r.h * k);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        r.vignette = c.toDataURL("image/jpeg", 0.75);
+      } catch (e) {}
+      res();
+    };
+    im.onerror = () => { r.illisible = true; res(); };   // HEIC hors Safari
+    im.src = r.url;
+  });
+}
+
+async function file(taches, n) {
+  let i = 0;
+  await Promise.all(Array.from({ length: n }, async () => { while (i < taches.length) await taches[i++](); }));
+}
+
+// ---------- chargement du dossier ----------
+async function charger(fichiers, nomDossier) {
+  rushes.forEach(r => URL.revokeObjectURL(r.url));
+  const medias = fichiers.filter(f => !f.file.name.startsWith(".") && (PHOTO.test(f.file.name) || VIDEO.test(f.file.name)));
+  if (!medias.length) { alert("Aucune photo ni vidéo dans ce dossier."); return; }
+  dossier = nomDossier || "dossier";
+  rushes = medias.map((f, i) => ({
+    id: "r" + i, file: f.file, nom: f.file.name, chemin: f.chemin || f.file.name,
+    nature: VIDEO.test(f.file.name) ? "video" : "photo", url: URL.createObjectURL(f.file),
+    taille: f.file.size, modif: f.file.lastModified,
+  }));
+  montage = []; ecartes = new Set();
+  $("#vide").classList.add("cache");
+  ["#secMontage", "#secBiblio"].forEach(s => $(s).classList.remove("cache"));
+  let faits = 0;
+  const progression = () => $("#stat").textContent = `Lecture des métadonnées… ${faits}/${rushes.length}`;
+  progression();
+  await file(rushes.map(r => async () => {
+    let m = {};
+    try { m = r.nature === "video" ? await metaVideo(r.file) : await metaPhoto(r.file); } catch (e) {}
+    if (!m.date) { const n = metaNom(r.nom); if (n) m = { ...m, ...n }; }
+    if (!m.date) m = { ...m, date: new Date(r.modif), source: "date du fichier", fiab: "basse" };
+    Object.assign(r, m);
+    await (r.nature === "video" ? infosVideo(r) : infosPhoto(r));
+    faits++; progression();
+    if (faits % 12 === 0) rendre();
+  }), 3);
+  if (!restaurer() && mode === "claude") triAuto();
+  rendre();
+}
+
+async function parcourirEntree(entree, chemin, out) {
+  if (entree.isFile) {
+    const f = await new Promise((ok, ko) => entree.file(ok, ko));
+    out.push({ file: f, chemin: chemin + f.name });
+  } else if (entree.isDirectory) {
+    const lecteur = entree.createReader();
+    let lot;
+    do {
+      lot = await new Promise((ok, ko) => lecteur.readEntries(ok, ko));
+      for (const e of lot) await parcourirEntree(e, chemin + entree.name + "/", out);
+    } while (lot.length);
+  }
+}
+async function parcourirHandle(h, chemin, out) {
+  for await (const e of h.values()) {
+    if (e.kind === "file") out.push({ file: await e.getFile(), chemin: chemin + e.name });
+    else await parcourirHandle(e, chemin + e.name + "/", out);
+  }
+}
+
+$("#ouvrir").onclick = async () => {
+  if (window.showDirectoryPicker) {
+    try {
+      const h = await showDirectoryPicker({ mode: "read" });
+      const out = []; await parcourirHandle(h, "", out);
+      return charger(out, h.name);
+    } catch (e) { if (e.name === "AbortError") return; }
+  }
+  $("#choixDossier").click();
+};
+$("#choixDossier").onchange = e => {
+  const fs = [...e.target.files];
+  const nom = fs[0] && fs[0].webkitRelativePath ? fs[0].webkitRelativePath.split("/")[0] : "dossier";
+  charger(fs.map(f => ({ file: f, chemin: f.webkitRelativePath || f.name })), nom);
+  e.target.value = "";
+};
+document.addEventListener("dragover", e => { if (e.dataTransfer.types.includes("Files")) { e.preventDefault(); $("#vide").classList.add("survol"); } });
+document.addEventListener("dragleave", e => { if (!e.relatedTarget) $("#vide").classList.remove("survol"); });
+document.addEventListener("drop", async e => {
+  if (!e.dataTransfer.types.includes("Files")) return;
+  e.preventDefault(); $("#vide").classList.remove("survol");
+  const entrees = [...e.dataTransfer.items].map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  const out = [];
+  for (const en of entrees) await parcourirEntree(en, "", out);
+  const nom = entrees.length === 1 && entrees[0].isDirectory ? entrees[0].name : "dépôt";
+  charger(out, nom);
+});
+
+// ---------- tri ----------
+const byId = id => rushes.find(r => r.id === id);
+const rang = r => (r.fiab === "basse" ? 1 : 0);
+const chrono = (a, b) => rang(a) - rang(b) || a.date - b.date || a.chemin.length - b.chemin.length || a.chemin.localeCompare(b.chemin);
+
+function triAuto() {
+  ecartes = new Set();
+  const tries = [...rushes].sort(chrono);
+  const vus = new Map();
+  let dernierePhoto = null;
+  for (const r of tries) {
+    const cle = r.date.getTime() + ":" + r.taille;
+    if (vus.has(cle)) { ecartes.add(r.id); r.raison = "doublon de " + vus.get(cle); continue; }
+    vus.set(cle, r.nom);
+    if (r.nature === "video" && r.duree != null && r.duree < 1) { ecartes.add(r.id); r.raison = "vidéo de moins d'une seconde"; continue; }
+    if (r.nature === "photo" && r.fiab !== "basse") {
+      if (dernierePhoto && r.date - dernierePhoto.date < 2000) { ecartes.add(r.id); r.raison = "rafale (garde " + dernierePhoto.nom + ")"; continue; }
+      dernierePhoto = r;
+    }
+  }
+  montage = tries.filter(r => !ecartes.has(r.id)).map(r => r.id);
+}
+
+$("#chrono").onclick = () => { montage.sort((a, b) => chrono(byId(a), byId(b))); rendre(); };
+$("#vider").onclick = () => { montage = []; rendre(); };
+$("#toutPrendre").onclick = () => { montage = [...rushes].sort(chrono).map(r => r.id); rendre(); };
+$("#ecart").onchange = rendre;
+
+function choisirMode(m) {
+  mode = m;
+  $("#modeMoi").setAttribute("aria-pressed", m === "moi");
+  $("#modeClaude").setAttribute("aria-pressed", m === "claude");
+  $("#secClaude").classList.toggle("cache", m !== "claude" || !rushes.length);
+  if (m === "claude" && rushes.length) triAuto();
+  if (m === "moi") ecartes = new Set();
+  rendre();
+}
+$("#modeMoi").onclick = () => choisirMode("moi");
+$("#modeClaude").onclick = () => choisirMode("claude");
+
+// ---------- rendu ----------
+const heure = d => d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const jour = d => d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+const duree = s => s == null ? "" : s < 60 ? s.toFixed(1).replace(".", ",") + " s" : Math.floor(s / 60) + " min " + String(Math.round(s % 60)).padStart(2, "0");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function vignetteHTML(r) {
+  const img = r.vignette ? `<img src="${r.vignette}" alt="" loading="lazy">`
+    : `<span class="ph">${r.illisible ? esc(r.nom.split(".").pop().toUpperCase()) + " · pas d'aperçu ici" : "…"}</span>`;
+  return img + (r.nature === "video" ? (r.vignette ? `<span class="lire">▶</span>` : "") + (r.duree ? `<span class="badge">${duree(r.duree)}</span>` : "") : "");
+}
+
+function moments(liste) {
+  const ecart = Math.max(1, +$("#ecart").value || 20) * 60000;
+  const fiables = liste.filter(r => r.fiab !== "basse"), groupes = [];
+  for (const r of fiables) {
+    const g = groupes[groupes.length - 1];
+    if (!g || r.date - g[g.length - 1].date > ecart) groupes.push([r]); else g.push(r);
+  }
+  return { groupes, aPlacer: liste.filter(r => r.fiab === "basse") };
+}
+
+function carteHTML(r) {
+  const pris = montage.includes(r.id);
+  return `<div class="carte${pris ? " pris" : ""}${ecartes.has(r.id) ? " ecarte" : ""}" draggable="true" data-id="${r.id}" title="${esc(r.chemin)}${r.raison && ecartes.has(r.id) ? " — écarté : " + esc(r.raison) : ""}">
+    <div class="vignette" data-voir="${r.id}">${vignetteHTML(r)}</div>
+    <button class="plus" data-basculer="${r.id}" aria-label="${pris ? "Retirer du" : "Ajouter au"} montage">${pris ? "✓" : "+"}</button>
+    <div class="meta"><div class="nom">${esc(r.nom)}</div>
+      <div class="ligne"><span>${r.date ? heure(r.date) : ""}</span><span class="fiab ${r.fiab || ""}" title="Source : ${esc(r.source || "")}">${r.fiab || ""}</span></div>
+    </div></div>`;
+}
+
+function rendre() {
+  if (!rushes.length) return;
+  const tries = [...rushes].filter(r => r.date).sort(chrono);
+  const { groupes, aPlacer } = moments(tries);
+  let h = groupes.map((g, i) => {
+    const d = g[0].date, f = g[g.length - 1].date;
+    const dv = g.filter(r => r.nature === "video").reduce((s, r) => s + (r.duree || 0), 0);
+    return `<div class="moment"><h3>Moment ${i + 1} · ${jour(d)}, ${heure(d).slice(0, 5)} → ${heure(f).slice(0, 5)} <span>· ${g.length} rushes${dv ? " · " + duree(dv) + " de vidéo" : ""}</span></h3>
+      <div class="grille">${g.map(carteHTML).join("")}</div></div>`;
+  }).join("");
+  if (aPlacer.length) h += `<div class="moment"><h3>À placer à la main <span>· pas d'heure de prise de vue fiable</span></h3><div class="grille">${aPlacer.map(carteHTML).join("")}</div></div>`;
+  $("#biblio").innerHTML = h;
+
+  $("#montage").innerHTML = montage.map((id, i) => {
+    const r = byId(id);
+    return `<div class="clip" draggable="true" data-id="${id}" data-idx="${i}"><span class="num">${i + 1}</span>
+      <button class="x" data-retirer="${id}" aria-label="Retirer">×</button>
+      <div class="vignette" data-voir="${id}">${vignetteHTML(r)}</div>
+      <div class="meta"><div class="nom">${esc(r.nom)}</div><div class="ligne"><span>${r.date ? heure(r.date).slice(0, 5) : ""}</span><span class="fiab ${r.fiab}">${r.fiab}</span></div></div></div>`;
+  }).join("");
+
+  const dMontage = montage.reduce((s, id) => s + (byId(id).duree || 0), 0);
+  $("#statMontage").textContent = `${montage.length} rushes${dMontage ? " · " + duree(dMontage) + " de vidéo" : ""}`;
+  const nv = rushes.filter(r => r.nature === "video").length;
+  $("#stat").textContent = `${dossier} · ${nv} vidéos, ${rushes.length - nv} photos`;
+
+  const av = [];
+  if (aPlacer.length) av.push(`${aPlacer.length} rush(es) sans heure fiable : ils restent hors chronologie.`);
+  if (rushes.some(r => /-WA\d+/.test(r.nom))) av.push("Des fichiers sont passés par WhatsApp, qui efface les métadonnées. Demandez les originaux.");
+  const app = [...new Set(rushes.map(r => r.appareil).filter(Boolean))];
+  if (app.length > 1) av.push(`Plusieurs appareils (${app.join(", ")}) : leurs horloges peuvent différer de quelques minutes.`);
+  if (rushes.some(r => r.illisible)) av.push("Certains fichiers n'ont pas d'aperçu dans ce navigateur : photos HEIC (lisibles dans Safari), ou codec vidéo non pris en charge (utilisez Chrome, Edge ou Safari à jour).");
+  if (ecartes.size) av.push(`${ecartes.size} rush(es) écarté(s) par le tri automatique, grisés (survolez pour la raison).`);
+  $("#avert").innerHTML = av.map(a => `<li>${esc(a)}</li>`).join("");
+  $("#secClaude").classList.toggle("cache", mode !== "claude");
+  sauver();
+}
+
+// ---------- interactions ----------
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-basculer],[data-retirer],[data-voir]");
+  if (!t) return;
+  if (t.dataset.basculer) { const id = t.dataset.basculer; montage = montage.includes(id) ? montage.filter(x => x !== id) : [...montage, id]; rendre(); }
+  else if (t.dataset.retirer) { montage = montage.filter(x => x !== t.dataset.retirer); rendre(); }
+  else if (t.dataset.voir) voir(t.dataset.voir);
+});
+
+// glisser-déposer : de la bibliothèque vers le montage, et à l'intérieur du montage
+let glisse = null;
+const barre = document.createElement("div"); barre.className = "insert";
+document.addEventListener("dragstart", e => {
+  const el = e.target.closest?.("[draggable][data-id]"); if (!el) return;
+  glisse = el.dataset.id; el.classList.add("drag");
+  e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", glisse);
+});
+document.addEventListener("dragend", e => { e.target.classList?.remove("drag"); barre.remove(); $("#montage").classList.remove("survol"); glisse = null; });
+function indexInsertion(x) {
+  const clips = [...$("#montage").querySelectorAll(".clip")];
+  for (let i = 0; i < clips.length; i++) { const b = clips[i].getBoundingClientRect(); if (x < b.left + b.width / 2) return i; }
+  return clips.length;
+}
+$("#montage").addEventListener("dragover", e => {
+  if (!glisse) return;
+  e.preventDefault(); e.stopPropagation();
+  const i = indexInsertion(e.clientX), clips = $("#montage").querySelectorAll(".clip");
+  $("#montage").classList.add("survol");
+  if (clips[i]) $("#montage").insertBefore(barre, clips[i]); else $("#montage").appendChild(barre);
+});
+$("#montage").addEventListener("dragleave", e => { if (!$("#montage").contains(e.relatedTarget)) { barre.remove(); $("#montage").classList.remove("survol"); } });
+$("#montage").addEventListener("drop", e => {
+  if (!glisse) return;
+  e.preventDefault(); e.stopPropagation();
+  let i = indexInsertion(e.clientX);
+  const avant = montage.indexOf(glisse);
+  if (avant !== -1) { montage.splice(avant, 1); if (avant < i) i--; }
+  montage.splice(i, 0, glisse);
+  glisse = null; barre.remove(); $("#montage").classList.remove("survol"); rendre();
+});
+
+// lecteur
+function voir(id) {
+  courant = id; const r = byId(id);
+  $("#scene").innerHTML = r.nature === "video"
+    ? `<video src="${r.url}" controls autoplay playsinline></video>`
+    : `<img src="${r.url}" alt="${esc(r.nom)}">`;
+  const src = r.source ? ` · date : ${r.source} (${r.fiab})` : "";
+  $("#legende").textContent = `${r.chemin} · ${r.date ? jour(r.date) + " " + heure(r.date) : ""}${r.duree ? " · " + duree(r.duree) : ""}${r.l ? " · " + r.l + "×" + r.h : ""}${r.appareil ? " · " + r.appareil : ""}${src}`;
+  $("#prendre").textContent = montage.includes(id) ? "Retirer du montage" : "Ajouter au montage";
+  if (!$("#lecteur").open) $("#lecteur").showModal();
+}
+function voisin(d) {
+  const ordre = [...rushes].filter(r => r.date).sort(chrono).map(r => r.id);
+  const i = ordre.indexOf(courant);
+  if (i !== -1 && ordre[i + d]) voir(ordre[i + d]);
+}
+$("#prec").onclick = () => voisin(-1);
+$("#suiv").onclick = () => voisin(1);
+$("#fermer").onclick = () => $("#lecteur").close();
+$("#lecteur").addEventListener("close", () => { $("#scene").innerHTML = ""; });
+$("#lecteur").addEventListener("keydown", e => { if (e.key === "ArrowLeft") voisin(-1); if (e.key === "ArrowRight") voisin(1); });
+$("#prendre").onclick = () => {
+  montage = montage.includes(courant) ? montage.filter(x => x !== courant) : [...montage, courant];
+  rendre(); voir(courant);
+};
+
+// ---------- exports ----------
+function telecharger(nom, obj) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" }));
+  a.download = nom; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+const fiche = r => ({
+  fichier: r.chemin, nature: r.nature, date: r.date ? r.date.toISOString() : null,
+  heure_locale: r.date ? jour(r.date) + " " + heure(r.date) : null,
+  source_date: r.source, fiabilite: r.fiab, appareil: r.appareil || null,
+  duree_s: r.duree != null ? +r.duree.toFixed(2) : null, format: r.l ? `${r.l}x${r.h}` : null,
+});
+
+$("#exporter").onclick = () => {
+  const liste = montage.map(byId);
+  const estChrono = liste.every((r, i) => i === 0 || chrono(liste[i - 1], r) <= 0);
+  const { groupes, aPlacer } = moments(liste);
+  telecharger("plan.json", {
+    dossier, ordre: estChrono ? "chronologique" : "manuel", mode, exporte_le: new Date().toISOString(),
+    titre: "", accroche: "", angle: "", ancrage: "", chute: "",
+    sequences: estChrono
+      ? groupes.map((g, i) => ({ titre: `Moment ${i + 1}`, description: "", duree_s: null, rushes_utiles: g.map(r => r.chemin), manquants: [] }))
+      : [{ titre: "Montage", description: "", duree_s: null, rushes_utiles: liste.map(r => r.chemin), manquants: [] }],
+    a_placer: estChrono ? aPlacer.map(r => r.chemin) : [],
+    rushes: liste.map(fiche),
+    avertissements: [...$("#avert").querySelectorAll("li")].map(li => li.textContent),
+  });
+};
+
+$("#exportClaude").onclick = () => {
+  telecharger("rushes-pour-claude.json", {
+    consigne: "Voici l'inventaire de mes rushes, avec une vignette par fichier (première image pour les vidéos). " +
+      "Propose un plan de montage : choisis les rushes utiles, ordonne-les, découpe en séquences (titre, description, rushes_utiles, manquants), " +
+      "donne un ancrage et une chute, et liste tes avertissements. Réponds avec un JSON au format du champ 'format_reponse'.",
+    format_reponse: { titre: "", accroche: "", angle: "", ancrage: "", chute: "",
+      sequences: [{ titre: "", description: "", duree_s: 0, rushes_utiles: ["chemin/du/fichier"], manquants: [] }], ecartes: [{ fichier: "", raison: "" }], avertissements: [] },
+    dossier, tri_automatique: montage.map(id => byId(id).chemin),
+    rushes: [...rushes].sort(chrono).map(r => ({ ...fiche(r), ecarte_par_tri_auto: ecartes.has(r.id) ? r.raison : null, vignette_jpeg: r.vignette || null })),
+  });
+};
+
+$("#importPlan").onclick = () => $("#fichierPlan").click();
+$("#fichierPlan").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  let plan; try { plan = JSON.parse(await f.text()); } catch (err) { alert("Ce fichier n'est pas un JSON lisible."); return; }
+  const chemins = plan.ordre_fichiers || (plan.sequences || []).flatMap(s => s.rushes_utiles || []);
+  const index = new Map(); rushes.forEach(r => { index.set(r.chemin, r.id); if (!index.has(r.nom)) index.set(r.nom, r.id); });
+  const ids = chemins.map(c => index.get(c) || index.get(String(c).split("/").pop())).filter(Boolean);
+  const inconnus = chemins.length - ids.length;
+  montage = [...new Set(ids)];
+  rendre();
+  alert(`Plan importé : ${montage.length} rushes dans le montage${inconnus ? `, ${inconnus} fichier(s) introuvable(s) dans ce dossier` : ""}.`);
+};
+</script>
+</body>
+</html>
