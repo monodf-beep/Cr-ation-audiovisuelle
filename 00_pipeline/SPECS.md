@@ -107,6 +107,9 @@ Resolve ne tourne que sur un ordinateur avec une bonne carte graphique, hors du 
 | 10.4 | Voix des notes vocales nettoyée (bruit de fond) et volume mis à niveau. | ○ |
 | 10.5 | Stabilisation des images de téléphone. | ○ |
 | 10.6 | Grain, halation et vignettage appliqués après le LUT, comme dans `filmlook.py` (un LUT ne porte que la couleur pixel par pixel). | ○ |
+| 10.7 | Correction du regard vers la caméra (NVIDIA Maxine Eye Contact), sur un serveur à carte NVIDIA loué à la demande, seulement le temps du traitement. À tester sur une vraie prise (lunettes, lumière, mouvements de tête). | ○ |
+| 10.8 | Coupée par défaut ; aperçu avant/après, réglage d'intensité, désactivable plan par plan. | ○ |
+| 10.9 | Uniquement sur le face-caméra du journaliste qui l'active, jamais sur une personne interviewée ni une image d'événement ; notée dans l'historique des versions. | ○ |
 
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
@@ -140,6 +143,7 @@ Tous `○`. À valider un par un.
 | 8.8 | Qui voit un projet vidéo : tout le média, ou le créateur et les journalistes qu'il ajoute ? | Le créateur et les membres ajoutés, les admins du média voient tout. C'est le modèle des articles, qui appartiennent à leur auteur. |
 | 8.9 | Deux journalistes sur la même vidéo : un à la fois avec passage de relais, ou en même temps ? | Un à la fois : « Marie édite en ce moment », bouton « Prendre le relais » qui la prévient. Aucun conflit, bien plus simple que l'édition simultanée. |
 | 8.10 | DaVinci Resolve pour l'étalonnage ? | **Tranché le 27/09 : non.** Traitements sur le serveur du studio (§ 10). |
+| 8.11 | Correction du regard vers la caméra ? | **Demandée le 27/09 : option à activer**, coupée par défaut, seulement sur le face-caméra du journaliste (§ 10.7 à 10.9). |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
