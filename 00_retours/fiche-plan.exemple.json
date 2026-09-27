@@ -1,0 +1,22 @@
+{
+  "plan": "15",
+  "nom": "DOS",
+  "moment": "apres",
+  "etat_maillot": "trempe, porte, vu de dos pour la premiere fois",
+  "intention": "Il se retourne. Le verso est le resultat de la soiree.",
+  "source": "reprise",
+  "reference": "5e2237c9-50ac-40f9-b069-c1e32fd2439f",
+  "ce_qui_change": "saison et heure uniquement ; composition conservee",
+  "heure_saison": "aout, ~21 h 30, ciel bleu profond, projecteurs allumes",
+  "axe_camera": "depuis le terrain vers la tribune : sommet isole en fond",
+  "public": "tribune debout, environ 150 personnes, kop a gauche contre la barriere",
+  "visages": "de dos, tete coupee par le bord haut du cadre",
+  "texte_a_l_ecran": ["FC CLUSA", "CHAMPIONS", "26"],
+  "ratio_generation": "4:5",
+  "ratio_final": "9:16",
+  "mouvement": "lente rotation du buste, le dos entre dans le cadre",
+  "style": "amateur : cadrage legerement penche, mise au point en retard",
+  "son": "silence total",
+  "prompt_final": "",
+  "generation_retenue": ""
+}
