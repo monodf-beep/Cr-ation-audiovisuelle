@@ -4,10 +4,11 @@
 // - recoit les prises de voix off : POST /<projet>/televerser?nom=<fichier> les ecrit dans
 //   <depot>/<projet>/voix-off/, puis les copie aussitot dans Google Drive (rclone) ;
 // - la bibliotheque de montage (/bibliotheque/) : catalogue, choix (garder / ecarter) et fichiers
-//   televerses, gardes dans <depot>/bibliotheque/donnees et fichiers/, copies dans Drive.
+//   televerses, gardes dans <depot>/bibliotheque/donnees et fichiers/, copies dans Drive ;
+// - les rendus sans terminal (/rendu/) : etat des rendus, et demande de rendu lancee par synchro.sh.
 // Sans dependance. Variables : DEPOT (chemin du depot), PORT (8090), DRIVE (ex. drive:Videos).
 import { createServer } from 'node:http';
-import { createReadStream, createWriteStream, mkdirSync, statSync, watchFile, readFileSync, writeFileSync, renameSync, unlinkSync, existsSync } from 'node:fs';
+import { createReadStream, createWriteStream, mkdirSync, statSync, watchFile, readFileSync, writeFileSync, renameSync, unlinkSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { join, normalize, extname, basename, resolve, sep } from 'node:path';
@@ -63,6 +64,41 @@ function televerser(req, res, projet) {
     res.end(JSON.stringify({ ok: true, fichier: `${projet}/voix-off/${nom}`, drive: !!DRIVE }));
   });
   sortie.on('error', (e) => { res.writeHead(500); res.end(e.message); });
+}
+
+// --- Rendus sans terminal (page /rendu/) : une demande deposee ici est lancee par synchro.sh ---
+const projets = () => readdirSync(DEPOT, { withFileTypes: true })
+  .filter((d) => d.isDirectory() && !d.name.startsWith('.') && existsSync(join(DEPOT, d.name, 'index.html'))
+    && readFileSync(join(DEPOT, d.name, 'index.html'), 'utf8').includes('data-composition-id'))
+  .map((d) => d.name);
+function etatRendu(p) {
+  const r = join(DEPOT, p, 'renders');
+  const lire = (f) => { try { return readFileSync(join(r, f), 'utf8'); } catch { return ''; } };
+  let etat = null; try { etat = JSON.parse(lire('etat-rendu.json')); } catch {}
+  const journal = lire('rendu.log');
+  const pourcents = [...journal.slice(-6000).matchAll(/(\d{1,3})%/g)];
+  const fichier = etat?.fichier || (p === '10_cern' ? 'cern-reportage.mp4' : `${p}.mp4`);
+  let video = null; try { const st = statSync(join(r, fichier)); video = { chemin: `${p}/renders/${fichier}`, taille: st.size, date: st.mtime }; } catch {}
+  const metriques = (() => { try { return readFileSync(join(DEPOT, p, 'metriques.md'), 'utf8'); } catch { return ''; } })();
+  const alertes = [...metriques.matchAll(/^- (.+)$/gm)].map((m) => m[1]).slice(0, 20);
+  const etape = [...journal.matchAll(/^== (\w+)/gm)].map((m) => m[1]).pop() || null;
+  return { projet: p, demande: existsSync(join(r, 'demande-rendu.json')), etat, etape,
+    progression: pourcents.length ? +pourcents[pourcents.length - 1][1] : null,
+    fin_journal: journal.split('\n').filter((l) => /ECHEC|Error|error/.test(l)).slice(-5), video, alertes,
+    metriques_ok: /Aucune alerte/.test(metriques), metriques: !!metriques };
+}
+function rendu(req, res, route) {
+  if (req.method === 'GET' && route === 'etat') return json(res, 200, { projets: projets().map(etatRendu) });
+  if (req.method === 'POST' && route === 'demander') {
+    const p = new URL(req.url, 'http://x').searchParams.get('projet');
+    if (!projets().includes(p)) return json(res, 400, { erreur: 'projet inconnu' });
+    const e = etatRendu(p);
+    if (e.demande || e.etat?.etat === 'en cours') return json(res, 409, { erreur: 'un rendu est deja demande ou en cours' });
+    mkdirSync(join(DEPOT, p, 'renders'), { recursive: true });
+    writeFileSync(join(DEPOT, p, 'renders', 'demande-rendu.json'), JSON.stringify({ date: new Date().toISOString() }));
+    return json(res, 200, { ok: true });
+  }
+  json(res, 404, { erreur: 'inconnu' });
 }
 
 // --- Bibliotheque de montage ---
@@ -127,6 +163,8 @@ async function bibliotheque(req, res, route) {
 }
 
 createServer((req, res) => {
+  const r = /^\/rendu\/api\/(\w+)/.exec(req.url);
+  if (r) { try { return rendu(req, res, r[1]); } catch (e) { return json(res, 500, { erreur: e.message }); } }
   const b = /^\/bibliotheque\/api\/(\w+)/.exec(req.url);
   if (b) return bibliotheque(req, res, b[1]).catch((e) => json(res, 500, { erreur: e.message }));
   const m = /^\/([^/?]+)\/televerser(\?|$)/.exec(req.url);

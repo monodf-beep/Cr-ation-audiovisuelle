@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rendus du studio</title>
+<!-- Page du studio (VPS) : lancer le rendu d'un montage sans terminal, suivre la progression, regarder la video
+     et le resultat du controle. API : /rendu/api/ (ops/vps/serveur-enregistrement.mjs) ; le rendu est lance par
+     ops/vps/synchro.sh (ops/vps/rendu-auto.sh). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{ --bleu:#0a36af; --bleu-doux:#e6ebf7; --encre:#171719; --encre-2:#45454c; --encre-3:#6b6b76; --fond:#f6f7fa; --carte:#fff; --trait:#dcdde4;
+  --ok:#1c7a4a; --ok-doux:#e3f3ea; --alerte:#9a5b00; --alerte-doux:#fff3dc; --echec:#a23a2c; --echec-doux:#f7e6e3; color-scheme: light; }
+@media (prefers-color-scheme: dark){ :root{ --bleu:#8fa6ec; --bleu-doux:#1b2340; --encre:#ececf2; --encre-2:#c4c4ce; --encre-3:#9696a3; --fond:#121318; --carte:#1a1b22; --trait:#2d2f3a;
+  --ok:#6fcf9b; --ok-doux:#15301f; --alerte:#f0b85a; --alerte-doux:#332610; --echec:#ee8a7c; --echec-doux:#3a1b17; color-scheme: dark; } }
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{margin:0;background:var(--fond);color:var(--encre);font:16px/1.5 Figtree,system-ui,sans-serif;padding-inline:20px;padding-block:24px 60px}
+.page{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:6px}
+header nav{display:flex;gap:14px;font-size:14px;flex-wrap:wrap}
+header nav a{color:var(--encre-3)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--bleu)}
+h1{font-size:32px;line-height:1.1;margin:0}
+header p{margin:0;color:var(--encre-2);max-width:66ch}
+.projet{background:var(--carte);border:1px solid var(--trait);padding:18px;display:grid;grid-template-columns:1fr 200px;gap:18px}
+@media (max-width:640px){ .projet{grid-template-columns:1fr} }
+.projet h2{margin:0;font-size:22px}
+.etat{display:inline-block;font-size:13px;font-weight:700;padding:3px 9px;margin-top:6px}
+.etat.attente,.etat.cours{background:var(--bleu-doux);color:var(--bleu)}
+.etat.ok{background:var(--ok-doux);color:var(--ok)}
+.etat.echec{background:var(--echec-doux);color:var(--echec)}
+.infos{display:flex;flex-direction:column;gap:10px}
+.ligne{font-size:14px;color:var(--encre-2)}
+.barre{height:8px;background:var(--bleu-doux);overflow:hidden}
+.barre i{display:block;height:100%;background:var(--bleu);transition:width .5s}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button,a.bouton{font:inherit;font-weight:700;border:none;padding:10px 16px;cursor:pointer;text-decoration:none;display:inline-block}
+button.principal{background:var(--bleu);color:#fff}
+button[disabled]{opacity:.45;cursor:default}
+a.bouton{background:var(--bleu-doux);color:var(--bleu)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--bleu);outline-offset:2px}
+.controle{font-size:14px;padding:10px 12px;border-left:4px solid var(--ok);background:var(--ok-doux)}
+.controle.alertes{border-left-color:var(--alerte);background:var(--alerte-doux)}
+.controle ul{margin:6px 0 0;padding-left:18px}
+.controle li{margin:2px 0}
+.erreurs{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--echec-doux);color:var(--echec);padding:8px 10px;white-space:pre-wrap}
+video{width:200px;aspect-ratio:9/16;background:#000;display:block}
+.vide-video{width:200px;aspect-ratio:9/16;background:var(--bleu-doux);display:grid;place-items:center;color:var(--encre-3);font-size:13px;text-align:center;padding:10px}
+.message{font-size:14px;color:var(--encre-2)}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <nav><a href="../10_cern/enregistrer.html">Enregistrer la voix off</a><a href="../bibliotheque/index.html">Bibliothèque de montage</a></nav>
+    <div class="eyebrow">Studio · rendus</div>
+    <h1>Rendre une vidéo</h1>
+    <p>Un bouton suffit : le studio récupère la dernière version du montage, fabrique les médias, rend la vidéo
+      (20 à 25 minutes), la contrôle et la copie dans Google Drive. Le rendu démarre dans les 3 minutes ;
+      vous pouvez fermer cette page, il continue.</p>
+  </header>
+  <div id="liste"><p class="message">Chargement…</p></div>
+</div>
+<script>
+const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const date = (d) => d ? new Date(d).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) : "";
+const mo = (n) => (n / 1048576).toFixed(1).replace(".", ",") + " Mo";
+let dernier = "";
+
+async function charger() {
+  let d;
+  try { d = await (await fetch("api/etat", { cache: "no-store" })).json(); }
+  catch (e) { document.getElementById("liste").innerHTML = '<p class="message">Studio injoignable : vérifiez la connexion, la page réessaie toute seule.</p>'; return; }
+  const html = d.projets.map(carte).join("") || '<p class="message">Aucun montage trouvé.</p>';
+  if (html !== dernier) { document.getElementById("liste").innerHTML = html; dernier = html; brancher(); }
+}
+function carte(p) {
+  const e = p.etat?.etat;
+  let statut, classe, detail = "";
+  if (p.demande) { statut = "Demandé : démarre dans les 3 minutes"; classe = "attente"; }
+  else if (e === "en cours") {
+    statut = p.etape === "rendu" && p.progression != null ? `Rendu en cours : ${p.progression} %` : p.etape === "metriques" ? "Contrôle en cours" : "Préparation des médias";
+    classe = "cours";
+    detail = `<div class="barre"><i style="width:${p.etape === "rendu" ? (p.progression || 0) : p.etape === "metriques" ? 100 : 5}%"></i></div><div class="ligne">Commencé le ${date(p.etat.debut)}</div>`;
+  } else if (e === "echec") {
+    statut = `Échec (${esc(p.etat.message)})`; classe = "echec";
+    detail = `<div class="ligne">Le ${date(p.etat.fin)}. Envoyez ces lignes à Claude :</div><div class="erreurs">${esc(p.fin_journal.join("\n") || "voir renders/rendu.log")}</div>`;
+  } else if (e === "termine") { statut = `Terminé le ${date(p.etat.fin)}`; classe = "ok"; }
+  else { statut = p.video ? "Prêt" : "Jamais rendu ici"; classe = p.video ? "ok" : "attente"; }
+  const occupe = p.demande || e === "en cours";
+  const controle = !p.metriques || occupe ? "" : p.alertes.length
+    ? `<div class="controle alertes"><b>${p.alertes.length} alerte(s) au contrôle</b><ul>${p.alertes.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>`
+    : `<div class="controle"><b>Contrôle : aucune alerte</b> (débit, sous-titres, rythme, volume, zones Instagram / TikTok)</div>`;
+  const video = p.video && !occupe
+    ? `<video src="../${esc(p.video.chemin)}?v=${new Date(p.video.date).getTime()}" controls playsinline preload="metadata"></video>`
+    : `<div class="vide-video">${occupe ? "La vidéo apparaîtra ici à la fin du rendu" : "Pas encore de vidéo"}</div>`;
+  return `<section class="projet"><div class="infos">
+      <div><h2>${esc(p.projet)}</h2><span class="etat ${classe}">${statut}</span></div>${detail}
+      ${p.video && !occupe ? `<div class="ligne">Dernière vidéo : ${mo(p.video.taille)}, ${date(p.video.date)} · aussi dans Google Drive (${esc(p.projet)}/renders)</div>` : ""}
+      ${controle}
+      <div class="actions"><button class="principal" data-rendre="${esc(p.projet)}" ${occupe ? "disabled" : ""}>Rendre la vidéo</button>
+        ${p.video && !occupe ? `<a class="bouton" href="../${esc(p.video.chemin)}" download>Télécharger</a>` : ""}
+        <span class="message" id="msg-${esc(p.projet)}"></span></div>
+    </div>${video}</section>`;
+}
+function brancher() {
+  document.querySelectorAll("[data-rendre]").forEach((b) => b.onclick = async () => {
+    b.disabled = true;
+    const r = await fetch("api/demander?projet=" + encodeURIComponent(b.dataset.rendre), { method: "POST" });
+    const m = document.getElementById("msg-" + b.dataset.rendre);
+    if (!r.ok) { const e = await r.json().catch(() => ({})); m.textContent = "Refusé : " + (e.erreur || r.status); b.disabled = false; }
+    dernier = ""; charger();
+  });
+}
+charger(); setInterval(charger, 5000);
+</script>
+</body>
+</html>

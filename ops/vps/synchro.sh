@@ -35,6 +35,13 @@ for sous in donnees fichiers/televerses; do
   [ -d "$DEPOT/bibliotheque/$sous" ] && rclone copy "$DEPOT/bibliotheque/$sous" "$DRIVE/bibliotheque/$sous" --update -q || true
 done
 
+# Rendus demandes depuis la page « Rendus » du studio (bouton) : lances ici, l'un apres l'autre. La
+# synchronisation attend la fin du rendu (20 a 25 minutes) avant de reprendre ; la video part ensuite dans Drive.
+for demande in "$DEPOT"/*/renders/demande-rendu.json; do
+  [ -f "$demande" ] || continue
+  DEPOT="$DEPOT" HF="$HF" bash "$DEPOT/ops/vps/rendu-auto.sh" "$(basename "$(dirname "$(dirname "$demande")")")"
+done
+
 # Prises filmees : version eclaircie et verticale, a cote de la prise brute.
 DEPOT="$DEPOT" "$DEPOT/ops/vps/traiter-prises.sh" || echo "traitement des prises en erreur"
 

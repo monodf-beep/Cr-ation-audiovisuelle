@@ -77,3 +77,10 @@ tail -f /srv/studio/depot/10_cern/renders/rendu.log
 Met le dépôt à jour, fabrique les médias hors dépôt, rend et lance les métriques, dans un service
 temporaire (`studio-rendu`) : le rendu continue si le terminal se ferme ou si la connexion saute.
 Le Studio est arrêté pendant le rendu (mémoire) et relancé à la fin, même en cas d'échec.
+
+## Rendre une vidéo sans terminal
+
+Page : `https://<adresse>/enregistrement/rendu/` (même mot de passe). Le bouton « Rendre la vidéo » dépose
+`<projet>/renders/demande-rendu.json` ; `synchro.sh` (toutes les 3 minutes) lance alors `rendu-auto.sh` :
+médias, rendu, métriques, puis copie dans Drive. La page affiche la progression, la vidéo et les alertes du
+contrôle. `rendre.sh` reste disponible pour lancer un rendu depuis le terminal.
