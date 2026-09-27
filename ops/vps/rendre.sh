@@ -8,7 +8,11 @@
 # Etat   :  systemctl status studio-rendu
 set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "Lancer avec sudo."; exit 1; }
-source /etc/studio/studio.env
+# Reglages du studio : seulement nos 5 variables, lues sans executer le fichier (d'autres outils du VPS y
+# ajoutent leurs propres lignes, parfois non valides pour bash).
+while IFS='=' read -r cle valeur; do
+  case "$cle" in DEPOT|PROJET|DRIVE|BRANCHE|HF) export "$cle=$valeur" ;; esac
+done < /etc/studio/studio.env
 PROJET=${1:-$PROJET}
 [ -d "$DEPOT/$PROJET" ] || { echo "Projet introuvable : $DEPOT/$PROJET"; exit 1; }
 if systemctl is-active --quiet studio-rendu; then echo "Un rendu tourne deja : tail -f $DEPOT/$PROJET/renders/rendu.log"; exit 1; fi

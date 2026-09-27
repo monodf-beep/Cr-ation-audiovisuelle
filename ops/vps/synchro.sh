@@ -5,7 +5,11 @@
 #  3. VPS -> Drive : les rendus (renders/), les prises de voix off (voix-off/), la bibliotheque de montage.
 # Rien n'est jamais supprime d'un cote ou de l'autre : les copies ne font qu'ajouter ou mettre a jour.
 set -uo pipefail
-source /etc/studio/studio.env
+# Reglages du studio : seulement nos 5 variables, lues sans executer le fichier (d'autres outils du VPS y
+# ajoutent leurs propres lignes, parfois non valides pour bash).
+while IFS='=' read -r cle valeur; do
+  case "$cle" in DEPOT|PROJET|DRIVE|BRANCHE|HF) export "$cle=$valeur" ;; esac
+done < /etc/studio/studio.env
 
 cd "$DEPOT" || exit 1
 # Le VPS est une copie de GitHub : les modifications se font dans le depot (par Claude), pas sur le VPS.
