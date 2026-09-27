@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventaire des rushes : lit les metadonnees des photos et videos d'un dossier,
+"""Inventaire des rushes : lit les metadonnees des photos, videos et notes vocales d'un dossier,
 les remet dans l'ordre de prise de vue et propose un squelette de plan chronologique.
 
     python3 00_pipeline/rushes.py DOSSIER [--sortie rushes] [--ecart 20] [--tz Europe/Paris]
@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 PHOTO = {".jpg", ".jpeg", ".png", ".heic", ".heif", ".webp", ".tif", ".tiff", ".dng", ".cr2", ".cr3", ".nef", ".arw"}
 VIDEO = {".mp4", ".mov", ".m4v", ".avi", ".mkv", ".mts", ".3gp", ".webm"}
+AUDIO = {".m4a", ".mp3", ".wav", ".aac", ".ogg", ".opus", ".amr", ".flac", ".caf"}
 
 # Motifs de noms de fichiers courants. `utc` : l'horodatage du nom est en UTC (Pixel).
 MOTIFS = [
@@ -27,7 +28,7 @@ MOTIFS = [
     (re.compile(r"(?:IMG|VID|MVIMG|PANO)_(\d{8})_(\d{6})"), "%Y%m%d%H%M%S", False),
     (re.compile(r"(?:Screenshot|Capture)[_ -](\d{4}-\d{2}-\d{2})[_ -](\d{2}-\d{2}-\d{2})"), "%Y-%m-%d%H-%M-%S", False),
     (re.compile(r"(?<!\d)(\d{8})[_-](\d{6})(?!\d)"), "%Y%m%d%H%M%S", False),
-    (re.compile(r"(?:IMG|VID|AUD)-(\d{8})-WA\d+"), "%Y%m%d", False),  # WhatsApp : la date seule
+    (re.compile(r"(?:IMG|VID|AUD|PTT)-(\d{8})-WA\d+"), "%Y%m%d", False),  # WhatsApp : la date seule
 ]
 
 
@@ -194,6 +195,15 @@ def fiabilite(source, date):
     return "haute" if date and date.tzinfo else "moyenne"
 
 
+def transcription(chemin):
+    """Texte d'une note vocale, s'il a ete produit par notes.py (fichier voisin .txt)."""
+    for t in (chemin + ".txt", os.path.splitext(chemin)[0] + ".txt"):
+        if os.path.exists(t):
+            with open(t, encoding="utf-8") as f:
+                return f.read().strip()
+    return None
+
+
 def decalages(liste):
     """'Canon EOS 250D=-00:04:30' -> {'Canon EOS 250D': timedelta(-270 s)}"""
     res = {}
@@ -210,16 +220,16 @@ def inventaire(dossier, tz, decal):
     for racine, _, fichiers in os.walk(dossier):
         for f in sorted(fichiers):
             ext = os.path.splitext(f)[1].lower()
-            if ext in PHOTO | VIDEO and not f.startswith("."):
+            if ext in PHOTO | VIDEO | AUDIO and not f.startswith("."):
                 chemins.append(os.path.join(racine, f))
     exif = par_exiftool(chemins)
     rushes = []
     for c in chemins:
         ext = os.path.splitext(c)[1].lower()
-        nature = "video" if ext in VIDEO else "photo"
+        nature = "video" if ext in VIDEO else "audio" if ext in AUDIO else "photo"
         info = exif.get(c) or {}
         if not info.get("date"):
-            info = {**(par_ffmpeg(c) if nature == "video" else par_pillow(c)), **{k: v for k, v in info.items() if v}}
+            info = {**(par_pillow(c) if nature == "photo" else par_ffmpeg(c)), **{k: v for k, v in info.items() if v}}
         if not info.get("date"):
             d, src = par_nom(os.path.basename(c))
             if d:
@@ -245,6 +255,7 @@ def inventaire(dossier, tz, decal):
             "format": f"{info['largeur']}x{info['hauteur']}" if info.get("largeur") else None,
             "rotation": info.get("rotation"),
             "taille_octets": os.path.getsize(c),
+            "transcription": transcription(c) if nature == "audio" else None,
             "_t": date,
         })
     rushes.sort(key=lambda r: (r["_t"], r["fichier"]))
@@ -258,6 +269,9 @@ def avertissements(rushes):
         av.append(f"{len(basses)} rush(es) sans heure de prise de vue fiable, laisses hors chronologie "
                   "(voir a_placer) : " + ", ".join(basses[:8]) + (" ..." if len(basses) > 8 else ""))
     wa = [r["fichier"] for r in rushes if "-WA" in r["fichier"]]
+    muettes = [r["fichier"] for r in rushes if r["nature"] == "audio" and not r["transcription"]]
+    if muettes:
+        av.append(f"{len(muettes)} note(s) vocale(s) pas encore transcrite(s) : lancer 00_pipeline/notes.py.")
     if wa:
         av.append(f"{len(wa)} fichier(s) passes par WhatsApp : metadonnees effacees, demander les originaux.")
     appareils = sorted({r["appareil"] for r in rushes if r["appareil"]})
@@ -285,6 +299,8 @@ def moments(rushes, ecart_min):
         "titre": "", "description": "",
         "rushes": [r["fichier"] for r in g],
         "duree_videos_s": round(sum(r["duree_s"] or 0 for r in g if r["nature"] == "video"), 1),
+        "notes_vocales": [{"fichier": r["fichier"], "heure": r["date"][11:16], "transcription": r["transcription"]}
+                          for r in g if r["nature"] == "audio"],
     } for i, g in enumerate(groupes, 1)]
 
 
@@ -324,6 +340,8 @@ def main():
             r = next(x for x in rushes if x["fichier"] == fic)
             duree = f"{r['duree_s']:.1f}s" if r["duree_s"] else ""
             print(f"   {r['date'][11:19]}  {r['nature']:5} {duree:>7}  [{r['fiabilite']:7}] {fic}")
+            if r["transcription"]:
+                print(f"      « {r['transcription'][:110]}{'…' if len(r['transcription']) > 110 else ''} »")
     for r in plan["a_placer"]:
         print(f"\n?  a placer : {r['fichier']}  (indice : {r['indice'][:10]}, {r['source_date']})")
     for x in av:

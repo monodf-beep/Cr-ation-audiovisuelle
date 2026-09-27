@@ -36,7 +36,7 @@ button:disabled { opacity: .45; cursor: default; }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
 .grow { flex: 1; }
 .stat { color: var(--muted); font-size: 13px; }
-main { padding: 16px; display: grid; gap: 20px; }
+main { padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
 .sec-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 12px; }
 #vide { text-align: center; padding: 56px 16px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); }
@@ -46,8 +46,8 @@ section { background: var(--surface); border: 1px solid var(--line); border-radi
 #montage:empty::before { content: "Glissez des rushes ici, ou cliquez sur « + » dans la bibliothèque."; color: var(--muted); margin: auto; }
 .clip { flex: 0 0 150px; position: relative; background: var(--surface-2); border-radius: 8px; overflow: hidden; cursor: grab; user-select: none; }
 .clip.drag { opacity: .35; }
-.clip .num { position: absolute; top: 4px; left: 4px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 700; border-radius: 4px; padding: 0 5px; }
-.clip .x { position: absolute; top: 3px; right: 3px; padding: 0 6px; font-size: 12px; line-height: 18px; }
+.clip .num { z-index: 2; position: absolute; top: 4px; left: 4px; background: var(--ink); color: var(--bg); font-size: 11px; font-weight: 700; border-radius: 4px; padding: 0 5px; }
+.clip .x { z-index: 2; position: absolute; top: 3px; right: 3px; padding: 0 6px; font-size: 12px; line-height: 18px; }
 .insert { flex: 0 0 3px; align-self: stretch; background: var(--accent); border-radius: 2px; }
 .moment { margin-top: 14px; }
 .moment:first-child { margin-top: 0; }
@@ -67,7 +67,13 @@ section { background: var(--surface); border: 1px solid var(--line); border-radi
 .meta .ligne { display: flex; justify-content: space-between; gap: 6px; color: var(--muted); }
 .fiab { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
 .fiab.haute { color: var(--ok); } .fiab.moyenne { color: var(--warn); } .fiab.basse { color: var(--bad); }
-.plus { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; }
+.note-vocale { width: 100%; height: 100%; display: flex; gap: 8px; align-items: flex-start; padding: 10px 38px 10px 10px; background: var(--surface); text-align: left; }
+.note-vocale .micro { font-size: 20px; line-height: 1; }
+.note-vocale .extrait { font-size: 12px; font-style: italic; color: var(--ink); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; }
+.scene-note { padding: 24px; max-width: 720px; width: 100%; }
+.scene-note audio { width: 100%; }
+.scene-note p { font-size: 16px; line-height: 1.6; color: #eee; white-space: pre-wrap; }
+.plus { z-index: 2; position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 1; }
 .carte.pris .plus { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .avert { margin: 0; padding-left: 18px; color: var(--warn); font-size: 13px; }
 .avert:empty { display: none; }
@@ -106,7 +112,7 @@ input[type=number] { width: 56px; font: inherit; padding: 3px 6px; border: 1px s
 
 <main>
   <div id="vide">
-    <p><strong>Déposez ici un dossier de photos et de vidéos</strong>, ou cliquez sur « Ouvrir un dossier ».</p>
+    <p><strong>Déposez ici un dossier de photos, de vidéos et de notes vocales</strong>, ou cliquez sur « Ouvrir un dossier ».</p>
     <p>Tout reste sur votre ordinateur : rien n'est envoyé en ligne.</p>
   </div>
 
@@ -133,7 +139,8 @@ input[type=number] { width: 56px; font: inherit; padding: 3px 6px; border: 1px s
     </div>
     <p class="note" style="margin-top:0">Un premier tri automatique est déjà appliqué : doublons, vidéos de moins d'une seconde et rafales de photos sont écartés, le reste est mis dans l'ordre de prise de vue.
     « Préparer l'envoi à Claude » télécharge un fichier avec une vignette et les métadonnées de chaque rush. Donnez-le à Claude : il choisit, ordonne et découpe en séquences.
-    Réimportez sa réponse avec « Importer le plan de Claude ».</p>
+    Réimportez sa réponse avec « Importer le plan de Claude ».
+    Les notes vocales transcrites partent avec : Claude s'en sert pour l'angle, les moments forts et le script, mais ne les met pas d'office dans le montage.</p>
   </section>
 
   <section id="secBiblio" class="cache">
@@ -163,6 +170,8 @@ input[type=number] { width: 56px; font: inherit; padding: 3px 6px; border: 1px s
 "use strict";
 const PHOTO = /\.(jpe?g|png|heic|heif|webp|gif|tiff?|dng)$/i;
 const VIDEO = /\.(mp4|mov|m4v|webm|mkv|avi|3gp|mts)$/i;
+const AUDIO = /\.(m4a|mp3|wav|aac|ogg|opus|amr|flac|caf)$/i;
+const nature = n => VIDEO.test(n) ? "video" : AUDIO.test(n) ? "audio" : "photo";
 const $ = s => document.querySelector(s);
 
 let rushes = [];            // { id, file, nom, chemin, nature, date, source, fiab, appareil, duree, l, h, vignette, url }
@@ -308,7 +317,7 @@ function metaNom(nom) {
     const d = utc ? new Date(Date.UTC(p[0], p[1] - 1, p[2], p[3], p[4], p[5])) : new Date(p[0], p[1] - 1, p[2], p[3], p[4], p[5]);
     if (!isNaN(d)) return { date: d, source: "nom du fichier", fiab: "moyenne" };
   }
-  const w = /(?:IMG|VID|AUD)-(\d{4})(\d{2})(\d{2})-WA\d+/.exec(nom);
+  const w = /(?:IMG|VID|AUD|PTT)-(\d{4})(\d{2})(\d{2})-WA\d+/.exec(nom);
   if (w) return { date: new Date(+w[1], w[2] - 1, +w[3]), source: "nom WhatsApp (date seule)", fiab: "basse" };
   return null;
 }
@@ -331,6 +340,15 @@ function infosVideo(r) {
       clearTimeout(t); fin();
     };
     v.onerror = () => { clearTimeout(t); r.illisible = true; fin(); };
+  });
+}
+function infosAudio(r) {
+  return new Promise(res => {
+    const a = document.createElement("audio");
+    a.preload = "metadata"; a.src = r.url;
+    const t = setTimeout(res, 10000);
+    a.onloadedmetadata = () => { if (isFinite(a.duration)) r.duree = a.duration; clearTimeout(t); res(); };
+    a.onerror = () => { clearTimeout(t); res(); };
   });
 }
 function infosPhoto(r) {
@@ -359,12 +377,14 @@ async function file(taches, n) {
 // ---------- chargement du dossier ----------
 async function charger(fichiers, nomDossier) {
   rushes.forEach(r => URL.revokeObjectURL(r.url));
-  const medias = fichiers.filter(f => !f.file.name.startsWith(".") && (PHOTO.test(f.file.name) || VIDEO.test(f.file.name)));
-  if (!medias.length) { alert("Aucune photo ni vidéo dans ce dossier."); return; }
+  const medias = fichiers.filter(f => !f.file.name.startsWith(".") && (PHOTO.test(f.file.name) || VIDEO.test(f.file.name) || AUDIO.test(f.file.name)));
+  if (!medias.length) { alert("Aucune photo, vidéo ni note vocale dans ce dossier."); return; }
+  // transcriptions produites par notes.py : « note.m4a.txt » à côté de « note.m4a »
+  const textes = new Map(fichiers.filter(f => /\.txt$/i.test(f.file.name)).map(f => [(f.chemin || f.file.name), f.file]));
   dossier = nomDossier || "dossier";
   rushes = medias.map((f, i) => ({
     id: "r" + i, file: f.file, nom: f.file.name, chemin: f.chemin || f.file.name,
-    nature: VIDEO.test(f.file.name) ? "video" : "photo", url: URL.createObjectURL(f.file),
+    nature: nature(f.file.name), url: URL.createObjectURL(f.file),
     taille: f.file.size, modif: f.file.lastModified,
   }));
   montage = []; ecartes = new Set();
@@ -375,11 +395,15 @@ async function charger(fichiers, nomDossier) {
   progression();
   await file(rushes.map(r => async () => {
     let m = {};
-    try { m = r.nature === "video" ? await metaVideo(r.file) : await metaPhoto(r.file); } catch (e) {}
+    try { m = r.nature === "photo" ? await metaPhoto(r.file) : /\.(mp4|mov|m4v|3gp|m4a)$/i.test(r.nom) ? await metaVideo(r.file) : {}; } catch (e) {}
+    if (r.nature === "audio") {
+      const t = textes.get(r.chemin + ".txt") || textes.get(r.chemin.replace(/\.[^./]+$/, ".txt"));
+      if (t) r.transcription = (await t.text()).trim();
+    }
     if (!m.date) { const n = metaNom(r.nom); if (n) m = { ...m, ...n }; }
     if (!m.date) m = { ...m, date: new Date(r.modif), source: "date du fichier", fiab: "basse" };
     Object.assign(r, m);
-    await (r.nature === "video" ? infosVideo(r) : infosPhoto(r));
+    await (r.nature === "video" ? infosVideo(r) : r.nature === "audio" ? infosAudio(r) : infosPhoto(r));
     faits++; progression();
     if (faits % 12 === 0) rendre();
   }), 3);
@@ -455,7 +479,7 @@ function triAuto() {
       dernierePhoto = r;
     }
   }
-  montage = tries.filter(r => !ecartes.has(r.id)).map(r => r.id);
+  montage = tries.filter(r => !ecartes.has(r.id) && r.nature !== "audio").map(r => r.id);
 }
 
 $("#chrono").onclick = () => { montage.sort((a, b) => chrono(byId(a), byId(b))); rendre(); };
@@ -482,6 +506,9 @@ const duree = s => s == null ? "" : s < 60 ? s.toFixed(1).replace(".", ",") + " 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 function vignetteHTML(r) {
+  if (r.nature === "audio") return `<div class="note-vocale"><span class="micro" aria-hidden="true">🎙</span>
+    <span class="extrait">${r.transcription ? "« " + esc(r.transcription.slice(0, 140)) + (r.transcription.length > 140 ? "…" : "") + " »" : "Note vocale · pas encore transcrite"}</span></div>`
+    + (r.duree ? `<span class="badge">${duree(r.duree)}</span>` : "");
   const img = r.vignette ? `<img src="${r.vignette}" alt="" loading="lazy">`
     : `<span class="ph">${r.illisible ? esc(r.nom.split(".").pop().toUpperCase()) + " · pas d'aperçu ici" : "…"}</span>`;
   return img + (r.nature === "video" ? (r.vignette ? `<span class="lire">▶</span>` : "") + (r.duree ? `<span class="badge">${duree(r.duree)}</span>` : "") : "");
@@ -514,7 +541,8 @@ function rendre() {
   let h = groupes.map((g, i) => {
     const d = g[0].date, f = g[g.length - 1].date;
     const dv = g.filter(r => r.nature === "video").reduce((s, r) => s + (r.duree || 0), 0);
-    return `<div class="moment"><h3>Moment ${i + 1} · ${jour(d)}, ${heure(d).slice(0, 5)} → ${heure(f).slice(0, 5)} <span>· ${g.length} rushes${dv ? " · " + duree(dv) + " de vidéo" : ""}</span></h3>
+    const nn = g.filter(r => r.nature === "audio").length;
+    return `<div class="moment"><h3>Moment ${i + 1} · ${jour(d)}, ${heure(d).slice(0, 5)} → ${heure(f).slice(0, 5)} <span>· ${g.length} rushes${dv ? " · " + duree(dv) + " de vidéo" : ""}${nn ? " · 🎙 " + nn + " note" + (nn > 1 ? "s" : "") : ""}</span></h3>
       <div class="grille">${g.map(carteHTML).join("")}</div></div>`;
   }).join("");
   if (aPlacer.length) h += `<div class="moment"><h3>À placer à la main <span>· pas d'heure de prise de vue fiable</span></h3><div class="grille">${aPlacer.map(carteHTML).join("")}</div></div>`;
@@ -530,14 +558,16 @@ function rendre() {
 
   const dMontage = montage.reduce((s, id) => s + (byId(id).duree || 0), 0);
   $("#statMontage").textContent = `${montage.length} rushes${dMontage ? " · " + duree(dMontage) + " de vidéo" : ""}`;
-  const nv = rushes.filter(r => r.nature === "video").length;
-  $("#stat").textContent = `${dossier} · ${nv} vidéos, ${rushes.length - nv} photos`;
+  const nb = k => rushes.filter(r => r.nature === k).length;
+  $("#stat").textContent = `${dossier} · ${nb("video")} vidéos, ${nb("photo")} photos` + (nb("audio") ? `, ${nb("audio")} notes vocales` : "");
 
   const av = [];
   if (aPlacer.length) av.push(`${aPlacer.length} rush(es) sans heure fiable : ils restent hors chronologie.`);
   if (rushes.some(r => /-WA\d+/.test(r.nom))) av.push("Des fichiers sont passés par WhatsApp, qui efface les métadonnées. Demandez les originaux.");
   const app = [...new Set(rushes.map(r => r.appareil).filter(Boolean))];
   if (app.length > 1) av.push(`Plusieurs appareils (${app.join(", ")}) : leurs horloges peuvent différer de quelques minutes.`);
+  const muettes = rushes.filter(r => r.nature === "audio" && !r.transcription).length;
+  if (muettes) av.push(`${muettes} note(s) vocale(s) sans transcription : lancez « python3 00_pipeline/notes.py » sur ce dossier, puis rouvrez-le.`);
   if (rushes.some(r => r.illisible)) av.push("Certains fichiers n'ont pas d'aperçu dans ce navigateur : photos HEIC (lisibles dans Safari), ou codec vidéo non pris en charge (utilisez Chrome, Edge ou Safari à jour).");
   if (ecartes.size) av.push(`${ecartes.size} rush(es) écarté(s) par le tri automatique, grisés (survolez pour la raison).`);
   $("#avert").innerHTML = av.map(a => `<li>${esc(a)}</li>`).join("");
@@ -591,6 +621,8 @@ function voir(id) {
   courant = id; const r = byId(id);
   $("#scene").innerHTML = r.nature === "video"
     ? `<video src="${r.url}" controls autoplay playsinline></video>`
+    : r.nature === "audio"
+    ? `<div class="scene-note"><audio src="${r.url}" controls autoplay></audio><p>${r.transcription ? esc(r.transcription) : "<em>Pas encore transcrite.</em>"}</p></div>`
     : `<img src="${r.url}" alt="${esc(r.nom)}">`;
   const src = r.source ? ` · date : ${r.source} (${r.fiab})` : "";
   $("#legende").textContent = `${r.chemin} · ${r.date ? jour(r.date) + " " + heure(r.date) : ""}${r.duree ? " · " + duree(r.duree) : ""}${r.l ? " · " + r.l + "×" + r.h : ""}${r.appareil ? " · " + r.appareil : ""}${src}`;
@@ -623,6 +655,7 @@ const fiche = r => ({
   heure_locale: r.date ? jour(r.date) + " " + heure(r.date) : null,
   source_date: r.source, fiabilite: r.fiab, appareil: r.appareil || null,
   duree_s: r.duree != null ? +r.duree.toFixed(2) : null, format: r.l ? `${r.l}x${r.h}` : null,
+  ...(r.nature === "audio" ? { transcription: r.transcription || null } : {}),
 });
 
 $("#exporter").onclick = () => {
@@ -645,11 +678,17 @@ $("#exportClaude").onclick = () => {
   telecharger("rushes-pour-claude.json", {
     consigne: "Voici l'inventaire de mes rushes, avec une vignette par fichier (première image pour les vidéos). " +
       "Propose un plan de montage : choisis les rushes utiles, ordonne-les, découpe en séquences (titre, description, rushes_utiles, manquants), " +
-      "donne un ancrage et une chute, et liste tes avertissements. Réponds avec un JSON au format du champ 'format_reponse'.",
+      "donne un ancrage et une chute, et liste tes avertissements. " +
+      "Les notes vocales (nature 'audio') sont mon ressenti enregistré sur le moment : sers-t'en pour l'angle, pour choisir les moments forts " +
+      "et pour écrire le script ; signale les phrases qui feraient une bonne voix off (fichier + citation exacte). " +
+      "Les faits qu'elles citent (noms, chiffres, dates) sont à vérifier, ne les tiens pas pour acquis. " +
+      "Réponds avec un JSON au format du champ 'format_reponse'.",
     format_reponse: { titre: "", accroche: "", angle: "", ancrage: "", chute: "",
-      sequences: [{ titre: "", description: "", duree_s: 0, rushes_utiles: ["chemin/du/fichier"], manquants: [] }], ecartes: [{ fichier: "", raison: "" }], avertissements: [] },
+      sequences: [{ titre: "", description: "", duree_s: 0, rushes_utiles: ["chemin/du/fichier"], manquants: [] }],
+      voix_off_possibles: [{ fichier: "", citation: "" }], ecartes: [{ fichier: "", raison: "" }], avertissements: [] },
     dossier, tri_automatique: montage.map(id => byId(id).chemin),
     rushes: [...rushes].sort(chrono).map(r => ({ ...fiche(r), ecarte_par_tri_auto: ecartes.has(r.id) ? r.raison : null, vignette_jpeg: r.vignette || null })),
+    carnet_de_bord: [...rushes].filter(r => r.nature === "audio").sort(chrono).map(r => ({ heure: r.fiab !== "basse" ? heure(r.date).slice(0, 5) : "inconnue", fichier: r.chemin, transcription: r.transcription || null })),
   });
 };
 

@@ -18,6 +18,8 @@ Ce processus reprend celui du studio journalistique (`studio-cultura-sabauda`), 
 
 ### L'atelier : la vue d'ensemble
 
+*Si le dossier est sur Google Drive, installez « Google Drive pour ordinateur » : le dossier apparaît alors comme un dossier ordinaire, et l'atelier l'ouvre directement.*
+
 Ouvrez `00_pipeline/atelier/index.html` dans Chrome, Edge ou Safari. Il n'y a rien à installer, et les fichiers restent sur votre ordinateur.
 
 - **Ouvrir un dossier**, ou le glisser sur la page. Toutes les photos et vidéos apparaissent, sous-dossiers compris, regroupées en moments de tournage.
@@ -30,6 +32,41 @@ Ouvrez `00_pipeline/atelier/index.html` dans Chrome, Edge ou Safari. Il n'y a ri
 - **Exporter le plan** : produit un `plan.json` au format de l'étape 2.
 
 L'ordre du montage est gardé dans le navigateur d'une session à l'autre.
+
+### Les notes vocales : le ressenti sur le moment
+
+Sur place, on ne sent pas les choses comme derrière l'ordinateur. Une note vocale enregistrée sur le moment garde ce ressenti. Elle est horodatée, comme une photo, donc elle se range toute seule dans le moment qu'elle commente.
+
+**Sur place**, enregistrez dans le même dossier que les rushes (Dictaphone de l'iPhone, Enregistreur Android) :
+
+- **ce que vous ressentez**, l'ambiance, l'odeur, le bruit, ce qui vous surprend : c'est la matière du script ;
+- **ce qui compte** : « là, c'est le moment fort », « ce plan-là, c'est l'ouverture » ;
+- **les noms, en les épelant**, et les chiffres entendus : on les vérifiera, mais au moins on les aura.
+
+Envoyez les notes **en fichier** (AirDrop, Drive, câble), **pas par WhatsApp**, qui efface l'heure d'enregistrement.
+
+**De retour à l'ordinateur**, on transcrit sur la machine, sans rien envoyer en ligne :
+
+```
+pip install faster-whisper
+python3 00_pipeline/notes.py DOSSIER --mots "Terra Madre, Slow Food, piémontais, tomme"
+```
+
+- `--mots` donne d'avance les noms propres du lieu, qui sont alors bien mieux reconnus.
+- Le script écrit un `.txt` à côté de chaque note. Vous pouvez le corriger à la main : il ne sera plus écrasé.
+- Il produit aussi un `carnet-de-bord.md` : toutes les notes dans l'ordre, avec leur heure.
+
+**Dans l'atelier**, chaque note s'affiche dans son moment, avec son extrait. Le lecteur joue l'audio et montre le texte entier.
+
+**À quoi elles servent :**
+
+| Étape | Usage de la note |
+|---|---|
+| Plan (étape 2) | l'angle, et le choix des moments forts (« c'est le moment fort de la journée ») |
+| Script | les mots de l'auteur plutôt que ceux de l'IA |
+| Montage | une vraie voix off, puisque la note elle-même peut être montée : Claude signale les phrases qui s'y prêtent |
+
+Les faits qu'une note cite (noms, chiffres, dates) sont **à vérifier**, comme une source. Une note est un témoignage, pas une preuve : c'est la règle « pas de faits inventés ».
 
 ### Le script : la même lecture, en ligne de commande
 
