@@ -111,6 +111,16 @@ Resolve ne tourne que sur un ordinateur avec une bonne carte graphique, hors du 
 | 10.8 | Coupée par défaut ; aperçu avant/après, réglage d'intensité, désactivable plan par plan. | ○ |
 | 10.9 | Uniquement sur le face-caméra du journaliste qui l'active, jamais sur une personne interviewée ni une image d'événement ; notée dans l'historique des versions. | ○ |
 
+## 11. Claude Code dans le studio (Managed Agents, choisi le 27/09)
+
+| # | Spécification | État |
+|---|---|---|
+| 11.1 | Pour une demande ouverte (« fais un générique animé », « invente une transition »), le studio ouvre une session Managed Agents sur le projet. | ○ |
+| 11.2 | Chaque session a un plafond en dollars (`budget.max_list_cost`, 2 $ pour commencer) ; arrivée au plafond, elle se met en pause sans rien perdre. Coût : tokens au tarif de l'API + 0,08 $ par heure de conteneur. | ○ |
+| 11.3 | L'agent peut appeler les outils précis du studio (rendre une séquence, appliquer le LUT, flouter un visage) en plus du terminal. | ○ |
+| 11.4 | Il travaille sur une copie et produit une nouvelle version signée « Claude », validée par vous comme les autres ; il ne touche jamais aux rushes d'origine. | ○ |
+| 11.5 | Préconisé : bac à sable auto-hébergé (`config: {type: "self_hosted"}`) sur le serveur Hostinger ; l'agent tourne chez Anthropic, ffmpeg et les scripts chez vous, les rushes ne quittent pas votre infrastructure. | ○ |
+
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
 Tous `○`. À valider un par un.
@@ -144,6 +154,7 @@ Tous `○`. À valider un par un.
 | 8.9 | Deux journalistes sur la même vidéo : un à la fois avec passage de relais, ou en même temps ? | Un à la fois : « Marie édite en ce moment », bouton « Prendre le relais » qui la prévient. Aucun conflit, bien plus simple que l'édition simultanée. |
 | 8.10 | DaVinci Resolve pour l'étalonnage ? | **Tranché le 27/09 : non.** Traitements sur le serveur du studio (§ 10). |
 | 8.11 | Correction du regard vers la caméra ? | **Demandée le 27/09 : option à activer**, coupée par défaut, seulement sur le face-caméra du journaliste (§ 10.7 à 10.9). |
+| 8.12 | La puissance de Claude Code dans le studio : comment ? | **Choisi le 27/09 : Managed Agents (C).** Préconisé : avec le bac à sable sur votre serveur (D), pour que les rushes restent chez vous (§ 11). |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
