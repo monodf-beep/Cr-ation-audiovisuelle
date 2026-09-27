@@ -165,6 +165,21 @@ L'atelier (`00_pipeline/atelier/`) choisit et ordonne les rushes et produit `pla
 | 14.6 | Une banque par média, étiquettes par projet et par journaliste : rien ne fuit d'un client à l'autre. | ○ |
 | 14.7 | Panneau « Transparence » : ce que Claude lit (doctrine, mémoire, voix), fichier par fichier. | ○ |
 
+## 15. Votre carnet : références, moodboards, documents, principes (votre demande du 27/09)
+
+**Obsidian et Drive stockent, le studio relie.** Obsidian : vos notes en texte, déjà synchronisées sur votre serveur (CouchDB, à côté du studio). Drive : vos fichiers (PDF, vidéos, captures, formations achetées, prompts, méthodes). Le studio lit les deux par connecteur, fabrique des vignettes, et garde seulement les liens entre les éléments et les projets. Il n'écrit jamais chez vous, et vous restez propriétaire.
+
+| # | Spécification | État |
+|---|---|---|
+| 15.1 | Le carnet relie, il ne stocke pas : notes dans Obsidian, fichiers dans Drive, le studio indexe. | ○ |
+| 15.2 | Quatre types : référence (lien + votre capture + « pourquoi j'aime ça » + contexte), document (fichier Drive), moodboard (collection rattachée à un projet ou un brief), principe (règle en brouillon avec son contexte). | ○ |
+| 15.3 | Une référence sans note « pourquoi » n'est pas acceptée : la note a la valeur, le lien meurt. | ○ |
+| 15.4 | Étiquette portée : personnel (vous seul et votre Claude), média, réseau. | ○ |
+| 15.5 | Étiquette protégé pour le contenu payé : le studio n'en garde que vos notes, jamais le contenu ; rien n'en passe dans un produit vendu ni dans la doctrine d'un autre média. | ○ |
+| 15.6 | Un savoir acheté (ex. humains générés ultra-réalistes) peut servir à un B-roll d'illustration dans une rédaction, sous la règle de sortie : image générée signalée, jamais un fait, un lieu ou une personne réels. La règle porte sur l'image produite, pas sur la source du savoir. | ○ |
+| 15.7 | Chaque carte affiche « utilisé dans » (brief, plan, règle) ; un moodboard non rattaché est signalé comme orphelin. | ○ |
+| 15.8 | Grille de cartes avec vignettes, filtres par contexte, type, portée ; un principe se promeut en règle par la voie 14.3. | ○ |
+
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
 Tous `○`. À valider un par un.
@@ -202,6 +217,7 @@ Tous `○`. À valider un par un.
 | 8.13 | Votre propre Claude branché sur le studio ? | Oui : le studio devient un connecteur MCP, votre Claude garde contexte, skills, connecteurs et forfait ; le studio garde les validations (§ 12). |
 | 8.14 | Higgsfield dans le studio ? | Intégré par l'API Higgsfield (paiement à l'usage, environ 5 $ les 100 crédits ; image Nano Banana Pro ≈ 2 crédits, vidéo 8 s ≈ 14), crédits refacturés avec plafond par client ; conditions de revente à vérifier. |
 | 8.15 | Génération et calculs : fal.ai ou Higgsfield ? | Les deux, chacun à sa place : fal.ai dans le studio (1 000+ modèles à l'usage, et nos propres traitements comme la correction du regard ou le floutage hébergés sur GPU à la seconde, sans louer de serveur) ; Higgsfield par votre propre Claude pour vos créations. |
+| 8.16 | Votre carnet : construit dans le studio, ou indexé depuis Drive et Obsidian ? | Indexé : ne pas construire un quatrième endroit où écrire (§ 15). |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
