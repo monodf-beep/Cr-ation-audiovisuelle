@@ -1,6 +1,6 @@
 # Studio vidéo — spécifications à valider
 
-Version 1.1, 27 septembre 2026. Chaque point est numéroté pour que la validation puisse dire « tout sauf le 3.2 ».
+Version 1.2, 27 septembre 2026. Page de décision : https://claude.ai/artifact/4hNsiGBoGukLUoBq8Qu9NK Chaque point est numéroté pour que la validation puisse dire « tout sauf le 3.2 ».
 
 `✔` existe et testé · `◐` existe, à vérifier sur de vrais fichiers · `○` proposé, pas encore fait
 
@@ -13,7 +13,7 @@ Version 1.1, 27 septembre 2026. Chaque point est numéroté pour que la validati
 | 1.1 | Le studio vidéo suit le processus du studio journalistique : matière → brief → **plan proposé** → validation humaine → réalisation → retours → finalisation. | ✔ |
 | 1.2 | **Rien ne se monte ni ne se génère avant un plan validé.** C'est la gate principale. | ✔ (règle écrite) |
 | 1.3 | Aucune sortie ne part sans validation humaine (équivalent de la règle 117 du studio). | ✔ (règle écrite) |
-| 1.4 | Tout reste sur l'ordinateur : aucun fichier n'est envoyé en ligne sans action explicite. | ✔ |
+| 1.4 | Tout reste sur l'ordinateur : aucun fichier n'est envoyé en ligne sans action explicite. | ✔ · **à réécrire après 8.1** (si 8.5 = Drive : « les rushes restent dans Drive, le studio ne garde que le léger ») |
 | 1.5 | Le studio journalistique n'est pas modifié. Un portage éventuel viendra après. | ✔ |
 
 ## 2. Matière : le dossier de rushes
@@ -104,9 +104,11 @@ Tous `○`. À valider un par un.
 
 | # | Question | Ma proposition |
 |---|---|---|
-| 8.1 | Où vit l'atelier à terme : page locale, ou écran dans le studio ? | Page locale tant que les vidéos restent lourdes ; portage dans le studio quand le mode Claude direct (4.9) sera voulu. |
+| 8.1 | Où vit l'atelier à terme : page locale, ou écran dans le studio ? | **Tranché le 27/09 : dans le studio.** La plateforme doit être utilisable par d'autres personnes, comme le studio journalistique. La page locale reste comme prototype. |
 | 8.2 | Le mode Claude direct (4.9) : par le studio (fonctions Supabase existantes) ou par une clé API dans la page ? | Par le studio, pour ne pas mettre de clé dans une page locale. |
 | 8.3 | Faut-il un vrai montage (export vidéo) depuis l'atelier, ou seulement le plan ? | Seulement le plan pour l'instant ; le montage reste dans les scripts `04_montage/`. |
+| 8.5 | Où restent les rushes : dans Google Drive, ou envoyés dans le stockage du studio ? | Dans Drive. Le studio lit le dossier et ne garde que le léger (vignettes, heures, transcriptions) : aucun envoi de Go depuis le terrain. |
+| 8.6 | Un module « Vidéo » dans le studio existant, ou une application séparée ? | Un module dans le studio : mêmes comptes, mêmes voix, mêmes fonctions Claude, parcours articles inchangé. |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
