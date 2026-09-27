@@ -14,6 +14,15 @@ Ce processus reprend celui du studio journalistique (`studio-cultura-sabauda`), 
 
 ---
 
+## Documents de décision et argumentaire
+
+Deux pages, hors dépôt, servent à décider et à vendre le studio. Elles sont privées tant qu'elles ne sont pas partagées.
+
+- **Décisions** : les seize questions, les préconisations, les specs, la veille, et huit maquettes d'écran (projets, rushes rangés, plan à valider, table de montage, Claude travaille, versions et sortie, carnet, doctrine). Les choix sont enregistrés dans la page. https://claude.ai/artifact/4hNsiGBoGukLUoBq8Qu9NK
+- **Page d'accueil** : l'argumentaire tel qu'on le présenterait à une rédaction ou à un réseau, en trois piliers (humain, méthode, techno), avec la comparaison honnête et le programme pilote. https://claude.ai/artifact/62MgSXKC57go7cZKSdwQQo
+
+---
+
 ## 0. Rushes — l'équivalent des sujets proposés
 
 ### L'atelier : la vue d'ensemble
