@@ -95,6 +95,19 @@ Tous `○`. Calqué sur le studio journalistique (comptes sur invitation, rôles
 | 9.6 | Chaque version porte son auteur : on sait qui a changé quoi, et on peut revenir à une version. | ○ |
 | 9.7 | Les voix (VOIX.md) et les bibles appartiennent au média : tous ses journalistes les partagent. | ○ |
 
+## 10. Traitements sur le serveur (DaVinci écarté le 27/09)
+
+Resolve ne tourne que sur un ordinateur avec une bonne carte graphique, hors du studio en ligne, et Claude ne peut pas le piloter. Les traitements se font donc sur le serveur du studio : un navigateur suffit, et ils marchent aussi en mode « Je fais confiance ».
+
+| # | Spécification | État |
+|---|---|---|
+| 10.1 | Look commun en LUT (`03_etalonnage/look-pellicule.cube`, généré par `lut.py` depuis `filmlook.split_tone`) : écart avec le script ≤ 3/255, lu par ffmpeg (`lut3d`). | ✔ |
+| 10.2 | Couleurs accordées entre appareils : balance des blancs et exposition corrigées plan par plan, sur un plan de référence. | ○ |
+| 10.3 | Visages floutés automatiquement là où le cadrage ne suffit pas. | ○ |
+| 10.4 | Voix des notes vocales nettoyée (bruit de fond) et volume mis à niveau. | ○ |
+| 10.5 | Stabilisation des images de téléphone. | ○ |
+| 10.6 | Grain, halation et vignettage appliqués après le LUT, comme dans `filmlook.py` (un LUT ne porte que la couleur pixel par pixel). | ○ |
+
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
 Tous `○`. À valider un par un.
@@ -126,6 +139,7 @@ Tous `○`. À valider un par un.
 | 8.7 | Deux modes de travail ? | **Proposé par vous le 27/09 : deux modes.** « Je maîtrise » : toutes les étapes, vous validez le plan. « Je fais confiance » : Claude fait brief, plan et montage, vous corrigez la vidéo en texte (« plus court », « retire le plan 7 »). Dans les deux modes, le plan existe (Claude applique vos demandes dessus, vous pouvez reprendre la main) et rien ne sort sans votre accord final (1.3). |
 | 8.8 | Qui voit un projet vidéo : tout le média, ou le créateur et les journalistes qu'il ajoute ? | Le créateur et les membres ajoutés, les admins du média voient tout. C'est le modèle des articles, qui appartiennent à leur auteur. |
 | 8.9 | Deux journalistes sur la même vidéo : un à la fois avec passage de relais, ou en même temps ? | Un à la fois : « Marie édite en ce moment », bouton « Prendre le relais » qui la prévient. Aucun conflit, bien plus simple que l'édition simultanée. |
+| 8.10 | DaVinci Resolve pour l'étalonnage ? | **Tranché le 27/09 : non.** Traitements sur le serveur du studio (§ 10). |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
