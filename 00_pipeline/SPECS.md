@@ -132,7 +132,7 @@ Tous `○`. À valider un par un.
 | # | Question | Ma proposition |
 |---|---|---|
 | 8.1 | Où vit l'atelier à terme : page locale, ou écran dans le studio ? | **Tranché le 27/09 : dans le studio.** La plateforme doit être utilisable par d'autres personnes, comme le studio journalistique. La page locale reste comme prototype. |
-| 8.2 | Le mode Claude direct (4.9) : par le studio (fonctions Supabase existantes) ou par une clé API dans la page ? | Par le studio, pour ne pas mettre de clé dans une page locale. |
+| 8.2 | Comment le studio fait appel à Claude, et combien ça coûte ? | Les deux : l'API du studio par défaut (même clé et même facture que les articles ; environ 0,30 à 0,50 $ par vidéo, un plan à 0,12 $ puis 3 à 5 corrections à 0,06 $, estimation à mesurer), et l'export gratuit « Préparer l'envoi à Claude » gardé en secours, via le forfait de chacun. Un forfait personnel ne peut pas servir de moteur à une plateforme multi-comptes. |
 | 8.3 | Faut-il un vrai montage (export vidéo) depuis l'atelier, ou seulement le plan ? | Seulement le plan pour l'instant ; le montage reste dans les scripts `04_montage/`. |
 | 8.5 | Où restent les rushes : dans Google Drive, ou envoyés dans le stockage du studio ? | Dans Drive. Le studio lit le dossier et ne garde que le léger (vignettes, heures, transcriptions) : aucun envoi de Go depuis le terrain. |
 | 8.6 | Un module « Vidéo » dans le studio existant, ou une application séparée ? | Un module dans le studio : mêmes comptes, mêmes voix, mêmes fonctions Claude, parcours articles inchangé. |
