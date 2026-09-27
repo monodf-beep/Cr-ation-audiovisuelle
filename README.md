@@ -2,6 +2,8 @@
 
 Projets vidéo et contenus visuels.
 
+**Processus commun à toutes les vidéos** : [`00_pipeline/`](00_pipeline/README.md). On commence par l'inventaire des rushes et leurs métadonnées (`rushes.py`, qui propose un ordre chronologique), puis un plan validé avant tout montage ou toute génération, sur le modèle du studio journalistique.
+
 ## Projet en cours — FC CLUSA « CHAMPIONS 26 »
 
 Publicité de présentation du maillot commémoratif du titre R2 LAuRAFoot du FC Cluses.
