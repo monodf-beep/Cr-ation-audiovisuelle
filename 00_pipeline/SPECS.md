@@ -107,7 +107,7 @@ Resolve ne tourne que sur un ordinateur avec une bonne carte graphique, hors du 
 | 10.4 | Voix des notes vocales nettoyée (bruit de fond) et volume mis à niveau. | ○ |
 | 10.5 | Stabilisation des images de téléphone. | ○ |
 | 10.6 | Grain, halation et vignettage appliqués après le LUT, comme dans `filmlook.py` (un LUT ne porte que la couleur pixel par pixel). | ○ |
-| 10.7 | Correction du regard vers la caméra (NVIDIA Maxine Eye Contact), sur un serveur à carte NVIDIA loué à la demande, seulement le temps du traitement. À tester sur une vraie prise (lunettes, lumière, mouvements de tête). | ○ |
+| 10.7 | Correction du regard vers la caméra, par un modèle hébergé sur fal.ai (GPU facturé à la seconde) plutôt qu'un serveur loué ; en attendant, CapCut le fait gratuitement pour le face-caméra du journaliste. À tester sur une vraie prise (lunettes, lumière, mouvements de tête). | ○ |
 | 10.8 | Coupée par défaut ; aperçu avant/après, réglage d'intensité, désactivable plan par plan. | ○ |
 | 10.9 | Uniquement sur le face-caméra du journaliste qui l'active, jamais sur une personne interviewée ni une image d'événement ; notée dans l'historique des versions. | ○ |
 
@@ -201,6 +201,7 @@ Tous `○`. À valider un par un.
 | 8.12 | La puissance de Claude Code dans le studio : comment ? | **Choisi le 27/09 : Managed Agents (C).** Préconisé : avec le bac à sable sur votre serveur (D), pour que les rushes restent chez vous (§ 11). |
 | 8.13 | Votre propre Claude branché sur le studio ? | Oui : le studio devient un connecteur MCP, votre Claude garde contexte, skills, connecteurs et forfait ; le studio garde les validations (§ 12). |
 | 8.14 | Higgsfield dans le studio ? | Intégré par l'API Higgsfield (paiement à l'usage, environ 5 $ les 100 crédits ; image Nano Banana Pro ≈ 2 crédits, vidéo 8 s ≈ 14), crédits refacturés avec plafond par client ; conditions de revente à vérifier. |
+| 8.15 | Génération et calculs : fal.ai ou Higgsfield ? | Les deux, chacun à sa place : fal.ai dans le studio (1 000+ modèles à l'usage, et nos propres traitements comme la correction du regard ou le floutage hébergés sur GPU à la seconde, sans louer de serveur) ; Higgsfield par votre propre Claude pour vos créations. |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
