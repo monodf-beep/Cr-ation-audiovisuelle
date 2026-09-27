@@ -121,6 +121,20 @@ Resolve ne tourne que sur un ordinateur avec une bonne carte graphique, hors du 
 | 11.4 | Il travaille sur une copie et produit une nouvelle version signée « Claude », validée par vous comme les autres ; il ne touche jamais aux rushes d'origine. | ○ |
 | 11.5 | Préconisé : bac à sable auto-hébergé (`config: {type: "self_hosted"}`) sur le serveur Hostinger ; l'agent tourne chez Anthropic, ffmpeg et les scripts chez vous, les rushes ne quittent pas votre infrastructure. | ○ |
 
+## 12. Votre Claude branché sur le studio (votre idée du 27/09)
+
+Le studio devient un connecteur de Claude (serveur MCP), comme l'Agenda Sabauda. Chaque journaliste garde son Claude, avec sa mémoire, ses skills et ses connecteurs, et son forfait. Le studio est le cadre : il n'expose que des outils autorisés et garde les validations.
+
+| # | Spécification | État |
+|---|---|---|
+| 12.1 | Le studio expose un connecteur MCP sur votre serveur, avec connexion par compte du studio, comme l'Agenda Sabauda. | ○ |
+| 12.2 | Outils : lister projets et rushes, lire métadonnées, vignettes et transcriptions, proposer un plan en brouillon, lancer un rendu, appliquer le LUT ou la correction du regard, comparer les versions, commenter. | ○ |
+| 12.3 | Aucun outil de validation : le plan validé et la sortie validée restent des clics humains dans l'interface, garantis par le serveur. | ○ |
+| 12.4 | Chaque action faite par Claude via le connecteur crée une version signée « Claude pour [journaliste] », visible dans l'historique. | ○ |
+| 12.5 | Une skill « Studio vidéo » emballe le processus (étapes, bibles, fiche de plan, relecture). | ○ |
+| 12.6 | Chaque journaliste utilise son propre forfait Claude ; l'API du studio ne sert qu'au Claude intégré à l'interface. | ○ |
+| 12.7 | Premier pas : un connecteur local qui transforme `rushes.py`, `notes.py` et `lut.py` en outils, à tester sur Terra Madre depuis Claude Code. | ○ |
+
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
 Tous `○`. À valider un par un.
@@ -155,6 +169,7 @@ Tous `○`. À valider un par un.
 | 8.10 | DaVinci Resolve pour l'étalonnage ? | **Tranché le 27/09 : non.** Traitements sur le serveur du studio (§ 10). |
 | 8.11 | Correction du regard vers la caméra ? | **Demandée le 27/09 : option à activer**, coupée par défaut, seulement sur le face-caméra du journaliste (§ 10.7 à 10.9). |
 | 8.12 | La puissance de Claude Code dans le studio : comment ? | **Choisi le 27/09 : Managed Agents (C).** Préconisé : avec le bac à sable sur votre serveur (D), pour que les rushes restent chez vous (§ 11). |
+| 8.13 | Votre propre Claude branché sur le studio ? | Oui : le studio devient un connecteur MCP, votre Claude garde contexte, skills, connecteurs et forfait ; le studio garde les validations (§ 12). |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
