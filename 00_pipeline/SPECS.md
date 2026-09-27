@@ -81,6 +81,20 @@ Version 1.2, 27 septembre 2026. Page de décision : https://claude.ai/artifact/4
 | 6.5 | Relecture en 8 points avant livraison (ordre, faits, textes à l'écran, saison, lieu, visages, public, ancrage/chute). | ✔ |
 | 6.6 | Un retour qui revient deux fois devient une règle dans la bible concernée. | ✔ (règle) |
 
+## 9. Comptes et collaboration (votre demande du 27/09)
+
+Tous `○`. Calqué sur le studio journalistique (comptes sur invitation, rôles, journalistes rattachés à un média), avec en plus le projet partagé.
+
+| # | Spécification | État |
+|---|---|---|
+| 9.1 | Chaque journaliste a son compte, sur invitation, comme dans le studio articles (les mêmes comptes si 8.6 = module). | ○ |
+| 9.2 | Un projet vidéo appartient à un média ; son créateur peut y ajouter d'autres journalistes. | ○ |
+| 9.3 | Rushes, notes vocales, plan et versions sont partagés entre les membres du projet. | ○ |
+| 9.4 | Un seul journaliste édite à la fois ; les autres voient qui édite et peuvent commenter. | ○ |
+| 9.5 | Prendre le relais : un bouton qui prévient l'éditeur en cours ; la main passe sans rien perdre. | ○ |
+| 9.6 | Chaque version porte son auteur : on sait qui a changé quoi, et on peut revenir à une version. | ○ |
+| 9.7 | Les voix (VOIX.md) et les bibles appartiennent au média : tous ses journalistes les partagent. | ○ |
+
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
 Tous `○`. À valider un par un.
@@ -110,6 +124,8 @@ Tous `○`. À valider un par un.
 | 8.5 | Où restent les rushes : dans Google Drive, ou envoyés dans le stockage du studio ? | Dans Drive. Le studio lit le dossier et ne garde que le léger (vignettes, heures, transcriptions) : aucun envoi de Go depuis le terrain. |
 | 8.6 | Un module « Vidéo » dans le studio existant, ou une application séparée ? | Un module dans le studio : mêmes comptes, mêmes voix, mêmes fonctions Claude, parcours articles inchangé. |
 | 8.7 | Deux modes de travail ? | **Proposé par vous le 27/09 : deux modes.** « Je maîtrise » : toutes les étapes, vous validez le plan. « Je fais confiance » : Claude fait brief, plan et montage, vous corrigez la vidéo en texte (« plus court », « retire le plan 7 »). Dans les deux modes, le plan existe (Claude applique vos demandes dessus, vous pouvez reprendre la main) et rien ne sort sans votre accord final (1.3). |
+| 8.8 | Qui voit un projet vidéo : tout le média, ou le créateur et les journalistes qu'il ajoute ? | Le créateur et les membres ajoutés, les admins du média voient tout. C'est le modèle des articles, qui appartiennent à leur auteur. |
+| 8.9 | Deux journalistes sur la même vidéo : un à la fois avec passage de relais, ou en même temps ? | Un à la fois : « Marie édite en ce moment », bouton « Prendre le relais » qui la prévient. Aucun conflit, bien plus simple que l'édition simultanée. |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
