@@ -16,7 +16,9 @@ for prise in "$DEPOT"/*/voix-off/*.webm "$DEPOT"/*/voix-off/*.mp4; do
   sortie="$dossier/$(basename "${prise%.*}")-lumiere.mp4"
   [ -f "$sortie" ] && continue
   # Seulement les prises filmees, et pas une prise encore en cours d'envoi (modifiee il y a moins d'une minute).
-  ffprobe -v error -select_streams v -show_entries stream=codec_type -of csv=p=0 "$prise" | grep -q video || continue
+  # Prises vides ou abimees (premiers essais de l'enregistreur) : ignorees sans bruit dans le journal.
+  [ "$(stat -c %s "$prise")" -gt 100000 ] || continue
+  ffprobe -v quiet -select_streams v -show_entries stream=codec_type -of csv=p=0 "$prise" 2>/dev/null | grep -q video || continue
   [ $(( $(date +%s) - $(stat -c %Y "$prise") )) -lt 60 ] && continue
   mkdir -p "$dossier"
   echo "traitement : $prise"
