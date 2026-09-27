@@ -1,6 +1,6 @@
 # Studio vidéo — spécifications à valider
 
-Version 1, 27 septembre 2026. Chaque point est numéroté pour que la validation puisse dire « tout sauf le 3.2 ».
+Version 1.1, 27 septembre 2026. Chaque point est numéroté pour que la validation puisse dire « tout sauf le 3.2 ».
 
 `✔` existe et testé · `◐` existe, à vérifier sur de vrais fichiers · `○` proposé, pas encore fait
 
@@ -81,19 +81,38 @@ Version 1, 27 septembre 2026. Chaque point est numéroté pour que la validation
 | 6.5 | Relecture en 8 points avant livraison (ordre, faits, textes à l'écran, saison, lieu, visages, public, ancrage/chute). | ✔ |
 | 6.6 | Un retour qui revient deux fois devient une règle dans la bible concernée. | ✔ (règle) |
 
-## 7. Questions ouvertes
+## 7. Ajouts proposés après veille (voir `VEILLE.md`)
+
+Tous `○`. À valider un par un.
+
+| # | Spécification | Origine |
+|---|---|---|
+| 7.1 | **Storyboard visuel sur gabarit**, produit à partir du plan validé et avant tout rendu : une case par séquence, avec la vignette du rush ou un cadre vide pour un manque. `05_storyboard/gen.py` sert de base. | Chase AI |
+| 7.2 | **Beat sheet** : le plan porte, par séquence, le time-code de début et de fin, l'action en une ligne et le mouvement. C'est ce qui nourrit le prompt d'animation. Notre découpage 22 plans / 36 s en est déjà un ; on en fait le format standard. | Chase AI |
+| 7.3 | **Retouches par composant** : un retour vise le graphisme, le son ou la musique, jamais « refais tout ». Budget de **deux ou trois itérations** par version, annoncé d'avance. | Chase AI, motion-graphics-skill |
+| 7.4 | **Contrôle après rendu** : comparer chaque séquence rendue à sa ligne du beat sheet ; ne refaire que celles qui dévient, en reprenant leur fiche. | Chase AI |
+| 7.5 | **Bibliothèque de références classée par type de film** (présentation produit, ambiance de lieu, événement, typographie), avec ce qu'on retient de chacune. Un plan cite sa référence. | Chase AI, motion-graphics-skill |
+| 7.6 | **Brief de style avant tout rendu** : 3 directions candidates réellement différentes, 1 recommandation, une palette où chaque couleur dit d'où elle vient (maillot, drapeau, stade). La direction retenue de chaque film est notée pour ne pas la répéter au suivant. | motion-graphics-skill |
+| 7.7 | **Contrôles anti-diaporama** ajoutés à la relecture : pas de suite de fondus, un sujet qui persiste, deux niveaux de texte maximum, transitions variées, texte lisible sur téléphone (≥ 30 px sur 1080). | motion-graphics-skill |
+| 7.8 | **Le montage reste modifiable** : `plan.json` et `coupes.json` sont la source, jamais un export aplati. Toute correction repart d'eux. | Higgsfield |
+| 7.9 | **`VOIX.md` par client**, collecté par interview (une question à la fois, huit questions), relu et signé avant tout script. Contient « ce que ça ne doit jamais être ». | social-agents |
+| 7.10 | **Étape couverture** dans la finalisation : image réelle du film, texte uniquement dans les 240 px du bas, contrôle de la fenêtre 3:4 et de l'orthographe. | social-agents |
+| 7.11 | **Discipline de diffusion** si une étape publication est ajoutée : un fuseau par lot, jamais de date passée corrigée en silence, jamais de légende inventée. | social-agents |
+| 7.12 | **`INDEX.md` des bibles et règles**, à consulter avant toute tâche jamais faite. | social-agents |
+
+## 8. Questions ouvertes
 
 | # | Question | Ma proposition |
 |---|---|---|
-| 7.1 | Où vit l'atelier à terme : page locale, ou écran dans le studio ? | Page locale tant que les vidéos restent lourdes ; portage dans le studio quand le mode Claude direct (4.9) sera voulu. |
-| 7.2 | Le mode Claude direct (4.9) : par le studio (fonctions Supabase existantes) ou par une clé API dans la page ? | Par le studio, pour ne pas mettre de clé dans une page locale. |
-| 7.3 | Faut-il un vrai montage (export vidéo) depuis l'atelier, ou seulement le plan ? | Seulement le plan pour l'instant ; le montage reste dans les scripts `04_montage/`. |
-| 7.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
+| 8.1 | Où vit l'atelier à terme : page locale, ou écran dans le studio ? | Page locale tant que les vidéos restent lourdes ; portage dans le studio quand le mode Claude direct (4.9) sera voulu. |
+| 8.2 | Le mode Claude direct (4.9) : par le studio (fonctions Supabase existantes) ou par une clé API dans la page ? | Par le studio, pour ne pas mettre de clé dans une page locale. |
+| 8.3 | Faut-il un vrai montage (export vidéo) depuis l'atelier, ou seulement le plan ? | Seulement le plan pour l'instant ; le montage reste dans les scripts `04_montage/`. |
+| 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
 
 ## Ce qu'il faut pour valider
 
 1. Cochez ou barrez les lignes ci-dessus.
-2. Tranchez les questions du § 7.
+2. Tranchez les questions du § 8.
 3. **Testez l'atelier avec de vrais rushes** (dossier Terra Madre) et dites-moi ce qui ne s'affiche pas : c'est le seul point que je n'ai pas pu vérifier moi-même (4.3, 4.4, 4.5).
