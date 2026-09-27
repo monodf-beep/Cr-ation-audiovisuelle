@@ -21,10 +21,12 @@ fi
 
 # Google Drive accepte deux dossiers du meme nom cote a cote (glisser un dossier deja present en cree
 # un second) : on les fusionne avant chaque copie, sans rien supprimer d'autre.
-rclone dedupe --dedupe-mode merge "$DRIVE" -q || echo "rclone : fusion des dossiers en double en erreur"
+# (rclone fusionne toujours les dossiers en double ; le mode « skip » laisse les fichiers en double tels quels.)
+rclone dedupe --dedupe-mode skip "$DRIVE" -q || echo "rclone : fusion des dossiers en double en erreur"
 
 MEDIAS='*.{mp4,mov,m4v,webm,wav,mp3,m4a,aac,flac,ogg,jpg,jpeg,png,webp,gif,svg,woff,woff2,otf,ttf}'
-rclone copy "$DRIVE" "$DEPOT" --update --include "$MEDIAS" --exclude 'node_modules/**' --exclude '.git/**' \
+# Regles de filtre dans l'ordre (rclone refuse de melanger --include et --exclude).
+rclone copy "$DRIVE" "$DEPOT" --update --filter '- node_modules/**' --filter '- .git/**' --filter "+ $MEDIAS" --filter '- *' \
   --drive-skip-gdocs --fast-list -q || echo "rclone : Drive -> VPS en erreur"
 
 # Bibliotheque de montage : sons candidats telecharges a la source (une fois), choix et ajouts copies dans Drive.
