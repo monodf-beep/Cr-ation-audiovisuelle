@@ -56,3 +56,28 @@ Prend une vidéo **déjà montée** et gère l'après : transcription, légendes
 - higgsfield.ai/mcp/use-after-effects · higgsfield.ai/ai-motion-designer
 - github.com/lowfatgeek/motion-graphics-skill
 - github.com/kevinbadi/social-agents
+
+
+---
+
+## Lecture approfondie des dépôts (27/09)
+
+### cth9191/motion-design (skill publique de Chase AI, sans licence)
+
+Adapte des prompts de référence et envoie **un seul prompt découpé en séquences** à Seedance via le MCP Higgsfield. Pas de montage de rushes ni de rendu local. Le dépôt « storyboard » du post reste réservé à la communauté payante de l'auteur.
+
+À retenir : « establish what the viewer should understand, believe or want » avant les séquences ; format du prompt (monde visuel, règles de mouvement, plans minutés, ambiance, musique) ; **inventaire des textes exacts** (→ 13.7) ; **test de sens** (sans le titre, qu'est-ce qui relie le plan à l'affirmation ?) ; **tableau de revue** exigence / plan / résultat observé au timecode / réussi, échoué, non vérifié (→ 13.8) ; une seule tentative de correction et un journal de ce qui a été soumis (→ 7.3).
+Écarté : vidéo générée en entier ; fichiers non réutilisables (aucune licence, prompts de tiers).
+
+### lowfatgeek/motion-graphics-skill (MIT)
+
+Animations HTML/GSAP exportées en MP4 image par image (Puppeteer + ffmpeg, sans GPU).
+
+À retenir : brief de style bloquant avant tout code (→ 7.6) ; **empreinte de structure** (concept, nombre de scènes, objets héros, accroche, chute) : deux livrables diffèrent sur 3 paramètres sur 5 ; contrôles anti-diaporama mesurables (→ 7.7) ; rendu déterministe ; **planche contact** `scripts/snap.mjs` pour que l'IA « voie » un rendu (→ 13.8) ; voix off calée sur les pauses (`silencedetect`) ; **effets sonores ajoutés après rendu** sans réencoder l'image, sidechain sous la voix, limiteur −1 dBFS, contrôle `ebur128` (→ 13.9).
+Réutilisable (MIT) : `scripts/export-frames.mjs`, `scripts/snap.mjs`, `scripts/sfx-mix.mjs`, `scripts/sfx-cues.mjs`, `scripts/vo-pauses.html`. Les 20 WAV de `assets/sfx/` : usage commercial déclaré par l'auteur, à vérifier.
+
+### kevinbadi/social-agents (MIT), lu en entier
+
+À retenir : **interdits dans le code** (`src/client/endpoints.ts`, HARD_BLOCKS avant l'allowlist) (→ 12.8) ; un registre d'outils unique exposé par le connecteur (`src/agent/registry.ts` → `tools.ts`) (→ 12.2) ; **journal des actions** de mutation (`src/util/activityLog.ts`), à compléter avec l'utilisateur et le projet (→ 12.9) ; isolation des espaces vérifiée à l'exécution (`src/workspaces.ts`) (→ 14.6) ; **panneau « Understanding »** qui montre ce que l'agent lit, fichier par fichier (→ 14.7) ; panneau « Training » : playbooks éditables en place, compteurs d'usage (→ 14.1) ; format de skill Avant / Procédure / Règles / Vérification avec « dans le doute, escalader » (→ 12.5).
+Pas d'apprentissage automatique : leur « mémoire » est faite de fichiers édités par des humains. Nous allons plus loin avec Hindsight (§ 14).
+Écarté : agent aux pleins pouvoirs (`permissionMode: 'bypassPermissions'`, terminal et écriture libres) ; validations seulement écrites dans le prompt ; tableau de bord sans connexion ; pas de versions.

@@ -134,6 +134,36 @@ Le studio devient un connecteur de Claude (serveur MCP), comme l'Agenda Sabauda.
 | 12.5 | Une skill « Studio vidéo » emballe le processus (étapes, bibles, fiche de plan, relecture). | ○ |
 | 12.6 | Chaque journaliste utilise son propre forfait Claude ; l'API du studio ne sert qu'au Claude intégré à l'interface. | ○ |
 | 12.7 | Premier pas : un connecteur local qui transforme `rushes.py`, `notes.py` et `lut.py` en outils, à tester sur Terra Madre depuis Claude Code. | ○ |
+| 12.8 | Les interdits sont écrits dans le code du connecteur, vérifiés avant chaque outil (modèle `HARD_BLOCKS` de social-agents) : aucune consigne ne peut les contourner. | ○ |
+| 12.9 | Journal de chaque action du connecteur : qui, quel projet, quoi, résultat. | ○ |
+
+## 13. Table de montage dans l'interface (votre remarque du 27/09)
+
+L'atelier (`00_pipeline/atelier/`) choisit et ordonne les rushes et produit `plan.json` (étapes 1-2). Les scripts `04_montage/` (`film.py`, `son.py`) fabriquent le film à partir de `coupes.json`, sans écran (étape 4). Il manque, entre les deux, l'écran où l'on règle et finalise.
+
+| # | Spécification | État |
+|---|---|---|
+| 13.1 | Une table de montage dans l'interface, entre l'atelier et les scripts `04_montage`. | ○ |
+| 13.2 | Réglages par plan : ordre, entrée et sortie, durée, mouvement, transition. | ○ |
+| 13.3 | Pistes : textes à l'écran, voix (notes vocales), musique, ambiance, avec leur volume. | ○ |
+| 13.4 | Options du rendu par plan : LUT, couleurs accordées, regard caméra, visages floutés. | ○ |
+| 13.5 | La table écrit `coupes.json`, le fichier que lisent déjà `film.py` et `son.py`. | ○ |
+| 13.6 | Claude (connecteur) et l'humain (table) modifient le même montage ; chaque rendu est une version. | ○ |
+| 13.7 | Inventaire des textes exacts (noms, chiffres, flocages) tenu à côté du plan et vérifié au rendu. | ○ |
+| 13.8 | Après chaque rendu : planche contact que Claude peut voir, et tableau de revue réussi / échoué / non vérifié au timecode. | ○ |
+| 13.9 | Voix off calée sur les pauses détectées ; effets sonores ajoutés après rendu (`-c:v copy`) ; niveaux mesurés (EBU R128). Scripts MIT réutilisables de motion-graphics-skill. | ○ |
+
+## 14. Mémoire : doctrine et mémoire machine (votre remarque du 27/09)
+
+| # | Spécification | État |
+|---|---|---|
+| 14.1 | Doctrine de rédaction (charte, règles, bibles, voix) : écrite et validée par des humains, versionnée dans le studio. Source de vérité. | ○ |
+| 14.2 | Mémoire machine (Hindsight, déjà branché) : Claude y consigne faits, décisions, réussites, échecs, et la relit avant chaque plan. | ○ |
+| 14.3 | Un retour qui revient deux fois : Claude propose une règle, un humain la valide, elle entre dans la doctrine. | ○ |
+| 14.4 | La doctrine validée est publiée dans Hindsight comme directives : tout LLM branché par le connecteur la voit. | ○ |
+| 14.5 | La mémoire machine ne contredit jamais la doctrine : en cas de conflit, Claude le signale. | ○ |
+| 14.6 | Une banque par média, étiquettes par projet et par journaliste : rien ne fuit d'un client à l'autre. | ○ |
+| 14.7 | Panneau « Transparence » : ce que Claude lit (doctrine, mémoire, voix), fichier par fichier. | ○ |
 
 ## 7. Ajouts proposés après veille (voir `VEILLE.md`)
 
@@ -170,6 +200,7 @@ Tous `○`. À valider un par un.
 | 8.11 | Correction du regard vers la caméra ? | **Demandée le 27/09 : option à activer**, coupée par défaut, seulement sur le face-caméra du journaliste (§ 10.7 à 10.9). |
 | 8.12 | La puissance de Claude Code dans le studio : comment ? | **Choisi le 27/09 : Managed Agents (C).** Préconisé : avec le bac à sable sur votre serveur (D), pour que les rushes restent chez vous (§ 11). |
 | 8.13 | Votre propre Claude branché sur le studio ? | Oui : le studio devient un connecteur MCP, votre Claude garde contexte, skills, connecteurs et forfait ; le studio garde les validations (§ 12). |
+| 8.14 | Higgsfield dans le studio ? | Intégré par l'API Higgsfield (paiement à l'usage, environ 5 $ les 100 crédits ; image Nano Banana Pro ≈ 2 crédits, vidéo 8 s ≈ 14), crédits refacturés avec plafond par client ; conditions de revente à vérifier. |
 | 8.4 | Transcription : modèle `small` (rapide, quelques fautes) ou `medium` (plus juste, 3 fois plus lent) ? | `small` par défaut, `medium` pour les notes importantes. |
 
 ---
