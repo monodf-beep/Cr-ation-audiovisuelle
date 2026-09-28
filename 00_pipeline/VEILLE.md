@@ -81,3 +81,25 @@ Réutilisable (MIT) : `scripts/export-frames.mjs`, `scripts/snap.mjs`, `scripts/
 À retenir : **interdits dans le code** (`src/client/endpoints.ts`, HARD_BLOCKS avant l'allowlist) (→ 12.8) ; un registre d'outils unique exposé par le connecteur (`src/agent/registry.ts` → `tools.ts`) (→ 12.2) ; **journal des actions** de mutation (`src/util/activityLog.ts`), à compléter avec l'utilisateur et le projet (→ 12.9) ; isolation des espaces vérifiée à l'exécution (`src/workspaces.ts`) (→ 14.6) ; **panneau « Understanding »** qui montre ce que l'agent lit, fichier par fichier (→ 14.7) ; panneau « Training » : playbooks éditables en place, compteurs d'usage (→ 14.1) ; format de skill Avant / Procédure / Règles / Vérification avec « dans le doute, escalader » (→ 12.5).
 Pas d'apprentissage automatique : leur « mémoire » est faite de fichiers édités par des humains. Nous allons plus loin avec Hindsight (§ 14).
 Écarté : agent aux pleins pouvoirs (`permissionMode: 'bypassPermissions'`, terminal et écriture libres) ; validations seulement écrites dans le prompt ; tableau de bord sans connexion ; pas de versions.
+
+---
+
+## 3. Skills et outils de montage : écran divisé, visage en incrustation, texte derrière la personne (28/09)
+
+Aucun dépôt public ne couvre tout avec des règles « quand l'utiliser ». On a donc écrit notre propre skill (`.claude/skills/montage-mise-en-page/SKILL.md`) et trois scripts dans `04_montage/` : `disposition.py`, `texte_derriere.py`, `coupes.py`. Exemples de référence reçus : bandes empilées TOFU / MOFU / BOFU (Instagram, marineferrette_) et lettres géantes « DESIGN » derrière la tête (edwardcreates).
+
+| Dépôt | Licence | Ce qu'on en retient | Verdict |
+|---|---|---|---|
+| heygen-com/hyperframes, skill `talking-head-recut` | Apache-2.0 | Règles côte à côte / empilé / incrustation / plein cadre, texte hors de la zone de la tête, transitions de 0,5 à 0,7 s | `→ repris` (reformulé dans le skill) |
+| browser-use/video-use | MIT | Montage guidé par la transcription, fondus de 30 ms aux raccords | `→ repris` (fondus dans `coupes.py`) ; base possible pour la suite |
+| luisadrianpuga/DepthCaptions | MIT | Recette texte derrière la personne : détourage MediaPipe, 3 calques | `→ repris` (`texte_derriere.py`, écrit par nous) |
+| kurbaitaev/ghost-editor | MIT | Sous-titres qui ne couvrent jamais le visage | `→ repris` (règle du skill) |
+| 6missedcalls/video-editing-skill, WyattBlue/auto-editor | MIT, domaine public | Coupes des silences | `→ repris` (`coupes.py`) ; auto-editor utile pour exporter vers Premiere / DaVinci |
+| google-ai-edge/mediapipe | Apache-2.0 | Détourage de la personne sur processeur | `→ utilisé` (modèle selfie_segmenter, téléchargé au premier usage) |
+| PeterL1n/RobustVideoMatting | GPL-3.0 | Meilleur détourage vidéo, sans scintillement, GPU | à brancher si le serveur a une carte graphique ; attention à la GPL |
+| facebookresearch/sam2 | Apache-2.0 | Suivi d'un objet quelconque | plus tard, pour détourer autre chose qu'une personne |
+| dhirajlochib/VidMcp | MIT | Serveur MCP « texte derrière le sujet » | `✗` pour l'instant : immature |
+| Vincentwei1021/video-talkcraft | PolyForm Noncommercial | Écran de comparaison, zooms | `✗` : licence non commerciale |
+| calesthio/OpenMontage | AGPL-3.0 | 700 fiches de savoir-faire | idées seulement, pas de code (AGPL) |
+
+Guides : riverside.com (écran divisé), techsmith.com (visage en incrustation), adobe.com (texte derrière le sujet), descript.com (plans de coupe, coupes franches).
