@@ -5,10 +5,13 @@ Quatre plans réels, étalonnés aux couleurs Cultura Sabauda (voile marine en m
 
 | Plan | Fichier attendu dans `assets/` | Source (Pexels, licence libre) |
 |---|---|---|
-| Entretien, prise de notes | `terrain.mp4` | pexels.com/video/8454305 (20 s → 26 s) |
-| Lecture des documents | `sources.mp4` | pexels.com/video/8512938 (0,5 s → 6,5 s) |
-| Écriture, pénombre | `ecriture.mp4` | pexels.com/video/946146 (1 s → 7 s) |
-| Frappe au clavier | `frappe.mp4` | pexels.com/video/3114534 (1 s → 7 s) |
+| Conférence de presse, porte-parole face aux micros (retourné, recadré de 90 px à gauche) | `conference.mp4` | pexels.com/video/6952253 (0,5 s → 5,1 s) |
+| Prise de notes sur un carnet, dehors | `notes.mp4` | pexels.com/video/5530405 (0,3 s → 4,9 s) |
+| Frappe au clavier, de nuit | `frappe.mp4` | pexels.com/video/946146 (2,5 s → 7,1 s) |
+| Rotative, feuilles qui s'empilent (ralenti) | `presse.mp4` | pexels.com/video/29906414 (10,5 s → 15,1 s) |
+
+Le plan de l'entretien sur un canapé (pexels 8454305) a été retiré : jugé peu intéressant.
+Les plans sont réencodés avec une image clé par seconde (`-g 25`) pour éviter les images figées au rendu.
 
 Préparer chaque plan :
 
