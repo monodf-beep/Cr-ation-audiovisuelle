@@ -26,9 +26,23 @@ photos, documents, cartes). Pour une explication sans tournage (histoire, concep
 ## Écriture et voix
 
 - Voix **libre**, guidée par des repères (page d'enregistrement), jamais lue.
-- On garde l'essentiel : reprises, faux départs et erreurs coupés ; vidéo accélérée (×1,2) si le débit est lent.
+- On garde l'essentiel : reprises, faux départs et erreurs coupés ; vidéo accélérée (×1,35 pour le CERN) si le débit est lent.
 - Traitement sobre : voix proche et naturelle, pas de réverbération.
 - Un article ancien est présenté comme ancien (« Relisez l'article sur le projet », avec sa date).
+
+## Légende Instagram
+
+Modèle : la légende publiée par Franck pour le reportage du CERN (octobre 2026).
+
+- Une accroche courte, puis une relance seule sur sa ligne (« Le savoyard au @cern ... » / « Eh oui ! »).
+- De la prose à la première personne, avec des verbes et des phrases complètes, jamais une suite de mots-clés.
+- Les comptes cités en @ dans le texte (@cern, @enstitut.lengoua.savoyarda, @nosalpes_fr).
+- Des faits précis : date, lieu, chiffres, noms.
+- Une question puis sa réponse pour amener le savoyard (« Alors, qu'est-ce que le savoyard vient faire là ? Il a toute sa place. »).
+- Les remerciements en savoyard : « Grant-marci ».
+- Le renvoi à l'article par une ligne « 📰 … à retrouver sur nosalpes.eu @nosalpes_fr ».
+- Environ 7 hashtags en fin de texte (#langueSavoyarde #GrandGenève #CERN #Genève #Savoie #culture #Interreg).
+- Entre 1 000 et 1 500 caractères : Instagram en accepte 2 200, mais Franck n'écrit pas long.
 
 ## Montage
 
