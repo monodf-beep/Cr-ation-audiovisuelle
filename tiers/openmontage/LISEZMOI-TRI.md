@@ -56,5 +56,19 @@ Légende : **Reprendre l'idée** = on réécrit le principe dans notre pont ;
 5. **Une recette par format** : un long entretien peut donner plusieurs formats courts,
    chacun validé par un humain.
 
-Premier essai proposé : le principe 1 sur trois vrais rushes tournés à la main, comparé
-côte à côte avec le cadrage actuel.
+## Où on en est (2 octobre 2026)
+
+- **Fait** (dépôt du studio, `ops/pont/`) :
+  - principe 1, le cadre suit le visage : `cadrer.py` (option `suivi`), `expressionTrajet` dans `video-rendu.mjs` ;
+  - principe 3, la relecture automatique : `analyserSortie` et `relectureAuto`, qui repèrent les écrans noirs,
+    les silences de plus de 1,5 s, le son trop bas et les sous-titres sur un visage.
+    Tests : `ops/pont/tests/test-relecture.mjs`.
+- **Déjà là avant** :
+  - principe 2, la coupe des silences sur demande : outil `chercher_silences` de Claude au montage ;
+  - le son : la musique baisse sous la voix et le volume est égalisé (loudnorm).
+- **À faire** :
+  - principe 4, un accord avant tout nouveau service payant ;
+  - principe 5, une recette par format ;
+  - le repérage des changements de plan dans les longs rushes.
+- **À vérifier sur de vrais rushes** : le suivi a été testé sur une image qui se déplace,
+  pas encore sur un tournage réel.
