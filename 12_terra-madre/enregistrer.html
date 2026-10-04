@@ -94,8 +94,11 @@
   .aide { font-size: 14px; color: var(--fm-ink-700); line-height: 1.5; }
   kbd { font: inherit; font-weight: 700; border: 1px solid var(--fm-line); padding: 0 6px; background: var(--fm-bg-soft); }
   #erreur { color: var(--fm-error); font-weight: 600; }
+  /* Apercu de la webcam : en haut de la zone visible (sous l'en-tete masque, a gauche de la
+     colonne masquee a droite) et au-dessus des hachures, pour se voir pendant la prise. */
+  .ecran:not(.cadrage) .apercu { top: 14%; left: 3%; right: auto; bottom: auto; width: 82%; z-index: 4; }
   /* Sans apercu video : la description des images de la sequence, sur l'ecran vertical. */
-  .scene { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 0 20% 0 8%;
+  .scene { position: absolute; inset: 0; display: none; align-items: flex-end; justify-content: center; padding: 0 20% 50% 8%;
     color: #fff; font-size: 22px; line-height: 1.35; text-align: center; z-index: 1; }
   .sans-apercu .scene { display: flex; }
   .scene small { display: block; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; margin-bottom: 12px; }
