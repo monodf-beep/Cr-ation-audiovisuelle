@@ -1,50 +1,43 @@
-# « Parlez comme chez vous » : script de la voix off (proposition)
+# « Je vous défie » : script de la voix off (proposition v2, mode défis)
 
-Reel vertical 9:16, environ 75 s (voix d'environ 190 mots, posée, puis ×1,35 comme le CERN).
+Reel vertical 9:16, environ 70 s (voix d'environ 180 mots, posée, puis ×1,35 comme le CERN).
 Style « Reportage Franck » (`styles/reportage-franck.md`). Faits et sources : rapport
-« Langue de chez nous en Savoie » (dépôt cr-ation-audiovisuelle, `reports/`, notes dans `research_notes/`).
+« Langue de chez nous en Savoie » (dépôt cr-ation-audiovisuelle, `reports/`).
 
-**Angle unique :** septante, la Clusa, la panosse… ce n'est pas mal parler, c'est parler de chez nous.
-**Accroche :** une faute qui n'en est pas une.
+**Angle :** deux défis au spectateur, puis votre histoire. Le français, c'est aussi le nôtre : à nous de nous le réapproprier.
+**Accroche :** un défi, tout de suite, à la deuxième personne.
+**Fin :** le défi revient, avec un appel en commentaire.
 
-La voix est libre, guidée par les repères (`reperes.json`). Les phrases ci-dessous sont une proposition : dites-les
-avec vos mots, mais gardez les faits tels quels (dates, chiffres, noms).
+La voix est libre, guidée par les repères (`reperes.json`). Votre histoire (séquences 4 et 5) est votre témoignage : racontez-la comme vous me l'avez écrite.
 
 | Temps | Image | Voix off (proposition) |
 |---|---|---|
-| 0 – 3 s | Face caméra serré. « SEPTANTE » en très gros, souligné au stylo rouge comme une faute… le trait rouge devient bleu Savoie. | Septante. Ce n'est pas une faute de français. |
-| 3 – 13 s | Compteur qui monte à 48,7 % sur fond de vieux texte imprimé ; puis la page de Vaugelas (Gallica, 1647), la phrase surlignée. | C'est du latin. Au XVIe siècle, on l'écrit encore une fois sur deux. En 1647, un grammairien, Vaugelas, le condamne : il faudra dire soixante-dix. |
-| 13 – 22 s | Pages des dictionnaires numérisés : Brachet 1883 (« Septanta », « Nonanta »), Constantin & Désormaux 1902 (la phrase sur nonante). | Chez nous, il a tenu. En 1883, le patois d'Albertville compte encore septanta, nonanta. En 1902, le dictionnaire savoyard regrette déjà nonante. |
-| 22 – 31 s | Carte des États de Savoie (règles `styles/carte-etats-de-savoie.md`), zoom sur les arrondissements : 56 % Saint-Julien, 46 % Thonon, 28 % Albertville. Mention « enquêtes Avanzi ». Face caméra, punch-in sur « l'école ». | Ce n'est pas une loi qui l'a fait reculer, c'est l'école. Et pourtant, autour de Saint-Julien, plus d'une personne sur deux dit encore septante. |
-| 31 – 42 s | Panneau d'entrée « La Clusaz » : le z pâlit et reste ; « La Clusa » s'écrit en dessous. Même chose pour Avoriaz, Chamonix. Citation en bloc : « Le Z ne se prononce pas. Jamais. » (Marc Bron). | Pareil pour nos noms de lieux. Le z de La Clusaz ne se prononce pas : il dit où tombe l'accent. La Clusa, Avoria. Et le x de Chamonix : Chamoni. |
-| 42 – 48 s | Vieille carte IGN, des z barrés au crayon… qui reviennent un à un. | En 1950, on a même voulu les effacer des cartes, parce que les touristes les faisaient sonner. Ils sont restés. |
-| 48 – 62 s | Liste qui monte, un mot par coupe, avec son sens : la panosse (serpillière), la patte (chiffon), le cayon (cochon), débarouler (dévaler), appondre (raccorder). Puis carte : panosse 100 % en Savoie, 0 % dans l'Ain et l'Isère (enquête 1994-96). | Et nos mots : la panosse, la patte, le cayon, débarouler, appondre. Dans les années 90, tous les Savoyards interrogés connaissaient la panosse. Dans l'Ain, à côté, personne. |
-| 62 – 71 s | Face caméra, plan large puis serré. Lueur de la langue sur la carte. | Si on les a cachés, c'est qu'on nous a appris à en avoir honte. Le savoyard, notre variété du francoprovençal, est une langue en danger. Mais le français de chez nous en garde les traces. |
-| 71 – 78 s | Face caméra ; « septante · la Clusa · la panosse » en sous-titres mot-clé. Carton final. | Alors osez. Septante, la Clusa, la panosse. Ce n'est pas mal parler. C'est parler de chez nous. [salut en savoyard, graphie de Franck] |
+| 0 – 4 s | Face caméra, serré. Titre « DÉFI n° 1 » en bloc bleu. Un numéro de téléphone fictif s'écrit chiffre par chiffre : « 06 · septante… » (jamais votre vrai numéro). | Je vous lance un défi : dites votre numéro de téléphone avec septante. |
+| 4 – 10 s | « DÉFI n° 2 ». Panneau ou carte : « Semnoz » ; le z pâlit, reste écrit, ne se dit pas. Sous-titre : « Semno ». | Deuxième défi : le Semnoz. Sans prononcer le z. |
+| 10 – 22 s | Le z en gros, une flèche vers l'accent (« Sèm-no »). Puis « septante » en latin (*septuaginta*), page de Vaugelas 1647, dictionnaire de 1883 (« Septanta »). | Ce z, c'est un repère : il dit où tombe l'accent. Et septante, ce n'est pas du suisse. C'est du latin, du vieux français… et du savoyard : en 1883, le patois d'Albertville comptait encore « septanta ». |
+| 22 – 32 s | Face caméra. Petite photo d'enfance si vous en avez une, ou « déçu en bien » écrit à la craie. | Notre langue évolue. Petit, je disais « déçu en bien », comme en Suisse. |
+| 32 – 46 s | Face caméra, punch-in à chaque « peur ». Trois cartons qui se succèdent : « peur en Savoie », « peur hors de Savoie », « plus peur ». | Avant, j'avais peur de dire septante en Savoie. Puis j'ai eu peur de le dire en dehors de la Savoie. Aujourd'hui, ce n'est plus mon problème : c'est celui qui écoute qui se sent bête… alors que c'est simple. |
+| 46 – 58 s | Dialogue en bulles de messagerie, une par réplique (bruit de message doux) : « J'ai pas l'habitude. » / « Vous êtes belge ? » / « Bah non, je suis savoyard. » | On me dit : « J'ai pas l'habitude. » Ou : « Vous êtes belge ? » Bah non, je suis savoyard. Mais pourquoi tu demandes ? Pourquoi tu as besoin de le remarquer ? |
+| 58 – 65 s | Mots-clés qui s'empilent : septante · la Clusa · panosse · Semno. | Le français, c'est aussi le nôtre. À nous de nous le réapproprier. |
+| 65 – 72 s | Retour des deux défis en gros, puis carton final avec « Dites-le en commentaire ». | Alors, défi relevé ? Votre numéro en septante, et le Semnoz sans le z. Dites-le-moi en commentaire. |
 
-## Sources des faits (une par ligne de la voix)
+## Faits utilisés et sources
 
-- Septante, latin *septuaginta* ; 48,7 % au XVIe siècle ; l'école et non une loi ; chiffres par arrondissement :
-  Mathieu Avanzi, francaisdenosregions.com, 16/11/2024 (enquêtes en ligne, non représentatives : dire « enquêtes Avanzi »).
-- Vaugelas, *Remarques sur la langue françoise*, 1647 (Gallica, bpt6k84316s, vue 136).
-- Brachet, *Dictionnaire du patois savoyard* (canton d'Albertville), 1883 ; Constantin & Désormaux, *Dictionnaire savoyard*, 1902 (archive.org).
-- Règle du -z / -x : Avanzi, 30/09/2020 ; citation de Marc Bron (Journal de Bâle et Genève).
-- 1950, IGN et Albert Dauzat : *Revue internationale d'onomastique*, 1950 (Persée).
-- Panosse, patte, cayon, débarouler, appondre : *Dictionnaire des régionalismes de France* (Rézeau, 2001 ; enquête 1994-96, taux de reconnaissance).
-- « Langue en danger », « traces bien vivantes » : *Langues et cité* n° 18, ministère de la Culture, 2011.
+- Le -z final ne se prononce pas, il marque l'accent (noms en -az / -oz) : Mathieu Avanzi, francaisdenosregions.com, 30/09/2020 ; Marc Bron, maire d'Habère-Poche : « Le Z ne se prononce pas. Jamais. On dit La Clusa, le Semno… » (Journal de Bâle et Genève).
+- Septante, du latin *septuaginta* ; usage en vieux français (48,7 % des occurrences au XVIe siècle) : Avanzi, 16/11/2024.
+- 1883, patois du canton d'Albertville : « Septanta » (graphie Brachet, *Dictionnaire du patois savoyard*).
+- Belgique : septante et nonante usuels (Avanzi) ; d'où la question « vous êtes belge ? ».
 
-## À vérifier ou à décider par Franck avant d'enregistrer
+## À vérifier ou à décider par Franck
 
-- **Graphie des mots savoyards à l'écran** (« septanta », « nonanta », le salut final) : les sources donnent Brachet 1883 ou Conflans. Le Gramazino n'a été trouvé dans aucune source : donnez la forme et la graphie à afficher.
-- **Vaugelas** : son origine savoyarde (fils d'Antoine Favre) ferait une chute ironique, mais elle n'est pas vérifiée. Ne la dites pas sans source.
-- **Pas de « loi sur l'accent »** : seule la proposition Euzet a été votée par les députés le 26/11/2020, jamais par le Sénat.
-- **Panosse « 100 % »** : c'est un taux de reconnaissance de 1994-96, pas d'usage ; la voix dit « connaissaient ».
-- **Prononciations locales** de vos propres exemples (Megève, Les Gets, Les Houches) : non sourcées ; à votre jugement.
+- **« Déçu en bien »** : l'expression est attestée en Suisse romande. Je n'ai pas de source pour la Savoie : la voix dit « comme en Suisse », votre souvenir fait le reste. Si vous voulez dire « comme en Savoie », il faudra une source.
+- **Graphie de « septanta » à l'écran** : c'est celle de Brachet (1883). Le Gramazino n'a été trouvé dans aucune source : à transcrire par vous si vous l'affichez en savoyard.
+- **Numéro de téléphone** : fictif à l'écran. Ne montrez jamais le vôtre.
+- **Prononciation de Semnoz** : « Semno », accent sur la première syllabe (citée par Marc Bron) ; à votre oreille.
 
 ## Images à réunir
 
-- Face caméra (prise filmée avec la voix, page d'enregistrement).
-- Scans libres de droits : Vaugelas 1647 (Gallica), Brachet 1883 et Constantin & Désormaux 1902 (archive.org), article Dauzat 1950 (Persée, à citer).
-- Panneaux d'entrée de La Clusaz, Avoriaz, Chamonix : photos de Franck, ou panneaux recréés en motion design.
-- Carte des États de Savoie : à partir de `10_cern/tools/build-carte.mjs`, selon `styles/carte-etats-de-savoie.md`.
-- Objets de la liste (panosse, patte, poche) : photos de Franck chez lui, ou pictos dessinés.
+- Face caméra (prise filmée avec la voix, page d'enregistrement ou onglet « Voix » du studio).
+- Le Semnoz : une photo à vous (panneau, sommet), ou la carte des États de Savoie (`styles/carte-etats-de-savoie.md`) avec un repère.
+- Scans libres : Vaugelas 1647 (Gallica), Brachet 1883 (archive.org).
+- Si possible, une photo de vous enfant.
