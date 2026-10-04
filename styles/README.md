@@ -14,6 +14,8 @@ La liste est aussi dans l'onglet **Styles et skills** de la bibliothèque du stu
 | Vox — collage éditorial | `vox-animation` (look `mixed`) | explication animée sans tournage, ton curieux et précis | [vox-collage.md](vox-collage.md) |
 | Vox — diorama de papier | `vox-animation` (look `diorama`) | enquête, sujet politique ou grave, ambiance documentaire | [vox-diorama.md](vox-diorama.md) |
 
+**Cartes** : toute carte (États de Savoie, langue savoyarde) suit [carte-etats-de-savoie.md](carte-etats-de-savoie.md), quel que soit le style.
+
 Autres skills installés : `hyperframes*` et `media-use` (outil de montage HTML → MP4, utilisés par les deux styles).
 
 ## Ajouter un style ou un skill

@@ -20,7 +20,7 @@ photos, documents, cartes). Pour une explication sans tournage (histoire, concep
 | Titres, sous-titres | Semplicità Pro, gras (police commerciale, hors dépôt) |
 | Lieux, remerciements | Cormorant Garamond, italique fine |
 | Blocs | aplats bleu Savoie à angles droits (bandeau nom, mot-clé des sous-titres) |
-| Cartes | vectorielles, espace sabaudo au contour bleu affirmé, aire de la langue en lueur diffuse |
+| Cartes | vectorielles, espace sabaudo au contour bleu affirmé, aire de la langue en lueur diffuse : règles dans [carte-etats-de-savoie.md](carte-etats-de-savoie.md) |
 | Format | vertical 1080 × 1920, 30 images/s, 60 à 90 s |
 
 ## Écriture et voix

@@ -42,6 +42,9 @@ Tailles données pour un post de 1080 × 1080. En 1920 × 1080, garder les même
 
 ## Cartes
 
+Règles complètes de Franck (cinq entités, trois niveaux de traits, lueur de la langue, erreurs à ne pas refaire) : `styles/carte-etats-de-savoie.md`.
+
+
 - Projection Mercator, cadrée sur les 5 entités (73, 74, arrondissement de Nice, Piémont, Vallée d'Aoste).
 - Savoie et Haute-Savoie fusionnées. Chaque frontière commune n'est tracée qu'une fois.
 - Version réseaux sociaux : contours lissés (Catmull-Rom 0,5), trait bleu 1,8 px, sans remplissage.

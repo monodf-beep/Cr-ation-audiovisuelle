@@ -10,7 +10,7 @@ description: >
 
 # Reportage Franck — style maison et chaîne de fabrication
 
-Fiche du style : `styles/reportage-franck.md`. Règles, seuils et raisons : `04_montage/BONNES-PRATIQUES.md`
+Fiche du style : `styles/reportage-franck.md`. Cartes : `styles/carte-etats-de-savoie.md` (à relire avant toute carte ; partir de `10_cern/tools/build-carte.mjs`). Règles, seuils et raisons : `04_montage/BONNES-PRATIQUES.md`
 (à relire avant chaque montage : ce sont les demandes de Franck). Projet de référence : `10_cern/`.
 
 ## Principes non négociables
