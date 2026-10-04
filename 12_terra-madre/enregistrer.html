@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enregistrer la voix off</title>
+<!--
+  Page d'enregistrement de la voix off du reel « Terra Madre et Sagre » (copie adaptee de 10_cern).
+  Ici la webcam est coupee par defaut : les face camera viennent des rushes du tournage. Tant que
+  renders/apercu.mp4 manque, l'ecran montre la description des images de chaque sequence (« voit »).
+  Deux modes :
+  - Reperes (par defaut) : pour parler librement. Chaque sequence du montage affiche quelques mots-cles
+    (reperes.json) ; on passe a la suivante quand on veut (fleche droite ou bouton « Suivant »), le montage
+    montre la sequence et s'arrete sur sa derniere image. Les changements de sequence sont notes et
+    envoyes avec la prise (fichier .json) pour recaler le montage sur la voix.
+  - Texte : l'ancien prompteur, phrase par phrase, cale sur le montage (phrases lues dans index.html).
+  La webcam filme par defaut (cadre vertical 9:16 affiche sur l'apercu) : les prises servent aussi de rushes.
+  En local : depuis 12_terra-madre, `npx --yes http-server -p 8080 -c-1`, puis http://localhost:8080/enregistrer.html.
+  Sur le VPS (ops/vps/) : servie sous /enregistrement/12_terra-madre/, chaque prise part sur le serveur puis dans Drive.
+-->
+<link rel="stylesheet" href="../10_cern/brand/tokens.css" />
+<style>
+  @font-face { font-family: 'Semplicita Pro'; src: url('../10_cern/assets/fonts/SemplicitaPro-Regular.woff') format('woff'); font-weight: 400; }
+  @font-face { font-family: 'Semplicita Pro'; src: url('../10_cern/assets/fonts/SemplicitaPro-Semibold.woff') format('woff'); font-weight: 600; }
+  @font-face { font-family: 'Semplicita Pro'; src: url('../10_cern/assets/fonts/SemplicitaPro-Bold.woff') format('woff'); font-weight: 700; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: var(--fm-font); color: var(--fm-ink-900); background: var(--fm-bg-soft); min-height: 100vh; }
+  header { padding: 18px 28px; background: var(--fm-bg); border-bottom: 1px solid var(--fm-line); display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  header .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+  header h1 { font-size: 24px; font-weight: 700; }
+  .modes { margin-left: auto; display: flex; gap: 0; }
+  .modes button { font-size: 15px; padding: 8px 14px; }
+  .modes button.actif { background: var(--fm-bleu-savoie); color: #fff; }
+  main { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 24px 28px; align-items: start; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .ecran { position: relative; height: calc(100vh - 140px); min-height: 480px; aspect-ratio: 9 / 16; background: #000; }
+  #montage { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+  .apercu { position: absolute; right: 12px; bottom: 12px; width: 55%; aspect-ratio: 16 / 9; display: none; z-index: 2;
+    border: 3px solid #fff; box-shadow: 0 4px 18px rgba(0,0,0,.4); overflow: hidden; background: #111; }
+  .apercu video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+  /* Cadre vertical 9:16 : ce qui sera garde a l'image dans la video finale. */
+  .apercu .cadre { position: absolute; top: 0; bottom: 0; left: 50%; width: 31.64%; transform: translateX(-50%);
+    border-left: 2px dashed #fff; border-right: 2px dashed #fff; box-shadow: 0 0 0 999px rgba(0,0,0,.45); pointer-events: none; }
+  .apercu .rec { position: absolute; left: 8px; top: 6px; font-size: 13px; font-weight: 700; color: #fff; background: var(--fm-error); padding: 2px 8px; display: none; }
+  /* Apercu corrige : a peu pres le traitement applique ensuite a la prise (ops/vps/traiter-prises.sh). */
+  .corrige video#camera { filter: brightness(1.28) contrast(1.06) saturate(1.1) sepia(0.12); }
+  /* Plein cadre : la camera occupe tout l'ecran vertical, recadree comme dans la video finale. */
+  .ecran.cadrage .apercu { inset: 0; width: 100%; aspect-ratio: auto; border: 0; }
+  .ecran.cadrage .apercu .cadre { display: none; }
+  .ecran.cadrage #montage { visibility: hidden; }
+  .ecran .etiquette { position: absolute; left: 12px; top: 12px; z-index: 3; display: none; font-size: 14px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); padding: 4px 10px; }
+  .ecran.cadrage .etiquette { display: block; }
+  /* Zones masquees par l'interface d'Instagram (Reels) et de TikTok, sur 1080 x 1920 : haut 250 px, bas 480 px,
+     colonne de droite 140 px (boutons) de 700 a 1440 px. Rien d'important dedans : ni visage, ni texte.
+     Memes valeurs dans 04_montage/zones-sures.cjs et 04_montage/BONNES-PRATIQUES.md. */
+  .zones { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  .zones i { position: absolute; background: repeating-linear-gradient(135deg, rgba(220,40,40,.38) 0 8px, rgba(220,40,40,.16) 8px 16px); outline: 1px solid rgba(255,90,90,.9); }
+  .zones .z-haut { left: 0; right: 0; top: 0; height: 13.02%; }
+  .zones .z-bas { left: 0; right: 0; bottom: 0; height: 25%; }
+  .zones .z-droite { right: 0; width: 12.96%; top: 36.46%; bottom: 25%; }
+  .zones span { position: absolute; left: 6px; font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 0 3px #000; }
+  .sans-zones .zones { display: none; }
+  #decompte { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 160px; font-weight: 700; color: #fff; background: rgba(10,54,175,.55); z-index: 3; }
+  .panneau { display: flex; flex-direction: column; gap: 18px; max-width: 880px; }
+  .prompteur { background: var(--fm-bg); padding: 26px 32px; min-height: 320px; display: flex; flex-direction: column; gap: 16px; border-left: 6px solid var(--fm-bleu-savoie); }
+  .prompteur .temps { font-size: 14px; font-weight: 600; letter-spacing: .08em; color: var(--fm-ink-500); font-variant-numeric: tabular-nums; display: flex; justify-content: space-between; gap: 12px; }
+  #sequence { color: var(--fm-bleu-savoie); text-transform: uppercase; letter-spacing: .12em; }
+  #phrase { font-size: 44px; font-weight: 700; line-height: 1.2; min-height: 2.4em; }
+  #phrase.attente { color: var(--fm-ink-500); font-weight: 600; font-size: 28px; }
+  #phrase ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  #phrase li::before { content: '· '; color: var(--fm-bleu-savoie); }
+  #suivante { font-size: 20px; color: var(--fm-ink-500); line-height: 1.35; min-height: 1.4em; }
+  #suivante:not(:empty)::before { content: 'Ensuite : '; font-weight: 600; }
+  .barre { height: 6px; background: var(--fm-line); }
+  .barre i { display: block; height: 100%; width: 0; background: var(--fm-bleu-savoie); }
+  .commandes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  button { font: inherit; font-size: 17px; font-weight: 600; padding: 12px 20px; border: 2px solid var(--fm-bleu-savoie); background: var(--fm-bg); color: var(--fm-bleu-savoie); cursor: pointer; }
+  button.principal { background: var(--fm-bleu-savoie); color: #fff; }
+  button.stop { background: var(--fm-error); border-color: var(--fm-error); color: #fff; }
+  button:disabled { opacity: .4; cursor: default; }
+  .nav { display: none; gap: 12px; }
+  .libre .nav { display: flex; }
+  label, select { font: inherit; font-size: 15px; }
+  select { padding: 8px; border: 1px solid var(--fm-line); background: var(--fm-bg); max-width: 100%; }
+  .reglages { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; background: var(--fm-bg); padding: 16px 20px; }
+  .niveau { width: 140px; height: 10px; background: var(--fm-line); }
+  .niveau i { display: block; height: 100%; width: 0; background: #1e8e3e; }
+  .prises { background: var(--fm-bg); padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .prises h2 { font-size: 15px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--fm-ink-700); }
+  .prise { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-top: 1px solid var(--fm-line); padding-top: 10px; }
+  .prise b { min-width: 200px; }
+  .prise a { color: var(--fm-bleu-savoie); font-weight: 600; }
+  .prise video, .prise audio { width: 100%; max-height: 260px; background: #000; display: none; }
+  .aide { font-size: 14px; color: var(--fm-ink-700); line-height: 1.5; }
+  kbd { font: inherit; font-weight: 700; border: 1px solid var(--fm-line); padding: 0 6px; background: var(--fm-bg-soft); }
+  #erreur { color: var(--fm-error); font-weight: 600; }
+  /* Sans apercu video : la description des images de la sequence, sur l'ecran vertical. */
+  .scene { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 0 20% 0 8%;
+    color: #fff; font-size: 22px; line-height: 1.35; text-align: center; z-index: 1; }
+  .sans-apercu .scene { display: flex; }
+  .scene small { display: block; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; margin-bottom: 12px; }
+</style>
+</head>
+<body class="libre">
+<header>
+  <span class="eyebrow">Terra Madre et Sagre · <a href="../bibliotheque/index.html" style="color:inherit">Bibliothèque de montage</a> · <a href="../rendu/index.html" style="color:inherit">Rendre la vidéo</a></span>
+  <h1>Enregistrer la voix off</h1>
+  <div class="modes">
+    <button id="modeLibre" class="actif" title="Parler librement, guidé par des mots-clés">Repères</button>
+    <button id="modeTexte" title="Lire le texte phrase par phrase">Texte complet</button>
+  </div>
+</header>
+<main>
+  <div class="ecran">
+    <video id="montage" src="renders/apercu.mp4" muted playsinline preload="auto"></video>
+    <div class="apercu" id="apercu"><video id="camera" muted playsinline></video><div class="cadre"><div class="zones"><i class="z-haut"></i><i class="z-droite"></i><i class="z-bas"></i></div></div><div class="rec" id="rec">● REC</div></div>
+    <div id="scene" class="scene"></div>
+    <div class="etiquette">Aperçu de la vidéo finale</div>
+    <div id="decompte"></div>
+  </div>
+  <div class="panneau">
+    <div class="prompteur">
+      <div class="temps"><span id="sequence"></span><span id="temps">0,0 s</span></div>
+      <div class="barre"><i id="avance"></i></div>
+      <div id="phrase" class="attente">Choisissez le point de départ, puis cliquez sur « Enregistrer ».</div>
+      <div id="suivante"></div>
+    </div>
+
+    <div class="commandes">
+      <button id="enregistrer" class="principal">● Enregistrer</button>
+      <button id="arreter" class="stop" disabled>■ Arrêter</button>
+      <span class="nav"><button id="precedent">◀ Précédent</button><button id="suivant">Suivant ▶</button></span>
+      <button id="repeter">▶ Répéter sans enregistrer</button>
+      <label>Départ : <select id="depart"></select></label>
+    </div>
+
+    <div class="reglages">
+      <label>Micro : <select id="micro"></select></label>
+      <span class="niveau" title="Niveau du micro"><i id="niveau"></i></span>
+      <label><input type="checkbox" id="avecCamera" /> Filmer avec la webcam</label>
+      <label id="choixCamera">Caméra : <select id="cam"></select></label>
+      <label><input type="checkbox" id="decompteActif" checked /> Décompte de 3 s</label>
+      <label><input type="checkbox" id="apercuCorrige" checked /> Aperçu avec la lumière corrigée</label>
+      <button id="cadrer" type="button">Me cadrer en plein écran</button>
+      <label><input type="checkbox" id="voirZones" checked /> Zones masquées par Instagram et TikTok</label>
+    </div>
+
+    <div class="prises">
+      <h2>Prises</h2>
+      <div id="listePrises" class="aide">Aucune prise pour l'instant.</div>
+    </div>
+
+    <p class="aide" id="aideLibre">
+      <b>Repères :</b> racontez avec vos mots, comme à un ami : où vous étiez, ce que vous avez vu, goûté,
+      entendu. Les mots-clés ne sont que des pistes. Passez à la séquence suivante quand vous voulez avec
+      <kbd>→</kbd> ou « Suivant » (<kbd>←</kbd> pour revenir) ; rien ne vous presse. <kbd>Échap</kbd> arrête.
+      Hésitations et reprises ne gênent pas : je garde les meilleurs passages, je coupe le reste et je cale
+      les images sur votre voix. Dites les noms exacts (lieux, sagra, producteurs) : ils seront écrits à l'écran.
+      La webcam est coupée : vos face caméra viennent du tournage. Cochez « Filmer avec la webcam » seulement
+      si vous voulez une prise face caméra de plus.
+    </p>
+    <p class="aide" id="aideTexte" hidden>
+      <b>Texte complet :</b> le montage défile sans le son et chaque phrase s'affiche au bon moment. Chaque
+      prise commence au point de départ choisi. « Voir » rejoue la prise.
+    </p>
+    <p id="erreur"></p>
+  </div>
+</main>
+
+<script>
+(async function () {
+  const $ = (id) => document.getElementById(id);
+  const montage = $('montage'), camera = $('camera');
+  const fmt = (t) => Math.max(0, t).toFixed(1).replace('.', ',') + ' s';
+  const erreur = (m) => { $('erreur').textContent = m; };
+  let libre = true;
+
+  // --- Donnees : reperes (mode libre) et phrases du texte (lues dans la composition). ---
+  let reperes = [], phrases = [];
+  try { reperes = (await (await fetch('reperes.json', { cache: 'no-store' })).json()).reperes; }
+  catch (e) { erreur("reperes.json introuvable (" + e.message + ")."); }
+  try {
+    // Phrases du texte : les sous-titres de la composition (.st, avec leurs temps data-a / data-b).
+    const html = await (await fetch('index.html', { cache: 'no-store' })).text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('.st').forEach((st) => phrases.push({ t: +st.dataset.a, fin: +st.dataset.b, texte: st.textContent.replace(/\s+/g, ' ').trim() }));
+    phrases.sort((x, y) => x.t - y.t);
+  } catch (e) { /* le mode texte sera simplement vide */ }
+
+  // --- Points de depart selon le mode. ---
+  const depart = $('depart');
+  function remplirDeparts() {
+    depart.innerHTML = '';
+    if (libre) reperes.forEach((r, i) => depart.add(new Option(`${i + 1}. ${r.titre}`, String(i))));
+    else {
+      depart.add(new Option('Début du montage (0 s)', '0'));
+      phrases.forEach((p) => { const t = Math.max(0, p.t - 1); depart.add(new Option(fmt(t) + ' — ' + p.texte.slice(0, 60) + (p.texte.length > 60 ? '…' : ''), String(t))); });
+    }
+  }
+
+  // --- Horloge : celle du montage, ou une horloge interne si la video manque (le prompteur defile quand meme). ---
+  let sansMontage = false, horlogeDebut = 0, horlogePos = 0, horlogeMarche = false;
+  const MSG_SANS_MONTAGE = "Pas encore d'aperçu vidéo : l'écran décrit les images de chaque séquence.";
+  const tempsMontage = () => !sansMontage ? montage.currentTime : horlogeMarche ? horlogePos + (performance.now() - horlogeDebut) / 1000 : horlogePos;
+  function placer(t) { horlogePos = t; horlogeDebut = performance.now(); if (!sansMontage) montage.currentTime = t; }
+  async function jouer() {
+    if (!sansMontage) { try { await montage.play(); return; } catch (e) { passerSansMontage(); } }
+    horlogeDebut = performance.now(); horlogeMarche = true;
+  }
+  function suspendre() { if (sansMontage) { horlogePos = tempsMontage(); horlogeMarche = false; } else montage.pause(); }
+  function passerSansMontage() { if (!sansMontage) { sansMontage = true; document.body.classList.add('sans-apercu'); horlogePos = montage.currentTime || 0; erreur(MSG_SANS_MONTAGE); } }
+  montage.onerror = passerSansMontage;
+  if (montage.error || montage.networkState === 3) passerSansMontage();
+
+  // --- Etat d'une prise en cours. ---
+  let enCours = false, enregistrement = false, t0Prise = 0, indexRepere = 0, marques = [];
+  const tPrise = () => (performance.now() - t0Prise) / 1000;
+
+  function allerAuRepere(i, noter = true) {
+    indexRepere = Math.max(0, Math.min(reperes.length - 1, i));
+    const r = reperes[indexRepere];
+    placer(r.debut);
+    if (enCours) { jouer(); if (noter && enregistrement) marques.push({ repere: r.id, titre: r.titre, t: +tPrise().toFixed(2) }); }
+  }
+
+  // --- Affichage, a chaque image. ---
+  function afficher() {
+    const t = tempsMontage();
+    const el = $('phrase');
+    if (libre) {
+      const r = reperes[indexRepere];
+      if (r && enCours && t >= r.fin) suspendre(); // fin de la sequence : on reste sur sa derniere image
+      $('sequence').textContent = r ? `Séquence ${indexRepere + 1}/${reperes.length} · ${r.titre}` : '';
+      $('temps').textContent = enCours ? (enregistrement ? '● ' : '') + fmt(tPrise()) : '';
+      $('avance').style.width = reperes.length ? (100 * (indexRepere + (r && enCours ? Math.min(1, (t - r.debut) / (r.fin - r.debut)) : 0)) / reperes.length) + '%' : '0';
+      if (!r) return;
+      const html = '<ul>' + r.mots.map((m) => `<li>${m}</li>`).join('') + '</ul>';
+      const scene = r.voit ? `<div><small>On voit</small>${r.voit}</div>` : '';
+      if ($('scene').innerHTML !== scene) $('scene').innerHTML = scene;
+      if (el.innerHTML !== html) { el.innerHTML = html; el.className = ''; }
+      $('suivante').textContent = reperes[indexRepere + 1] ? reperes[indexRepere + 1].titre : 'fin : « Arrêter »';
+    } else {
+      const d = sansMontage ? (phrases.length ? phrases[phrases.length - 1].fin + 2 : 80) : montage.duration || 0;
+      if (enCours && t >= d) arreter();
+      $('sequence').textContent = 'Texte complet';
+      $('temps').textContent = fmt(t) + ' / ' + fmt(d);
+      $('avance').style.width = d ? (100 * t / d) + '%' : '0';
+      const i = phrases.findIndex((p) => t < p.fin);
+      if (i === -1) { el.textContent = 'Fin du texte.'; el.className = 'attente'; $('suivante').textContent = ''; return; }
+      const p = phrases[i];
+      if (t >= p.t - 0.15) { el.textContent = p.texte; el.className = ''; $('suivante').textContent = phrases[i + 1] ? phrases[i + 1].texte : ''; }
+      else { el.textContent = 'Dans ' + fmt(p.t - t) + ' : ' + p.texte; el.className = 'attente'; $('suivante').textContent = ''; }
+    }
+  }
+  (function boucle() { afficher(); requestAnimationFrame(boucle); })();
+
+  // --- Changement de mode. ---
+  function choisirMode(l) {
+    if (enCours) return;
+    libre = l;
+    document.body.classList.toggle('libre', l);
+    $('modeLibre').classList.toggle('actif', l); $('modeTexte').classList.toggle('actif', !l);
+    $('aideLibre').hidden = !l; $('aideTexte').hidden = l;
+    remplirDeparts();
+    if (l) allerAuRepere(0, false); else placer(0);
+  }
+  $('modeLibre').onclick = () => choisirMode(true);
+  $('modeTexte').onclick = () => choisirMode(false);
+
+  // --- Micro, camera, vumetre. ---
+  let flux = null, analyseur = null, ctxAudio = null;
+  async function ouvrirFlux() {
+    const idMicro = $('micro').value, idCam = $('cam').value;
+    // Son brut du micro : sans annulation d'echo, reduction de bruit ni gain automatique du navigateur.
+    const audio = { deviceId: idMicro ? { exact: idMicro } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false, sampleRate: 48000, channelCount: { ideal: 2 } };
+    const video = $('avecCamera').checked ? { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 }, deviceId: idCam ? { exact: idCam } : undefined } : false;
+    $('choixCamera').style.display = video ? '' : 'none';
+    if (flux) flux.getTracks().forEach((t) => t.stop());
+    flux = await navigator.mediaDevices.getUserMedia({ audio, video });
+    camera.srcObject = video ? flux : null;
+    $('apercu').style.display = video ? 'block' : 'none';
+    if (video) camera.play();
+    if (ctxAudio) ctxAudio.close();
+    ctxAudio = new AudioContext();
+    analyseur = ctxAudio.createAnalyser(); analyseur.fftSize = 512;
+    ctxAudio.createMediaStreamSource(flux).connect(analyseur);
+  }
+  const donnees = new Uint8Array(512);
+  (function vumetre() {
+    if (analyseur) {
+      analyseur.getByteTimeDomainData(donnees);
+      let m = 0; for (const v of donnees) m = Math.max(m, Math.abs(v - 128));
+      $('niveau').style.width = Math.min(100, m / 1.28) + '%';
+    }
+    requestAnimationFrame(vumetre);
+  })();
+  async function listerAppareils() {
+    const appareils = await navigator.mediaDevices.enumerateDevices();
+    for (const [id, kind, nom] of [['micro', 'audioinput', 'Micro'], ['cam', 'videoinput', 'Caméra']]) {
+      const sel = $(id), actuel = sel.value; sel.innerHTML = '';
+      appareils.filter((a) => a.kind === kind).forEach((a, i) => sel.add(new Option(a.label || `${nom} ${i + 1}`, a.deviceId)));
+      if (actuel) sel.value = actuel;
+    }
+  }
+  try { await ouvrirFlux(); await listerAppareils(); }
+  catch (e) { erreur("Accès au micro ou à la caméra refusé ou impossible (" + e.message + ")."); }
+  $('micro').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
+  $('cam').onchange = () => ouvrirFlux().catch((e) => erreur(e.message));
+  $('avecCamera').onchange = () => ouvrirFlux().then(listerAppareils).catch((e) => erreur(e.message));
+  navigator.mediaDevices.addEventListener('devicechange', listerAppareils);
+
+  // --- Previsualiser avant d'enregistrer : lumiere corrigee et plein cadre vertical. ---
+  const appliquerCorrection = () => $('apercu').classList.toggle('corrige', $('apercuCorrige').checked);
+  $('apercuCorrige').onchange = appliquerCorrection; appliquerCorrection();
+  function cadrer(oui) {
+    document.querySelector('.ecran').classList.toggle('cadrage', oui);
+    $('cadrer').textContent = oui ? 'Revenir au montage' : 'Me cadrer en plein écran';
+  }
+  $('cadrer').onclick = () => cadrer(!document.querySelector('.ecran').classList.contains('cadrage'));
+  // Zones masquees par l'interface des reseaux : sur l'ecran vertical (montage ou plein cadre) et dans le cadre 9:16.
+  document.querySelector('.ecran').insertAdjacentHTML('beforeend',
+    '<div class="zones"><i class="z-haut"><span>masqué : en-tête</span></i><i class="z-droite"></i><i class="z-bas"><span>masqué : légende, boutons</span></i></div>');
+  const voirZones = () => document.body.classList.toggle('sans-zones', !$('voirZones').checked);
+  $('voirZones').onchange = voirZones; voirZones();
+
+  // --- Lancer, arreter. ---
+  let enregistreur = null, morceaux = [];
+  const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function decompte() {
+    if (!$('decompteActif').checked) return;
+    const d = $('decompte'); d.style.display = 'flex';
+    for (const n of [3, 2, 1]) { d.textContent = n; await attendre(1000); }
+    d.style.display = 'none';
+  }
+  async function lancer(avecEnregistrement) {
+    erreur(sansMontage ? MSG_SANS_MONTAGE : '');
+    cadrer(false);
+    suspendre();
+    if (libre) allerAuRepere(+depart.value || 0, false); else placer(+depart.value || 0);
+    $('enregistrer').disabled = true; $('repeter').disabled = true; $('arreter').disabled = false;
+    await decompte();
+    enCours = true; enregistrement = avecEnregistrement; t0Prise = performance.now(); marques = [];
+    if (avecEnregistrement) {
+      if (!flux) await ouvrirFlux();
+      const video = flux.getVideoTracks().length > 0;
+      const type = ['video/webm;codecs=vp9,opus', 'video/webm', 'video/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/mp4']
+        .find((t) => (video ? t.startsWith('video') : t.startsWith('audio')) && MediaRecorder.isTypeSupported(t)) || '';
+      morceaux = [];
+      // Son en haute qualite (256 kb/s) pour un micro de studio ; video a 8 Mb/s.
+      const rec = new MediaRecorder(flux, { ...(type ? { mimeType: type } : {}), audioBitsPerSecond: 256000, ...(video ? { videoBitsPerSecond: 8000000 } : {}) });
+      const infos = { mode: libre ? 'reperes' : 'texte', depart: libre ? reperes[indexRepere]?.id : +depart.value, video };
+      rec.ondataavailable = (e) => { if (e.data.size) morceaux.push(e.data); };
+      rec.onstop = () => ajouterPrise(new Blob(morceaux, { type: rec.mimeType }), { ...infos, duree: +tPrise().toFixed(2), marques: marques.slice() });
+      rec.start(1000);
+      enregistreur = rec;
+      $('rec').style.display = 'block';
+      if (libre) marques.push({ repere: reperes[indexRepere].id, titre: reperes[indexRepere].titre, t: 0 });
+    }
+    await jouer();
+  }
+  function arreter() {
+    if (!enCours && !enregistreur) return;
+    suspendre();
+    if (enregistreur && enregistreur.state !== 'inactive') enregistreur.stop();
+    enregistreur = null; enCours = false; enregistrement = false;
+    $('rec').style.display = 'none';
+    $('enregistrer').disabled = false; $('repeter').disabled = false; $('arreter').disabled = true;
+  }
+  $('enregistrer').onclick = () => lancer(true).catch((e) => { erreur(e.message); arreter(); });
+  $('repeter').onclick = () => lancer(false).catch((e) => { erreur(e.message); arreter(); });
+  $('arreter').onclick = arreter;
+  $('suivant').onclick = () => allerAuRepere(indexRepere + 1);
+  $('precedent').onclick = () => allerAuRepere(indexRepere - 1);
+  montage.onended = () => { if (!libre) arreter(); };
+  depart.onchange = () => { if (!enCours) { if (libre) allerAuRepere(+depart.value, false); else placer(+depart.value); } };
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'SELECT') return;
+    if (e.key === 'Escape') arreter();
+    else if (libre && enCours && (e.key === 'ArrowRight' || e.key === 'PageDown')) { e.preventDefault(); allerAuRepere(indexRepere + 1); }
+    else if (libre && enCours && (e.key === 'ArrowLeft' || e.key === 'PageUp')) { e.preventDefault(); allerAuRepere(indexRepere - 1); }
+  });
+
+  // --- Prises : nom horodate (pas d'ecrasement d'une session a l'autre), envoi au serveur, apercu. ---
+  let numero = 0;
+  const horodatage = () => { const d = new Date(), z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}_${z(d.getHours())}h${z(d.getMinutes())}m${z(d.getSeconds())}`; };
+  function ajouterPrise(blob, infos) {
+    numero += 1;
+    const ext = blob.type.includes('mp4') ? (infos.video ? 'mp4' : 'm4a') : 'webm';
+    const base = `terra-madre-${infos.mode}-${horodatage()}`;
+    const nom = `${base}.${ext}`;
+    const url = URL.createObjectURL(blob);
+    const liste = $('listePrises');
+    if (numero === 1) liste.textContent = '';
+    const ligne = document.createElement('div'); ligne.className = 'prise';
+    ligne.innerHTML = `<b>Prise ${numero} · ${fmt(infos.duree)}${infos.video ? ' · vidéo' : ' · son'}</b>`;
+    const lien = document.createElement('a'); lien.href = url; lien.download = nom; lien.textContent = 'Télécharger';
+    const media = document.createElement(infos.video ? 'video' : 'audio'); media.src = url; media.controls = true;
+    const voir = document.createElement('button'); voir.textContent = 'Voir';
+    voir.onclick = () => { media.style.display = media.style.display === 'block' ? 'none' : 'block'; if (media.style.display === 'block') media.play(); else media.pause(); };
+    const suppr = document.createElement('button'); suppr.textContent = 'Retirer de la liste';
+    suppr.onclick = () => { URL.revokeObjectURL(url); ligne.remove(); };
+    const etat = document.createElement('span'); etat.className = 'aide';
+    ligne.append(lien, voir, suppr, etat, media);
+    liste.prepend(ligne);
+    televerser(blob, nom, etat).then((ok) => {
+      if (ok) televerser(new Blob([JSON.stringify({ fichier: nom, ...infos }, null, 2)], { type: 'application/json' }), `${base}.json`);
+    });
+  }
+  // Sur le VPS (ops/vps/serveur-enregistrement.mjs), la prise part sur le serveur puis dans Google Drive.
+  // En local (http-server), l'envoi est refuse : on garde le telechargement.
+  async function televerser(blob, nom, etat) {
+    if (etat) etat.textContent = 'Envoi…';
+    try {
+      const r = await fetch('televerser?nom=' + encodeURIComponent(nom), { method: 'POST', body: blob });
+      if (!r.ok) throw new Error(r.status);
+      const j = await r.json();
+      if (etat) etat.textContent = j.drive ? '✓ Envoyée dans le Drive' : '✓ Enregistrée sur le serveur';
+      return true;
+    } catch (e) {
+      if (etat) etat.textContent = 'Pas de serveur : pensez à télécharger la prise.';
+      return false;
+    }
+  }
+
+  choisirMode(true);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "_note": "Repères de la voix off libre (enregistrer.html, mode « Repères ») pour le reel « Terra Madre et Sagre ». Une entrée par séquence, temps indicatifs en secondes (cible ≈ 45 s après accélération). « mots » = pistes, pas un texte à lire ; « voit » = les images de la séquence, affichées tant qu'il n'y a pas d'aperçu vidéo. Séquences tirées du plan validé v1 du studio (projet e1547470).",
+  "reperes": [
+    { "id": "accroche", "titre": "Accroche", "debut": 0, "fin": 3,
+      "voit": "La statue allongée de la fontaine, l'eau qui coule en rideau, plein soleil.",
+      "mots": ["Une phrase pour accrocher : deux week-ends, deux façons de fêter ce qu'on mange"] },
+    { "id": "turin", "titre": "Turin, Terra Madre", "debut": 3, "fin": 10,
+      "voit": "La place animée, la statue équestre, l'église baroque ; les tentes blanches du salon sous le dôme.",
+      "mots": ["Terra Madre, Turin", "quel jour, quelle ambiance ?", "ce que c'est, en une phrase"] },
+    { "id": "portiques", "titre": "Sous les portiques", "debut": 10, "fin": 17,
+      "voit": "L'escargot rose de Slow Food, la vitrine de chocolats, la rue piétonne bondée sous les arcades.",
+      "mots": ["Slow Food, l'escargot", "un produit, un goût, un nom de producteur ?"] },
+    { "id": "po", "titre": "Vous, vers le Pô", "debut": 17, "fin": 24,
+      "voit": "Vous face caméra ; le Pô, le vélo rouge contre le parapet, la colline en face.",
+      "mots": ["ce que vous en retenez", "le Pô, la pause"] },
+    { "id": "mole", "titre": "La Mole, sortie de Turin", "debut": 24, "fin": 29,
+      "voit": "La Mole Antonelliana au bout de la rue.",
+      "mots": ["on quitte Turin"] },
+    { "id": "vignes", "titre": "Les vignes, en montagne", "debut": 29, "fin": 35,
+      "voit": "Vignes en terrasses, la vallée, un drapeau rouge ; le 3 octobre en fin de journée.",
+      "mots": ["où est-ce ? (vallée, village)", "pourquoi vous y êtes allé"] },
+    { "id": "sagra", "titre": "La sagra", "debut": 35, "fin": 43,
+      "voit": "Le marché sous la tour médiévale, les parapluies colorés suspendus, la foule.",
+      "mots": ["le nom de la sagra et du village", "4 octobre", "ce qu'on y fête, ce qu'on y mange"] },
+    { "id": "chute", "titre": "Chute", "debut": 43, "fin": 47,
+      "voit": "Vous devant la façade baroque, regard posé.",
+      "mots": ["une phrase de fin : ce qui relie Turin et la sagra"] }
+  ]
+}
