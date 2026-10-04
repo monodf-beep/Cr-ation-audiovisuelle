@@ -1,14 +1,13 @@
 {
-  "_note": "Repères de la voix off libre (page d'enregistrement, mode « Repères ») pour « Parlez comme chez vous ». Les mots sont des pistes ; les faits (dates, chiffres) sont à garder tels quels (SCRIPT.md).",
+  "_note": "Repères de la voix libre (mode « Repères ») pour « Je vous défie » (SCRIPT.md, v2 en mode défis). Les mots sont des pistes ; votre histoire se raconte avec vos mots.",
   "reperes": [
-    { "id": "accroche", "titre": "Accroche", "debut": 0, "fin": 3, "mots": ["Septante.", "pas une faute"] },
-    { "id": "latin", "titre": "Du latin à Vaugelas", "debut": 3, "fin": 13, "mots": ["latin", "XVIe : une fois sur deux", "1647, Vaugelas : soixante-dix"] },
-    { "id": "savoie", "titre": "Chez nous, il a tenu", "debut": 13, "fin": 22, "mots": ["1883, Albertville : septanta, nonanta", "1902 : on regrette nonante"] },
-    { "id": "aujourdhui", "titre": "L'école, et aujourd'hui", "debut": 22, "fin": 31, "mots": ["pas une loi : l'école", "Saint-Julien : plus d'un sur deux"] },
-    { "id": "toponymes", "titre": "Le z et le x", "debut": 31, "fin": 42, "mots": ["le z dit l'accent", "la Clusa, Avoria", "Chamoni"] },
-    { "id": "ign", "titre": "1950, l'IGN", "debut": 42, "fin": 48, "mots": ["effacer les z des cartes", "ils sont restés"] },
-    { "id": "mots", "titre": "Nos mots", "debut": 48, "fin": 62, "mots": ["panosse, patte, cayon, débarouler, appondre", "années 90 : tous connaissaient la panosse", "dans l'Ain, personne"] },
-    { "id": "honte", "titre": "La honte", "debut": 62, "fin": 71, "mots": ["on nous a appris la honte", "le savoyard, en danger", "les traces dans notre français"] },
-    { "id": "chute", "titre": "Osez", "debut": 71, "fin": 78, "mots": ["osez : septante, la Clusa, la panosse", "parler de chez nous", "salut en savoyard"] }
+    { "id": "defi1", "titre": "Défi n° 1", "debut": 0, "fin": 4, "mots": ["je vous lance un défi", "votre numéro avec septante"] },
+    { "id": "defi2", "titre": "Défi n° 2", "debut": 4, "fin": 10, "mots": ["le Semnoz", "sans prononcer le z"] },
+    { "id": "pourquoi", "titre": "Pourquoi c'est juste", "debut": 10, "fin": 22, "mots": ["le z dit l'accent", "septante : latin, vieux français", "1883, Albertville : septanta"] },
+    { "id": "enfance", "titre": "Petit", "debut": 22, "fin": 32, "mots": ["la langue évolue", "« déçu en bien »"] },
+    { "id": "peur", "titre": "La peur", "debut": 32, "fin": 46, "mots": ["peur en Savoie", "peur hors de Savoie", "maintenant, c'est l'autre qui se sent bête"] },
+    { "id": "dialogue", "titre": "« Vous êtes belge ? »", "debut": 46, "fin": 58, "mots": ["« j'ai pas l'habitude »", "« vous êtes belge ? » — non, savoyard", "pourquoi le remarquer ?"] },
+    { "id": "nous", "titre": "À nous", "debut": 58, "fin": 65, "mots": ["le français, c'est aussi le nôtre", "se le réapproprier"] },
+    { "id": "chute", "titre": "Défi relevé ?", "debut": 65, "fin": 72, "mots": ["défi relevé ?", "numéro en septante, Semno", "en commentaire"] }
   ]
 }
