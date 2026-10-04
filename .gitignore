@@ -40,3 +40,10 @@ bibliotheque/donnees/
 11_vox/projects/*/voice/
 # Empreinte des coupes de la face camera (tools/face-voix.py)
 *.empreinte
+# Terra Madre et sagre : medias hors depot (rushes, voix, plans, habillage sonore, rendus)
+12_terra-madre/assets/plans/
+12_terra-madre/assets/.morceaux/
+12_terra-madre/assets/*.m4a
+12_terra-madre/renders/
+12_terra-madre/data/voix-montee.mots.json
+12_terra-madre/snapshots/

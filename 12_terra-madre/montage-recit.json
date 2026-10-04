@@ -1,0 +1,419 @@
+{
+ "_note": "Morceaux du recit (secondes dans la prise) et leur place dans le montage (t, vitesse 1). Fait par tools/couper-recit.py.",
+ "vitesse": 1.35,
+ "duree_voix": 147.219,
+ "duree": 109.051,
+ "passages": [
+  {
+   "sequence": "sagre",
+   "texte": "Les sagre, ce sont des endroits dans les villages en général pour célébrer la gastronomie,"
+  },
+  {
+   "sequence": "sagre",
+   "texte": "les produits du terroir, les produits du Piémont."
+  },
+  {
+   "sequence": "gouter",
+   "texte": "Ce que j'aime par-dessus tout, c'est"
+  },
+  {
+   "sequence": "gouter",
+   "texte": "de trouver des nouveaux produits et surtout de goûter, c'est ça l'important."
+  },
+  {
+   "sequence": "piemont",
+   "texte": "On y mange uniquement du territoire, donc en général dans le Piémont on y mange uniquement piémontais,"
+  },
+  {
+   "sequence": "piemont",
+   "texte": "on y mange beaucoup, on y mange très bien,"
+  },
+  {
+   "sequence": "sieste",
+   "texte": "moi je suis quelqu'un qui fait des siestes."
+  },
+  {
+   "sequence": "turin",
+   "texte": "Le week-end dernier j'étais à Turin pour Terra Madre,"
+  },
+  {
+   "sequence": "turin",
+   "texte": "pour valoriser le terroir piémontais,"
+  },
+  {
+   "sequence": "viaroma",
+   "texte": "surtout que c'était dans via Roma, ils ont refait toute la rue de via Roma."
+  },
+  {
+   "sequence": "vallees",
+   "texte": "Et ce week-end,"
+  },
+  {
+   "sequence": "vallees",
+   "texte": "dans le Piémont on a des vallées savoyardes bien sûr, on a des vallées occitanes,"
+  },
+  {
+   "sequence": "vallees",
+   "texte": "et là j'étais dans une vallée occitane."
+  },
+  {
+   "sequence": "giaveno",
+   "texte": "J'étais à Giaveno,"
+  },
+  {
+   "sequence": "giaveno",
+   "texte": "c'est un petit village,"
+  },
+  {
+   "sequence": "giaveno",
+   "texte": "et là il y avait justement la Sagra dei Funghi, donc pour les champignons."
+  },
+  {
+   "sequence": "plats",
+   "texte": "La lasagne avec les champignons, il y avait la salsiccia, la saucisse, c'était exceptionnel."
+  },
+  {
+   "sequence": "influenceur",
+   "texte": "Moi je vais pas vous montrer des plats, je suis pas un influenceur food, pas encore. Donc faut juste me faire confiance, et me croire."
+  },
+  {
+   "sequence": "cumiana",
+   "texte": "Et là je me trouve à Cumiana, entre Giaveno et Pinerolo."
+  },
+  {
+   "sequence": "bulbe",
+   "texte": "J'adore ce clocher, le bulbe,"
+  },
+  {
+   "sequence": "bulbe",
+   "texte": "qu'on retrouve un peu plus dans le Piémont, pas trop en Savoie,"
+  },
+  {
+   "sequence": "bulbe",
+   "texte": "mais c'est la même famille, on va dire."
+  },
+  {
+   "sequence": "francois",
+   "texte": "On retrouve beaucoup saint François de Sales,"
+  },
+  {
+   "sequence": "francois",
+   "texte": "c'est le saint patron des journalistes,"
+  },
+  {
+   "sequence": "francois",
+   "texte": "mais là, non, on ne l'a pas trouvé."
+  },
+  {
+   "sequence": "baroque",
+   "texte": "Et surtout le baroque : les églises regorgent de l'art baroque."
+  },
+  {
+   "sequence": "fin",
+   "texte": "Je vous remercie et à tout bientôt. Allez, abastou, ciao ciao."
+  }
+ ],
+ "morceaux": [
+  {
+   "sequence": "sagre",
+   "source": "recit",
+   "a": 18.3,
+   "b": 26.241,
+   "t": 0.0
+  },
+  {
+   "sequence": "sagre",
+   "source": "recit",
+   "a": 26.901,
+   "b": 27.094,
+   "t": 8.121
+  },
+  {
+   "sequence": "sagre",
+   "source": "recit",
+   "a": 27.3,
+   "b": 27.44,
+   "t": 8.494
+  },
+  {
+   "sequence": "sagre",
+   "source": "recit",
+   "a": 27.689,
+   "b": 28.149,
+   "t": 8.814
+  },
+  {
+   "sequence": "sagre",
+   "source": "recit",
+   "a": 28.455,
+   "b": 29.365,
+   "t": 9.454
+  },
+  {
+   "sequence": "sagre",
+   "source": "recit",
+   "a": 32.6,
+   "b": 37.4,
+   "t": 10.544
+  },
+  {
+   "sequence": "gouter",
+   "source": "recit",
+   "a": 42.851,
+   "b": 46.463,
+   "t": 15.624
+  },
+  {
+   "sequence": "gouter",
+   "source": "recit",
+   "a": 49.4,
+   "b": 54.042,
+   "t": 19.416
+  },
+  {
+   "sequence": "gouter",
+   "source": "recit",
+   "a": 54.43,
+   "b": 55.6,
+   "t": 24.238
+  },
+  {
+   "sequence": "piemont",
+   "source": "recit",
+   "a": 75.85,
+   "b": 82.85,
+   "t": 25.688
+  },
+  {
+   "sequence": "piemont",
+   "source": "recit",
+   "a": 85.962,
+   "b": 86.892,
+   "t": 32.868
+  },
+  {
+   "sequence": "piemont",
+   "source": "recit",
+   "a": 87.037,
+   "b": 88.113,
+   "t": 33.978
+  },
+  {
+   "sequence": "sieste",
+   "source": "recit",
+   "a": 106.55,
+   "b": 108.376,
+   "t": 35.334
+  },
+  {
+   "sequence": "sieste",
+   "source": "recit",
+   "a": 108.601,
+   "b": 111.25,
+   "t": 37.34
+  },
+  {
+   "sequence": "turin",
+   "source": "recit",
+   "a": 137.35,
+   "b": 144.35,
+   "t": 40.269
+  },
+  {
+   "sequence": "turin",
+   "source": "recit",
+   "a": 147.4,
+   "b": 149.128,
+   "t": 47.449
+  },
+  {
+   "sequence": "turin",
+   "source": "recit",
+   "a": 149.335,
+   "b": 152.4,
+   "t": 49.357
+  },
+  {
+   "sequence": "viaroma",
+   "source": "recit",
+   "a": 160.9,
+   "b": 163.153,
+   "t": 52.702
+  },
+  {
+   "sequence": "viaroma",
+   "source": "recit",
+   "a": 163.579,
+   "b": 167.557,
+   "t": 55.135
+  },
+  {
+   "sequence": "vallees",
+   "source": "recit",
+   "a": 180.8,
+   "b": 181.585,
+   "t": 59.393
+  },
+  {
+   "sequence": "vallees",
+   "source": "recit",
+   "a": 181.839,
+   "b": 182.1,
+   "t": 60.358
+  },
+  {
+   "sequence": "vallees",
+   "source": "recit",
+   "a": 201.6,
+   "b": 209.35,
+   "t": 60.799
+  },
+  {
+   "sequence": "vallees",
+   "source": "recit",
+   "a": 214.95,
+   "b": 217.95,
+   "t": 68.729
+  },
+  {
+   "sequence": "giaveno",
+   "source": "recit",
+   "a": 229.45,
+   "b": 230.95,
+   "t": 72.009
+  },
+  {
+   "sequence": "giaveno",
+   "source": "recit",
+   "a": 240.05,
+   "b": 241.2,
+   "t": 73.689
+  },
+  {
+   "sequence": "giaveno",
+   "source": "recit",
+   "a": 241.45,
+   "b": 250.25,
+   "t": 75.019
+  },
+  {
+   "sequence": "plats",
+   "source": "recit",
+   "a": 260.75,
+   "b": 271.15,
+   "t": 84.099
+  },
+  {
+   "sequence": "influenceur",
+   "source": "fin",
+   "a": 48.6,
+   "b": 63.1,
+   "t": 94.779
+  },
+  {
+   "sequence": "cumiana",
+   "source": "recit",
+   "a": 275.4,
+   "b": 282.15,
+   "t": 109.559
+  },
+  {
+   "sequence": "bulbe",
+   "source": "recit",
+   "a": 289.05,
+   "b": 292.2,
+   "t": 116.589
+  },
+  {
+   "sequence": "bulbe",
+   "source": "recit",
+   "a": 312.1,
+   "b": 316.0,
+   "t": 119.919
+  },
+  {
+   "sequence": "bulbe",
+   "source": "recit",
+   "a": 318.45,
+   "b": 320.65,
+   "t": 123.999
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 362.6,
+   "b": 364.9,
+   "t": 126.479
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 384.85,
+   "b": 386.12,
+   "t": 128.959
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 388.23,
+   "b": 390.698,
+   "t": 130.409
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 390.866,
+   "b": 391.0,
+   "t": 133.057
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 403.3,
+   "b": 403.471,
+   "t": 133.371
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 403.766,
+   "b": 404.646,
+   "t": 133.722
+  },
+  {
+   "sequence": "francois",
+   "source": "recit",
+   "a": 405.217,
+   "b": 406.85,
+   "t": 134.782
+  },
+  {
+   "sequence": "baroque",
+   "source": "recit",
+   "a": 407.6,
+   "b": 412.55,
+   "t": 136.695
+  },
+  {
+   "sequence": "fin",
+   "source": "recit",
+   "a": 428.45,
+   "b": 430.553,
+   "t": 141.925
+  },
+  {
+   "sequence": "fin",
+   "source": "recit",
+   "a": 430.704,
+   "b": 431.612,
+   "t": 144.208
+  },
+  {
+   "sequence": "fin",
+   "source": "recit",
+   "a": 431.777,
+   "b": 433.7,
+   "t": 145.296
+  }
+ ]
+}

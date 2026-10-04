@@ -1,0 +1,1065 @@
+[
+{
+"debut": 0.0,
+"fin": 1.48,
+"mots": [
+"Les",
+"sagre"
+],
+"cle": "sagre"
+},
+{
+"debut": 1.48,
+"fin": 1.58,
+"mots": [
+"ce",
+"sont"
+],
+"cle": null
+},
+{
+"debut": 1.58,
+"fin": 2.7,
+"mots": [
+"des",
+"endroits"
+],
+"cle": null
+},
+{
+"debut": 2.7,
+"fin": 3.6,
+"mots": [
+"dans",
+"les",
+"villages"
+],
+"cle": null
+},
+{
+"debut": 3.6,
+"fin": 4.34,
+"mots": [
+"en",
+"général"
+],
+"cle": null
+},
+{
+"debut": 4.34,
+"fin": 6.92,
+"mots": [
+"pour",
+"célébrer"
+],
+"cle": null
+},
+{
+"debut": 6.92,
+"fin": 7.94,
+"mots": [
+"la",
+"gastronomie"
+],
+"cle": "gastronomie"
+},
+{
+"debut": 7.94,
+"fin": 8.48,
+"mots": [
+"Les",
+"produits"
+],
+"cle": null
+},
+{
+"debut": 8.48,
+"fin": 9.86,
+"mots": [
+"du",
+"terroir"
+],
+"cle": "terroir"
+},
+{
+"debut": 9.86,
+"fin": 10.44,
+"mots": [
+"les",
+"produits"
+],
+"cle": null
+},
+{
+"debut": 10.44,
+"fin": 11.64,
+"mots": [
+"du",
+"Piémont"
+],
+"cle": "Piémont"
+},
+{
+"debut": 11.64,
+"fin": 12.32,
+"mots": [
+"Ce",
+"que",
+"j'aime"
+],
+"cle": null
+},
+{
+"debut": 12.32,
+"fin": 13.84,
+"mots": [
+"par-dessus",
+"tout"
+],
+"cle": null
+},
+{
+"debut": 14.06,
+"fin": 14.94,
+"mots": [
+"c'est",
+"trouver"
+],
+"cle": null
+},
+{
+"debut": 14.94,
+"fin": 15.28,
+"mots": [
+"des",
+"nouveaux"
+],
+"cle": null
+},
+{
+"debut": 15.28,
+"fin": 17.28,
+"mots": [
+"produits",
+"et",
+"surtout"
+],
+"cle": null
+},
+{
+"debut": 17.28,
+"fin": 18.12,
+"mots": [
+"de",
+"goûter"
+],
+"cle": "goûter"
+},
+{
+"debut": 18.12,
+"fin": 19.14,
+"mots": [
+"C'est",
+"ça",
+"l'important"
+],
+"cle": null
+},
+{
+"debut": 19.14,
+"fin": 19.62,
+"mots": [
+"Et",
+"on"
+],
+"cle": null
+},
+{
+"debut": 19.62,
+"fin": 20.82,
+"mots": [
+"y",
+"mange",
+"uniquement"
+],
+"cle": null
+},
+{
+"debut": 20.82,
+"fin": 21.92,
+"mots": [
+"du",
+"territoire"
+],
+"cle": null
+},
+{
+"debut": 21.92,
+"fin": 22.5,
+"mots": [
+"En",
+"général"
+],
+"cle": null
+},
+{
+"debut": 22.5,
+"fin": 22.78,
+"mots": [
+"dans",
+"le",
+"Piémont"
+],
+"cle": "Piémont"
+},
+{
+"debut": 22.78,
+"fin": 23.08,
+"mots": [
+"on",
+"y",
+"mange"
+],
+"cle": null
+},
+{
+"debut": 23.08,
+"fin": 23.46,
+"mots": [
+"uniquement"
+],
+"cle": null
+},
+{
+"debut": 23.46,
+"fin": 24.36,
+"mots": [
+"piémontais"
+],
+"cle": "piémontais"
+},
+{
+"debut": 24.36,
+"fin": 24.72,
+"mots": [
+"On",
+"y",
+"mange"
+],
+"cle": null
+},
+{
+"debut": 24.72,
+"fin": 25.38,
+"mots": [
+"beaucoup",
+"on"
+],
+"cle": null
+},
+{
+"debut": 25.38,
+"fin": 25.62,
+"mots": [
+"y",
+"mange"
+],
+"cle": null
+},
+{
+"debut": 25.62,
+"fin": 26.24,
+"mots": [
+"très",
+"bien"
+],
+"cle": null
+},
+{
+"debut": 26.24,
+"fin": 26.82,
+"mots": [
+"Moi"
+],
+"cle": null
+},
+{
+"debut": 26.82,
+"fin": 28.28,
+"mots": [
+"je",
+"suis",
+"quelqu'un"
+],
+"cle": null
+},
+{
+"debut": 28.28,
+"fin": 28.74,
+"mots": [
+"qui",
+"fait"
+],
+"cle": null
+},
+{
+"debut": 28.74,
+"fin": 29.56,
+"mots": [
+"des",
+"siestes"
+],
+"cle": "siestes"
+},
+{
+"debut": 29.82,
+"fin": 30.92,
+"mots": [
+"Le",
+"week-end",
+"dernier"
+],
+"cle": null
+},
+{
+"debut": 30.92,
+"fin": 32.56,
+"mots": [
+"j'étais",
+"à",
+"Turin"
+],
+"cle": "Turin"
+},
+{
+"debut": 32.56,
+"fin": 35.32,
+"mots": [
+"pour",
+"Terra Madre"
+],
+"cle": "Terra Madre"
+},
+{
+"debut": 35.32,
+"fin": 36.16,
+"mots": [
+"pour",
+"valoriser"
+],
+"cle": null
+},
+{
+"debut": 36.16,
+"fin": 38.1,
+"mots": [
+"le",
+"terroir"
+],
+"cle": "terroir"
+},
+{
+"debut": 38.1,
+"fin": 39.06,
+"mots": [
+"piémontais"
+],
+"cle": "piémontais"
+},
+{
+"debut": 39.06,
+"fin": 39.68,
+"mots": [
+"Surtout",
+"que",
+"c'était"
+],
+"cle": null
+},
+{
+"debut": 39.68,
+"fin": 41.08,
+"mots": [
+"dans",
+"via Roma"
+],
+"cle": "via Roma"
+},
+{
+"debut": 41.08,
+"fin": 41.88,
+"mots": [
+"Ils",
+"ont",
+"refait"
+],
+"cle": null
+},
+{
+"debut": 41.88,
+"fin": 42.84,
+"mots": [
+"toute",
+"la",
+"rue"
+],
+"cle": null
+},
+{
+"debut": 42.84,
+"fin": 44.0,
+"mots": [
+"de",
+"via Roma"
+],
+"cle": "via Roma"
+},
+{
+"debut": 44.04,
+"fin": 45.36,
+"mots": [
+"Et",
+"ce",
+"week-end"
+],
+"cle": null
+},
+{
+"debut": 45.36,
+"fin": 46.22,
+"mots": [
+"dans",
+"le",
+"Piémont"
+],
+"cle": "Piémont"
+},
+{
+"debut": 46.5,
+"fin": 46.86,
+"mots": [
+"on",
+"a"
+],
+"cle": null
+},
+{
+"debut": 46.86,
+"fin": 48.32,
+"mots": [
+"des",
+"vallées savoyardes"
+],
+"cle": "vallées savoyardes"
+},
+{
+"debut": 48.32,
+"fin": 48.86,
+"mots": [
+"bien",
+"sûr"
+],
+"cle": null
+},
+{
+"debut": 48.86,
+"fin": 48.98,
+"mots": [
+"on",
+"a"
+],
+"cle": null
+},
+{
+"debut": 48.98,
+"fin": 50.6,
+"mots": [
+"des",
+"vallées occitanes"
+],
+"cle": "vallées occitanes"
+},
+{
+"debut": 50.92,
+"fin": 51.34,
+"mots": [
+"Et",
+"là",
+"j'étais"
+],
+"cle": null
+},
+{
+"debut": 51.34,
+"fin": 51.44,
+"mots": [
+"dans"
+],
+"cle": null
+},
+{
+"debut": 51.44,
+"fin": 53.36,
+"mots": [
+"une",
+"vallée occitane"
+],
+"cle": "vallée occitane"
+},
+{
+"debut": 53.36,
+"fin": 54.7,
+"mots": [
+"J'étais",
+"à",
+"Giaveno"
+],
+"cle": "Giaveno"
+},
+{
+"debut": 54.7,
+"fin": 55.14,
+"mots": [
+"c'est",
+"un",
+"petit"
+],
+"cle": null
+},
+{
+"debut": 55.14,
+"fin": 55.42,
+"mots": [
+"village"
+],
+"cle": null
+},
+{
+"debut": 55.42,
+"fin": 55.84,
+"mots": [
+"Et",
+"là"
+],
+"cle": null
+},
+{
+"debut": 55.84,
+"fin": 56.12,
+"mots": [
+"il",
+"y",
+"avait"
+],
+"cle": null
+},
+{
+"debut": 56.12,
+"fin": 56.92,
+"mots": [
+"justement"
+],
+"cle": null
+},
+{
+"debut": 56.92,
+"fin": 60.32,
+"mots": [
+"la",
+"Sagra dei Funghi"
+],
+"cle": "Sagra dei Funghi"
+},
+{
+"debut": 60.94,
+"fin": 62.04,
+"mots": [
+"pour",
+"les",
+"champignons"
+],
+"cle": "champignons"
+},
+{
+"debut": 62.04,
+"fin": 63.92,
+"mots": [
+"la lasagne",
+"avec"
+],
+"cle": "la lasagne"
+},
+{
+"debut": 63.92,
+"fin": 65.9,
+"mots": [
+"les",
+"champignons"
+],
+"cle": "champignons"
+},
+{
+"debut": 66.18,
+"fin": 66.64,
+"mots": [
+"Il",
+"y",
+"avait"
+],
+"cle": null
+},
+{
+"debut": 66.64,
+"fin": 67.36,
+"mots": [
+"la",
+"salsiccia"
+],
+"cle": "salsiccia"
+},
+{
+"debut": 67.36,
+"fin": 68.74,
+"mots": [
+"la",
+"saucisse"
+],
+"cle": null
+},
+{
+"debut": 68.74,
+"fin": 70.32,
+"mots": [
+"c'était",
+"exceptionnel"
+],
+"cle": null
+},
+{
+"debut": 70.32,
+"fin": 70.68,
+"mots": [
+"Moi",
+"je",
+"ne"
+],
+"cle": null
+},
+{
+"debut": 70.68,
+"fin": 70.86,
+"mots": [
+"vais",
+"pas",
+"vous"
+],
+"cle": null
+},
+{
+"debut": 70.86,
+"fin": 71.88,
+"mots": [
+"montrer",
+"des",
+"plats"
+],
+"cle": null
+},
+{
+"debut": 71.88,
+"fin": 73.22,
+"mots": [
+"je",
+"ne",
+"suis"
+],
+"cle": null
+},
+{
+"debut": 73.22,
+"fin": 73.3,
+"mots": [
+"pas"
+],
+"cle": null
+},
+{
+"debut": 73.3,
+"fin": 75.74,
+"mots": [
+"un",
+"influenceur food"
+],
+"cle": "influenceur food"
+},
+{
+"debut": 76.1,
+"fin": 77.08,
+"mots": [
+"pas",
+"encore"
+],
+"cle": null
+},
+{
+"debut": 78.12,
+"fin": 78.74,
+"mots": [
+"Donc"
+],
+"cle": null
+},
+{
+"debut": 78.92,
+"fin": 79.2,
+"mots": [
+"il",
+"faut",
+"juste"
+],
+"cle": null
+},
+{
+"debut": 79.2,
+"fin": 79.78,
+"mots": [
+"me",
+"faire",
+"confiance"
+],
+"cle": null
+},
+{
+"debut": 79.78,
+"fin": 80.94,
+"mots": [
+"et",
+"me",
+"croire"
+],
+"cle": null
+},
+{
+"debut": 80.94,
+"fin": 81.66,
+"mots": [
+"Et",
+"là"
+],
+"cle": null
+},
+{
+"debut": 81.66,
+"fin": 81.98,
+"mots": [
+"je",
+"me",
+"trouve"
+],
+"cle": null
+},
+{
+"debut": 81.98,
+"fin": 83.32,
+"mots": [
+"à",
+"Cumiana"
+],
+"cle": "Cumiana"
+},
+{
+"debut": 84.04,
+"fin": 84.98,
+"mots": [
+"entre",
+"Giaveno"
+],
+"cle": "Giaveno"
+},
+{
+"debut": 84.98,
+"fin": 86.36,
+"mots": [
+"et",
+"Pinerolo"
+],
+"cle": "Pinerolo"
+},
+{
+"debut": 86.36,
+"fin": 88.28,
+"mots": [
+"J'adore",
+"ce",
+"clocher"
+],
+"cle": "clocher"
+},
+{
+"debut": 88.28,
+"fin": 89.14,
+"mots": [
+"le",
+"bulbe",
+"qu'on"
+],
+"cle": "bulbe"
+},
+{
+"debut": 89.14,
+"fin": 89.8,
+"mots": [
+"retrouve",
+"un",
+"peu"
+],
+"cle": null
+},
+{
+"debut": 89.8,
+"fin": 90.16,
+"mots": [
+"plus",
+"dans"
+],
+"cle": null
+},
+{
+"debut": 90.16,
+"fin": 90.5,
+"mots": [
+"le",
+"Piémont"
+],
+"cle": "Piémont"
+},
+{
+"debut": 90.5,
+"fin": 91.22,
+"mots": [
+"pas",
+"trop"
+],
+"cle": null
+},
+{
+"debut": 91.22,
+"fin": 91.92,
+"mots": [
+"en",
+"Savoie"
+],
+"cle": "Savoie"
+},
+{
+"debut": 91.92,
+"fin": 92.44,
+"mots": [
+"Mais",
+"c'est"
+],
+"cle": null
+},
+{
+"debut": 92.44,
+"fin": 92.98,
+"mots": [
+"la",
+"même famille"
+],
+"cle": "même famille"
+},
+{
+"debut": 92.98,
+"fin": 93.7,
+"mots": [
+"on",
+"va",
+"dire"
+],
+"cle": null
+},
+{
+"debut": 93.7,
+"fin": 94.42,
+"mots": [
+"On",
+"retrouve",
+"beaucoup"
+],
+"cle": null
+},
+{
+"debut": 94.42,
+"fin": 95.54,
+"mots": [
+"saint François de Sales"
+],
+"cle": "saint François de Sales"
+},
+{
+"debut": 95.76,
+"fin": 96.48,
+"mots": [
+"c'est",
+"un",
+"saint"
+],
+"cle": null
+},
+{
+"debut": 96.48,
+"fin": 96.74,
+"mots": [
+"qui",
+"est"
+],
+"cle": null
+},
+{
+"debut": 96.74,
+"fin": 96.92,
+"mots": [
+"le",
+"saint"
+],
+"cle": null
+},
+{
+"debut": 96.92,
+"fin": 98.98,
+"mots": [
+"patron des journalistes"
+],
+"cle": "patron des journalistes"
+},
+{
+"debut": 99.4,
+"fin": 100.22,
+"mots": [
+"Mais",
+"là",
+"non"
+],
+"cle": null
+},
+{
+"debut": 100.22,
+"fin": 100.36,
+"mots": [
+"on",
+"ne",
+"l'a"
+],
+"cle": null
+},
+{
+"debut": 100.36,
+"fin": 101.32,
+"mots": [
+"pas",
+"trouvé"
+],
+"cle": null
+},
+{
+"debut": 101.32,
+"fin": 102.06,
+"mots": [
+"Et",
+"aussi",
+"surtout"
+],
+"cle": null
+},
+{
+"debut": 102.06,
+"fin": 102.74,
+"mots": [
+"le",
+"baroque"
+],
+"cle": null
+},
+{
+"debut": 102.74,
+"fin": 103.56,
+"mots": [
+"les",
+"églises"
+],
+"cle": null
+},
+{
+"debut": 103.56,
+"fin": 104.54,
+"mots": [
+"regorgent",
+"de",
+"l'art"
+],
+"cle": null
+},
+{
+"debut": 104.54,
+"fin": 105.3,
+"mots": [
+"baroque"
+],
+"cle": null
+},
+{
+"debut": 105.54,
+"fin": 105.96,
+"mots": [
+"Et",
+"bien"
+],
+"cle": null
+},
+{
+"debut": 105.96,
+"fin": 106.48,
+"mots": [
+"je",
+"vous",
+"remercie"
+],
+"cle": null
+},
+{
+"debut": 106.48,
+"fin": 107.24,
+"mots": [
+"et",
+"à",
+"tout"
+],
+"cle": null
+},
+{
+"debut": 107.24,
+"fin": 107.76,
+"mots": [
+"bientôt"
+],
+"cle": null
+},
+{
+"debut": 107.76,
+"fin": 108.66,
+"mots": [
+"Allez",
+"abastou"
+],
+"cle": "abastou"
+},
+{
+"debut": 108.66,
+"fin": 109.4,
+"mots": [
+"ciao ciao"
+],
+"cle": null
+}
+]

@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Terra Madre et sagre du Piémont</title>
+    <!-- Reel vertical de Franck Monod, style « Reportage Franck » (styles/reportage-franck.md, 04_montage/BONNES-PRATIQUES.md).
+         Genere par tools/composer.py : ne pas editer a la main. Voix : tools/couper-recit.py ; sous-titres : tools/sous-titres.py. -->
+    <script src="assets/vendor/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <style>
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro.woff') format('woff'); font-weight: 400; }
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Semibold.woff') format('woff'); font-weight: 600; }
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Bold.woff') format('woff'); font-weight: 700; }
+      @font-face { font-family: 'Cormorant Garamond'; src: url('assets/fonts/CormorantGaramond-Medium.woff2') format('woff2'); font-weight: 500; }
+      @font-face { font-family: 'Cormorant Garamond'; src: url('assets/fonts/CormorantGaramond-Italic.woff2') format('woff2'); font-weight: 500; font-style: italic; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: var(--fm-font); color: var(--fm-ink-900); }
+      video.plein, img.plein { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      #face { transform-origin: 50% 30%; }
+      .plan { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+      .plan .cadre { position: absolute; inset: 0; transform-origin: 50% 45%; }
+      .vent { position: absolute; inset: 0; }
+      #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 40; }
+
+      /* Titres (zone sure : sous 280 px, au-dessus de 1440 px, a gauche de 940 px) */
+      .hook { position: absolute; left: 80px; right: 160px; top: 300px; z-index: 20; opacity: 0; }
+      .hook .eyebrow { display: inline-block; font-size: 30px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff; background: var(--fm-bleu-savoie); padding: 8px 16px; }
+      .hook h1 { margin-top: 20px; font-size: 168px; font-weight: 700; line-height: .92; letter-spacing: -.02em; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,.55); }
+      .hook h1 em { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; }
+      .pastille { position: absolute; left: 70px; top: 300px; background: #fff; padding: 18px 26px; z-index: 20; opacity: 0; max-width: 780px; }
+      .pastille .k { font-size: 24px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+      .pastille .v { margin-top: 6px; font-size: 44px; font-weight: 700; line-height: 1.1; }
+      .credit { position: absolute; right: 24px; top: 262px; font-size: 18px; color: #fff; background: rgba(23,23,25,.75); padding: 4px 10px; z-index: 21; opacity: 0; }
+      .liste { position: absolute; left: 70px; top: 300px; z-index: 20; }
+      .liste div { display: table; margin-bottom: 14px; background: #fff; padding: 10px 24px 14px; font-size: 64px; font-weight: 700; opacity: 0; }
+      .liste div.cle { background: var(--fm-bleu-savoie); color: #fff; }
+      .lieu-fin { position: absolute; left: 80px; top: 300px; z-index: 20; color: #fff; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 120px; line-height: 1; text-shadow: 0 0 4px rgba(0,0,0,.7), 0 2px 24px rgba(0,0,0,.7); opacity: 0; }
+      .lieu-fin em { font-style: italic; border-bottom: 5px solid #fff; }
+      .bloc-nom { position: absolute; left: 60px; top: 1080px; background: var(--fm-bleu-savoie); color: #fff; padding: 22px 32px 24px; z-index: 20; opacity: 0; }
+      .bloc-nom .n { font-size: 54px; font-weight: 700; line-height: 1.1; }
+      .bloc-nom .r { margin-top: 8px; font-size: 26px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+
+      /* Carte */
+      .carte { position: absolute; inset: 0; background: #e9ecf3; opacity: 0; z-index: 10; overflow: hidden; }
+      .carte .cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; }
+      .carte .cam img { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .pin { position: absolute; width: 0; height: 0; opacity: 0; }
+      .pin i { position: absolute; left: -16px; top: -16px; width: 32px; height: 32px; border-radius: 50%; background: var(--fm-bleu-savoie); border: 6px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,.3); }
+      .pin b { position: absolute; left: 30px; top: -34px; white-space: nowrap; font-size: 52px; font-weight: 700; color: var(--fm-ink-900); text-shadow: 0 0 6px #fff, 0 0 12px #fff; }
+      .pin.gauche b { left: auto; right: 30px; }
+      .pin.petit i { background: #fff; border-color: var(--fm-ink-700); left: -11px; top: -11px; width: 22px; height: 22px; border-width: 5px; }
+      .pin.petit b { font-size: 38px; font-weight: 600; color: var(--fm-ink-700); }
+      .lueur { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0; }
+      .langue { position: absolute; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 64px; line-height: 1; opacity: 0; text-shadow: 0 0 8px #fff, 0 0 16px #fff; }
+      .carte .titre { position: absolute; left: 70px; top: 290px; font-size: 26px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+      .trait { position: absolute; height: 0; border-top: 5px dashed var(--fm-bleu-savoie); transform-origin: 0 0; opacity: 0; }
+
+      /* Via Roma : plaque de rue */
+      .plaque { position: absolute; left: 140px; top: 640px; width: 800px; padding: 42px 40px 46px; background: #f4f1ea; border: 8px solid #2b2b2e; outline: 3px solid #f4f1ea; text-align: center; z-index: 20; opacity: 0; box-shadow: 0 30px 70px rgba(0,0,0,.45); }
+      .plaque .ville { font-size: 30px; font-weight: 700; letter-spacing: .3em; text-transform: uppercase; color: #6b6b70; }
+      .plaque .nom { margin-top: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 150px; line-height: 1; letter-spacing: .04em; color: #1c1c1e; }
+      .tampon { position: absolute; left: 520px; top: 990px; background: var(--fm-bleu-savoie); color: #fff; font-size: 54px; font-weight: 700; padding: 12px 28px 16px; transform: rotate(-6deg); z-index: 21; opacity: 0; }
+
+      /* Menu de la sagra */
+      .menu { position: absolute; left: 110px; top: 330px; width: 860px; background: #fbf8f1; padding: 50px 56px 60px; z-index: 20; opacity: 0; box-shadow: 0 30px 70px rgba(0,0,0,.4); }
+      .menu .eyebrow { font-size: 26px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+      .menu h2 { margin-top: 10px; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 96px; line-height: 1; }
+      .menu .ligne { display: flex; align-items: baseline; gap: 18px; margin-top: 34px; font-size: 54px; font-weight: 700; opacity: 0; }
+      .menu .ligne span { flex: 1; border-bottom: 4px dotted #b9b9bf; transform: translateY(-12px); }
+      .menu .ligne small { font-size: 34px; font-weight: 600; color: var(--fm-ink-700); }
+      .etoiles { position: absolute; right: 60px; bottom: -46px; background: var(--fm-bleu-savoie); color: #fff; font-size: 46px; font-weight: 700; padding: 12px 26px 16px; transform: rotate(-5deg); opacity: 0; }
+      .pas-photo { position: absolute; left: 600px; top: 330px; width: 380px; z-index: 20; opacity: 0; }
+
+      /* Clocher demonte (plan d'architecte) */
+      .plan-bleu { position: absolute; inset: 0; background: var(--fm-bleu-savoie); opacity: 0; z-index: 12; overflow: hidden; }
+      .plan-bleu .grille { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.08) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.08) 2px, transparent 2px); background-size: 60px 60px; }
+      .plan-bleu svg { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      .plan-bleu .t { stroke: #fff; stroke-width: 4; fill: rgba(255,255,255,.06); stroke-linejoin: round; }
+      .plan-bleu .fin { stroke: #fff; stroke-width: 2.5; fill: none; opacity: .8; }
+      .plan-bleu .bul { fill: rgba(255,255,255,.06); }
+      .plan-bleu .eti { font-family: 'Semplicita Pro', sans-serif; font-size: 36px; font-weight: 700; fill: #fff; letter-spacing: .04em; }
+      .plan-bleu .eti-l { stroke: #fff; stroke-width: 2; stroke-dasharray: 6 6; }
+      .plan-bleu .titre { position: absolute; left: 70px; top: 290px; font-size: 26px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff; }
+      .plan-bleu .legende { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 72px; fill: #fff; }
+
+      /* Z de la sieste */
+      .zzz { position: absolute; right: 120px; top: 360px; z-index: 20; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.6); }
+      .zzz span { position: absolute; opacity: 0; }
+
+      /* Carton final */
+      .final { position: absolute; inset: 0; background: #fff; z-index: 30; opacity: 0; }
+      .final .eyebrow { position: absolute; left: 90px; top: 330px; font-size: 28px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--fm-bleu-savoie); }
+      .final h2 { position: absolute; left: 90px; right: 150px; top: 390px; font-size: 104px; font-weight: 700; line-height: 1; letter-spacing: -.01em; }
+      .final .lieux { position: absolute; left: 90px; top: 760px; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 64px; color: #1b2f6e; }
+      .final .sig { position: absolute; left: 90px; top: 1200px; font-size: 30px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--fm-ink-500); }
+      .final .abastou { position: absolute; left: 90px; top: 1250px; font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-weight: 500; font-size: 120px; color: var(--fm-bleu-savoie); }
+
+      /* Sous-titres : groupes de 1 a 3 mots, mot-cle sur bloc bleu (zone sure Reels) */
+      .st { position: absolute; left: 60px; right: 140px; bottom: 490px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; transform-origin: 50% 100%; z-index: 35; opacity: 0;
+             font-size: 62px; font-weight: 700; line-height: 1.2; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.9), 0 3px 18px rgba(0,0,0,.6); }
+      .st .m { display: inline-block; white-space: nowrap; }
+      .st .m.cle { font-size: 1.3em; background: var(--fm-bleu-savoie); color: #fff; padding: 0 16px 4px; text-shadow: none; }
+      .st.clair { color: var(--fm-ink-900); text-shadow: 0 0 10px rgba(255,255,255,.95); }
+      .st.clair .m.cle { color: #fff; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="112.851" data-width="1080" data-height="1920">
+      <!-- Le recit face camera, monte comme la voix (tools/couper-recit.py) -->
+      <video id="face" class="plein" src="assets/face-recit.mp4" muted playsinline data-start="0" data-duration="109.051" data-media-start="0" data-track-index="1"></video>
+      <audio id="voix" src="assets/voix.m4a" data-start="0" data-duration="109.051" data-track-index="10" data-volume="1"></audio>
+      <audio id="habillage" src="assets/habillage.m4a" data-start="0" data-duration="112.851" data-track-index="11" data-volume="1"></audio>
+      <svg width="0" height="0" style="position:absolute">
+        <!-- Le drapeau flotte : turbulence qui glisse (feOffset anime) et deplace les pixels du drapeau seulement -->
+        <filter id="vent-oc" x="-20%" y="-10%" width="140%" height="120%" filterUnits="objectBoundingBox">
+          <feTurbulence type="turbulence" baseFrequency="0.009 0.022" numOctaves="2" seed="4" result="t"/>
+          <feOffset id="vent-oc-dx" in="t" dx="0" dy="0" result="t2"/>
+          <feDisplacementMap in="SourceGraphic" in2="t2" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        <filter id="vent-pie" x="-20%" y="-10%" width="140%" height="120%" filterUnits="objectBoundingBox">
+          <feTurbulence type="turbulence" baseFrequency="0.011 0.02" numOctaves="2" seed="9" result="t"/>
+          <feOffset id="vent-pie-dx" in="t" dx="0" dy="0" result="t2"/>
+          <feDisplacementMap in="SourceGraphic" in2="t2" scale="20" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </svg>
+
+      <div class="plan" id="pl0"><div class="cadre"><video id="v-pl0" class="plein" src="assets/plans/parapluies.mp4" muted playsinline data-start="0.0" data-duration="2.43" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl1"><div class="cadre"><video id="v-pl1" class="plein" src="assets/plans/village.mp4" muted playsinline data-start="2.6" data-duration="1.74" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="plan" id="pl2"><div class="cadre"><video id="v-pl2" class="plein" src="assets/plans/marche.mp4" muted playsinline data-start="4.34" data-duration="3.6" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl3"><div class="cadre"><video id="v-pl3" class="plein" src="assets/plans/chocolats.mp4" muted playsinline data-start="7.94" data-duration="3.426" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="plan" id="pl4"><div class="cadre"><video id="v-pl4" class="plein" src="assets/plans/patisseries.mp4" muted playsinline data-start="14.94" data-duration="0.94" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl5"><div class="cadre"><img class="plein" src="assets/plans/palais.jpg" alt="" /><div class="vent" style="clip-path:inset(540px 868px 872px 0px)"><img class="plein" src="assets/plans/palais.jpg" alt="" style="filter:url(#vent-pie)" /></div></div></div>
+      <div class="plan" id="pl6"><div class="cadre"><video id="v-pl6" class="plein" src="assets/plans/tables-mole.mp4" muted playsinline data-start="24.36" data-duration="1.606" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl7"><div class="cadre"><video id="v-pl7" class="plein" src="assets/plans/san-carlo.mp4" muted playsinline data-start="32.71" data-duration="3.75" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="plan" id="pl8"><div class="cadre"><video id="v-pl8" class="plein" src="assets/plans/terra-madre.mp4" muted playsinline data-start="36.46" data-duration="1.44" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl9"><div class="cadre"><video id="v-pl9" class="plein" src="assets/plans/escargot.mp4" muted playsinline data-start="37.9" data-duration="0.931" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="plan" id="pl10"><div class="cadre"><video id="v-pl10" class="plein" src="assets/plans/via-roma.mp4" muted playsinline data-start="38.831" data-duration="4.956" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl11"><div class="cadre"><img class="plein" src="assets/plans/vignes.jpg" alt="" /><div class="vent" style="clip-path:inset(668px 108px 796px 846px)"><img class="plein" src="assets/plans/vignes.jpg" alt="" style="filter:url(#vent-oc)" /></div></div></div>
+      <div class="plan" id="pl12"><div class="cadre"><video id="v-pl12" class="plein" src="assets/plans/giaveno.mp4" muted playsinline data-start="54.7" data-duration="2.22" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl13"><div class="cadre"><video id="v-pl13" class="plein" src="assets/plans/sagra.mp4" muted playsinline data-start="56.92" data-duration="5.168" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="plan" id="pl14"><div class="cadre"><video id="v-pl14" class="plein" src="assets/plans/menu-fond.mp4" muted playsinline data-start="62.088" data-duration="8.111" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl15"><div class="cadre"><video id="v-pl15" class="plein" src="assets/plans/clocher.mp4" muted playsinline data-start="86.155" data-duration="2.125" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="plan" id="pl16"><div class="cadre"><video id="v-pl16" class="plein" src="assets/plans/baroque.mp4" muted playsinline data-start="101.048" data-duration="2.512" data-media-start="0" data-track-index="2"></video></div></div>
+      <div class="plan" id="pl17"><div class="cadre"><video id="v-pl17" class="plein" src="assets/plans/eglise-rue.mp4" muted playsinline data-start="103.56" data-duration="1.512" data-media-start="0" data-track-index="3"></video></div></div>
+      <div class="hook" id="hook"><div class="eyebrow">Piémont · automne</div><h1>Les <em>sagre</em></h1></div>
+      <div class="liste" id="liste"><div>la gastronomie</div><div>le terroir</div><div class="cle">le Piémont</div></div>
+      <div class="pastille" id="pa-pie"><div class="k">Au menu des sagre</div><div class="v">100 % piémontais</div></div>
+      <div class="zzz" id="zzz"><span style="right:0;top:120px;font-size:80px">z</span><span style="right:-60px;top:40px;font-size:110px">z</span><span style="right:-140px;top:-60px;font-size:150px">z</span></div>
+      <div class="pastille" id="pa-tm"><div class="k">Turin · 27 septembre</div><div class="v">Terra Madre</div></div>
+      <div class="pastille" id="pa-sf"><div class="k">Slow Food</div><div class="v">le terroir à l'honneur</div></div>
+      <div class="plaque" id="plaque"><div class="ville">Torino</div><div class="nom">Via Roma</div></div>
+      <div class="tampon" id="tampon">refaite</div>
+      <div class="pastille" id="pa-oc"><div class="k">3 octobre</div><div class="v">Une vallée occitane</div></div>
+      <div class="pastille" id="pa-gi"><div class="k">4 octobre</div><div class="v">Giaveno</div></div>
+      <div class="hook" id="sagra"><div class="eyebrow">Giaveno</div><h1 style="font-size:132px">Sagra <em>dei Funghi</em></h1></div>
+      <div class="menu" id="menu"><div class="eyebrow">Sagra dei Funghi · Giaveno</div><h2>Au menu</h2>
+        <div class="ligne" id="m1">Lasagne<span></span><small>aux champignons</small></div>
+        <div class="ligne" id="m2">Salsiccia<span></span><small>la saucisse</small></div>
+        <div class="etoiles" id="etoiles">exceptionnel ★★★</div></div>
+      <svg class="pas-photo" id="pas-photo" viewBox="0 0 380 300"><rect x="20" y="70" width="340" height="210" rx="26" fill="#fff"/><rect x="120" y="36" width="120" height="50" rx="12" fill="#fff"/>
+        <circle cx="190" cy="175" r="70" fill="none" stroke="#171719" stroke-width="16"/><circle cx="190" cy="175" r="30" fill="#171719"/>
+        <line x1="40" y1="40" x2="340" y2="290" stroke="#0a36af" stroke-width="26" stroke-linecap="round"/></svg>
+      <div class="pastille" id="pa-cl"><div class="k">Cumiana</div><div class="v">le clocher</div></div>
+      <div class="plan" id="pl-francois"><div class="cadre"><img class="plein" src="assets/francois-de-sales.jpg" alt="" style="object-position:50% 20%" /></div></div>
+      <div class="bloc-nom" id="nom-fr"><div class="n">Saint François de Sales</div><div class="r">1567-1622 · patron des journalistes</div></div>
+      <div class="credit" id="credit-fr">Château de Bussy-Rabutin · domaine public</div>
+      <div class="tampon" id="introuvable" style="left:300px;top:420px;font-size:64px">introuvable ici</div>
+      <div class="lieu-fin" id="baroque">l'art<br><em>baroque</em></div>
+      <div class="carte" id="ca0"><div class="cam" style="transform:translate(-683.3px,-694.6px) scale(1.7)"><img src="assets/carte.svg" alt="" /></div><div class="titre">Piémont</div><div class="pin " id="ca0-Turin" style="left:540.0px;top:960.0px"><i></i><b>Turin</b></div></div>
+      <div class="pastille" id="pa-turin" style="top:1120px"><div class="k">Le week-end dernier</div><div class="v">Terra Madre, Turin</div></div>
+      <div class="carte" id="ca1"><div class="cam" style="transform:translate(-160.0px,-277.5px) scale(1.25)"><img src="assets/carte.svg" alt="" /></div><div class="titre">Piémont · les vallées</div><div class="lueur" id="ca1-l1" style="left:421.20000000000005px;top:633.8px;width:340px;height:300px;background:rgba(10,54,175,.55)"></div><div class="lueur" id="ca1-l2" style="left:270.0px;top:986.2px;width:380px;height:340px;background:rgba(214,40,40,.5)"></div><div class="langue" id="ca1-t1" style="left:391.20000000000005px;top:743.8px;color:#0a36af">vallées savoyardes</div><div class="langue" id="ca1-t2" style="left:250.0px;top:1126.2px;color:#b01c1c">vallées occitanes</div><div class="langue" id="ca1-sav" style="left:33.80000000000001px;top:610.0px;color:#0a36af;font-size:56px;opacity:0">Savoie</div><div class="pin petit" id="ca1-Turin" style="left:739.5px;top:939.1px"><i></i><b>Turin</b></div></div>
+      <div class="carte" id="ca2"><div class="cam" style="transform:translate(-1508.0px,-2208.0px) scale(3.2)"><img src="assets/carte.svg" alt="" /></div><div class="titre">Piémont</div><div class="pin petit" id="ca2-Turin" style="left:794.7px;top:906.6px"><i></i><b>Turin</b></div><div class="pin gauche" id="ca2-Giaveno" style="left:419.7px;top:952.0px"><i></i><b>Giaveno</b></div></div>
+      <div class="carte" id="ca3"><div class="cam" style="transform:translate(-2001.0px,-3324.0px) scale(4.2)"><img src="assets/carte.svg" alt="" /></div><div class="titre">entre Giaveno et Pinerolo</div><div class="pin petit gauche" id="ca3-Giaveno" style="left:529.1px;top:823.5px"><i></i><b>Giaveno</b></div><div class="pin petit gauche" id="ca3-Pinerolo" style="left:498.0px;top:1150.7px"><i></i><b>Pinerolo</b></div><div class="pin " id="ca3-Cumiana" style="left:565.6px;top:951.2px"><i></i><b>Cumiana</b></div><div class="trait" id="ca3-trait" style="left:529.1px;top:823.5px;width:329px;transform:rotate(95.4deg)"></div></div>
+      <div class="plan-bleu" id="clocher"><div class="grille"></div><div class="titre">Cumiana · le clocher, démonté</div><svg viewBox="0 0 1080 1920"><g transform="translate(135 260) scale(0.75)"><g id="cl-tout"><g id="cl-croix"><line class="t" x1="540" y1="430" x2="540" y2="520"/><line class="t" x1="512" y1="458" x2="568" y2="458"/></g><g id="et-croix" opacity="0"><line class="eti-l" x1="700" y1="260" x2="800" y2="260"/><text class="eti" x="812" y="272">la croix</text></g><g id="cl-lanterne"><path class="t" d="M520 590 L520 540 Q540 516 560 540 L560 590 Z"/><line class="fin" x1="540" y1="548" x2="540" y2="580"/><path class="t" d="M532 516 Q540 500 548 516 Z"/></g><g id="et-lanterne" opacity="0"><line class="eti-l" x1="700" y1="415" x2="800" y2="415"/><text class="eti" x="812" y="427">le lanternon</text></g><g id="cl-bulbe"><path class="t bul" d="M452 790 C 400 740, 420 676, 486 640 C 516 622, 532 610, 540 590 C 548 610, 564 622, 594 640 C 660 676, 680 740, 628 790 Z"/><path class="fin" d="M496 790 C 470 740, 490 680, 540 600 M584 790 C 610 740, 590 680, 540 600"/></g><g id="et-bulbe" opacity="0"><line class="eti-l" x1="700" y1="630" x2="800" y2="630"/><text class="eti" x="812" y="642">le bulbe</text></g><g id="cl-tambour"><rect class="t" x="440" y="790" width="200" height="140"/><circle class="t" cx="540" cy="860" r="40"/><line class="fin" x1="540" y1="860" x2="540" y2="834"/><line class="fin" x1="540" y1="860" x2="560" y2="868"/><rect class="t" x="428" y="780" width="224" height="18"/></g><g id="et-tambour" opacity="0"><line class="eti-l" x1="700" y1="860" x2="800" y2="860"/><text class="eti" x="812" y="872">l&#x27;horloge</text></g><g id="cl-beffroi"><rect class="t" x="420" y="930" width="240" height="250"/><path class="t" d="M490 1150 L490 1020 Q540 966 590 1020 L590 1150 Z"/><rect class="t" x="404" y="920" width="272" height="22"/><line class="fin" x1="430" y1="950" x2="430" y2="1170"/><line class="fin" x1="650" y1="950" x2="650" y2="1170"/></g><g id="et-beffroi" opacity="0"><line class="eti-l" x1="700" y1="1130" x2="800" y2="1130"/><text class="eti" x="812" y="1142">les cloches</text></g><g id="cl-tour"><rect class="t" x="430" y="1180" width="220" height="300"/><rect class="t" x="414" y="1170" width="252" height="20"/><rect class="fin" x="510" y="1260" width="60" height="110"/><line class="fin" x1="444" y1="1200" x2="444" y2="1470"/><line class="fin" x1="636" y1="1200" x2="636" y2="1470"/></g><g id="et-tour" opacity="0"><line class="eti-l" x1="700" y1="1470" x2="800" y2="1470"/><text class="eti" x="812" y="1482">la tour</text></g></g></g><g id="cmp" opacity="0"><path class="t bul" d="M232 900 C 180 850, 200 786, 266 750 C 296 732, 312 720, 320 700 C 328 720, 344 732, 374 750 C 440 786, 460 850, 408 900 Z"/><path class="t" d="M300 700 L300 660 Q320 640 340 660 L340 700 Z"/><line class="t" x1="320" y1="600" x2="320" y2="642"/><text class="legende" x="320" y="1010" text-anchor="middle">Piémont</text><path class="t bul" d="M660 900 C 640 860, 650 830, 700 812 C 728 802, 744 792, 760 770 C 776 792, 792 802, 820 812 C 870 830, 880 860, 860 900 Z"/><rect class="t" x="738" y="728" width="44" height="42"/><path class="t bul" d="M716 728 C 712 706, 730 694, 752 686 C 756 680, 758 676, 760 668 C 762 676, 764 680, 768 686 C 790 694, 808 706, 804 728 Z"/><line class="t" x1="760" y1="610" x2="760" y2="668"/><text class="legende" x="760" y="1010" text-anchor="middle">Savoie</text><text class="legende" x="540" y="1180" text-anchor="middle" font-size="84">la même famille</text></g></svg></div>
+      <div class="final" id="final"><div class="eyebrow">Weekends sagre</div><h2>Terra Madre et les sagre du Piémont</h2>
+        <div class="lieux">Turin · Giaveno · Cumiana</div><div class="sig">Franck Monod</div><div class="abastou">abastou !</div></div>
+      <div class="st" id="st3"><span class="m">dans</span> <span class="m">les</span> <span class="m">villages</span></div>
+      <div class="st" id="st4"><span class="m">en</span> <span class="m">général</span></div>
+      <div class="st" id="st5"><span class="m">pour</span> <span class="m">célébrer</span></div>
+      <div class="st" id="st11"><span class="m">Ce</span> <span class="m">que</span> <span class="m">j&#x27;aime</span></div>
+      <div class="st" id="st12"><span class="m">par-dessus</span> <span class="m">tout</span></div>
+      <div class="st" id="st13"><span class="m">c&#x27;est</span> <span class="m">trouver</span></div>
+      <div class="st" id="st14"><span class="m">des</span> <span class="m">nouveaux</span></div>
+      <div class="st" id="st15"><span class="m">produits</span> <span class="m">et</span> <span class="m">surtout</span></div>
+      <div class="st" id="st16"><span class="m">de</span> <span class="m cle">goûter</span></div>
+      <div class="st" id="st17"><span class="m">C&#x27;est</span> <span class="m">ça</span> <span class="m">l&#x27;important</span></div>
+      <div class="st" id="st18"><span class="m">Et</span> <span class="m">on</span></div>
+      <div class="st" id="st19"><span class="m">y</span> <span class="m">mange</span> <span class="m">uniquement</span></div>
+      <div class="st" id="st20"><span class="m">du</span> <span class="m">territoire</span></div>
+      <div class="st" id="st21"><span class="m">En</span> <span class="m">général</span></div>
+      <div class="st" id="st22"><span class="m">dans</span> <span class="m">le</span> <span class="m cle">Piémont</span></div>
+      <div class="st" id="st23"><span class="m">on</span> <span class="m">y</span> <span class="m">mange</span></div>
+      <div class="st" id="st24"><span class="m">uniquement</span></div>
+      <div class="st" id="st25"><span class="m cle">piémontais</span></div>
+      <div class="st" id="st26"><span class="m">On</span> <span class="m">y</span> <span class="m">mange</span></div>
+      <div class="st" id="st27"><span class="m">beaucoup</span> <span class="m">on</span></div>
+      <div class="st" id="st28"><span class="m">y</span> <span class="m">mange</span></div>
+      <div class="st" id="st29"><span class="m">très</span> <span class="m">bien</span></div>
+      <div class="st" id="st30"><span class="m">Moi</span></div>
+      <div class="st" id="st31"><span class="m">je</span> <span class="m">suis</span> <span class="m">quelqu&#x27;un</span></div>
+      <div class="st" id="st32"><span class="m">qui</span> <span class="m">fait</span></div>
+      <div class="st" id="st33"><span class="m">des</span> <span class="m cle">siestes</span></div>
+      <div class="st clair" id="st34"><span class="m">Le</span> <span class="m">week-end</span> <span class="m">dernier</span></div>
+      <div class="st clair" id="st35"><span class="m">j&#x27;étais</span> <span class="m">à</span> <span class="m cle">Turin</span></div>
+      <div class="st clair" id="st36"><span class="m">pour</span> <span class="m cle">Terra Madre</span></div>
+      <div class="st" id="st37"><span class="m">pour</span> <span class="m">valoriser</span></div>
+      <div class="st" id="st38"><span class="m">le</span> <span class="m cle">terroir</span></div>
+      <div class="st" id="st39"><span class="m cle">piémontais</span></div>
+      <div class="st" id="st40"><span class="m">Surtout</span> <span class="m">que</span> <span class="m">c&#x27;était</span></div>
+      <div class="st" id="st41"><span class="m">dans</span> <span class="m cle">via Roma</span></div>
+      <div class="st" id="st42"><span class="m">Ils</span> <span class="m">ont</span> <span class="m">refait</span></div>
+      <div class="st" id="st43"><span class="m">toute</span> <span class="m">la</span> <span class="m">rue</span></div>
+      <div class="st" id="st44"><span class="m">de</span> <span class="m cle">via Roma</span></div>
+      <div class="st" id="st45"><span class="m">Et</span> <span class="m">ce</span> <span class="m">week-end</span></div>
+      <div class="st clair" id="st46"><span class="m">dans</span> <span class="m">le</span> <span class="m cle">Piémont</span></div>
+      <div class="st clair" id="st47"><span class="m">on</span> <span class="m">a</span></div>
+      <div class="st clair" id="st48"><span class="m">des</span> <span class="m cle">vallées savoyardes</span></div>
+      <div class="st clair" id="st49"><span class="m">bien</span> <span class="m">sûr</span></div>
+      <div class="st clair" id="st50"><span class="m">on</span> <span class="m">a</span></div>
+      <div class="st clair" id="st51"><span class="m">des</span> <span class="m cle">vallées occitanes</span></div>
+      <div class="st" id="st52"><span class="m">Et</span> <span class="m">là</span> <span class="m">j&#x27;étais</span></div>
+      <div class="st" id="st53"><span class="m">dans</span></div>
+      <div class="st" id="st54"><span class="m">une</span> <span class="m cle">vallée occitane</span></div>
+      <div class="st clair" id="st55"><span class="m">J&#x27;étais</span> <span class="m">à</span> <span class="m cle">Giaveno</span></div>
+      <div class="st" id="st56"><span class="m">c&#x27;est</span> <span class="m">un</span> <span class="m">petit</span></div>
+      <div class="st" id="st57"><span class="m">village</span></div>
+      <div class="st" id="st58"><span class="m">Et</span> <span class="m">là</span></div>
+      <div class="st" id="st59"><span class="m">il</span> <span class="m">y</span> <span class="m">avait</span></div>
+      <div class="st" id="st60"><span class="m">justement</span></div>
+      <div class="st" id="st61"><span class="m">la</span> <span class="m cle">Sagra dei Funghi</span></div>
+      <div class="st" id="st62"><span class="m">pour</span> <span class="m">les</span> <span class="m cle">champignons</span></div>
+      <div class="st" id="st63"><span class="m cle">la lasagne</span> <span class="m">avec</span></div>
+      <div class="st" id="st69"><span class="m">Moi</span> <span class="m">je</span> <span class="m">ne</span></div>
+      <div class="st" id="st70"><span class="m">vais</span> <span class="m">pas</span> <span class="m">vous</span></div>
+      <div class="st" id="st71"><span class="m">montrer</span> <span class="m">des</span> <span class="m">plats</span></div>
+      <div class="st" id="st72"><span class="m">je</span> <span class="m">ne</span> <span class="m">suis</span></div>
+      <div class="st" id="st73"><span class="m">pas</span></div>
+      <div class="st" id="st74"><span class="m">un</span> <span class="m cle">influenceur food</span></div>
+      <div class="st" id="st75"><span class="m">pas</span> <span class="m">encore</span></div>
+      <div class="st" id="st76"><span class="m">Donc</span></div>
+      <div class="st" id="st77"><span class="m">il</span> <span class="m">faut</span> <span class="m">juste</span></div>
+      <div class="st" id="st78"><span class="m">me</span> <span class="m">faire</span> <span class="m">confiance</span></div>
+      <div class="st" id="st79"><span class="m">et</span> <span class="m">me</span> <span class="m">croire</span></div>
+      <div class="st clair" id="st80"><span class="m">Et</span> <span class="m">là</span></div>
+      <div class="st clair" id="st81"><span class="m">je</span> <span class="m">me</span> <span class="m">trouve</span></div>
+      <div class="st clair" id="st82"><span class="m">à</span> <span class="m cle">Cumiana</span></div>
+      <div class="st clair" id="st83"><span class="m">entre</span> <span class="m cle">Giaveno</span></div>
+      <div class="st clair" id="st84"><span class="m">et</span> <span class="m cle">Pinerolo</span></div>
+      <div class="st" id="st85"><span class="m">J&#x27;adore</span> <span class="m">ce</span> <span class="m cle">clocher</span></div>
+      <div class="st" id="st95"><span class="m">On</span> <span class="m">retrouve</span> <span class="m">beaucoup</span></div>
+      <div class="st" id="st96"><span class="m cle">saint François de Sales</span></div>
+      <div class="st" id="st97"><span class="m">c&#x27;est</span> <span class="m">un</span> <span class="m">saint</span></div>
+      <div class="st" id="st98"><span class="m">qui</span> <span class="m">est</span></div>
+      <div class="st" id="st99"><span class="m">le</span> <span class="m">saint</span></div>
+      <div class="st" id="st100"><span class="m cle">patron des journalistes</span></div>
+      <div class="st" id="st101"><span class="m">Mais</span> <span class="m">là</span> <span class="m">non</span></div>
+      <div class="st" id="st102"><span class="m">on</span> <span class="m">ne</span> <span class="m">l&#x27;a</span></div>
+      <div class="st" id="st103"><span class="m">pas</span> <span class="m">trouvé</span></div>
+      <div class="st" id="st104"><span class="m">Et</span> <span class="m">aussi</span> <span class="m">surtout</span></div>
+      <div class="st" id="st105"><span class="m">le</span> <span class="m">baroque</span></div>
+      <div class="st" id="st106"><span class="m">les</span> <span class="m">églises</span></div>
+      <div class="st" id="st107"><span class="m">regorgent</span> <span class="m">de</span> <span class="m">l&#x27;art</span></div>
+      <div class="st" id="st108"><span class="m">baroque</span></div>
+      <div class="st" id="st109"><span class="m">Et</span> <span class="m">bien</span></div>
+      <div class="st" id="st110"><span class="m">je</span> <span class="m">vous</span> <span class="m">remercie</span></div>
+      <div class="st" id="st111"><span class="m">et</span> <span class="m">à</span> <span class="m">tout</span></div>
+      <div class="st" id="st112"><span class="m">bientôt</span></div>
+      <div class="st" id="st113"><span class="m">Allez</span> <span class="m cle">abastou</span></div>
+      <div class="st" id="st114"><span class="m">ciao ciao</span></div>
+      <div id="flash"></div>
+      <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.set("#flash", {opacity: 0}, 0);
+      tl.set("#pl0", {opacity: 1}, 0.0); tl.set("#pl0", {opacity: 0}, 2.43);
+      tl.fromTo("#pl0 .cadre", {scale: 1}, {scale: 1.06, duration: 2.43, ease: "none"}, 0.0);
+      tl.set("#pl1", {opacity: 1}, 2.6); tl.set("#pl1", {opacity: 0}, 4.34);
+      tl.fromTo("#pl1 .cadre", {scale: 1}, {scale: 1.06, duration: 1.74, ease: "none"}, 2.6);
+      tl.set("#pl2", {opacity: 1}, 4.34); tl.set("#pl2", {opacity: 0}, 7.94);
+      tl.fromTo("#pl2 .cadre", {scale: 1}, {scale: 1.06, duration: 3.6, ease: "none"}, 4.34);
+      tl.set("#pl3", {opacity: 1}, 7.94); tl.set("#pl3", {opacity: 0}, 11.366);
+      tl.fromTo("#pl3 .cadre", {scale: 1}, {scale: 1.06, duration: 3.426, ease: "none"}, 7.94);
+      tl.set("#pl4", {opacity: 1}, 14.94); tl.set("#pl4", {opacity: 0}, 15.88);
+      tl.fromTo("#pl4 .cadre", {scale: 1}, {scale: 1.06, duration: 0.94, ease: "none"}, 14.94);
+      tl.set("#pl5", {opacity: 1}, 19.62); tl.set("#pl5", {opacity: 0}, 24.36);
+      tl.fromTo("#pl5 .cadre", {scale: 1}, {scale: 1.06, duration: 4.74, ease: "none"}, 19.62);
+      tl.fromTo("#vent-pie-dx", {attr: {dx: 0, dy: 0}}, {attr: {dx: -260, dy: 30}, duration: 4.74, ease: "none"}, 19.62);
+      tl.set("#pl6", {opacity: 1}, 24.36); tl.set("#pl6", {opacity: 0}, 25.966);
+      tl.fromTo("#pl6 .cadre", {scale: 1}, {scale: 1.06, duration: 1.606, ease: "none"}, 24.36);
+      tl.set("#pl7", {opacity: 1}, 32.71); tl.set("#pl7", {opacity: 0}, 36.46);
+      tl.fromTo("#pl7 .cadre", {scale: 1}, {scale: 1.06, duration: 3.75, ease: "none"}, 32.71);
+      tl.set("#pl8", {opacity: 1}, 36.46); tl.set("#pl8", {opacity: 0}, 37.9);
+      tl.fromTo("#pl8 .cadre", {scale: 1}, {scale: 1.06, duration: 1.44, ease: "none"}, 36.46);
+      tl.set("#pl9", {opacity: 1}, 37.9); tl.set("#pl9", {opacity: 0}, 38.831);
+      tl.fromTo("#pl9 .cadre", {scale: 1}, {scale: 1.06, duration: 0.931, ease: "none"}, 37.9);
+      tl.set("#pl10", {opacity: 1}, 38.831); tl.set("#pl10", {opacity: 0}, 43.787);
+      tl.set("#pl11", {opacity: 1}, 50.92); tl.set("#pl11", {opacity: 0}, 53.133);
+      tl.fromTo("#pl11 .cadre", {scale: 1}, {scale: 1.06, duration: 2.213, ease: "none"}, 50.92);
+      tl.fromTo("#vent-oc-dx", {attr: {dx: 0, dy: 0}}, {attr: {dx: -260, dy: 30}, duration: 2.213, ease: "none"}, 50.92);
+      tl.set("#pl12", {opacity: 1}, 54.7); tl.set("#pl12", {opacity: 0}, 56.92);
+      tl.fromTo("#pl12 .cadre", {scale: 1}, {scale: 1.06, duration: 2.22, ease: "none"}, 54.7);
+      tl.set("#pl13", {opacity: 1}, 56.92); tl.set("#pl13", {opacity: 0}, 62.088);
+      tl.fromTo("#pl13 .cadre", {scale: 1}, {scale: 1.06, duration: 5.168, ease: "none"}, 56.92);
+      tl.set("#pl14", {opacity: 1}, 62.088); tl.set("#pl14", {opacity: 0}, 70.199);
+      tl.set("#pl15", {opacity: 1}, 86.155); tl.set("#pl15", {opacity: 0}, 88.28);
+      tl.fromTo("#pl15 .cadre", {scale: 1}, {scale: 1.06, duration: 2.125, ease: "none"}, 86.155);
+      tl.set("#pl16", {opacity: 1}, 101.048); tl.set("#pl16", {opacity: 0}, 103.56);
+      tl.fromTo("#pl16 .cadre", {scale: 1}, {scale: 1.06, duration: 2.512, ease: "none"}, 101.048);
+      tl.set("#pl17", {opacity: 1}, 103.56); tl.set("#pl17", {opacity: 0}, 105.072);
+      tl.fromTo("#pl17 .cadre", {scale: 1}, {scale: 1.06, duration: 1.512, ease: "none"}, 103.56);
+      tl.set("#hook", {opacity: 1}, 0); tl.from("#hook .eyebrow", {y: 16, opacity: 0, duration: 0.35, ease: "power3.out"}, 0.05);
+      tl.from("#hook h1", {y: 40, opacity: 0, duration: 0.5, ease: "power3.out"}, 0.12); tl.to("#hook", {opacity: 0, duration: 0.2}, 2.23);
+      tl.set("#liste div:nth-child(1)", {opacity: 1}, 6.92); tl.from("#liste div:nth-child(1)", {x: -40, duration: 0.35, ease: "power3.out"}, 6.92);
+      tl.set("#liste div:nth-child(2)", {opacity: 1}, 8.48); tl.from("#liste div:nth-child(2)", {x: -40, duration: 0.35, ease: "power3.out"}, 8.48);
+      tl.set("#liste div:nth-child(3)", {opacity: 1}, 10.44); tl.from("#liste div:nth-child(3)", {x: -40, duration: 0.35, ease: "power3.out"}, 10.44);
+      tl.to("#liste", {opacity: 0, duration: 0.2}, 11.166);
+      tl.set("#pa-pie", {opacity: 1}, 23.46);
+      tl.from("#pa-pie", {y: 30, duration: 0.45, ease: "power3.out"}, 23.46);
+      tl.to("#pa-pie", {opacity: 0, duration: 0.2}, 24.16);
+      tl.fromTo("#zzz span:nth-child(1)", {opacity: 0, y: 20}, {opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false}, 28.889999999999997);
+      tl.fromTo("#zzz span:nth-child(2)", {opacity: 0, y: 20}, {opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false}, 29.109999999999996);
+      tl.fromTo("#zzz span:nth-child(3)", {opacity: 0, y: 20}, {opacity: 1, y: 0, duration: 0.3, ease: "power2.out", immediateRender: false}, 29.33);
+      tl.to("#zzz", {opacity: 0, duration: 0.2}, 29.471);
+      tl.set("#pa-tm", {opacity: 1}, 36.46);
+      tl.from("#pa-tm", {y: 30, duration: 0.45, ease: "power3.out"}, 36.46);
+      tl.to("#pa-tm", {opacity: 0, duration: 0.2}, 37.7);
+      tl.set("#pa-sf", {opacity: 1}, 38.0);
+      tl.from("#pa-sf", {y: 30, duration: 0.45, ease: "power3.out"}, 38.0);
+      tl.to("#pa-sf", {opacity: 0, duration: 0.2}, 38.631);
+      tl.set("#plaque", {opacity: 1}, 38.881);
+      tl.from("#plaque", {scale: 0.8, duration: 0.3, ease: "back.out(2.2)"}, 38.881);
+      tl.to("#plaque", {opacity: 0, duration: 0.2}, 43.587);
+      tl.set("#tampon", {opacity: 1}, 41.08);
+      tl.from("#tampon", {scale: 0.8, duration: 0.3, ease: "back.out(2.2)"}, 41.08);
+      tl.to("#tampon", {opacity: 0, duration: 0.2}, 43.587);
+      tl.set("#pa-oc", {opacity: 1}, 51.02);
+      tl.from("#pa-oc", {y: 30, duration: 0.45, ease: "power3.out"}, 51.02);
+      tl.to("#pa-oc", {opacity: 0, duration: 0.2}, 52.933);
+      tl.set("#pa-gi", {opacity: 1}, 54.75);
+      tl.from("#pa-gi", {y: 30, duration: 0.45, ease: "power3.out"}, 54.75);
+      tl.to("#pa-gi", {opacity: 0, duration: 0.2}, 56.72);
+      tl.set("#sagra", {opacity: 1}, 56.92);
+      tl.from("#sagra", {y: 30, duration: 0.45, ease: "power3.out"}, 56.92);
+      tl.to("#sagra", {opacity: 0, duration: 0.2}, 61.888);
+      tl.set("#menu", {opacity: 1}, 62.138);
+      tl.from("#menu", {y: 30, duration: 0.45, ease: "power3.out"}, 62.138);
+      tl.to("#menu", {opacity: 0, duration: 0.2}, 69.999);
+      tl.set("#m1", {opacity: 1}, 62.04); tl.from("#m1", {x: -30, duration: 0.3, ease: "power3.out"}, 62.04);
+      tl.set("#m2", {opacity: 1}, 66.64); tl.from("#m2", {x: -30, duration: 0.3, ease: "power3.out"}, 66.64);
+      tl.set("#etoiles", {opacity: 1}, 68.74); tl.from("#etoiles", {scale: 1.6, duration: 0.3, ease: "back.out(2)"}, 68.74);
+      tl.set("#pas-photo", {opacity: 1}, 70.86);
+      tl.from("#pas-photo", {scale: 0.8, duration: 0.3, ease: "back.out(2.2)"}, 70.86);
+      tl.to("#pas-photo", {opacity: 0, duration: 0.2}, 72.26);
+      tl.set("#pa-cl", {opacity: 1}, 86.205);
+      tl.from("#pa-cl", {y: 30, duration: 0.45, ease: "power3.out"}, 86.205);
+      tl.to("#pa-cl", {opacity: 0, duration: 0.2}, 88.08);
+      tl.set("#pl-francois", {opacity: 1}, 93.481); tl.set("#pl-francois", {opacity: 0}, 99.4); tl.fromTo("#pl-francois .cadre", {scale: 1.12}, {scale: 1.02, duration: 5.919, ease: "none"}, 93.481);
+      tl.set("#nom-fr", {opacity: 1}, 93.781);
+      tl.from("#nom-fr", {y: 30, duration: 0.45, ease: "power3.out"}, 93.781);
+      tl.to("#nom-fr", {opacity: 0, duration: 0.2}, 99.2);
+      tl.set("#credit-fr", {opacity: 1}, 93.481);
+      tl.to("#credit-fr", {opacity: 0, duration: 0.2}, 99.2);
+      tl.set("#introuvable", {opacity: 1}, 100.36);
+      tl.from("#introuvable", {scale: 0.8, duration: 0.3, ease: "back.out(2.2)"}, 100.36);
+      tl.to("#introuvable", {opacity: 0, duration: 0.2}, 100.848);
+      tl.set("#baroque", {opacity: 1}, 102.06);
+      tl.from("#baroque", {y: 30, duration: 0.45, ease: "power3.out"}, 102.06);
+      tl.to("#baroque", {opacity: 0, duration: 0.2}, 104.872);
+      tl.set("#ca0", {opacity: 1}, 29.621); tl.set("#ca0", {opacity: 0}, 32.71);
+      tl.fromTo("#ca0 .cam", {scale: 1.564, x: -585.5, y: -562.2}, {scale: 1.7, x: -683.3, y: -694.6, duration: 0.9, ease: "power2.out"}, 29.621);
+      tl.fromTo("#ca0-Turin", {opacity: 0, scale: 0.4}, {opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)", immediateRender: false}, 29.971);
+      tl.set("#pa-turin", {opacity: 1}, 32.51);
+      tl.from("#pa-turin", {y: 30, duration: 0.45, ease: "power3.out"}, 32.51);
+      tl.to("#pa-turin", {opacity: 0, duration: 0.2}, 32.51);
+      tl.set("#ca1", {opacity: 1}, 45.36); tl.set("#ca1", {opacity: 0}, 50.92);
+      tl.fromTo("#ca1 .cam", {scale: 1.1500000000000001, x: -104.0, y: -178.5}, {scale: 1.25, x: -160.0, y: -277.5, duration: 0.9, ease: "power2.out"}, 45.36);
+      tl.fromTo("#ca1-Turin", {opacity: 0}, {opacity: 1, duration: 0.3}, 45.66);
+      tl.to("#ca1-sav", {opacity: 1, duration: 0.4}, 45.86);
+      tl.to("#ca1-l1", {opacity: 1, duration: 0.6}, 46.86); tl.to("#ca1-t1", {opacity: 1, duration: 0.4}, 46.86);
+      tl.to("#ca1-l2", {opacity: 1, duration: 0.6}, 48.98); tl.to("#ca1-t2", {opacity: 1, duration: 0.4}, 48.98);
+      tl.set("#ca2", {opacity: 1}, 53.133); tl.set("#ca2", {opacity: 0}, 54.7);
+      tl.fromTo("#ca2 .cam", {scale: 2.9440000000000004, x: -1344.2, y: -1954.6}, {scale: 3.2, x: -1508.0, y: -2208.0, duration: 0.9, ease: "power2.out"}, 53.133);
+      tl.fromTo("#ca2-Turin", {opacity: 0, scale: 0.4}, {opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)", immediateRender: false}, 53.483);
+      tl.fromTo("#ca2-Giaveno", {opacity: 0, scale: 0.4}, {opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)", immediateRender: false}, 53.833);
+      tl.set("#ca3", {opacity: 1}, 80.947); tl.set("#ca3", {opacity: 0}, 86.155);
+      tl.fromTo("#ca3 .cam", {scale: 3.8640000000000003, x: -1797.7, y: -2981.3}, {scale: 4.2, x: -2001.0, y: -3324.0, duration: 0.9, ease: "power2.out"}, 80.947);
+      tl.fromTo("#ca3-Giaveno", {opacity: 0, scale: 0.4}, {opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)", immediateRender: false}, 81.297);
+      tl.fromTo("#ca3-Pinerolo", {opacity: 0, scale: 0.4}, {opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)", immediateRender: false}, 81.647);
+      tl.fromTo("#ca3-Cumiana", {opacity: 0, scale: 0.4}, {opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.4)", immediateRender: false}, 81.98);
+      tl.fromTo("#ca3-trait", {opacity: 1, scaleX: 0}, {scaleX: 1, duration: 0.6, ease: "power2.inOut"}, 84.78);
+      tl.set("#clocher", {opacity: 1}, 88.28); tl.set("#clocher", {opacity: 0}, 93.481);
+      tl.from("#cl-tout g[id^=cl-]", {opacity: 0, y: 40, duration: 0.3, stagger: 0.06, ease: "power2.out"}, 88.28);
+      tl.to("#cl-croix", {y: -210, duration: 0.7, ease: "power3.inOut"}, 88.78);
+      tl.to("#et-croix", {opacity: 1, duration: 0.25}, 89.28);
+      tl.to("#cl-lanterne", {y: -140, duration: 0.7, ease: "power3.inOut"}, 88.78);
+      tl.to("#et-lanterne", {opacity: 1, duration: 0.25}, 89.36);
+      tl.to("#cl-bulbe", {y: -70, duration: 0.7, ease: "power3.inOut"}, 88.78);
+      tl.to("#et-bulbe", {opacity: 1, duration: 0.25}, 89.44);
+      tl.to("#cl-tambour", {y: 0, duration: 0.7, ease: "power3.inOut"}, 88.78);
+      tl.to("#et-tambour", {opacity: 1, duration: 0.25}, 89.52);
+      tl.to("#cl-beffroi", {y: 70, duration: 0.7, ease: "power3.inOut"}, 88.78);
+      tl.to("#et-beffroi", {opacity: 1, duration: 0.25}, 89.6);
+      tl.to("#cl-tour", {y: 140, duration: 0.7, ease: "power3.inOut"}, 88.78);
+      tl.to("#et-tour", {opacity: 1, duration: 0.25}, 89.68);
+      tl.to("#cl-bulbe .bul", {fill: "rgba(255,255,255,0.9)", duration: 0.4}, 89.58);
+      tl.to("#cl-tout", {opacity: 0, duration: 0.3}, 91.53999999999999); tl.to("#cmp", {opacity: 1, duration: 0.4}, 91.74);
+      tl.set("#final", {opacity: 1}, 109.051); tl.from("#final .eyebrow, #final h2, #final .lieux, #final .sig, #final .abastou", {y: 26, opacity: 0, duration: 0.5, stagger: 0.12, ease: "power3.out"}, 109.101);
+      tl.set("#st3", {opacity: 1}, 2.7); tl.from("#st3", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 2.7); tl.set("#st3", {opacity: 0}, 3.6);
+      tl.set("#st4", {opacity: 1}, 3.6); tl.from("#st4", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 3.6); tl.set("#st4", {opacity: 0}, 4.34);
+      tl.set("#st5", {opacity: 1}, 4.34); tl.from("#st5", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 4.34); tl.set("#st5", {opacity: 0}, 6.92);
+      tl.set("#st11", {opacity: 1}, 11.64); tl.from("#st11", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 11.64); tl.set("#st11", {opacity: 0}, 12.32);
+      tl.set("#st12", {opacity: 1}, 12.32); tl.from("#st12", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 12.32); tl.set("#st12", {opacity: 0}, 13.84);
+      tl.set("#st13", {opacity: 1}, 14.06); tl.from("#st13", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 14.06); tl.set("#st13", {opacity: 0}, 14.94);
+      tl.set("#st14", {opacity: 1}, 14.94); tl.from("#st14", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 14.94); tl.set("#st14", {opacity: 0}, 15.28);
+      tl.set("#st15", {opacity: 1}, 15.28); tl.from("#st15", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 15.28); tl.set("#st15", {opacity: 0}, 17.28);
+      tl.set("#st16", {opacity: 1}, 17.28); tl.from("#st16", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 17.28); tl.set("#st16", {opacity: 0}, 18.12);
+      tl.set("#st17", {opacity: 1}, 18.12); tl.from("#st17", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 18.12); tl.set("#st17", {opacity: 0}, 19.14);
+      tl.set("#st18", {opacity: 1}, 19.14); tl.from("#st18", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 19.14); tl.set("#st18", {opacity: 0}, 19.62);
+      tl.set("#st19", {opacity: 1}, 19.62); tl.from("#st19", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 19.62); tl.set("#st19", {opacity: 0}, 20.82);
+      tl.set("#st20", {opacity: 1}, 20.82); tl.from("#st20", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 20.82); tl.set("#st20", {opacity: 0}, 21.92);
+      tl.set("#st21", {opacity: 1}, 21.92); tl.from("#st21", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 21.92); tl.set("#st21", {opacity: 0}, 22.5);
+      tl.set("#st22", {opacity: 1}, 22.5); tl.from("#st22", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 22.5); tl.set("#st22", {opacity: 0}, 22.78);
+      tl.set("#st23", {opacity: 1}, 22.78); tl.from("#st23", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 22.78); tl.set("#st23", {opacity: 0}, 23.08);
+      tl.set("#st24", {opacity: 1}, 23.08); tl.from("#st24", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 23.08); tl.set("#st24", {opacity: 0}, 23.46);
+      tl.set("#st25", {opacity: 1}, 23.46); tl.from("#st25", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 23.46); tl.set("#st25", {opacity: 0}, 24.36);
+      tl.set("#st26", {opacity: 1}, 24.36); tl.from("#st26", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 24.36); tl.set("#st26", {opacity: 0}, 24.72);
+      tl.set("#st27", {opacity: 1}, 24.72); tl.from("#st27", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 24.72); tl.set("#st27", {opacity: 0}, 25.38);
+      tl.set("#st28", {opacity: 1}, 25.38); tl.from("#st28", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 25.38); tl.set("#st28", {opacity: 0}, 25.62);
+      tl.set("#st29", {opacity: 1}, 25.62); tl.from("#st29", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 25.62); tl.set("#st29", {opacity: 0}, 26.24);
+      tl.set("#st30", {opacity: 1}, 26.24); tl.from("#st30", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 26.24); tl.set("#st30", {opacity: 0}, 26.82);
+      tl.set("#st31", {opacity: 1}, 26.82); tl.from("#st31", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 26.82); tl.set("#st31", {opacity: 0}, 28.28);
+      tl.set("#st32", {opacity: 1}, 28.28); tl.from("#st32", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 28.28); tl.set("#st32", {opacity: 0}, 28.74);
+      tl.set("#st33", {opacity: 1}, 28.74); tl.from("#st33", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 28.74); tl.set("#st33", {opacity: 0}, 29.56);
+      tl.set("#st34", {opacity: 1}, 29.82); tl.from("#st34", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 29.82); tl.set("#st34", {opacity: 0}, 30.92);
+      tl.set("#st35", {opacity: 1}, 30.92); tl.from("#st35", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 30.92); tl.set("#st35", {opacity: 0}, 32.56);
+      tl.set("#st36", {opacity: 1}, 32.56); tl.from("#st36", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 32.56); tl.set("#st36", {opacity: 0}, 35.32);
+      tl.set("#st37", {opacity: 1}, 35.32); tl.from("#st37", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 35.32); tl.set("#st37", {opacity: 0}, 36.16);
+      tl.set("#st38", {opacity: 1}, 36.16); tl.from("#st38", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 36.16); tl.set("#st38", {opacity: 0}, 38.1);
+      tl.set("#st39", {opacity: 1}, 38.1); tl.from("#st39", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 38.1); tl.set("#st39", {opacity: 0}, 39.06);
+      tl.set("#st40", {opacity: 1}, 39.06); tl.from("#st40", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 39.06); tl.set("#st40", {opacity: 0}, 39.68);
+      tl.set("#st41", {opacity: 1}, 39.68); tl.from("#st41", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 39.68); tl.set("#st41", {opacity: 0}, 41.08);
+      tl.set("#st42", {opacity: 1}, 41.08); tl.from("#st42", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 41.08); tl.set("#st42", {opacity: 0}, 41.88);
+      tl.set("#st43", {opacity: 1}, 41.88); tl.from("#st43", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 41.88); tl.set("#st43", {opacity: 0}, 42.84);
+      tl.set("#st44", {opacity: 1}, 42.84); tl.from("#st44", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 42.84); tl.set("#st44", {opacity: 0}, 44.0);
+      tl.set("#st45", {opacity: 1}, 44.04); tl.from("#st45", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 44.04); tl.set("#st45", {opacity: 0}, 45.36);
+      tl.set("#st46", {opacity: 1}, 45.36); tl.from("#st46", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 45.36); tl.set("#st46", {opacity: 0}, 46.22);
+      tl.set("#st47", {opacity: 1}, 46.5); tl.from("#st47", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 46.5); tl.set("#st47", {opacity: 0}, 46.86);
+      tl.set("#st48", {opacity: 1}, 46.86); tl.from("#st48", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 46.86); tl.set("#st48", {opacity: 0}, 48.32);
+      tl.set("#st49", {opacity: 1}, 48.32); tl.from("#st49", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 48.32); tl.set("#st49", {opacity: 0}, 48.86);
+      tl.set("#st50", {opacity: 1}, 48.86); tl.from("#st50", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 48.86); tl.set("#st50", {opacity: 0}, 48.98);
+      tl.set("#st51", {opacity: 1}, 48.98); tl.from("#st51", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 48.98); tl.set("#st51", {opacity: 0}, 50.6);
+      tl.set("#st52", {opacity: 1}, 50.92); tl.from("#st52", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 50.92); tl.set("#st52", {opacity: 0}, 51.34);
+      tl.set("#st53", {opacity: 1}, 51.34); tl.from("#st53", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 51.34); tl.set("#st53", {opacity: 0}, 51.44);
+      tl.set("#st54", {opacity: 1}, 51.44); tl.from("#st54", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 51.44); tl.set("#st54", {opacity: 0}, 53.36);
+      tl.set("#st55", {opacity: 1}, 53.36); tl.from("#st55", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 53.36); tl.set("#st55", {opacity: 0}, 54.7);
+      tl.set("#st56", {opacity: 1}, 54.7); tl.from("#st56", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 54.7); tl.set("#st56", {opacity: 0}, 55.14);
+      tl.set("#st57", {opacity: 1}, 55.14); tl.from("#st57", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 55.14); tl.set("#st57", {opacity: 0}, 55.42);
+      tl.set("#st58", {opacity: 1}, 55.42); tl.from("#st58", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 55.42); tl.set("#st58", {opacity: 0}, 55.84);
+      tl.set("#st59", {opacity: 1}, 55.84); tl.from("#st59", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 55.84); tl.set("#st59", {opacity: 0}, 56.12);
+      tl.set("#st60", {opacity: 1}, 56.12); tl.from("#st60", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 56.12); tl.set("#st60", {opacity: 0}, 56.92);
+      tl.set("#st61", {opacity: 1}, 56.92); tl.from("#st61", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 56.92); tl.set("#st61", {opacity: 0}, 60.32);
+      tl.set("#st62", {opacity: 1}, 60.94); tl.from("#st62", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 60.94); tl.set("#st62", {opacity: 0}, 62.04);
+      tl.set("#st63", {opacity: 1}, 62.04); tl.from("#st63", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 62.04); tl.set("#st63", {opacity: 0}, 63.92);
+      tl.set("#st69", {opacity: 1}, 70.32); tl.from("#st69", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 70.32); tl.set("#st69", {opacity: 0}, 70.68);
+      tl.set("#st70", {opacity: 1}, 70.68); tl.from("#st70", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 70.68); tl.set("#st70", {opacity: 0}, 70.86);
+      tl.set("#st71", {opacity: 1}, 70.86); tl.from("#st71", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 70.86); tl.set("#st71", {opacity: 0}, 71.88);
+      tl.set("#st72", {opacity: 1}, 71.88); tl.from("#st72", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 71.88); tl.set("#st72", {opacity: 0}, 73.22);
+      tl.set("#st73", {opacity: 1}, 73.22); tl.from("#st73", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 73.22); tl.set("#st73", {opacity: 0}, 73.3);
+      tl.set("#st74", {opacity: 1}, 73.3); tl.from("#st74", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 73.3); tl.set("#st74", {opacity: 0}, 75.74);
+      tl.set("#st75", {opacity: 1}, 76.1); tl.from("#st75", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 76.1); tl.set("#st75", {opacity: 0}, 77.08);
+      tl.set("#st76", {opacity: 1}, 78.12); tl.from("#st76", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 78.12); tl.set("#st76", {opacity: 0}, 78.74);
+      tl.set("#st77", {opacity: 1}, 78.92); tl.from("#st77", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 78.92); tl.set("#st77", {opacity: 0}, 79.2);
+      tl.set("#st78", {opacity: 1}, 79.2); tl.from("#st78", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 79.2); tl.set("#st78", {opacity: 0}, 79.78);
+      tl.set("#st79", {opacity: 1}, 79.78); tl.from("#st79", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 79.78); tl.set("#st79", {opacity: 0}, 80.94);
+      tl.set("#st80", {opacity: 1}, 80.94); tl.from("#st80", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 80.94); tl.set("#st80", {opacity: 0}, 81.66);
+      tl.set("#st81", {opacity: 1}, 81.66); tl.from("#st81", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 81.66); tl.set("#st81", {opacity: 0}, 81.98);
+      tl.set("#st82", {opacity: 1}, 81.98); tl.from("#st82", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 81.98); tl.set("#st82", {opacity: 0}, 83.32);
+      tl.set("#st83", {opacity: 1}, 84.04); tl.from("#st83", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 84.04); tl.set("#st83", {opacity: 0}, 84.98);
+      tl.set("#st84", {opacity: 1}, 84.98); tl.from("#st84", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 84.98); tl.set("#st84", {opacity: 0}, 86.36);
+      tl.set("#st85", {opacity: 1}, 86.36); tl.from("#st85", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 86.36); tl.set("#st85", {opacity: 0}, 88.28);
+      tl.set("#st95", {opacity: 1}, 93.7); tl.from("#st95", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 93.7); tl.set("#st95", {opacity: 0}, 94.42);
+      tl.set("#st96", {opacity: 1}, 94.42); tl.from("#st96", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 94.42); tl.set("#st96", {opacity: 0}, 95.54);
+      tl.set("#st97", {opacity: 1}, 95.76); tl.from("#st97", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 95.76); tl.set("#st97", {opacity: 0}, 96.48);
+      tl.set("#st98", {opacity: 1}, 96.48); tl.from("#st98", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 96.48); tl.set("#st98", {opacity: 0}, 96.74);
+      tl.set("#st99", {opacity: 1}, 96.74); tl.from("#st99", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 96.74); tl.set("#st99", {opacity: 0}, 96.92);
+      tl.set("#st100", {opacity: 1}, 96.92); tl.from("#st100", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 96.92); tl.set("#st100", {opacity: 0}, 98.98);
+      tl.set("#st101", {opacity: 1}, 99.4); tl.from("#st101", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 99.4); tl.set("#st101", {opacity: 0}, 100.22);
+      tl.set("#st102", {opacity: 1}, 100.22); tl.from("#st102", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 100.22); tl.set("#st102", {opacity: 0}, 100.36);
+      tl.set("#st103", {opacity: 1}, 100.36); tl.from("#st103", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 100.36); tl.set("#st103", {opacity: 0}, 101.32);
+      tl.set("#st104", {opacity: 1}, 101.32); tl.from("#st104", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 101.32); tl.set("#st104", {opacity: 0}, 102.06);
+      tl.set("#st105", {opacity: 1}, 102.06); tl.from("#st105", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 102.06); tl.set("#st105", {opacity: 0}, 102.74);
+      tl.set("#st106", {opacity: 1}, 102.74); tl.from("#st106", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 102.74); tl.set("#st106", {opacity: 0}, 103.56);
+      tl.set("#st107", {opacity: 1}, 103.56); tl.from("#st107", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 103.56); tl.set("#st107", {opacity: 0}, 104.54);
+      tl.set("#st108", {opacity: 1}, 104.54); tl.from("#st108", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 104.54); tl.set("#st108", {opacity: 0}, 105.3);
+      tl.set("#st109", {opacity: 1}, 105.54); tl.from("#st109", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 105.54); tl.set("#st109", {opacity: 0}, 105.96);
+      tl.set("#st110", {opacity: 1}, 105.96); tl.from("#st110", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 105.96); tl.set("#st110", {opacity: 0}, 106.48);
+      tl.set("#st111", {opacity: 1}, 106.48); tl.from("#st111", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 106.48); tl.set("#st111", {opacity: 0}, 107.24);
+      tl.set("#st112", {opacity: 1}, 107.24); tl.from("#st112", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 107.24); tl.set("#st112", {opacity: 0}, 107.76);
+      tl.set("#st113", {opacity: 1}, 107.76); tl.from("#st113", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 107.76); tl.set("#st113", {opacity: 0}, 108.66);
+      tl.set("#st114", {opacity: 1}, 108.66); tl.from("#st114", {scale: 0.86, duration: 0.14, ease: "back.out(2)"}, 108.66); tl.set("#st114", {opacity: 0}, 109.4);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 2.36); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 2.43);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 29.551); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 29.621);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 38.761); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 38.831);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 43.717); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 43.787);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 53.063); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 53.133);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 62.018); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 62.088);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 80.877); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 80.947);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 86.085); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 86.155);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 93.411); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 93.481);
+      tl.fromTo("#flash", {opacity: 0}, {opacity: 0.9, duration: 0.07, ease: "none", immediateRender: false}, 108.981); tl.to("#flash", {opacity: 0, duration: 0.35, ease: "power1.out"}, 109.051);
+      tl.set("#face", {scale: 1.0}, 0);
+      tl.set("#face", {scale: 1.08}, 2.43);
+      tl.set("#face", {scale: 1.0}, 11.573);
+      tl.set("#face", {scale: 1.2}, 17.28);
+      tl.set("#face", {scale: 1.0}, 18.12);
+      tl.set("#face", {scale: 1.0}, 26.173);
+      tl.set("#face", {scale: 1.24}, 28.74);
+      tl.set("#face", {scale: 1.0}, 70.207);
+      tl.set("#face", {scale: 1.2}, 73.3);
+      tl.set("#face", {scale: 1.0}, 76.1);
+      tl.set("#face", {scale: 1.16}, 79.2);
+      tl.set("#face", {scale: 1.22}, 99.4);
+      tl.set("#face", {scale: 1.0}, 105.13);
+      tl.set("#face", {scale: 1.18}, 107.76);
+      tl.set({}, {}, 112.851);
+      window.__timelines["main"] = tl;
+      </script>
+    </div>
+  </body>
+</html>
