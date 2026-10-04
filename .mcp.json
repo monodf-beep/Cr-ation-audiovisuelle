@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "studio-video": {
+      "type": "http",
+      "url": "https://152-239-112-112.sslip.io/pont/mcp",
+      "headers": {
+        "Authorization": "Bearer ${STUDIO_JETON}"
+      }
+    }
+  }
+}
