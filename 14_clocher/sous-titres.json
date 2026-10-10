@@ -1,0 +1,9 @@
+{
+  "note": "Minutage Whisper de la voix (memo du 10/10, 19 h 32). index.html porte le francais ; la version italienne est rendue en remplacant ces phrases.",
+  "phrases": [
+    { "debut": 0.0,  "fin": 1.9,  "fr": "Regarde, je crois qu'il y a un problème.", "it": "Guarda, credo che ci sia un problema." },
+    { "debut": 2.04, "fin": 3.45, "fr": "Regarde l'horloge.",                        "it": "Guarda l'orologio." },
+    { "debut": 3.6,  "fin": 5.5,  "fr": "Putain, regarde l'aiguille.",               "it": "Cazzo, guarda la lancetta." },
+    { "debut": 6.42, "fin": 8.1,  "fr": "Ça va tomber, non ?",                       "it": "Sta per cadere, no?" }
+  ]
+}
