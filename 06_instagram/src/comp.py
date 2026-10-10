@@ -18,7 +18,7 @@ def pose(f):
     if 24<=f<30: d['buck']=-2*np.sin(np.pi*seg(f,24,30))
     if 30<=f<38: u=eo(seg(f,30,38)); d['buck']=10*u; d['kick']=40*u
     elif 38<=f<50: u=1-ease(seg(f,38,50)); d['buck']=10*u; d['kick']=40*u
-    d['lift']=d['land']*2.0
+    d['lift']=0
     return d
 sil=np.load('fr/sil.npy').astype(np.uint8)
 silp=np.zeros((1920,1080),np.uint8); silp[y0:y0+sil.shape[0],x0:x0+sil.shape[1]]=sil

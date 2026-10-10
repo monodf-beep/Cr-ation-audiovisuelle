@@ -33,7 +33,15 @@ def pose(land=0,fleg=0,buck=0,kick=0,lift=0):
     ffw=(M1@np.r_[ff+PAD,1])[:2]-PAD
     M=rot(buck,ffw)@M1
     M=np.array([[1,0,0],[0,1,-lift],[0,0,1.]])@M
-    return cv2.warpAffine(img,M[:2],(img.shape[1],img.shape[0]),flags=cv2.INTER_LINEAR,borderValue=(1,1,1))
+    out=cv2.warpAffine(img,M[:2],(img.shape[1],img.shape[0]),flags=cv2.INTER_LINEAR,borderValue=(1,1,1))
+    # keep the horse centred where the logo sits
+    c=centroid(out); dx,dy=C0-c
+    T=np.float32([[1,0,dx],[0,1,dy]])
+    return cv2.warpAffine(out,T,(out.shape[1],out.shape[0]),flags=cv2.INTER_LINEAR,borderValue=(1,1,1))
+def centroid(img):
+    w=1-img.mean(2); s=w.sum()
+    return np.array([(w*xx).sum()/s,(w*yy).sum()/s])
+C0=centroid(F)
 if __name__=='__main__':
     import sys
     cl=pad(clean,(200,200,200))
