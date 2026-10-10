@@ -4,29 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1920" />
     <title>Le clocher</title>
-    <!-- Montage Instagram tres simple, plan apres plan, sans voix ni texte (demande de Franck, 10/10/2026).
-         Plans : panorama, eglise, clocher retravaille dans Higgsfield (Kling 3.0 Omni Edit) a partir
-         d'un recadrage qui pousse vers l'horloge (tools/zoom.py). Son : l'ambiance de chaque rush. -->
+    <!-- Montage Instagram simple, plan apres plan, cale sur la voix spontanee de Franck (memo du 10/10, 19 h 32).
+         L'accroche est la voix : « je crois qu'il y a un probleme » des la premiere seconde.
+         Clocher : recadrage vers l'horloge (tools/zoom.py), aiguilles redessinees (tools/aiguilles.py) :
+         recul sur « regarde l'aiguille », blocage sur « ca va tomber, non ? », casse juste apres. -->
     <script src="assets/vendor/gsap.min.js"></script>
     <style>
+      @font-face { font-family: 'Semplicita Pro'; src: url('assets/fonts/SemplicitaPro-Bold.woff') format('woff'); font-weight: 700; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
-      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: 'Semplicita Pro', sans-serif; }
       video { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      /* Sous-titres : zone sure (au-dessus de 1440 px), centres, une phrase a la fois */
+      .st { position: absolute; left: 90px; right: 90px; top: 1230px; text-align: center; z-index: 10; opacity: 0;
+            font-size: 68px; font-weight: 700; line-height: 1.12; color: #fff;
+            text-shadow: 0 0 6px rgba(0,0,0,.75), 0 3px 24px rgba(0,0,0,.7); text-wrap: balance; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="17.993" data-width="1080" data-height="1920">
-      <video id="v-panorama" src="assets/plans/panorama.mp4" muted playsinline data-start="0" data-duration="2.9" data-media-start="0" data-track-index="1"></video>
-      <video id="v-eglise" src="assets/plans/eglise.mp4" muted playsinline data-start="2.9" data-duration="6.76" data-media-start="0" data-track-index="2"></video>
-      <video id="v-clocher" src="assets/plans/clocher.mp4" muted playsinline data-start="9.66" data-duration="8.333" data-media-start="0" data-track-index="1"></video>
-      <audio id="a-panorama" src="assets/plans/panorama.m4a" data-start="0" data-duration="2.9" data-track-index="10" data-volume="1"></audio>
-      <audio id="a-eglise" src="assets/plans/eglise.m4a" data-start="2.9" data-duration="6.76" data-track-index="11" data-volume="1"></audio>
-      <audio id="a-clocher" src="assets/plans/clocher-son.m4a" data-start="9.66" data-duration="8.333" data-track-index="10" data-volume="1"></audio>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="11.6" data-width="1080" data-height="1920">
+      <video id="v-panorama" src="assets/plans/panorama.mp4" muted playsinline data-start="0" data-duration="2.0" data-media-start="0.4" data-track-index="1"></video>
+      <video id="v-eglise" src="assets/plans/eglise.mp4" muted playsinline data-start="2.0" data-duration="1.5" data-media-start="1.0" data-track-index="2"></video>
+      <video id="v-clocher" src="assets/plans/clocher.mp4" muted playsinline data-start="3.5" data-duration="8.1" data-media-start="0" data-track-index="1"></video>
+      <audio id="a-voix" src="assets/plans/voix.m4a" data-start="0" data-duration="9.845" data-track-index="9" data-volume="1"></audio>
+      <audio id="a-panorama" src="assets/plans/panorama.m4a" data-start="0" data-duration="2.0" data-media-start="0.4" data-track-index="10" data-volume="0.3"></audio>
+      <audio id="a-eglise" src="assets/plans/eglise.m4a" data-start="2.0" data-duration="1.5" data-media-start="1.0" data-track-index="11" data-volume="0.3"></audio>
+      <audio id="a-clocher" src="assets/plans/clocher-son.m4a" data-start="3.5" data-duration="8.1" data-track-index="10" data-volume="0.4"></audio>
+
+      <div class="st" id="st1">Regarde, je crois qu'il y a un problème.</div>
+      <div class="st" id="st2">Regarde l'horloge.</div>
+      <div class="st" id="st3">Putain, regarde l'aiguille.</div>
+      <div class="st" id="st4">Ça va tomber, non&nbsp;?</div>
       <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      tl.set({}, {}, 17.993);
+      // [id, debut, fin] : minutage Whisper de la voix
+      [["#st1", 0.001, 1.9], ["#st2", 2.04, 3.45], ["#st3", 3.6, 5.5], ["#st4", 6.42, 8.1]].forEach(([id, a, b]) => {
+        tl.fromTo(id, {opacity: 0, y: 8}, {opacity: 1, y: 0, duration: 0.12, ease: "power2.out", immediateRender: false}, a);
+        tl.to(id, {opacity: 0, duration: 0.1, ease: "none"}, b);
+      });
+      tl.set("#st1", {opacity: 1, y: 0}, 0); // visible des la premiere image (couverture, accroche)
+      tl.set({}, {}, 11.6);
       window.__timelines["main"] = tl;
       </script>
     </div>
