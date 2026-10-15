@@ -51,12 +51,13 @@ def tb(s):
 P = {
     "hook": (0.0, HOOK),
     "duo": (HOOK, VA),
-    "allee": (VA, t(4.86)),                  # « Aujourd'hui, j'étais au salon Dècidia » (punch-in sur Décidia)
+    "allee": (VA, t(3.42)),                  # « Aujourd'hui, j'étais au salon »
+    "accueil": (t(3.42), t(4.86)),           # « Dècidia » : les comptoirs aux couleurs du salon
     "frenchtech": (t(4.86), t(5.80)),        # « avec la French Tech »
     "savoyia": (t(5.80), t(7.20)),           # « et Savoy IA »
     "affiche": (t(7.20), t(8.72)),           # « pour une conférence »
-    "salle": (t(8.72), t(11.60)),            # « sur l'intelligence artificielle »
-    "entreprises": (t(11.60), t(12.95)),     # « adaptée »
+    "salle": (t(8.72), t(11.02)),            # « sur l'intelligence artificielle »
+    "entreprises": (t(11.02), t(12.95)),     # « adaptée » : le stand du club de handball
     "cabine": (t(12.95), t(15.40)),          # « à l'entreprise »
     "stand": (t(15.40), t(16.80)),           # « c'est utiliser la capacité »
     "scene": (t(16.80), t(18.40)),           # « les compétences métiers avant tout »
@@ -244,7 +245,7 @@ HTML = f"""<!doctype html>
       .relire .date {{ margin-top: 20px; font-size: 34px; font-weight: 600; color: var(--fm-ink-700); }}
       .logos {{ position: absolute; left: 60px; right: 150px; top: 760px; display: flex; align-items: center; justify-content: space-between; }}
       .logos .ft {{ width: 480px; height: auto; display: block; }}
-      .logos .sia {{ width: 340px; height: 340px; background: #05091f; display: flex; align-items: center; justify-content: center; }}
+      .logos .sia {{ width: 340px; height: 340px; display: flex; align-items: center; justify-content: center; }}
       .logos .sia img {{ width: 300px; height: 300px; display: block; }}
       .bloc-final {{ position: absolute; left: 90px; top: 1190px; background: var(--fm-bleu-savoie); color: #fff; padding: 22px 34px 26px; }}
       .bloc-final .n {{ font-size: 48px; font-weight: 700; line-height: 1.1; }}
@@ -278,6 +279,7 @@ HTML = f"""<!doctype html>
 
       <!-- Phrase 1 : le salon, la French Tech, Savoy IA -->
       {media("v-allee", "assets/allee.mp4", "allee")}
+      {media("v-accueil", "assets/accueil.mp4", "accueil")}
       {media("v-frenchtech", "assets/frenchtech.mp4", "frenchtech")}
       <div class="carte-logo" id="logo-ft"><img src="assets/logos/french-tech-alpes.svg" width="480" height="393" alt="La French Tech Alpes" /></div>
       <div class="plan" id="p-savoyia">
@@ -290,7 +292,9 @@ HTML = f"""<!doctype html>
       {img("photo-salle", "assets/photo-6.jpg", "salle")}
       <div class="pastille" id="pastille-atelier"><div class="k">Atelier · salle Lamartine</div><div class="v">Vendre mieux avec l'IA : l'humain garde la main</div></div>
       {media("v-entreprises", "assets/entreprises.mp4", "entreprises")}
+      <div class="pastille" id="pastille-club"><div class="k">Hall A · stand A84</div><div class="v">Chambéry Savoie Mont Blanc Handball</div></div>
       {media("v-cabine", "assets/cabine.mp4", "cabine")}
+      <div class="pastille" id="pastille-cabine"><div class="k">Sur le salon</div><div class="v">Téléphérique du Salève</div></div>
 
       <!-- Phrase 3 : les competences metiers -->
       {media("v-stand", "assets/stand.mp4", "stand")}
@@ -360,7 +364,7 @@ HTML = f"""<!doctype html>
         </div>
         <div class="logos">
           <img class="ft" id="fin-ft" src="assets/logos/french-tech-alpes.svg" width="480" height="393" alt="La French Tech Alpes" />
-          <div class="sia" id="fin-sia"><img src="assets/logos/savoy-ia-detoure.png" width="330" height="330" alt="Savoy IA" /></div>
+          <div class="sia" id="fin-sia"><img src="assets/logos/savoy-ia-clair.png" width="330" height="330" alt="Savoy IA" /></div>
         </div>
         <div class="bloc-final" id="fin-nom"><div class="n">Franck Monod · Rony Dray</div><div class="r">avec la French Tech Alpes et Savoy IA</div></div>
       </div>
@@ -380,6 +384,7 @@ HTML = f"""<!doctype html>
         tl.fromTo("#flash", {{ opacity: 0 }}, {{ opacity: 1, duration: 0.07, ease: "none", immediateRender: false }}, t - 0.07);
         tl.to("#flash", {{ opacity: 0, duration: 0.35, ease: "power2.out" }}, t);
       }};
+      gsap.set(["#pastille-club", "#pastille-cabine"], {{ opacity: 0 }});
       gsap.set(["#hook", "#voile-hook", "#nom", "#logo-ft", "#p-savoyia", "#pastille-atelier", "#p-couches", "#p-cycle", "#titre-stand",
                 "#bague", "#p-merci", "#p-final"], {{ opacity: 0 }});
 
@@ -396,10 +401,10 @@ HTML = f"""<!doctype html>
       tl.fromTo("#nom", {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut", immediateRender: false }}, P.duo[0] + 0.25);
       tl.set("#nom", {{ opacity: 0 }}, P.duo[1]);
 
-      // Allee du salon : poussee, punch-in sur « Decidia ».
-      gsap.set("#v-allee", {{ transformOrigin: "50% 45%" }});
-      tl.fromTo("#v-allee", {{ scale: 1.0 }}, {{ scale: 1.04, duration: {t(3.42)} - P.allee[0], ease: "none" }}, P.allee[0]);
-      tl.fromTo("#v-allee", {{ scale: 1.18 }}, {{ scale: 1.22, duration: P.allee[1] - {t(3.42)}, ease: "none", immediateRender: false }}, {t(3.42)});
+      // Allee du salon, puis coupe sur « Decidia » : les comptoirs du salon.
+      gsap.set(["#v-allee", "#v-accueil"], {{ transformOrigin: "50% 45%" }});
+      tl.fromTo("#v-allee", {{ scale: 1.0 }}, {{ scale: 1.05, duration: P.allee[1] - P.allee[0], ease: "none" }}, P.allee[0]);
+      tl.fromTo("#v-accueil", {{ scale: 1.14 }}, {{ scale: 1.06, duration: P.accueil[1] - P.accueil[0], ease: "none" }}, P.accueil[0]);
 
       // French Tech : le stand, puis le logo qui saute.
       gsap.set("#v-frenchtech", {{ transformOrigin: "45% 40%" }});
@@ -429,6 +434,12 @@ HTML = f"""<!doctype html>
       gsap.set(["#v-entreprises", "#v-cabine"], {{ transformOrigin: "50% 45%" }});
       tl.fromTo("#v-entreprises", {{ scale: 1.0 }}, {{ scale: 1.06, duration: P.entreprises[1] - P.entreprises[0], ease: "none" }}, P.entreprises[0]);
       tl.fromTo("#v-cabine", {{ scale: 1.12 }}, {{ scale: 1.04, duration: P.cabine[1] - P.cabine[0], ease: "none" }}, P.cabine[0]);
+      // Les deux stands nommes : pastille de gauche a droite, le temps du plan.
+      [["#pastille-club", "entreprises"], ["#pastille-cabine", "cabine"]].forEach(([sel, plan]) => {{
+        tl.set(sel, {{ opacity: 1 }}, P[plan][0] + 0.1);
+        tl.fromTo(sel, {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.inOut", immediateRender: false }}, P[plan][0] + 0.1);
+        tl.set(sel, {{ opacity: 0 }}, P[plan][1]);
+      }});
 
       // Le stand du traiteur, puis la scene de l'atelier.
       tl.fromTo("#v-stand", {{ scale: 1.0 }}, {{ scale: 1.06, duration: P.stand[1] - P.stand[0], ease: "none" }}, P.stand[0]);
@@ -442,8 +453,11 @@ HTML = f"""<!doctype html>
       gsap.set("#couche-ia", {{ opacity: 0 }});
       tl.fromTo("#couche-ia", {{ y: -360, opacity: 0 }}, {{ y: 0, opacity: 1, duration: 0.45, ease: "power3.in", immediateRender: false }}, A.carte_b - 0.45);
       tl.fromTo("#pile", {{ y: 0 }}, {{ y: 14, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }}, A.carte_b);
-      tl.to("#pile", {{ rotationX: 52, rotationZ: -28, y: -40, duration: 0.8, ease: "power3.inOut" }}, A.couche - 0.2);
-      tl.to("#couche-ia", {{ z: 170, y: -40, duration: 0.8, ease: "power3.inOut" }}, A.couche - 0.2);
+      tl.to("#pile", {{ rotationX: 52, rotationZ: -28, y: -40, duration: 0.35, ease: "power3.out" }}, A.couche - 0.05);
+      tl.to("#couche-ia", {{ z: 170, y: -40, duration: 0.35, ease: "power3.out" }}, A.couche - 0.05);
+      // Punch-in sec sur « supplementaire » (rythme : un changement franc toutes les 2 a 4 s).
+      gsap.set("#p-couches", {{ transformOrigin: "50% 15%" }});   // ancre en haut : le titre ne monte pas dans la zone masquee
+      tl.set("#p-couches", {{ scale: 1.16 }}, {t(23.62)});
 
       // Le public, puis le cycle qui se dessine.
       tl.fromTo("#photo-public", {{ scale: 1.05, x: 60 }}, {{ scale: 1.15, x: -20, duration: P.public[1] - P.public[0], ease: "none" }}, P.public[0]);
@@ -485,8 +499,8 @@ HTML = f"""<!doctype html>
         tl.fromTo("#cycle-svg", {{ scale: 1 }}, {{ scale: 1.06, duration: 0.1, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }}, t);
       }});
       // 4. Sortie : le cycle tourne et file vers la camera, juste avant le flash.
-      tl.to("#cycle-monde", {{ scale: 2.8, rotation: 30, duration: 0.42, ease: "power2.in" }}, P.cycle[1] - 0.42);
-      tl.to("#cycle-monde", {{ opacity: 0, duration: 0.26, ease: "power1.in" }}, P.cycle[1] - 0.42);   // invisible avant les bords du cadre
+      tl.to("#cycle-monde", {{ scale: 2.8, rotation: 30, duration: 0.42, ease: "power3.in" }}, P.cycle[1] - 0.42);
+      tl.to("#cycle-monde", {{ opacity: 0, duration: 0.18, ease: "power1.in" }}, P.cycle[1] - 0.4);   // invisible avant les bords du cadre
       tl.from("#p-cycle .credit-noir", {{ opacity: 0, duration: 0.4 }}, C + 0.6);
 
       // La rioule : titre de lieu, cercle autour de l'enseigne, punch-in a chaque coupe.

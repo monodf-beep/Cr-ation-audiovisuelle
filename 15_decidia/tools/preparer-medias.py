@@ -18,6 +18,7 @@ PLANS = {
     "hook":        ("VID_20261015_114308.mp4", 0.00, 1.95, False, False),   # accueil exposants Décidia
     "duo":         ("VID_20261015_103245.mp4", 4.55, 6.85, False, True),    # Franck et Rony saluent (coupé avant « Nous sommes… »)
     "allee":       ("VID_20261015_114135.mp4", 2.00, 5.15, False, False),   # allée du hall A
+    "accueil":     ("VID_20261015_114308.mp4", 3.90, 6.90, False, False),   # comptoirs badges et presse aux couleurs Décidia
     "frenchtech":  ("VID_20261015_112126.mp4", 0.00, 2.60, False, False),   # stand de la French Tech
     "affiche":     ("VID_20261015_110711.mp4", 0.30, 2.80, False, False),   # programme des conférences
     "entreprises": ("VID_20261015_114135.mp4", 0.00, 1.95, False, False),   # stand « Offres entreprises »
@@ -62,5 +63,10 @@ rgb = np.where(alpha[..., None] > 0, (crop - fond * (1 - alpha[..., None])) / np
 out = np.dstack([np.clip(rgb, 0, 255), alpha * 255]).astype(np.uint8)
 Image.fromarray(out, "RGBA").save("assets/logos/savoy-ia-detoure.png")
 print("logo   assets/logos/savoy-ia-detoure.png")
+clair = out.copy()
+texte = clair[400:, :, 3] > 0
+clair[400:, :, :3][texte] = (23, 23, 25)       # le nom « Savoy IA » en encre, la sphère bleue intacte
+Image.fromarray(clair, "RGBA").save("assets/logos/savoy-ia-clair.png")
+print("logo   assets/logos/savoy-ia-clair.png (fond clair)")
 
 json.dump(durees, open("assets/durees.json", "w"), indent=1)

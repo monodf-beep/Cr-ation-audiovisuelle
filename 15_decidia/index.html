@@ -97,7 +97,7 @@
       .relire .date { margin-top: 20px; font-size: 34px; font-weight: 600; color: var(--fm-ink-700); }
       .logos { position: absolute; left: 60px; right: 150px; top: 760px; display: flex; align-items: center; justify-content: space-between; }
       .logos .ft { width: 480px; height: auto; display: block; }
-      .logos .sia { width: 340px; height: 340px; background: #05091f; display: flex; align-items: center; justify-content: center; }
+      .logos .sia { width: 340px; height: 340px; display: flex; align-items: center; justify-content: center; }
       .logos .sia img { width: 300px; height: 300px; display: block; }
       .bloc-final { position: absolute; left: 90px; top: 1190px; background: var(--fm-bleu-savoie); color: #fff; padding: 22px 34px 26px; }
       .bloc-final .n { font-size: 48px; font-weight: 700; line-height: 1.1; }
@@ -115,10 +115,10 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="45.446" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="49.764" data-width="1080" data-height="1920">
 
       <!-- Bande-son mixee (tools/bande-son.py) : voix off, son direct, musique, ambiance du salon, effets -->
-      <audio id="bande-son" src="assets/bande-son.wav" data-start="0" data-duration="45.446" data-volume="1"></audio>
+      <audio id="bande-son" src="assets/bande-son.wav" data-start="0" data-duration="49.764" data-volume="1"></audio>
 
       <!-- Accroche : l'accueil exposants de Decidia -->
       <video id="v-hook" class="plein" src="assets/hook.mp4" muted playsinline data-start="0.0" data-duration="1.9" data-media-start="0.0"></video>
@@ -130,8 +130,9 @@
       <div class="bloc-nom" id="nom"><div class="n">Franck Monod &amp; Rony Dray</div><div class="r">Atelier Décidia · 15 octobre 2026</div></div>
 
       <!-- Phrase 1 : le salon, la French Tech, Savoy IA -->
-      <video id="v-allee" class="plein" src="assets/allee.mp4" muted playsinline data-start="4.199999999999999" data-duration="3.068" data-media-start="0.0"></video>
-      <video id="v-frenchtech" class="plein" src="assets/frenchtech.mp4" muted playsinline data-start="7.268" data-duration="0.855" data-media-start="0.0"></video>
+      <video id="v-allee" class="plein" src="assets/allee.mp4" muted playsinline data-start="4.199999999999999" data-duration="2.055" data-media-start="0.0"></video>
+      <video id="v-accueil" class="plein" src="assets/accueil.mp4" muted playsinline data-start="6.255" data-duration="1.44" data-media-start="0.0"></video>
+      <video id="v-frenchtech" class="plein" src="assets/frenchtech.mp4" muted playsinline data-start="7.695" data-duration="0.94" data-media-start="0.0"></video>
       <div class="carte-logo" id="logo-ft"><img src="assets/logos/french-tech-alpes.svg" width="480" height="393" alt="La French Tech Alpes" /></div>
       <div class="plan" id="p-savoyia">
         <svg id="sia-anneau" viewBox="0 0 1080 1920"><circle id="sia-onde" cx="540" cy="725" r="215" fill="none" stroke="#2f7bff" stroke-width="6" /></svg>
@@ -139,15 +140,17 @@
       </div>
 
       <!-- Phrase 2 : la conference, l'entreprise -->
-      <video id="v-affiche" class="plein" src="assets/affiche.mp4" muted playsinline data-start="9.268" data-duration="1.329" data-media-start="0.0"></video>
-      <img id="photo-salle" class="clip photo" src="assets/photo-6.jpg" width="1440" height="1920" alt="" data-start="10.597" data-duration="2.415" />
+      <video id="v-affiche" class="plein" src="assets/affiche.mp4" muted playsinline data-start="10.095" data-duration="1.462" data-media-start="0.0"></video>
+      <img id="photo-salle" class="clip photo" src="assets/photo-6.jpg" width="1440" height="1920" alt="" data-start="11.557" data-duration="2.3" />
       <div class="pastille" id="pastille-atelier"><div class="k">Atelier · salle Lamartine</div><div class="v">Vendre mieux avec l'IA : l'humain garde la main</div></div>
-      <video id="v-entreprises" class="plein" src="assets/entreprises.mp4" muted playsinline data-start="13.012" data-duration="1.037" data-media-start="0.0"></video>
-      <video id="v-cabine" class="plein" src="assets/cabine.mp4" muted playsinline data-start="14.049" data-duration="1.587" data-media-start="0.0"></video>
+      <video id="v-entreprises" class="plein" src="assets/entreprises.mp4" muted playsinline data-start="13.857" data-duration="1.617" data-media-start="0.0"></video>
+      <div class="pastille" id="pastille-club"><div class="k">Hall A · stand A84</div><div class="v">Chambéry Savoie Mont Blanc Handball</div></div>
+      <video id="v-cabine" class="plein" src="assets/cabine.mp4" muted playsinline data-start="15.474" data-duration="1.946" data-media-start="0.0"></video>
+      <div class="pastille" id="pastille-cabine"><div class="k">Sur le salon</div><div class="v">Téléphérique du Salève</div></div>
 
       <!-- Phrase 3 : les competences metiers -->
-      <video id="v-stand" class="plein" src="assets/stand.mp4" muted playsinline data-start="15.636" data-duration="1.221" data-media-start="0.0"></video>
-      <img id="photo-scene" class="clip photo" src="assets/photo-5.jpg" width="1440" height="1920" alt="" data-start="16.857" data-duration="1.534" />
+      <video id="v-stand" class="plein" src="assets/stand.mp4" muted playsinline data-start="17.42" data-duration="1.343" data-media-start="0.0"></video>
+      <img id="photo-scene" class="clip photo" src="assets/photo-5.jpg" width="1440" height="1920" alt="" data-start="18.763" data-duration="1.887" />
 
       <!-- Phrase 4 : l'IA, une couche en plus -->
       <div class="plan" id="p-couches">
@@ -159,7 +162,7 @@
       </div>
 
       <!-- Phrase 5 : tout le cycle, marketing et communication -->
-      <img id="photo-public" class="clip photo" src="assets/photo-9.jpg" width="1440" height="1920" alt="" data-start="24.59" data-duration="1.765" />
+      <img id="photo-public" class="clip photo" src="assets/photo-9.jpg" width="1440" height="1920" alt="" data-start="27.775" data-duration="2.062" />
       <div class="plan" id="p-cycle" data-layout-allow-overlap>
         <div id="cycle-monde">
           <svg id="cycle-svg" viewBox="0 0 1080 1920">
@@ -185,14 +188,14 @@
       </div>
 
       <!-- Au detour d'un stand : la rioule (son direct) -->
-      <video id="v-rioule-1" class="plein" src="assets/rioule-1.mp4" muted playsinline data-start="30.771" data-duration="2.4" data-media-start="0"></video>
-      <video id="v-rioule-2" class="plein" src="assets/rioule-2.mp4" muted playsinline data-start="33.171" data-duration="1.8" data-media-start="0"></video>
-      <video id="v-rioule-3" class="plein" src="assets/rioule-3.mp4" muted playsinline data-start="34.971" data-duration="0.8" data-media-start="0"></video>
+      <video id="v-rioule-1" class="plein" src="assets/rioule-1.mp4" muted playsinline data-start="34.721" data-duration="2.4" data-media-start="0"></video>
+      <video id="v-rioule-2" class="plein" src="assets/rioule-2.mp4" muted playsinline data-start="37.121" data-duration="1.8" data-media-start="0"></video>
+      <video id="v-rioule-3" class="plein" src="assets/rioule-3.mp4" muted playsinline data-start="38.921" data-duration="0.8" data-media-start="0"></video>
       <div class="lieu-fin" id="titre-stand"><span class="l"><span>Au détour</span></span><span class="l"><span>d'un <em>stand</em>…</span></span></div>
       <svg id="bague" viewBox="0 0 1080 1920"><circle class="b-fond" cx="790" cy="490" r="200" stroke="#ffffff" stroke-width="12" pathLength="1" /><circle class="b-trait" cx="790" cy="490" r="200" stroke="#0a36af" stroke-width="6" pathLength="1" /></svg>
 
       <!-- Grant-marci : la scene de l'atelier -->
-      <img id="photo-merci" class="clip photo" src="assets/photo-7.jpg" width="1440" height="1920" alt="" data-start="35.771" data-duration="3.275" />
+      <img id="photo-merci" class="clip photo" src="assets/photo-7.jpg" width="1440" height="1920" alt="" data-start="39.721" data-duration="3.643" />
       <div class="plan" id="p-merci">
         <div class="merci">
           <div class="l"><span>Grant-marci</span></div>
@@ -202,7 +205,7 @@
       </div>
 
       <!-- A bientot (son direct) -->
-      <video id="v-bientot" class="plein" src="assets/bientot.mp4" muted playsinline data-start="39.046" data-duration="2.2" data-media-start="0.0"></video>
+      <video id="v-bientot" class="plein" src="assets/bientot.mp4" muted playsinline data-start="43.364" data-duration="2.2" data-media-start="0.0"></video>
 
       <!-- Carton final -->
       <div class="plan" id="p-final">
@@ -213,7 +216,7 @@
         </div>
         <div class="logos">
           <img class="ft" id="fin-ft" src="assets/logos/french-tech-alpes.svg" width="480" height="393" alt="La French Tech Alpes" />
-          <div class="sia" id="fin-sia"><img src="assets/logos/savoy-ia-detoure.png" width="330" height="330" alt="Savoy IA" /></div>
+          <div class="sia" id="fin-sia"><img src="assets/logos/savoy-ia-clair.png" width="330" height="330" alt="Savoy IA" /></div>
         </div>
         <div class="bloc-final" id="fin-nom"><div class="n">Franck Monod · Rony Dray</div><div class="r">avec la French Tech Alpes et Savoy IA</div></div>
       </div>
@@ -221,44 +224,45 @@
       <div id="flash"></div>
 
       <!-- Sous-titres (traduction de la voix off en savoyard ; son direct en français) -->
-      <div class="st" data-a="4.258" data-b="4.912"><span class="m">Aujourd&#x27;hui</span></div>
-      <div class="st" data-a="4.932" data-b="5.939"><span class="m">j&#x27;étais au salon</span></div>
-      <div class="st" data-a="5.959" data-b="7.285"><span class="m cle">Décidia</span></div>
-      <div class="st" data-a="7.305" data-b="8.103"><span class="m">avec la French Tech</span></div>
-      <div class="st" data-a="8.123" data-b="8.775"><span class="m">et Savoy IA</span></div>
-      <div class="st" data-a="9.325" data-b="10.577"><span class="m">pour une conférence</span></div>
-      <div class="st" data-a="10.597" data-b="11.559"><span class="m">sur l&#x27;intelligence</span></div>
-      <div class="st" data-a="11.579" data-b="12.668"><span class="m">artificielle</span></div>
-      <div class="st" data-a="13.067" data-b="14.029"><span class="m">adaptée</span></div>
-      <div class="st" data-a="14.049" data-b="15.147"><span class="m">à</span> <span class="m cle">l&#x27;entreprise</span></div>
-      <div class="st" data-a="15.694" data-b="16.974"><span class="m">Les</span> <span class="m cle">compétences métiers</span></div>
-      <div class="st" data-a="16.994" data-b="17.892"><span class="m">avant tout</span></div>
-      <div class="st clair" data-a="18.443" data-b="19.359"><span class="m">et ajouter</span></div>
-      <div class="st clair" data-a="19.379" data-b="20.214"><span class="m">l&#x27;intelligence</span></div>
-      <div class="st clair" data-a="20.234" data-b="21.132"><span class="m">artificielle</span></div>
-      <div class="st clair" data-a="21.537" data-b="22.026"><span class="m">en plus</span></div>
-      <div class="st clair" data-a="22.046" data-b="22.99"><span class="m">pour une</span> <span class="m cle">couche</span></div>
-      <div class="st clair" data-a="23.01" data-b="24.108"><span class="m">supplémentaire</span></div>
-      <div class="st" data-a="24.59" data-b="26.335"><span class="m">Nous avons parlé</span></div>
-      <div class="st clair" data-a="26.355" data-b="27.681"><span class="m">de tout le cycle</span></div>
-      <div class="st" data-a="30.861" data-b="31.521"><span class="m">Alors Rony</span></div>
-      <div class="st" data-a="31.541" data-b="32.141"><span class="m">tu sais ce que</span></div>
-      <div class="st" data-a="32.161" data-b="33.231"><span class="m">ça veut dire la</span> <span class="m cle">rioule</span> <span class="m">?</span></div>
-      <div class="st" data-a="33.251" data-b="34.331"><span class="m">C&#x27;est faire la fête</span></div>
-      <div class="st" data-a="34.351" data-b="34.971"><span class="m">la</span> <span class="m cle">bambouche</span> <span class="m">!</span></div>
-      <div class="st" data-a="34.991" data-b="35.751"><span class="m">Exactement, bravo !</span></div>
-      <div class="st" data-a="40.196" data-b="41.226"><span class="m">À bientôt !</span></div>
+      <div class="st" data-a="4.264" data-b="5.105"><span class="m">Aujourd&#x27;hui</span></div>
+      <div class="st" data-a="5.125" data-b="6.235"><span class="m">j&#x27;étais au salon</span></div>
+      <div class="st" data-a="6.255" data-b="7.715"><span class="m cle">Décidia</span></div>
+      <div class="st" data-a="7.735" data-b="8.615"><span class="m">avec la French Tech</span></div>
+      <div class="st" data-a="8.635" data-b="9.355"><span class="m">et Savoy IA</span></div>
+      <div class="st" data-a="10.157" data-b="11.537"><span class="m">pour une conférence</span></div>
+      <div class="st" data-a="11.557" data-b="12.617"><span class="m">sur l&#x27;intelligence</span></div>
+      <div class="st" data-a="12.637" data-b="13.837"><span class="m">artificielle</span></div>
+      <div class="st" data-a="14.394" data-b="15.454"><span class="m">adaptée</span></div>
+      <div class="st" data-a="15.474" data-b="16.684"><span class="m">à</span> <span class="m cle">l&#x27;entreprise</span></div>
+      <div class="st" data-a="17.483" data-b="18.893"><span class="m">Les</span> <span class="m cle">compétences métiers</span></div>
+      <div class="st" data-a="18.913" data-b="19.903"><span class="m">avant tout</span></div>
+      <div class="st clair" data-a="20.707" data-b="21.717"><span class="m">et ajouter</span></div>
+      <div class="st clair" data-a="21.737" data-b="22.657"><span class="m">l&#x27;intelligence</span></div>
+      <div class="st clair" data-a="22.677" data-b="23.667"><span class="m">artificielle</span></div>
+      <div class="st clair" data-a="24.217" data-b="24.757"><span class="m">en plus</span></div>
+      <div class="st clair" data-a="24.777" data-b="25.817"><span class="m">pour une</span> <span class="m cle">couche</span></div>
+      <div class="st clair" data-a="25.837" data-b="27.047"><span class="m">supplémentaire</span></div>
+      <div class="st" data-a="27.775" data-b="29.817"><span class="m">Nous avons parlé</span></div>
+      <div class="st clair" data-a="29.837" data-b="31.297"><span class="m">de tout le cycle</span></div>
+      <div class="st" data-a="34.811" data-b="35.471"><span class="m">Alors Rony</span></div>
+      <div class="st" data-a="35.491" data-b="36.091"><span class="m">tu sais ce que</span></div>
+      <div class="st" data-a="36.111" data-b="37.181"><span class="m">ça veut dire la</span> <span class="m cle">rioule</span> <span class="m">?</span></div>
+      <div class="st" data-a="37.201" data-b="38.281"><span class="m">C&#x27;est faire la fête</span></div>
+      <div class="st" data-a="38.301" data-b="38.921"><span class="m">la</span> <span class="m cle">bambouche</span> <span class="m">!</span></div>
+      <div class="st" data-a="38.941" data-b="39.701"><span class="m">Exactement, bravo !</span></div>
+      <div class="st" data-a="44.514" data-b="45.544"><span class="m">À bientôt !</span></div>
     </div>
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      const P = {"hook": [0.0, 1.9], "duo": [1.9, 4.2], "allee": [4.2, 7.268], "frenchtech": [7.268, 8.123], "savoyia": [8.123, 9.268], "affiche": [9.268, 10.597], "salle": [10.597, 13.012], "entreprises": [13.012, 14.049], "cabine": [14.049, 15.636], "stand": [15.636, 16.857], "scene": [16.857, 18.391], "couches": [18.391, 24.59], "public": [24.59, 26.355], "cycle": [26.355, 30.771], "rioule": [30.771, 35.771], "merci": [35.771, 39.046], "bientot": [39.046, 41.246], "fin": [41.246, 45.446]};
-      const A = {"frenchtech_logo": 7.35, "savoyia_logo": 8.177, "carte_a": 18.541, "carte_b": 19.379, "couche": 22.046, "cycle": 26.405, "marketing": 28.465, "communication": 29.546, "rioule": 32.481};
+      const P = {"hook": [0.0, 1.9], "duo": [1.9, 4.2], "allee": [4.2, 6.255], "accueil": [6.255, 7.695], "frenchtech": [7.695, 8.635], "savoyia": [8.635, 10.095], "affiche": [10.095, 11.557], "salle": [11.557, 13.857], "entreprises": [13.857, 15.474], "cabine": [15.474, 17.42], "stand": [17.42, 18.763], "scene": [18.763, 20.65], "couches": [20.65, 27.775], "public": [27.775, 29.837], "cycle": [29.837, 34.721], "rioule": [34.721, 39.721], "merci": [39.721, 43.364], "bientot": [43.364, 45.564], "fin": [45.564, 49.764]};
+      const A = {"frenchtech_logo": 7.785, "savoyia_logo": 8.695, "carte_a": 20.8, "carte_b": 21.737, "couche": 24.777, "cycle": 29.887, "marketing": 32.157, "communication": 33.137, "rioule": 36.431};
       const montre = (sel, plan) => { tl.set(sel, { opacity: 1 }, P[plan][0]); tl.set(sel, { opacity: 0 }, P[plan][1]); };
       const flash = (t) => {
         tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, t - 0.07);
         tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, t);
       };
+      gsap.set(["#pastille-club", "#pastille-cabine"], { opacity: 0 });
       gsap.set(["#hook", "#voile-hook", "#nom", "#logo-ft", "#p-savoyia", "#pastille-atelier", "#p-couches", "#p-cycle", "#titre-stand",
                 "#bague", "#p-merci", "#p-final"], { opacity: 0 });
 
@@ -275,10 +279,10 @@
       tl.fromTo("#nom", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut", immediateRender: false }, P.duo[0] + 0.25);
       tl.set("#nom", { opacity: 0 }, P.duo[1]);
 
-      // Allee du salon : poussee, punch-in sur « Decidia ».
-      gsap.set("#v-allee", { transformOrigin: "50% 45%" });
-      tl.fromTo("#v-allee", { scale: 1.0 }, { scale: 1.04, duration: 5.959 - P.allee[0], ease: "none" }, P.allee[0]);
-      tl.fromTo("#v-allee", { scale: 1.18 }, { scale: 1.22, duration: P.allee[1] - 5.959, ease: "none", immediateRender: false }, 5.959);
+      // Allee du salon, puis coupe sur « Decidia » : les comptoirs du salon.
+      gsap.set(["#v-allee", "#v-accueil"], { transformOrigin: "50% 45%" });
+      tl.fromTo("#v-allee", { scale: 1.0 }, { scale: 1.05, duration: P.allee[1] - P.allee[0], ease: "none" }, P.allee[0]);
+      tl.fromTo("#v-accueil", { scale: 1.14 }, { scale: 1.06, duration: P.accueil[1] - P.accueil[0], ease: "none" }, P.accueil[0]);
 
       // French Tech : le stand, puis le logo qui saute.
       gsap.set("#v-frenchtech", { transformOrigin: "45% 40%" });
@@ -308,6 +312,12 @@
       gsap.set(["#v-entreprises", "#v-cabine"], { transformOrigin: "50% 45%" });
       tl.fromTo("#v-entreprises", { scale: 1.0 }, { scale: 1.06, duration: P.entreprises[1] - P.entreprises[0], ease: "none" }, P.entreprises[0]);
       tl.fromTo("#v-cabine", { scale: 1.12 }, { scale: 1.04, duration: P.cabine[1] - P.cabine[0], ease: "none" }, P.cabine[0]);
+      // Les deux stands nommes : pastille de gauche a droite, le temps du plan.
+      [["#pastille-club", "entreprises"], ["#pastille-cabine", "cabine"]].forEach(([sel, plan]) => {
+        tl.set(sel, { opacity: 1 }, P[plan][0] + 0.1);
+        tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.inOut", immediateRender: false }, P[plan][0] + 0.1);
+        tl.set(sel, { opacity: 0 }, P[plan][1]);
+      });
 
       // Le stand du traiteur, puis la scene de l'atelier.
       tl.fromTo("#v-stand", { scale: 1.0 }, { scale: 1.06, duration: P.stand[1] - P.stand[0], ease: "none" }, P.stand[0]);
@@ -321,8 +331,11 @@
       gsap.set("#couche-ia", { opacity: 0 });
       tl.fromTo("#couche-ia", { y: -360, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.in", immediateRender: false }, A.carte_b - 0.45);
       tl.fromTo("#pile", { y: 0 }, { y: 14, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, A.carte_b);
-      tl.to("#pile", { rotationX: 52, rotationZ: -28, y: -40, duration: 0.8, ease: "power3.inOut" }, A.couche - 0.2);
-      tl.to("#couche-ia", { z: 170, y: -40, duration: 0.8, ease: "power3.inOut" }, A.couche - 0.2);
+      tl.to("#pile", { rotationX: 52, rotationZ: -28, y: -40, duration: 0.35, ease: "power3.out" }, A.couche - 0.05);
+      tl.to("#couche-ia", { z: 170, y: -40, duration: 0.35, ease: "power3.out" }, A.couche - 0.05);
+      // Punch-in sec sur « supplementaire » (rythme : un changement franc toutes les 2 a 4 s).
+      gsap.set("#p-couches", { transformOrigin: "50% 15%" });   // ancre en haut : le titre ne monte pas dans la zone masquee
+      tl.set("#p-couches", { scale: 1.16 }, 25.837);
 
       // Le public, puis le cycle qui se dessine.
       tl.fromTo("#photo-public", { scale: 1.05, x: 60 }, { scale: 1.15, x: -20, duration: P.public[1] - P.public[0], ease: "none" }, P.public[0]);
@@ -364,8 +377,8 @@
         tl.fromTo("#cycle-svg", { scale: 1 }, { scale: 1.06, duration: 0.1, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
       });
       // 4. Sortie : le cycle tourne et file vers la camera, juste avant le flash.
-      tl.to("#cycle-monde", { scale: 2.8, rotation: 30, duration: 0.42, ease: "power2.in" }, P.cycle[1] - 0.42);
-      tl.to("#cycle-monde", { opacity: 0, duration: 0.26, ease: "power1.in" }, P.cycle[1] - 0.42);   // invisible avant les bords du cadre
+      tl.to("#cycle-monde", { scale: 2.8, rotation: 30, duration: 0.42, ease: "power3.in" }, P.cycle[1] - 0.42);
+      tl.to("#cycle-monde", { opacity: 0, duration: 0.18, ease: "power1.in" }, P.cycle[1] - 0.4);   // invisible avant les bords du cadre
       tl.from("#p-cycle .credit-noir", { opacity: 0, duration: 0.4 }, C + 0.6);
 
       // La rioule : titre de lieu, cercle autour de l'enseigne, punch-in a chaque coupe.
@@ -387,8 +400,8 @@
       tl.fromTo("#photo-merci", { scale: 1.1 }, { scale: 1.18, duration: P.merci[1] - P.merci[0], ease: "none" }, P.merci[0]);
       tl.from(".merci", { y: 30, opacity: 0, duration: 0.5, ease: "power3.out" }, P.merci[0] + 0.05);
       tl.from(".merci .l > span", { yPercent: 110, duration: 0.8, ease: "power4.out" }, P.merci[0] + 0.2);
-      tl.from(".merci p", { y: 14, opacity: 0, duration: 0.45, ease: "power3.out" }, 37.086);
-      tl.from(".merci .sav", { opacity: 0, duration: 0.4 }, 37.086 + 0.4);
+      tl.from(".merci p", { y: 14, opacity: 0, duration: 0.45, ease: "power3.out" }, 41.133);
+      tl.from(".merci .sav", { opacity: 0, duration: 0.4 }, 41.133 + 0.4);
 
       // A bientot : punch-in sur la main levee.
       gsap.set("#v-bientot", { transformOrigin: "50% 35%" });

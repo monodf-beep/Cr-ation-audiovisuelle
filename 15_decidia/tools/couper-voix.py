@@ -18,8 +18,8 @@ PHRASES = [
     ("cycle",     26.05, 32.95, "Nous avons parlé de tout le cycle marketing et communication."),
     ("merci",     33.85, 39.10, "Grant-marci à Rony et à tous !"),
 ]
-RESPIRATION = 0.30   # silence maximal gardé dans une phrase
-ENTRE = 0.45         # pause entre deux phrases
+RESPIRATION = 0.42   # silence maximal gardé dans une phrase (0,30 en v3 : trop serré, peu naturel)
+ENTRE = 0.65         # pause entre deux phrases
 MARGE = 0.06         # garde autour de la parole
 
 log = subprocess.run(["ffmpeg", "-hide_banner", "-i", SRC, "-af", "silencedetect=noise=-34dB:d=0.25", "-f", "null", "-"],

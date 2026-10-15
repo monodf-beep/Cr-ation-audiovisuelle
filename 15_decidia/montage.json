@@ -1,4 +1,4 @@
 {
-  "_note": "Réglages du montage, lus par tools/voix-finale.sh, tools/monter.py et tools/bande-son.py. vitesse : accélération de la voix off en savoyard (atempo, sans changer la hauteur) ; les plans en son direct (duo, rioule, à bientôt) restent à vitesse normale.",
-  "vitesse": 1.1
+  "_note": "Réglages du montage, lus par tools/voix-finale.sh, tools/monter.py et tools/bande-son.py. vitesse : accélération éventuelle de la voix off en savoyard (atempo, sans changer la hauteur) ; les plans en son direct (duo, rioule, à bientôt) restent à vitesse normale. Version 4 : vitesse ramenée à 1 (la voix accélérée sonnait peu naturelle).",
+  "vitesse": 1.0
 }
