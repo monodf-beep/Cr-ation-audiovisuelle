@@ -5,8 +5,9 @@ repris de 10_cern/index.html : bleu Savoie seul accent, Semplicità Pro, Cormora
 et le remerciement, sous-titres par groupes avec un mot-clé en bloc bleu et un petit « pop », flash blanc,
 punch-in, poussée lente, cercle qui se dessine, bandeau nom.
 
-Tous les temps viennent de la voix : les mots-ancres sont donnés en secondes de la prise (rushes/15_oct.__15.18.aac),
-convertis en temps du montage par voix-montee.json (tools/couper-voix.py) puis divisés par la vitesse (montage.json).
+Tous les temps viennent de la voix : les mots-ancres sont donnés en secondes de leur prise (rushes/audio_1.aac,
+audio_2.aac et audio_3.aac pour les phrases 1 à 5, 15_oct.__15.18.aac pour le « Grant-marci »), convertis en temps du
+montage par voix-montee.json (tools/couper-voix.py) puis divisés par la vitesse (montage.json).
 Usage (dans 15_decidia/) : python3 tools/monter.py"""
 import json
 from html import escape
@@ -16,9 +17,11 @@ VITESSE = json.load(open("montage.json"))["vitesse"]
 DUREES = json.load(open("assets/durees.json"))
 PH = {p["id"]: p for p in VOIX["phrases"]}
 
-def montage(s):
-    """Temps de la prise -> temps de la voix montée (avant accélération)."""
-    coupes = VOIX["coupes"]
+A1, A2, A3 = "audio_1", "audio_2", "audio_3"   # les trois prises de la voix off (phrases 1-2, 3-4, 5)
+
+def montage(f, s):
+    """Temps dans la prise f -> temps de la voix montée (avant accélération)."""
+    coupes = [c for c in VOIX["coupes"] if c["fichier"] == f]
     for c in coupes:
         (x, y), (m, _) = c["source"], c["montage"]
         if s <= y: return m + max(0.0, s - x)
@@ -31,9 +34,9 @@ VA = HOOK + DUO                              # début de la voix off (phrases 1 
 fin_a = PH["cycle"]["fin"] / VITESSE         # fin de la phrase 5 dans la voix accélérée
 debut_b, fin_b = PH["merci"]["debut"] / VITESSE, PH["merci"]["fin"] / VITESSE
 
-def t(s):
-    """Mot-ancre (secondes de la prise, phrases 1 à 5) -> temps de la vidéo."""
-    return round(VA + montage(s) / VITESSE, 3)
+def t(f, s):
+    """Mot-ancre (prise f, en secondes, phrases 1 à 5) -> temps de la vidéo."""
+    return round(VA + montage(f, s) / VITESSE, 3)
 
 RIOULE = round(VA + fin_a + 0.35, 3)
 R1, R2, R3 = DUREES["rioule-1"], DUREES["rioule-2"], DUREES["rioule-3"]
@@ -45,25 +48,24 @@ TOTAL = round(FIN + 4.2, 3)
 
 def tb(s):
     """Mot-ancre de la phrase 6 (merci) -> temps de la vidéo."""
-    return round(VB + montage(s) / VITESSE - debut_b, 3)
+    return round(VB + montage("15h18", s) / VITESSE - debut_b, 3)
 
 # Plans : (id, début, fin). Une coupe, un zoom ou un titre toutes les 1 à 3 s : c'est le rythme demandé.
 P = {
     "hook": (0.0, HOOK),
     "duo": (HOOK, VA),
-    "allee": (VA, t(3.42)),                  # « Aujourd'hui, j'étais au salon »
-    "accueil": (t(3.42), t(4.86)),           # « Dècidia » : les comptoirs aux couleurs du salon
-    "frenchtech": (t(4.86), t(5.80)),        # « avec la French Tech »
-    "savoyia": (t(5.80), t(7.20)),           # « et Savoy IA »
-    "affiche": (t(7.20), t(8.72)),           # « pour une conférence »
-    "salle": (t(8.72), t(11.02)),            # « sur l'intelligence artificielle »
-    "entreprises": (t(11.02), t(12.95)),     # « adaptée » : le stand du club de handball
-    "cabine": (t(12.95), t(15.40)),          # « à l'entreprise »
-    "stand": (t(15.40), t(16.80)),           # « c'est utiliser la capacité »
-    "scene": (t(16.80), t(18.40)),           # « les compétences métiers avant tout »
-    "couches": (t(18.40), t(26.05)),         # « et ajouter l'IA en plus, pour une couche supplémentaire »
-    "public": (t(26.05), t(28.36)),          # « nous avons parlé »
-    "cycle": (t(28.36), RIOULE),             # « de tout le cycle, marketing et communication »
+    "allee": (VA, t(A1, 2.58)),              # « Aujourd'hui, j'étais au salon »
+    "accueil": (t(A1, 2.58), t(A1, 3.28)),   # « Dècidia » : les comptoirs aux couleurs du salon
+    "frenchtech": (t(A1, 3.28), t(A1, 4.30)),# « avec la French Tech »
+    "savoyia": (t(A1, 4.30), t(A1, 5.62)),   # « et Savoy IA »
+    "affiche": (t(A1, 5.62), t(A1, 7.26)),   # « pour une conférence »
+    "salle": (t(A1, 7.26), t(A1, 9.70)),     # « sur l'intelligence artificielle »
+    "entreprises": (t(A1, 9.70), t(A1, 10.94)),  # « adaptée » : le stand du club de handball
+    "cabine": (t(A1, 10.94), t(A2, 0.75)),   # « à l'entreprise »
+    "stand": (t(A2, 0.75), t(A2, 1.86)),     # « c'est utiliser la capacité »
+    "scene": (t(A2, 1.86), t(A2, 3.97)),     # « les compétences métiers avant tout »
+    "couches": (t(A2, 3.97), t(A3, 0.74)),   # « et ajouter l'IA en plus, pour une couche supplémentaire »
+    "cycle": (t(A3, 0.74), RIOULE),          # « nous avons parlé de tout le cycle, marketing et communication »
     "rioule": (RIOULE, MERCI),
     "merci": (MERCI, BIENTOT),
     "bientot": (BIENTOT, FIN),
@@ -75,18 +77,16 @@ for k, (a, b) in P.items():   # un plan filmé ne doit pas durer plus que son ex
         raise SystemExit(f"plan « {k} » : {b - a:.2f} s à l'écran pour {DUREES[k]:.2f} s d'extrait (preparer-medias.py)")
 
 # Sous-titres de la voix off : traduction de Franck, par groupes de 1 à 3 mots (mot-clé entre crochets).
-# Temps de début en secondes de la prise ; chaque groupe reste jusqu'au suivant (ou 0,6 s après une pause).
+# Temps de début (prise, secondes) ; chaque groupe reste jusqu'au suivant, ou jusqu'à une pause (None).
 ST_VOIX = [
-    ("Aujourd'hui", 1.31), ("j'étais au salon", 2.29), ("[Décidia]", 3.42), ("avec la French Tech", 4.90),
-    ("et Savoy IA", 5.80), (None, 6.54),
-    ("pour une conférence", 7.32), ("sur l'intelligence", 8.72), ("artificielle", 9.80), (None, 11.02),
-    ("adaptée", 11.87), ("à [l'entreprise]", 12.95), (None, 14.18),
-    # Phrase rapide (2,2 s) : deux groupes, sinon plus de 25 car./s. « utiliser la capacité » est resserré.
-    ("Les [compétences métiers]", 15.52), ("avant tout", 16.95),
-    (None, 17.96),
-    ("et ajouter", 18.49), ("l'intelligence", 19.52), ("artificielle", 20.46), (None, 21.47),
-    ("en plus", 22.00), ("pour une [couche]", 22.56), ("supplémentaire", 23.62), (None, 24.85),
-    ("Nous avons parlé", 26.05), ("de tout le cycle", 28.36), (None, 29.84),
+    ("Aujourd'hui", A1, 1.01), ("j'étais au salon", A1, 1.50), ("[Décidia]", A1, 2.58), ("avec la French Tech", A1, 3.28),
+    ("et Savoy IA", A1, 4.30), (None, A1, 5.05),
+    ("pour une conférence", A1, 5.65), ("sur l'intelligence", A1, 7.26), ("artificielle", A1, 8.40), (None, A1, 9.40),
+    ("adaptée", A1, 9.92), ("à [l'entreprise]", A1, 10.94), (None, A1, 12.05),
+    ("C'est utiliser", A2, 0.75), ("les [compétences métiers]", A2, 1.70), ("avant tout", A2, 3.30), (None, A2, 3.60),
+    ("et ajouter", A2, 3.97), ("l'intelligence", A2, 5.32), ("artificielle", A2, 6.42),
+    ("en plus", A2, 7.88), ("pour une [couche]", A2, 8.36), ("supplémentaire", A2, 10.52), (None, A2, 11.65),
+    ("Nous avons parlé", A3, 0.74), ("de tout le cycle", A3, 1.52), (None, A3, 3.30),
     # « marketing » et « communication » claquent au centre du cycle : pas de sous-titre qui répète.
 ]
 # Plans en son direct (français) : temps dans le plan, depuis la transcription.
@@ -100,7 +100,7 @@ ST_DIRECT = [
 CLAIRS = {"couches", "cycle"}   # plans clairs : texte sombre (BONNES-PRATIQUES, section 2)
 
 def groupes():
-    out, liste = [], [(txt, t(s)) for txt, s in ST_VOIX] + [(None, t(29.84) + 0.6)] + ST_DIRECT
+    out, liste = [], [(txt, t(f, s)) for txt, f, s in ST_VOIX] + ST_DIRECT
     for i, (txt, a) in enumerate(liste):
         if txt is None: continue
         b = liste[i + 1][1] if i + 1 < len(liste) else a + 1.0
@@ -141,9 +141,10 @@ plan_json = {
                "rioule-2": [round(r_a + R1, 3), "assets/rioule-2.wav"],
                "rioule-3": [round(r_a + R1 + R2, 3), "assets/rioule-3.wav"],
                "bientot": [BIENTOT, "assets/bientot.wav"]},
-    "ancres": {"frenchtech_logo": t(4.95), "savoyia_logo": t(5.86), "carte_a": round(P["couches"][0] + 0.15, 3),
-               "carte_b": t(19.52), "couche": t(22.56), "cycle": round(P["cycle"][0] + 0.05, 3),
-               "marketing": t(30.68), "communication": t(31.66), "rioule": round(r_a + 1.71, 3)},
+    "ancres": {"frenchtech_logo": t(A1, 3.78), "savoyia_logo": t(A1, 4.56), "carte_a": round(P["couches"][0] + 0.15, 3),
+               "carte_b": t(A2, 5.32), "en_plus": t(A2, 7.88), "couche": t(A2, 10.02),
+               "cycle": round(P["cycle"][0] + 0.05, 3),
+               "marketing": t(A3, 3.30), "communication": t(A3, 4.94), "rioule": round(r_a + 1.71, 3)},
 }
 A = plan_json["ancres"]
 
@@ -313,7 +314,6 @@ HTML = f"""<!doctype html>
       </div>
 
       <!-- Phrase 5 : tout le cycle, marketing et communication -->
-      {img("photo-public", "assets/photo-9.jpg", "public")}
       <div class="plan" id="p-cycle" data-layout-allow-overlap>
         <div id="cycle-monde">
           <svg id="cycle-svg" viewBox="0 0 1080 1920">
@@ -459,12 +459,11 @@ HTML = f"""<!doctype html>
       tl.fromTo("#pile", {{ y: 0 }}, {{ y: 14, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }}, A.carte_b);
       tl.to("#pile", {{ rotationX: 52, rotationZ: -28, y: -40, duration: 0.35, ease: "power3.out" }}, A.couche - 0.05);
       tl.to("#couche-ia", {{ z: 170, y: -40, duration: 0.35, ease: "power3.out" }}, A.couche - 0.05);
-      // Punch-in sec sur « supplementaire » (rythme : un changement franc toutes les 2 a 4 s).
-      gsap.set("#p-couches", {{ transformOrigin: "50% 15%" }});   // ancre en haut : le titre ne monte pas dans la zone masquee
-      tl.set("#p-couches", {{ scale: 1.16 }}, {t(23.62)});
+      // Punch-in sec sur « en plus » (rythme : un changement franc toutes les 2 a 4 s). Sur la pile seule, autour de
+      // son centre : le titre ne monte pas dans la zone masquee, la carte du bas ne descend pas sur les sous-titres.
+      tl.set("#pile", {{ scale: 1.16 }}, A.en_plus);
 
-      // Le public, puis le cycle qui se dessine.
-      tl.fromTo("#photo-public", {{ scale: 1.05, x: 60 }}, {{ scale: 1.15, x: -20, duration: P.public[1] - P.public[0], ease: "none" }}, P.public[0]);
+      // Le cycle qui se dessine.
       montre("#p-cycle", "cycle");
       const C = P.cycle[0], T0 = C + 0.62, PAS = 0.3;
       const NOEUDS = [[0, -300], [285, -93], [176, 243], [-176, 243], [-285, -93]];

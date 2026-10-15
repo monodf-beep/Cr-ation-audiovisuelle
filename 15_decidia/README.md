@@ -3,7 +3,7 @@
 Reportage vertical (Reels, LinkedIn) de l'atelier **« Vendre mieux avec l'IA : l'humain garde la main »**,
 salon Décidia, Savoiexpo (Chambéry), 15 octobre 2026, avec Rony Dray, la French Tech Alpes et Savoy IA.
 
-**1080 × 1920 · 30 im/s · 50,2 s · voix off de Franck en savoyard, sous-titrée en français.**
+**1080 × 1920 · 30 im/s · 49,1 s · voix off de Franck en savoyard, sous-titrée en français.**
 
 Style « Reportage Franck » repris du reportage CERN (`10_cern/`, branche `claude/hyperframe-installation-o3hduz` :
 `styles/reportage-franck.md`, `04_montage/BONNES-PRATIQUES.md`, `04_montage/bibliotheque.json`) : bleu Savoie
@@ -16,20 +16,22 @@ flash blanc, punch-in, poussée lente, cercle qui se dessine, bandeau nom. Monta
 |---|---|---|---|
 | 0,0 – 1,9 | Accroche « L'IA ? L'humain garde la *main* » sur un bandeau encre | affiche officielle de Décidia (format Story du kit intervenant) | musique |
 | 1,9 – 4,6 | Franck salue, Rony répond « *Arvi* ! », bandeau nom | selfie du duo | son direct |
-| 4,6 – 10,5 | « Aujourd'hui, j'étais au salon Décidia avec la French Tech et Savoy IA » | allée du hall A, comptoirs Décidia, stand French Tech + logo, sphère Savoy IA | voix, pops |
-| 10,5 – 17,9 | « …pour une conférence sur l'IA adaptée à l'entreprise » | programme des conférences, la salle + titre de l'atelier, stand du Chambéry Savoie Mont Blanc Handball, cabine du Téléphérique du Salève (nommés) | déclencheur photo |
-| 17,9 – 21,1 | « Les compétences métiers avant tout » | stand du traiteur, la scène | |
-| 21,1 – 28,2 | « …et ajouter l'IA en plus, pour une couche supplémentaire » | motion design : la carte *IA* se pose sur *Compétences métiers*, la pile s'ouvre, punch-in | papier |
-| 28,2 – 35,2 | « Nous avons parlé de tout le cycle, marketing et communication » | le public, puis motion design : l'anneau éclot, les cinq étapes du cycle de vie client (Attraction, Acquisition, Développement, Fidélisation, Réactivation, d'après clustdoc.com) claquent au centre et volent sur l'anneau, une comète les suit ; *Marketing* puis *Communication* claquent ; le cycle file vers la caméra | whoosh, clics, pops |
-| 35,2 – 40,2 | « Tu sais ce que ça veut dire, la rioule ? — C'est faire la fête, la bambouche ! » | stand « Traiteur La Rioule » (image remise à l'endroit), cercle sur l'enseigne | son direct |
-| 40,2 – 43,8 | « Grant-marci à Rony et à tous ! » | la scène, titre Cormorant | voix |
-| 43,8 – 46,0 | « À bientôt ! », main levée | selfie de Franck | son direct |
-| 46,0 – 50,2 | Carton final : titre de l'atelier, logos French Tech Alpes et Savoy IA (fond transparent, nom en encre comme sur savoy-ia.fr) | | montée, musique |
+| 4,6 – 9,4 | « Aujourd'hui, j'étais au salon Décidia avec la French Tech et Savoy IA » | allée du hall A, comptoirs Décidia, stand French Tech + logo, sphère Savoy IA | voix, pops |
+| 9,4 – 16,6 | « …pour une conférence sur l'IA adaptée à l'entreprise » | programme des conférences, la salle + titre de l'atelier, stand du Chambéry Savoie Mont Blanc Handball, cabine du Téléphérique du Salève (nommés) | déclencheur photo |
+| 16,6 – 20,1 | « C'est utiliser la capacité, les compétences métiers avant tout » | stand du traiteur, la scène | |
+| 20,1 – 28,5 | « …et ajouter l'IA en plus, pour une couche supplémentaire » | motion design : la carte *IA* se pose sur *Compétences métiers*, punch-in, la pile s'ouvre | papier |
+| 28,5 – 34,0 | « Nous avons parlé de tout le cycle, marketing et communication » | motion design : l'anneau éclot, les cinq étapes du cycle de vie client (Attraction, Acquisition, Développement, Fidélisation, Réactivation, d'après clustdoc.com) claquent au centre et volent sur l'anneau, une comète les suit ; *Marketing* puis *Communication* claquent ; le cycle file vers la caméra | whoosh, clics, pops |
+| 34,0 – 39,0 | « Tu sais ce que ça veut dire, la rioule ? — C'est faire la fête, la bambouche ! » | stand « Traiteur La Rioule » (image remise à l'endroit), cercle sur l'enseigne | son direct |
+| 39,0 – 42,7 | « Grant-marci à Rony et à tous ! » | la scène, titre Cormorant | voix |
+| 42,7 – 44,9 | « À bientôt ! », main levée | selfie de Franck | son direct |
+| 44,9 – 49,1 | Carton final : titre de l'atelier, logos French Tech Alpes et Savoy IA (fond transparent, nom en encre comme sur savoy-ia.fr) | | montée, musique |
 
-Voix off : prise de 15 h 18, six phrases (`tools/couper-voix.py`), silences ramenés à 0,42 s (0,65 s entre deux
-phrases), vitesse normale (`montage.json`) : la version 3, accélérée ×1,1 avec des pauses de 0,3 s, sonnait peu naturelle.
-Une nouvelle prise se dépose dans le dossier Drive ; toute la chaîne se recale sur elle. Traduction : celle dictée par Franck ; la sixième phrase (« Grant-marci a Rony é a tô »)
-a été reconnue à la transcription et reste à confirmer.
+Voix off : les nouvelles prises de Franck (`rushes/audio_1.aac` : phrases 1 et 2, `audio_2.aac` : phrases 3 et 4,
+`audio_3.aac` : phrase 5), plus posées et plus fortes que la prise de 15 h 18, dont on garde seulement le
+« Grant-marci » (phrase 6, absente des nouvelles prises). `tools/couper-voix.py` coupe chaque phrase dans sa prise,
+ramène les silences à 0,42 s (0,65 s entre deux phrases), vitesse normale (`montage.json`) ; tous les temps du montage
+(plans, sous-titres, motion design) sont des mots-ancres de ces prises. Traduction : celle dictée par Franck ; la
+sixième phrase (« Grant-marci a Rony é a tô ») a été reconnue à la transcription et reste à confirmer.
 
 ## Chaîne
 
@@ -44,8 +46,8 @@ python3 tools/preparer-medias.py  # plans 1080 × 1920, son direct, photos, logo
 python3 tools/monter.py           # index.html + plan.json (tous les temps viennent de la voix)
 python3 tools/bande-son.py        # mixage -> assets/bande-son.wav (-15 LUFS, musique 16 dB sous la voix)
 npx hyperframes@0.8.75 check
-npx hyperframes@0.8.75 render -o renders/decidia-v4.mp4
-python3 tools/metriques.py renders/decidia-v4.mp4   # seuils de BONNES-PRATIQUES, rapport metriques.md
+npx hyperframes@0.8.75 render -o renders/decidia-v6.mp4
+python3 tools/metriques.py renders/decidia-v6.mp4   # seuils de BONNES-PRATIQUES, rapport metriques.md
 ```
 
 `index.html` est écrit par `tools/monter.py` : on modifie le script, pas le fichier.

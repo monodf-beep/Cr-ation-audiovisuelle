@@ -72,8 +72,7 @@ poser(mus * enveloppe(pts, len(mus)), 0, aussi=musique_seule)
 # Ambiance de salon (Mixkit, validée « fond sonore d'un salon ») : seulement sur les images du salon.
 foule = a_niveau(charger("sons/ambiance-foule-2.wav")[: int(TOTAL * SR)], -40.0)
 salon = [(0, -40), (P["hook"][1] - 0.15, -40), (P["hook"][1] + 0.1, -6), (P["entreprises"][0], -6), (P["cabine"][1], -6),
-         (P["couches"][0], -40), (P["public"][0] - 0.2, -40), (P["public"][0], -6), (P["public"][1], -6),
-         (P["public"][1] + 0.3, -40), (TOTAL, -40)]
+         (P["couches"][0], -40), (TOTAL, -40)]
 poser(foule * enveloppe(salon, len(foule)), 0)
 
 # Effets : un par image qui le justifie. Réglés à la crête, pas à la sonie : un déclencheur photo dure 0,39 s,
@@ -85,7 +84,7 @@ def effet(nom, t, crete=-16.0):
 effet("whoosh-doux-1.wav", P["duo"][0] - 0.22, -15)           # accroche -> le duo
 effet("pop-doux-3.wav", A["frenchtech_logo"] - 0.03, -14)     # le logo French Tech saute
 effet("pop-doux-3.wav", A["savoyia_logo"] - 0.03, -14)        # la sphère de Savoy IA
-for plan in ("salle", "scene", "public", "merci"):           # une photo apparaît
+for plan in ("salle", "scene", "merci"):           # une photo apparaît
     effet("declencheur-photo-1.wav", P[plan][0] - 0.02, -13)
 effet("page-papier-2.wav", A["carte_a"], -16)                 # la carte « compétences métiers » glisse
 effet("page-papier-2.wav", A["carte_b"] - 0.2, -14)           # la couche IA se pose dessus

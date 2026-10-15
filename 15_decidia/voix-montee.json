@@ -1,172 +1,166 @@
 {
- "duree": 33.664,
+ "duree": 32.535,
  "phrases": [
   {
    "id": "salon",
+   "fichier": "audio_1",
    "debut": 0.0,
-   "fin": 5.245,
+   "fin": 4.096,
    "fr": "Aujourd'hui, j'étais au salon Décidia avec la French Tech et Savoy IA",
    "morceaux": [
     [
      0.0,
-     0.447
-    ],
-    [
-     0.867,
-     5.245
+     4.096
     ]
    ]
   },
   {
    "id": "conference",
-   "debut": 5.895,
-   "fin": 12.57,
+   "fichier": "audio_1",
+   "debut": 4.746,
+   "fin": 11.22,
    "fr": "pour une conférence sur l'intelligence artificielle adaptée à l'entreprise.",
+   "morceaux": []
+  },
+  {
+   "id": "metier",
+   "fichier": "audio_2",
+   "debut": 11.87,
+   "fin": 14.775,
+   "fr": "C'est utiliser la capacité, les compétences métiers avant tout,",
    "morceaux": [
     [
-     10.133,
-     12.57
+     11.87,
+     14.775
     ]
    ]
   },
   {
-   "id": "metier",
-   "debut": 13.22,
-   "fin": 15.8,
-   "fr": "C'est utiliser la capacité, les compétences métiers avant tout,",
-   "morceaux": []
-  },
-  {
    "id": "couche",
-   "debut": 16.45,
-   "fin": 22.925,
+   "fichier": "audio_2",
+   "debut": 15.425,
+   "fin": 23.196,
    "fr": "et ajouter l'intelligence artificielle en plus, pour une couche supplémentaire.",
    "morceaux": []
   },
   {
    "id": "cycle",
-   "debut": 23.575,
-   "fin": 30.171,
+   "fichier": "audio_3",
+   "debut": 23.846,
+   "fin": 29.042,
    "fr": "Nous avons parlé de tout le cycle marketing et communication.",
    "morceaux": [
     [
-     24.117,
-     30.171
+     27.996,
+     29.042
     ]
    ]
   },
   {
    "id": "merci",
-   "debut": 30.821,
-   "fin": 33.664,
+   "fichier": "15h18",
+   "debut": 29.692,
+   "fin": 32.535,
    "fr": "Grant-marci à Rony et à tous !",
    "morceaux": [
     [
-     33.092,
-     33.664
+     29.692,
+     31.542
+    ],
+    [
+     31.962,
+     32.535
     ]
    ]
   }
  ],
  "coupes": [
   {
+   "fichier": "audio_1",
    "source": [
-    1.246,
-    1.693
+    0.954,
+    5.05
    ],
    "montage": [
     0.0,
-    0.447
+    4.096
    ]
   },
   {
+   "fichier": "audio_1",
    "source": [
-    2.232,
-    6.61
+    5.594,
+    12.067
    ],
    "montage": [
-    0.867,
-    5.245
+    4.746,
+    11.22
    ]
   },
   {
+   "fichier": "audio_2",
    "source": [
-    7.258,
-    11.075
+    0.685,
+    3.591
    ],
    "montage": [
-    5.895,
-    9.713
+    11.87,
+    14.775
    ]
   },
   {
+   "fichier": "audio_2",
    "source": [
-    11.809,
-    14.247
+    3.915,
+    11.685
    ],
    "montage": [
-    10.133,
-    12.57
+    15.425,
+    23.196
    ]
   },
   {
+   "fichier": "audio_3",
    "source": [
-    15.457,
-    18.037
+    0.682,
+    4.412
    ],
    "montage": [
-    13.22,
-    15.8
+    23.846,
+    27.576
    ]
   },
   {
+   "fichier": "audio_3",
    "source": [
-    18.433,
-    24.908
+    4.876,
+    5.921
    ],
    "montage": [
-    16.45,
-    22.925
+    27.996,
+    29.042
    ]
   },
   {
-   "source": [
-    26.082,
-    26.204
-   ],
-   "montage": [
-    23.575,
-    23.697
-   ]
-  },
-  {
-   "source": [
-    26.84,
-    32.894
-   ],
-   "montage": [
-    24.117,
-    30.171
-   ]
-  },
-  {
+   "fichier": "15h18",
    "source": [
     33.878,
     35.728
    ],
    "montage": [
-    30.821,
-    32.672
+    29.692,
+    31.542
    ]
   },
   {
+   "fichier": "15h18",
    "source": [
     38.4,
     38.973
    ],
    "montage": [
-    33.092,
-    33.664
+    31.962,
+    32.535
    ]
   }
  ]
