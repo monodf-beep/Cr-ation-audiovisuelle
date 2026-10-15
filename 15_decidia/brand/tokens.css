@@ -1,0 +1,38 @@
+/* Charte Franck Monod : tokens pour les compositions HyperFrames.
+   Source : 09_charte/export-cartes/README.md (export Claude Design, cartes des Etats de Savoie).
+   Les @font-face (Semplicita Pro, assets/fonts/) se declarent dans chaque composition : le lint l'exige. */
+
+
+:root {
+  /* Couleur de marque */
+  --fm-bleu-savoie: #0a36af;
+
+  /* Texte, du plus fort au plus discret */
+  --fm-ink-900: #171719;   /* titres */
+  --fm-ink-700: #45454c;   /* sous-titres, texte courant */
+  --fm-ink-500: #64646c;   /* texte secondaire */
+  --fm-ink-400: #8c8c94;   /* signature sur la carte web ; 3,3:1 sur blanc, sous le seuil 4,5:1 : en video, signer en ink-500 */
+
+  /* Fonds et lignes */
+  --fm-bg: #ffffff;
+  --fm-bg-soft: #f7f7f8;
+  --fm-line: #d9d9dc;
+
+  /* Erreur (usage technique uniquement) */
+  --fm-error: #8b0000;
+
+  /* Typographie */
+  --fm-font: 'Semplicita Pro', -apple-system, sans-serif;
+  --fm-title-size: 52px;         /* 44 a 52 px, graisse 700 */
+  --fm-title-tracking: -0.01em;
+  --fm-eyebrow-size: 14px;       /* 600, majuscules */
+  --fm-eyebrow-tracking: 0.14em;
+  --fm-sub-size: 17px;           /* 400 */
+  --fm-label-size: 20px;         /* etiquettes carte (post), 600, halo blanc 5 px */
+  --fm-brand-size: 13px;         /* signature, 600, majuscules */
+  --fm-brand-tracking: 0.08em;
+
+  /* Mise en page du post carre 1080 x 1080 */
+  --fm-margin: 64px;
+  --fm-stroke: 1.8px;            /* contours de carte */
+}

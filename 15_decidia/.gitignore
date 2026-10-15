@@ -1,0 +1,15 @@
+# Dépôt public (skill reportage-franck, principe 6) : ni rushes, ni photos, ni voix brute,
+# ni police commerciale, ni sons sous licence Mixkit. Tout se récupère avec tools/recuperer.sh.
+rushes/
+sons/
+assets/*
+!assets/fonts/
+assets/fonts/*
+!assets/fonts/CormorantGaramond-*.woff2
+renders/
+snapshots/
+node_modules/
+voix-off/
+*.wav
+*.mp3
+*.mp4

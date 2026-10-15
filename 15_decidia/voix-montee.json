@@ -1,0 +1,206 @@
+{
+ "duree": 32.016,
+ "phrases": [
+  {
+   "id": "salon",
+   "debut": 0.0,
+   "fin": 5.125,
+   "fr": "Aujourd'hui, j'étais au salon Décidia avec la French Tech et Savoy IA",
+   "morceaux": [
+    [
+     0.0,
+     0.447
+    ],
+    [
+     0.747,
+     5.125
+    ]
+   ]
+  },
+  {
+   "id": "conference",
+   "debut": 5.575,
+   "fin": 12.13,
+   "fr": "pour une conférence sur l'intelligence artificielle adaptée à l'entreprise.",
+   "morceaux": [
+    [
+     9.693,
+     12.13
+    ]
+   ]
+  },
+  {
+   "id": "metier",
+   "debut": 12.58,
+   "fin": 15.16,
+   "fr": "C'est utiliser la capacité, les compétences métiers avant tout,",
+   "morceaux": []
+  },
+  {
+   "id": "couche",
+   "debut": 15.61,
+   "fin": 21.979,
+   "fr": "et ajouter l'intelligence artificielle en plus, pour une couche supplémentaire.",
+   "morceaux": [
+    [
+     19.011,
+     21.979
+    ]
+   ]
+  },
+  {
+   "id": "cycle",
+   "debut": 22.429,
+   "fin": 28.843,
+   "fr": "Nous avons parlé de tout le cycle marketing et communication.",
+   "morceaux": [
+    [
+     22.429,
+     22.551
+    ],
+    [
+     22.851,
+     27.581
+    ],
+    [
+     27.881,
+     28.843
+    ]
+   ]
+  },
+  {
+   "id": "merci",
+   "debut": 29.293,
+   "fin": 32.016,
+   "fr": "Grant-marci à Rony et à tous !",
+   "morceaux": [
+    [
+     31.444,
+     32.016
+    ]
+   ]
+  }
+ ],
+ "coupes": [
+  {
+   "source": [
+    1.246,
+    1.693
+   ],
+   "montage": [
+    0.0,
+    0.447
+   ]
+  },
+  {
+   "source": [
+    2.232,
+    6.61
+   ],
+   "montage": [
+    0.747,
+    5.125
+   ]
+  },
+  {
+   "source": [
+    7.258,
+    11.075
+   ],
+   "montage": [
+    5.575,
+    9.393
+   ]
+  },
+  {
+   "source": [
+    11.809,
+    14.247
+   ],
+   "montage": [
+    9.693,
+    12.13
+   ]
+  },
+  {
+   "source": [
+    15.457,
+    18.037
+   ],
+   "montage": [
+    12.58,
+    15.16
+   ]
+  },
+  {
+   "source": [
+    18.433,
+    21.534
+   ],
+   "montage": [
+    15.61,
+    18.711
+   ]
+  },
+  {
+   "source": [
+    21.94,
+    24.908
+   ],
+   "montage": [
+    19.011,
+    21.979
+   ]
+  },
+  {
+   "source": [
+    26.082,
+    26.204
+   ],
+   "montage": [
+    22.429,
+    22.551
+   ]
+  },
+  {
+   "source": [
+    26.84,
+    31.57
+   ],
+   "montage": [
+    22.851,
+    27.581
+   ]
+  },
+  {
+   "source": [
+    31.932,
+    32.894
+   ],
+   "montage": [
+    27.881,
+    28.843
+   ]
+  },
+  {
+   "source": [
+    33.878,
+    35.728
+   ],
+   "montage": [
+    29.293,
+    31.144
+   ]
+  },
+  {
+   "source": [
+    38.4,
+    38.973
+   ],
+   "montage": [
+    31.444,
+    32.016
+   ]
+  }
+ ]
+}

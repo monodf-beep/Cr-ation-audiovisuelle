@@ -17,6 +17,7 @@ Chaîne : script → plans fixes → animation plan par plan → montage.
 | `05_plans/` | plans maillot étalonnés *(hors dépôt)* |
 | `06_terrain/` | plans terrain générés *(hors dépôt)* |
 | `07_film/` | **les 22 plans finaux, après passe pellicule** *(hors dépôt)* |
+| `15_decidia/` | reportage vertical de l'atelier Décidia 2026 (voix off en savoyard, style « Reportage Franck », HyperFrames) : voir `15_decidia/README.md` |
 
 ### Deux principes qui tiennent le projet
 

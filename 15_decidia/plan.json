@@ -1,0 +1,117 @@
+{
+ "total": 45.446,
+ "plans": {
+  "hook": [
+   0.0,
+   1.9
+  ],
+  "duo": [
+   1.9,
+   4.2
+  ],
+  "allee": [
+   4.2,
+   7.268
+  ],
+  "frenchtech": [
+   7.268,
+   8.123
+  ],
+  "savoyia": [
+   8.123,
+   9.268
+  ],
+  "affiche": [
+   9.268,
+   10.597
+  ],
+  "salle": [
+   10.597,
+   13.012
+  ],
+  "entreprises": [
+   13.012,
+   14.049
+  ],
+  "cabine": [
+   14.049,
+   15.636
+  ],
+  "stand": [
+   15.636,
+   16.857
+  ],
+  "scene": [
+   16.857,
+   18.391
+  ],
+  "couches": [
+   18.391,
+   24.59
+  ],
+  "public": [
+   24.59,
+   26.355
+  ],
+  "cycle": [
+   26.355,
+   30.771
+  ],
+  "rioule": [
+   30.771,
+   35.771
+  ],
+  "merci": [
+   35.771,
+   39.046
+  ],
+  "bientot": [
+   39.046,
+   41.246
+  ],
+  "fin": [
+   41.246,
+   45.446
+  ]
+ },
+ "voix": {
+  "debut_a": 4.199999999999999,
+  "fin_a": 26.221,
+  "debut_b_voix": 26.63,
+  "fin_b_voix": 29.105,
+  "debut_b": 36.121
+ },
+ "direct": {
+  "duo": [
+   1.9,
+   "assets/duo.wav"
+  ],
+  "rioule-1": [
+   30.771,
+   "assets/rioule-1.wav"
+  ],
+  "rioule-2": [
+   33.171,
+   "assets/rioule-2.wav"
+  ],
+  "rioule-3": [
+   34.971,
+   "assets/rioule-3.wav"
+  ],
+  "bientot": [
+   39.046,
+   "assets/bientot.wav"
+  ]
+ },
+ "ancres": {
+  "frenchtech_logo": 7.35,
+  "savoyia_logo": 8.177,
+  "carte_a": 18.541,
+  "carte_b": 19.379,
+  "couche": 22.046,
+  "cycle": 26.405,
+  "marketing": 28.465,
+  "communication": 29.546,
+  "rioule": 32.481
+ }
+}
