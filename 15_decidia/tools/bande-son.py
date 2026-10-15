@@ -86,7 +86,10 @@ effet("pop-doux-3.wav", A["frenchtech_logo"] - 0.03, -14)     # le logo French T
 effet("pop-doux-3.wav", A["savoyia_logo"] - 0.03, -14)        # la sphère de Savoy IA
 for plan in ("salle", "scene", "merci"):           # une photo apparaît
     effet("declencheur-photo-1.wav", P[plan][0] - 0.02, -13)
+effet("pop-doux-3.wav", A["ent_1"] - 0.03, -14)               # « Enteligença » claque
+effet("pop-doux-3.wav", A["art_1"] - 0.03, -14)               # « artificèla » claque
 effet("page-papier-2.wav", A["carte_a"], -16)                 # la carte « compétences métiers » glisse
+effet("clic-interface-1.wav", A["en_plus"], -17)              # la carte IA se décode en français
 effet("page-papier-2.wav", A["carte_b"] - 0.2, -14)           # la couche IA se pose dessus
 effet("whoosh-doux-1.wav", A["cycle"], -18)                   # l'anneau éclot
 for k in range(5):                                            # chaque étape du cycle se pose sur l'anneau
@@ -97,6 +100,7 @@ effet("whoosh-doux-3.wav", P["cycle"][1] - 0.45, -15)         # le cycle file ve
 effet("riser-doux-1.wav", P["fin"][0] - 2.45, -15)            # montée vers le carton final
 effet("pop-doux-3.wav", P["fin"][0] + 1.0, -16)               # logos du carton final
 effet("pop-doux-3.wav", P["fin"][0] + 1.25, -16)
+effet("clic-interface-1.wav", A["hashtag"], -18)              # le hashtag se décode
 
 # Niveau final : -15 LUFS par un gain fixe (un loudnorm en une passe aplatirait les baisses de la musique),
 # puis un limiteur pour garder la crête sous -1,5 dB.

@@ -9,7 +9,7 @@ Tous les temps viennent de la voix : les mots-ancres sont donnés en secondes de
 audio_2.aac et audio_3.aac pour les phrases 1 à 5, 15_oct.__15.18.aac pour le « Grant-marci »), convertis en temps du
 montage par voix-montee.json (tools/couper-voix.py) puis divisés par la vitesse (montage.json).
 Usage (dans 15_decidia/) : python3 tools/monter.py"""
-import json
+import json, random
 from html import escape
 
 VOIX = json.load(open("voix-montee.json"))
@@ -81,7 +81,9 @@ for k, (a, b) in P.items():   # un plan filmé ne doit pas durer plus que son ex
 ST_VOIX = [
     ("Aujourd'hui", A1, 1.01), ("j'étais au salon", A1, 1.50), ("[Décidia]", A1, 2.58), ("avec la French Tech", A1, 3.28),
     ("et Savoy IA", A1, 4.30), (None, A1, 5.05),
-    ("pour une conférence", A1, 5.65), ("sur l'intelligence", A1, 7.26), ("artificielle", A1, 8.40), (None, A1, 9.40),
+    ("pour une conférence", A1, 5.65), (None, A1, 7.26),
+    # « sur l'intelligence artificielle » : pas de sous-titre, les deux mots claquent en savoyard, glosés en français.
+   
     ("adaptée", A1, 9.92), ("à [l'entreprise]", A1, 10.94), (None, A1, 12.05),
     ("C'est utiliser", A2, 0.75), ("les [compétences métiers]", A2, 1.70), ("avant tout", A2, 3.30), (None, A2, 3.60),
     ("et ajouter", A2, 3.97), ("l'intelligence", A2, 5.32), ("artificielle", A2, 6.42),
@@ -117,6 +119,22 @@ def html_groupe(txt):
         html.append(f'<span class="{cls}">{escape(p.strip())}</span>')
     return " ".join(html)
 
+# « Enteligença artificèla » (l'intelligence artificielle en savoyard, orthographe des hashtags de Franck) : les lettres
+# défilent puis se posent, de gauche à droite. États tirés une fois pour toutes (graine fixe) et montrés par des
+# tl.set : le rendu image par image reste identique d'une passe à l'autre.
+BAS, HAUT = "abcdefghijklmnopqrstuvwxyzçèé0123456789", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#"
+def brouille(id_, avant, apres, graine, n=7):
+    r, etats = random.Random(graine), []
+    for k in range(1, n + 1):
+        ok = round(len(apres) * k / (n + 1))
+        L = round(len(avant) + (len(apres) - len(avant)) * k / (n + 1)) if avant else len(apres)
+        ref = lambda i: apres[i] if i < len(apres) else avant[i]
+        etats.append("".join(apres[i] if i < ok else r.choice(HAUT if ref(i).isupper() else BAS) for i in range(L)))
+    # Les états se superposent (un seul visible à la fois) : chevauchement voulu, signalé à l'audit de mise en page.
+    span = lambda cls, txt: f'<span class="{cls}" data-layout-allow-overlap>{escape(txt)}</span>'
+    html = ([span("b-avant", avant)] if avant else []) + [span("b-etat", e) for e in etats] + [span("b-final", apres)]
+    return f'<span class="brouille" id="{id_}">{"".join(html)}</span>'
+
 ST_HTML = "\n".join(
     f'      <div class="st{" clair" if clair else ""}" data-a="{a}" data-b="{b}">{html_groupe(txt)}</div>'
     for txt, a, b, clair in groupes())
@@ -142,9 +160,11 @@ plan_json = {
                "rioule-3": [round(r_a + R1 + R2, 3), "assets/rioule-3.wav"],
                "bientot": [BIENTOT, "assets/bientot.wav"]},
     "ancres": {"frenchtech_logo": t(A1, 3.78), "savoyia_logo": t(A1, 4.56), "carte_a": round(P["couches"][0] + 0.15, 3),
+               "ent_1": t(A1, 7.64), "art_1": t(A1, 8.40),
                "carte_b": t(A2, 5.32), "en_plus": t(A2, 7.88), "couche": t(A2, 10.02),
                "cycle": round(P["cycle"][0] + 0.05, 3),
-               "marketing": t(A3, 3.30), "communication": t(A3, 4.94), "rioule": round(r_a + 1.71, 3)},
+               "marketing": t(A3, 3.30), "communication": t(A3, 4.94), "rioule": round(r_a + 1.71, 3),
+               "hashtag": round(FIN + 2.3, 3)},
 }
 A = plan_json["ancres"]
 
@@ -196,6 +216,17 @@ HTML = f"""<!doctype html>
       #p-savoyia {{ background: radial-gradient(circle at 50% 42%, #0b1a4a 0%, #05091f 55%, #020512 100%); }}
       #sia-anneau {{ position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }}
       #sia-logo {{ position: absolute; left: 240px; top: 470px; width: 600px; height: 600px; }}
+
+      /* « Enteligença artificèla » : lettres qui se decodent (etats superposes, un seul visible a la fois) */
+      .brouille {{ position: relative; display: inline-block; white-space: nowrap; }}
+      .brouille .b-avant, .brouille .b-etat {{ position: absolute; left: 0; top: 0; white-space: nowrap; }}
+      .mot-sav {{ position: absolute; left: 60px; width: 860px; text-align: center; }}
+      #mot-1 {{ top: 690px; }}
+      #mot-2 {{ top: 945px; }}
+      .mot-sav .bloc {{ display: inline-block; background: var(--fm-bleu-savoie); color: #fff; font-size: 112px; font-weight: 700; line-height: 1.1; padding: 10px 40px 22px; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }}
+      .mot-sav .bloc {{ overflow: hidden; }}   /* les etats tires, plus larges ou plus etroits, restent dans le bloc */
+      .mot-sav .brouille .b-etat {{ left: 50%; transform: translateX(-50%); }}
+      .mot-sav .glose {{ display: block; margin-top: 14px; font-size: 28px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 2px 14px rgba(0,0,0,0.7); }}
 
       /* Titre de lieu : serif fine, lignes qui montent */
       .lieu-fin {{ position: absolute; left: 80px; top: 300px; color: #fff; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 96px; line-height: 1.02; text-shadow: 0 0 4px rgba(0,0,0,0.75), 0 2px 24px rgba(0,0,0,0.75); }}
@@ -254,6 +285,7 @@ HTML = f"""<!doctype html>
       .bloc-final {{ position: absolute; left: 90px; top: 1190px; background: var(--fm-bleu-savoie); color: #fff; padding: 22px 34px 26px; }}
       .bloc-final .n {{ font-size: 48px; font-weight: 700; line-height: 1.1; }}
       .bloc-final .r {{ margin-top: 8px; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }}
+      .hashtag {{ position: absolute; left: 90px; top: 1352px; font-size: 42px; font-weight: 700; color: var(--fm-bleu-savoie); }}
 
       /* Sous-titres : groupes de 1 a 3 mots, au-dessus de l'interface des Reels (y < 1440, x < 940) */
       .st {{ position: absolute; left: 60px; right: 180px; bottom: 490px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; transform-origin: 50% 100%; opacity: 0; }}
@@ -295,6 +327,8 @@ HTML = f"""<!doctype html>
       {media("v-affiche", "assets/affiche.mp4", "affiche")}
       {img("photo-salle", "assets/photo-6.jpg", "salle")}
       <div class="pastille" id="pastille-atelier"><div class="k">Atelier · salle Lamartine</div><div class="v">Vendre mieux avec l'IA : l'humain garde la main</div></div>
+      <div class="mot-sav" id="mot-1"><span class="bloc">{brouille("b-ent", "", "Enteligença", 1)}</span><span class="glose">intelligence</span></div>
+      <div class="mot-sav" id="mot-2"><span class="bloc">{brouille("b-art", "", "artificèla", 2)}</span><span class="glose">artificielle</span></div>
       {media("v-entreprises", "assets/entreprises.mp4", "entreprises")}
       <div class="pastille" id="pastille-club"><div class="k">Hall A · stand A84</div><div class="v">Chambéry Savoie Mont Blanc Handball</div></div>
       {media("v-cabine", "assets/cabine.mp4", "cabine")}
@@ -308,8 +342,8 @@ HTML = f"""<!doctype html>
       <div class="plan" id="p-couches">
         <div id="couches-titre">D'abord le métier</div>
         <div id="pile">
-          <div class="couche" id="couche-metier"><div class="k">La base</div><div class="v">Compétences métiers</div></div>
-          <div class="couche" id="couche-ia"><div class="k">La couche en plus</div><div class="v">Intelligence artificielle</div></div>
+          <div class="couche" id="couche-metier"><div class="k">La base</div><div class="v" data-layout-allow-overlap>Compétences métiers</div></div>
+          <div class="couche" id="couche-ia"><div class="k">La couche en plus</div><div class="v">{brouille("b-ia-1", "Enteligença", "Intelligence", 3)}<br />{brouille("b-ia-2", "artificèla", "artificielle", 4)}</div></div>
         </div>
       </div>
 
@@ -370,6 +404,7 @@ HTML = f"""<!doctype html>
           <div class="sia" id="fin-sia"><img src="assets/logos/savoy-ia-clair.png" width="330" height="330" alt="Savoy IA" /></div>
         </div>
         <div class="bloc-final" id="fin-nom"><div class="n">Franck Monod · Rony Dray</div><div class="r">avec la French Tech Alpes et Savoy IA</div></div>
+        <div class="hashtag" id="fin-hashtag">{brouille("b-hash", "", "#EnteligençaArtificèla", 5)}</div>
       </div>
 
       <div id="flash"></div>
@@ -387,7 +422,15 @@ HTML = f"""<!doctype html>
         tl.fromTo("#flash", {{ opacity: 0 }}, {{ opacity: 1, duration: 0.07, ease: "none", immediateRender: false }}, t - 0.07);
         tl.to("#flash", {{ opacity: 0, duration: 0.35, ease: "power2.out" }}, t);
       }};
-      gsap.set(["#pastille-club", "#pastille-cabine"], {{ opacity: 0 }});
+      // Lettres qui se decodent : l'etat de depart (s'il y en a un) cede la place aux etats tires, une image chacun.
+      const brouille = (sel, t, pas = 0.035) => {{
+        const el = document.querySelector(sel), etats = el.querySelectorAll(".b-etat"), avant = el.querySelector(".b-avant");
+        gsap.set([...etats, el.querySelector(".b-final")], {{ opacity: 0 }});
+        if (avant) tl.set(avant, {{ opacity: 0 }}, t);
+        etats.forEach((e, k) => {{ tl.set(e, {{ opacity: 1 }}, t + k * pas); tl.set(e, {{ opacity: 0 }}, t + (k + 1) * pas); }});
+        tl.set(el.querySelector(".b-final"), {{ opacity: 1 }}, t + etats.length * pas);
+      }};
+      gsap.set(["#pastille-club", "#pastille-cabine", "#mot-1", "#mot-2"], {{ opacity: 0 }});
       gsap.set(["#hook", "#voile-hook", "#nom", "#logo-ft", "#p-savoyia", "#pastille-atelier", "#p-couches", "#p-cycle", "#titre-stand",
                 "#bague", "#p-merci", "#p-final"], {{ opacity: 0 }});
 
@@ -433,6 +476,15 @@ HTML = f"""<!doctype html>
       tl.set("#pastille-atelier", {{ opacity: 1 }}, P.salle[0] + 0.2);
       tl.fromTo("#pastille-atelier", {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut", immediateRender: false }}, P.salle[0] + 0.2);
       tl.set("#pastille-atelier", {{ opacity: 0 }}, P.salle[1]);
+      // « su l'enteligença artificèla » : chaque mot claque sur le temps ou Franck le dit, ses lettres se decodent,
+      // la traduction se glisse dessous.
+      [["#mot-1", "#b-ent", A.ent_1], ["#mot-2", "#b-art", A.art_1]].forEach(([mot, b, t]) => {{
+        tl.set(mot, {{ opacity: 1 }}, t);
+        tl.fromTo(mot + " .bloc", {{ scale: 1.4 }}, {{ scale: 1, duration: 0.22, ease: "back.out(2)", immediateRender: false }}, t);
+        brouille(b, t);
+        tl.from(mot + " .glose", {{ y: 12, opacity: 0, duration: 0.25, ease: "power3.out" }}, t + 0.2);
+      }});
+      tl.set(["#mot-1", "#mot-2"], {{ opacity: 0 }}, P.salle[1]);
 
       // Les entreprises du salon : un stand, puis la cabine du Teleferique du Saleve.
       gsap.set(["#v-entreprises", "#v-cabine"], {{ transformOrigin: "50% 45%" }});
@@ -462,6 +514,9 @@ HTML = f"""<!doctype html>
       // Punch-in sec sur « en plus » (rythme : un changement franc toutes les 2 a 4 s). Sur la pile seule, autour de
       // son centre : le titre ne monte pas dans la zone masquee, la carte du bas ne descend pas sur les sous-titres.
       tl.set("#pile", {{ scale: 1.16 }}, A.en_plus);
+      // La carte dit d'abord « Enteligença artificèla », comme la voix ; sur « en plus », elle se decode en francais.
+      brouille("#b-ia-1", A.en_plus);
+      brouille("#b-ia-2", A.en_plus + 0.07);
 
       // Le cycle qui se dessine.
       montre("#p-cycle", "cycle");
@@ -542,6 +597,9 @@ HTML = f"""<!doctype html>
       tl.from("#fin-ft", {{ scale: 0.6, opacity: 0, duration: 0.4, ease: "back.out(2.2)" }}, P.fin[0] + 1.0);
       tl.from("#fin-sia", {{ scale: 0.6, opacity: 0, duration: 0.4, ease: "back.out(2.2)" }}, P.fin[0] + 1.25);
       tl.fromTo("#fin-nom", {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }}, P.fin[0] + 1.6);
+      gsap.set("#fin-hashtag", {{ opacity: 0 }});
+      tl.set("#fin-hashtag", {{ opacity: 1 }}, A.hashtag);
+      brouille("#b-hash", A.hashtag, 0.045);
 
       // Flash blanc sur les changements de sequence.
       [P.duo[0], P.savoyia[0], P.affiche[0], P.couches[0], P.cycle[0], P.rioule[0], P.merci[0], P.fin[0]].forEach(flash);

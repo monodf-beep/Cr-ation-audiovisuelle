@@ -47,6 +47,17 @@
       #sia-anneau { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
       #sia-logo { position: absolute; left: 240px; top: 470px; width: 600px; height: 600px; }
 
+      /* « Enteligença artificèla » : lettres qui se decodent (etats superposes, un seul visible a la fois) */
+      .brouille { position: relative; display: inline-block; white-space: nowrap; }
+      .brouille .b-avant, .brouille .b-etat { position: absolute; left: 0; top: 0; white-space: nowrap; }
+      .mot-sav { position: absolute; left: 60px; width: 860px; text-align: center; }
+      #mot-1 { top: 690px; }
+      #mot-2 { top: 945px; }
+      .mot-sav .bloc { display: inline-block; background: var(--fm-bleu-savoie); color: #fff; font-size: 112px; font-weight: 700; line-height: 1.1; padding: 10px 40px 22px; box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
+      .mot-sav .bloc { overflow: hidden; }   /* les etats tires, plus larges ou plus etroits, restent dans le bloc */
+      .mot-sav .brouille .b-etat { left: 50%; transform: translateX(-50%); }
+      .mot-sav .glose { display: block; margin-top: 14px; font-size: 28px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 2px 14px rgba(0,0,0,0.7); }
+
       /* Titre de lieu : serif fine, lignes qui montent */
       .lieu-fin { position: absolute; left: 80px; top: 300px; color: #fff; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 96px; line-height: 1.02; text-shadow: 0 0 4px rgba(0,0,0,0.75), 0 2px 24px rgba(0,0,0,0.75); }
       .lieu-fin .l { display: block; overflow: hidden; padding-bottom: 6px; }
@@ -104,6 +115,7 @@
       .bloc-final { position: absolute; left: 90px; top: 1190px; background: var(--fm-bleu-savoie); color: #fff; padding: 22px 34px 26px; }
       .bloc-final .n { font-size: 48px; font-weight: 700; line-height: 1.1; }
       .bloc-final .r { margin-top: 8px; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+      .hashtag { position: absolute; left: 90px; top: 1352px; font-size: 42px; font-weight: 700; color: var(--fm-bleu-savoie); }
 
       /* Sous-titres : groupes de 1 a 3 mots, au-dessus de l'interface des Reels (y < 1440, x < 940) */
       .st { position: absolute; left: 60px; right: 180px; bottom: 490px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; transform-origin: 50% 100%; opacity: 0; }
@@ -145,6 +157,8 @@
       <video id="v-affiche" class="plein" src="assets/affiche.mp4" muted playsinline data-start="9.412" data-duration="1.64" data-media-start="0.0"></video>
       <img id="photo-salle" class="clip photo" src="assets/photo-6.jpg" width="1440" height="1920" alt="" data-start="11.052" data-duration="2.44" />
       <div class="pastille" id="pastille-atelier"><div class="k">Atelier · salle Lamartine</div><div class="v">Vendre mieux avec l'IA : l'humain garde la main</div></div>
+      <div class="mot-sav" id="mot-1"><span class="bloc"><span class="brouille" id="b-ent"><span class="b-etat" data-layout-allow-overlap>Ei7eqh2é1yn</span><span class="b-etat" data-layout-allow-overlap>Entg2byè9aé</span><span class="b-etat" data-layout-allow-overlap>Entero8gubb</span><span class="b-etat" data-layout-allow-overlap>Entelib5ayn</span><span class="b-etat" data-layout-allow-overlap>Enteligèb4o</span><span class="b-etat" data-layout-allow-overlap>Enteligeé26</span><span class="b-etat" data-layout-allow-overlap>Enteligenço</span><span class="b-final" data-layout-allow-overlap>Enteligença</span></span></span><span class="glose">intelligence</span></div>
+      <div class="mot-sav" id="mot-2"><span class="bloc"><span class="brouille" id="b-art"><span class="b-etat" data-layout-allow-overlap>adffxktq9n</span><span class="b-etat" data-layout-allow-overlap>ar9c8kèz3x</span><span class="b-etat" data-layout-allow-overlap>arti5é3rcb</span><span class="b-etat" data-layout-allow-overlap>artifx0uyè</span><span class="b-etat" data-layout-allow-overlap>artifi4k6l</span><span class="b-etat" data-layout-allow-overlap>artificèpo</span><span class="b-etat" data-layout-allow-overlap>artificèlb</span><span class="b-final" data-layout-allow-overlap>artificèla</span></span></span><span class="glose">artificielle</span></div>
       <video id="v-entreprises" class="plein" src="assets/entreprises.mp4" muted playsinline data-start="13.492" data-duration="1.24" data-media-start="0.0"></video>
       <div class="pastille" id="pastille-club"><div class="k">Hall A · stand A84</div><div class="v">Chambéry Savoie Mont Blanc Handball</div></div>
       <video id="v-cabine" class="plein" src="assets/cabine.mp4" muted playsinline data-start="14.732" data-duration="1.843" data-media-start="0.0"></video>
@@ -158,8 +172,8 @@
       <div class="plan" id="p-couches">
         <div id="couches-titre">D'abord le métier</div>
         <div id="pile">
-          <div class="couche" id="couche-metier"><div class="k">La base</div><div class="v">Compétences métiers</div></div>
-          <div class="couche" id="couche-ia"><div class="k">La couche en plus</div><div class="v">Intelligence artificielle</div></div>
+          <div class="couche" id="couche-metier"><div class="k">La base</div><div class="v" data-layout-allow-overlap>Compétences métiers</div></div>
+          <div class="couche" id="couche-ia"><div class="k">La couche en plus</div><div class="v"><span class="brouille" id="b-ia-1"><span class="b-avant" data-layout-allow-overlap>Enteligença</span><span class="b-etat" data-layout-allow-overlap>Inp85ix918e</span><span class="b-etat" data-layout-allow-overlap>Int9a1q6om1</span><span class="b-etat" data-layout-allow-overlap>Inte561zjoj</span><span class="b-etat" data-layout-allow-overlap>Intell4yaek8</span><span class="b-etat" data-layout-allow-overlap>Intelligctbr</span><span class="b-etat" data-layout-allow-overlap>Intellige19y</span><span class="b-etat" data-layout-allow-overlap>Intelligenèz</span><span class="b-final" data-layout-allow-overlap>Intelligence</span></span><br /><span class="brouille" id="b-ia-2"><span class="b-avant" data-layout-allow-overlap>artificèla</span><span class="b-etat" data-layout-allow-overlap>arptgz1jfe</span><span class="b-etat" data-layout-allow-overlap>artbz6sdo4</span><span class="b-etat" data-layout-allow-overlap>arti5xrlgqn</span><span class="b-etat" data-layout-allow-overlap>artifibqrmk</span><span class="b-etat" data-layout-allow-overlap>artificitsx</span><span class="b-etat" data-layout-allow-overlap>artificief9v</span><span class="b-etat" data-layout-allow-overlap>artificiely3</span><span class="b-final" data-layout-allow-overlap>artificielle</span></span></div></div>
         </div>
       </div>
 
@@ -220,6 +234,7 @@
           <div class="sia" id="fin-sia"><img src="assets/logos/savoy-ia-clair.png" width="330" height="330" alt="Savoy IA" /></div>
         </div>
         <div class="bloc-final" id="fin-nom"><div class="n">Franck Monod · Rony Dray</div><div class="r">avec la French Tech Alpes et Savoy IA</div></div>
+        <div class="hashtag" id="fin-hashtag"><span class="brouille" id="b-hash"><span class="b-etat" data-layout-allow-overlap>#Enqw4b0pdkhX1py5g7pan</span><span class="b-etat" data-layout-allow-overlap>#EntelçrlykeIéiiaannkk</span><span class="b-etat" data-layout-allow-overlap>#Enteligsum5Nlmytbxçkj</span><span class="b-etat" data-layout-allow-overlap>#EnteligençqEvt98a9vet</span><span class="b-etat" data-layout-allow-overlap>#EnteligençaArwt1ul11l</span><span class="b-etat" data-layout-allow-overlap>#EnteligençaArtidqbwzb</span><span class="b-etat" data-layout-allow-overlap>#EnteligençaArtific6çx</span><span class="b-final" data-layout-allow-overlap>#EnteligençaArtificèla</span></span></div>
       </div>
 
       <div id="flash"></div>
@@ -231,8 +246,6 @@
       <div class="st" data-a="6.966" data-b="7.966"><span class="m">avec la French Tech</span></div>
       <div class="st" data-a="7.986" data-b="8.716"><span class="m">et Savoy IA</span></div>
       <div class="st" data-a="9.442" data-b="11.032"><span class="m">pour une conférence</span></div>
-      <div class="st" data-a="11.052" data-b="12.172"><span class="m">sur l&#x27;intelligence</span></div>
-      <div class="st" data-a="12.192" data-b="13.172"><span class="m">artificielle</span></div>
       <div class="st" data-a="13.712" data-b="14.712"><span class="m">adaptée</span></div>
       <div class="st" data-a="14.732" data-b="15.822"><span class="m">à</span> <span class="m cle">l&#x27;entreprise</span></div>
       <div class="st" data-a="16.575" data-b="17.505"><span class="m">C&#x27;est utiliser</span></div>
@@ -259,13 +272,21 @@
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
       const P = {"hook": [0.0, 1.9], "duo": [1.9, 4.64], "allee": [4.64, 6.266], "accueil": [6.266, 6.966], "frenchtech": [6.966, 7.986], "savoyia": [7.986, 9.412], "affiche": [9.412, 11.052], "salle": [11.052, 13.492], "entreprises": [13.492, 14.732], "cabine": [14.732, 16.575], "stand": [16.575, 17.685], "scene": [17.685, 20.12], "couches": [20.12, 28.544], "cycle": [28.544, 34.032], "rioule": [34.032, 39.032], "merci": [39.032, 42.675], "bientot": [42.675, 44.875], "fin": [44.875, 49.075]};
-      const A = {"frenchtech_logo": 7.466, "savoyia_logo": 8.246, "carte_a": 20.27, "carte_b": 21.47, "en_plus": 24.03, "couche": 26.17, "cycle": 28.594, "marketing": 31.104, "communication": 32.7, "rioule": 35.742};
+      const A = {"frenchtech_logo": 7.466, "savoyia_logo": 8.246, "carte_a": 20.27, "ent_1": 11.432, "art_1": 12.192, "carte_b": 21.47, "en_plus": 24.03, "couche": 26.17, "cycle": 28.594, "marketing": 31.104, "communication": 32.7, "rioule": 35.742, "hashtag": 47.175};
       const montre = (sel, plan) => { tl.set(sel, { opacity: 1 }, P[plan][0]); tl.set(sel, { opacity: 0 }, P[plan][1]); };
       const flash = (t) => {
         tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.07, ease: "none", immediateRender: false }, t - 0.07);
         tl.to("#flash", { opacity: 0, duration: 0.35, ease: "power2.out" }, t);
       };
-      gsap.set(["#pastille-club", "#pastille-cabine"], { opacity: 0 });
+      // Lettres qui se decodent : l'etat de depart (s'il y en a un) cede la place aux etats tires, une image chacun.
+      const brouille = (sel, t, pas = 0.035) => {
+        const el = document.querySelector(sel), etats = el.querySelectorAll(".b-etat"), avant = el.querySelector(".b-avant");
+        gsap.set([...etats, el.querySelector(".b-final")], { opacity: 0 });
+        if (avant) tl.set(avant, { opacity: 0 }, t);
+        etats.forEach((e, k) => { tl.set(e, { opacity: 1 }, t + k * pas); tl.set(e, { opacity: 0 }, t + (k + 1) * pas); });
+        tl.set(el.querySelector(".b-final"), { opacity: 1 }, t + etats.length * pas);
+      };
+      gsap.set(["#pastille-club", "#pastille-cabine", "#mot-1", "#mot-2"], { opacity: 0 });
       gsap.set(["#hook", "#voile-hook", "#nom", "#logo-ft", "#p-savoyia", "#pastille-atelier", "#p-couches", "#p-cycle", "#titre-stand",
                 "#bague", "#p-merci", "#p-final"], { opacity: 0 });
 
@@ -311,6 +332,15 @@
       tl.set("#pastille-atelier", { opacity: 1 }, P.salle[0] + 0.2);
       tl.fromTo("#pastille-atelier", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut", immediateRender: false }, P.salle[0] + 0.2);
       tl.set("#pastille-atelier", { opacity: 0 }, P.salle[1]);
+      // « su l'enteligença artificèla » : chaque mot claque sur le temps ou Franck le dit, ses lettres se decodent,
+      // la traduction se glisse dessous.
+      [["#mot-1", "#b-ent", A.ent_1], ["#mot-2", "#b-art", A.art_1]].forEach(([mot, b, t]) => {
+        tl.set(mot, { opacity: 1 }, t);
+        tl.fromTo(mot + " .bloc", { scale: 1.4 }, { scale: 1, duration: 0.22, ease: "back.out(2)", immediateRender: false }, t);
+        brouille(b, t);
+        tl.from(mot + " .glose", { y: 12, opacity: 0, duration: 0.25, ease: "power3.out" }, t + 0.2);
+      });
+      tl.set(["#mot-1", "#mot-2"], { opacity: 0 }, P.salle[1]);
 
       // Les entreprises du salon : un stand, puis la cabine du Teleferique du Saleve.
       gsap.set(["#v-entreprises", "#v-cabine"], { transformOrigin: "50% 45%" });
@@ -340,6 +370,9 @@
       // Punch-in sec sur « en plus » (rythme : un changement franc toutes les 2 a 4 s). Sur la pile seule, autour de
       // son centre : le titre ne monte pas dans la zone masquee, la carte du bas ne descend pas sur les sous-titres.
       tl.set("#pile", { scale: 1.16 }, A.en_plus);
+      // La carte dit d'abord « Enteligença artificèla », comme la voix ; sur « en plus », elle se decode en francais.
+      brouille("#b-ia-1", A.en_plus);
+      brouille("#b-ia-2", A.en_plus + 0.07);
 
       // Le cycle qui se dessine.
       montre("#p-cycle", "cycle");
@@ -420,6 +453,9 @@
       tl.from("#fin-ft", { scale: 0.6, opacity: 0, duration: 0.4, ease: "back.out(2.2)" }, P.fin[0] + 1.0);
       tl.from("#fin-sia", { scale: 0.6, opacity: 0, duration: 0.4, ease: "back.out(2.2)" }, P.fin[0] + 1.25);
       tl.fromTo("#fin-nom", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut" }, P.fin[0] + 1.6);
+      gsap.set("#fin-hashtag", { opacity: 0 });
+      tl.set("#fin-hashtag", { opacity: 1 }, A.hashtag);
+      brouille("#b-hash", A.hashtag, 0.045);
 
       // Flash blanc sur les changements de sequence.
       [P.duo[0], P.savoyia[0], P.affiche[0], P.couches[0], P.cycle[0], P.rioule[0], P.merci[0], P.fin[0]].forEach(flash);
