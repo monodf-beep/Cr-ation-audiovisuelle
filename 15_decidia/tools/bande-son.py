@@ -71,7 +71,7 @@ poser(mus * enveloppe(pts, len(mus)), 0, aussi=musique_seule)
 
 # Ambiance de salon (Mixkit, validée « fond sonore d'un salon ») : seulement sur les images du salon.
 foule = a_niveau(charger("sons/ambiance-foule-2.wav")[: int(TOTAL * SR)], -40.0)
-salon = [(0, 0), (P["hook"][1], 0), (P["hook"][1] + 0.2, -6), (P["entreprises"][0], -6), (P["cabine"][1], -6),
+salon = [(0, -40), (P["hook"][1] - 0.15, -40), (P["hook"][1] + 0.1, -6), (P["entreprises"][0], -6), (P["cabine"][1], -6),
          (P["couches"][0], -40), (P["public"][0] - 0.2, -40), (P["public"][0], -6), (P["public"][1], -6),
          (P["public"][1] + 0.3, -40), (TOTAL, -40)]
 poser(foule * enveloppe(salon, len(foule)), 0)

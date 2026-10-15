@@ -15,8 +15,7 @@ GRADE = "eq=brightness=0.02:contrast=1.04:saturation=1.08,colorbalance=rm=0.02:b
 # nom : (rush, entrée, sortie, miroir, son direct)
 # Les selfies du stand sont filmés en miroir (l'enseigne « Traiteur La Rioule » se lit à l'envers) : on les retourne.
 PLANS = {
-    "hook":        ("VID_20261015_114308.mp4", 0.00, 1.95, False, False),   # accueil exposants Décidia
-    "duo":         ("VID_20261015_103245.mp4", 4.55, 6.85, False, True),    # Franck et Rony saluent (coupé avant « Nous sommes… »)
+    "duo":         ("VID_20261015_103245.mp4", 4.50, 7.24, False, True),    # Franck salue, Rony répond « Arvi ! » (6,78 - 7,22), coupé avant « Nous sommes… »
     "allee":       ("VID_20261015_114135.mp4", 2.00, 5.15, False, False),   # allée du hall A
     "accueil":     ("VID_20261015_114308.mp4", 3.90, 6.90, False, False),   # comptoirs badges et presse aux couleurs Décidia
     "frenchtech":  ("VID_20261015_112126.mp4", 0.00, 2.60, False, False),   # stand de la French Tech
@@ -45,6 +44,13 @@ for nom, (rush, a, b, miroir, son) in PLANS.items():
         ff("-ss", f"{a}", "-t", f"{b - a}", "-i", R + rush, "-vn", "-ac", "2", "-ar", "48000", f"assets/{nom}.wav")
     durees[nom] = round(b - a, 3)
     print(f"plan   assets/{nom}.mp4  {b - a:.2f} s" + ("  + son direct" if son else ""))
+
+# Affiche officielle (format Story 1080 x 1920 du kit de communication intervenant DEC26, mail de la French Tech
+# Alpes du 12 octobre 2026), posée sur blanc : quelques bords sont semi-transparents.
+affiche = Image.open(f"{R}DEC26-Kitcom-intervenant-Story.png").convert("RGBA")
+fond = Image.new("RGBA", affiche.size, (255, 255, 255, 255)); fond.alpha_composite(affiche)
+fond.convert("RGB").save("assets/affiche-decidia.jpg", quality=93)
+print("affiche assets/affiche-decidia.jpg")
 
 # Photos du public et de la scène, recadrées au format 9:16 du cadre (1440 x 1920, marge pour la poussée lente).
 for i in (5, 6, 7, 8, 9):

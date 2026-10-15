@@ -25,7 +25,7 @@ def montage(s):
     return coupes[-1]["montage"][1]
 
 # ---------------------------------------------------------------- feuille de temps (secondes de la vidéo)
-HOOK = 1.90                                  # accroche sur l'accueil exposants
+HOOK = 1.90                                  # accroche sur l'affiche officielle de Décidia
 DUO = DUREES["duo"]                          # le duo salue, son direct
 VA = HOOK + DUO                              # début de la voix off (phrases 1 à 5)
 fin_a = PH["cycle"]["fin"] / VITESSE         # fin de la phrase 5 dans la voix accélérée
@@ -94,6 +94,7 @@ ST_DIRECT = [
     ("Alors Rony", RIOULE + 0.09), ("tu sais ce que", RIOULE + 0.77), ("ça veut dire la [rioule] ?", RIOULE + 1.39), ("C'est faire la fête", RIOULE + R1 + 0.08),
     ("la [bambouche] !", RIOULE + R1 + 1.18), ("Exactement, bravo !", RIOULE + R1 + R2 + 0.02),
     (None, MERCI),
+    ("[Arvi] !", HOOK + 2.28), (None, VA),       # Rony, dans le premier plan du duo (6,78 s du rush)
     ("À bientôt !", BIENTOT + 1.15), (None, FIN),
 ]
 CLAIRS = {"couches", "cycle"}   # plans clairs : texte sombre (BONNES-PRATIQUES, section 2)
@@ -171,8 +172,10 @@ HTML = f"""<!doctype html>
       img.photo {{ position: absolute; left: -180px; top: 0; width: 1440px; height: 1920px; inset: auto; }}
 
       /* Accroche : les mots claquent un a un (bibliotheque : hook-mots) */
-      #voile-hook {{ position: absolute; left: 0; right: 0; top: 0; height: 900px; background: linear-gradient(rgba(10,14,30,0.72) 0%, rgba(10,14,30,0.5) 45%, rgba(10,14,30,0) 100%); }}
-      .hook {{ position: absolute; left: 70px; right: 70px; top: 300px; font-size: 104px; font-weight: 700; line-height: 1.22; letter-spacing: -0.01em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.6), 0 4px 24px rgba(0,0,0,0.5); }}
+      #hook-affiche {{ position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 50% 30%; }}
+      /* Bandeau encre au milieu du cadre : l'accroche ne touche aucun texte de l'affiche */
+      #voile-hook {{ position: absolute; left: 0; right: 0; top: 770px; height: 420px; background: rgba(23, 23, 25, 0.93); }}
+      .hook {{ position: absolute; left: 70px; right: 70px; top: 832px; font-size: 104px; font-weight: 700; line-height: 1.22; letter-spacing: -0.01em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.6), 0 4px 24px rgba(0,0,0,0.5); }}
       .hook .w {{ display: inline-block; }}
       .hook .b {{ background: var(--fm-bleu-savoie); padding: 0 16px; text-shadow: none; }}
 
@@ -252,7 +255,7 @@ HTML = f"""<!doctype html>
       .bloc-final .r {{ margin-top: 8px; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }}
 
       /* Sous-titres : groupes de 1 a 3 mots, au-dessus de l'interface des Reels (y < 1440, x < 940) */
-      .st {{ position: absolute; left: 60px; right: 140px; bottom: 490px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; transform-origin: 50% 100%; opacity: 0; }}
+      .st {{ position: absolute; left: 60px; right: 180px; bottom: 490px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; transform-origin: 50% 100%; opacity: 0; }}
       .st {{ font-size: 66px; font-weight: 700; line-height: 1.2; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 3px 18px rgba(0,0,0,0.6); }}
       .st.clair {{ color: var(--fm-ink-900); text-shadow: 0 0 10px rgba(255,255,255,0.9); }}
       .st .m {{ display: inline-block; white-space: nowrap; }}
@@ -268,8 +271,8 @@ HTML = f"""<!doctype html>
       <!-- Bande-son mixee (tools/bande-son.py) : voix off, son direct, musique, ambiance du salon, effets -->
       <audio id="bande-son" src="assets/bande-son.wav" data-start="0" data-duration="{TOTAL}" data-volume="1"></audio>
 
-      <!-- Accroche : l'accueil exposants de Decidia -->
-      {media("v-hook", "assets/hook.mp4", "hook")}
+      <!-- Accroche : l'affiche officielle de Decidia (kit de communication intervenant) -->
+      <img id="hook-affiche" class="clip" src="assets/affiche-decidia.jpg" width="1080" height="1920" alt="Affiche Décidia 2026" data-start="0" data-duration="{HOOK}" />
       <div id="voile-hook"></div>
       <div class="hook" id="hook"><span class="w">L'IA ?</span> <span class="w">L'humain</span> <span class="w">garde</span> <span class="w">la</span> <span class="w b">main</span></div>
 
@@ -390,8 +393,9 @@ HTML = f"""<!doctype html>
 
       // Accroche (0 - {HOOK} s) : les mots claquent un a un, poussee lente sur l'accueil.
       tl.set(["#hook", "#voile-hook"], {{ opacity: 1 }}, 0);
-      tl.from("#hook .w", {{ scale: 0.6, opacity: 0, duration: 0.28, ease: "back.out(2.2)", stagger: 0.12 }}, 0.08);
-      tl.fromTo("#v-hook", {{ scale: 1.0 }}, {{ scale: 1.08, duration: {HOOK}, ease: "none" }}, 0);
+      tl.fromTo("#voile-hook", {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.22, ease: "power3.out", immediateRender: false }}, 0);
+      tl.from("#hook .w", {{ scale: 0.6, opacity: 0, duration: 0.28, ease: "back.out(2.2)", stagger: 0.12 }}, 0.12);
+      tl.fromTo("#hook-affiche", {{ scale: 1.0 }}, {{ scale: 1.08, duration: {HOOK}, ease: "none" }}, 0);
       tl.set(["#hook", "#voile-hook"], {{ opacity: 0 }}, {HOOK});
 
       // Le duo : bandeau nom de gauche a droite.
@@ -473,7 +477,8 @@ HTML = f"""<!doctype html>
       tl.fromTo("#cycle-centre", {{ scale: 0.5, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.2)", immediateRender: false }}, C + 0.1);
       tl.to("#cycle-centre", {{ scale: 0.6, opacity: 0, duration: 0.14, ease: "power2.in" }}, T0 - 0.14);
       // 2. Les cinq etapes : chacune claque au centre avec sa propre entree, puis vole a sa place sur l'anneau.
-      const ENTREES = [{{ scale: 2.2, filter: "blur(14px)" }}, {{ x: -560 }}, {{ x: 560 }}, {{ y: 380, rotation: 8 }}, {{ y: -380, rotation: -8 }}];
+      // Aucune entree par la droite : un mot large y traverserait la colonne des boutons d'Instagram.
+      const ENTREES = [{{ scale: 2.2, filter: "blur(14px)" }}, {{ x: -560 }}, {{ y: 380, rotation: 8 }}, {{ scale: 0.2, rotation: -12 }}, {{ y: -380, rotation: -8 }}];
       gsap.set(".etape", {{ xPercent: -50, yPercent: -50, opacity: 0 }});
       NOEUDS.forEach(([dx, dy], k) => {{
         const t = T0 + k * PAS, el = "#e" + k;
