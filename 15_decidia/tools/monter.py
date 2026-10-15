@@ -41,8 +41,8 @@ def t(f, s):
 RIOULE = round(VA + fin_a + 0.35, 3)
 R1, R2, R3 = DUREES["rioule-1"], DUREES["rioule-2"], DUREES["rioule-3"]
 MERCI = round(RIOULE + R1 + R2 + R3, 3)
-VB = round(MERCI + 0.35, 3)                  # « Grant-marci a Rony é a tô »
-BIENTOT = round(VB + (fin_b - debut_b) + 0.45, 3)
+VB = round(MERCI + 0.15, 3)                  # « Grant-marci », seul, puis directement « à bientôt »
+BIENTOT = round(VB + (fin_b - debut_b) + 0.25, 3)
 FIN = round(BIENTOT + DUREES["bientot"], 3)
 TOTAL = round(FIN + 4.2, 3)
 
@@ -96,7 +96,8 @@ ST_DIRECT = [
     ("Alors Rony", RIOULE + 0.09), ("tu sais ce que", RIOULE + 0.77), ("ça veut dire la [rioule] ?", RIOULE + 1.39), ("C'est faire la fête", RIOULE + R1 + 0.08),
     ("la [bambouche] !", RIOULE + R1 + 1.18), ("Exactement, bravo !", RIOULE + R1 + R2 + 0.02),
     (None, MERCI),
-    ("[Arvi] !", HOOK + 2.28), (None, VA),       # Rony, dans le premier plan du duo (6,78 s du rush)
+    ("[Adieu] à tô !", HOOK + 0.20), (None, HOOK + 1.50),   # Franck salue (« Adiato », 4,52 - 5,24 s du rush)
+    ("[Arvi] !", HOOK + 2.18), (None, VA + 0.03),            # Rony répond (6,80 - 6,97 s du rush)
     ("À bientôt !", BIENTOT + 1.15), (None, FIN),
 ]
 CLAIRS = {"couches", "cycle"}   # plans clairs : texte sombre (BONNES-PRATIQUES, section 2)
@@ -266,7 +267,6 @@ HTML = f"""<!doctype html>
       .merci {{ position: absolute; left: 70px; right: 70px; top: 300px; background: rgba(255,255,255,0.93); padding: 40px 50px 46px; }}
       .merci .l {{ overflow: hidden; }}
       .merci .l > span {{ display: inline-block; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-style: italic; font-size: 150px; line-height: 1.05; color: var(--fm-bleu-savoie); white-space: nowrap; }}
-      .merci p {{ margin-top: 18px; font-size: 52px; font-weight: 700; line-height: 1.2; }}
       .merci .sav {{ margin-top: 10px; font-size: 26px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fm-ink-500); }}
 
       /* Carton final */
@@ -384,7 +384,6 @@ HTML = f"""<!doctype html>
       <div class="plan" id="p-merci">
         <div class="merci">
           <div class="l"><span>Grant-marci</span></div>
-          <p>à Rony et à tous !</p>
           <div class="sav">« Merci », en savoyard</div>
         </div>
       </div>
@@ -579,10 +578,10 @@ HTML = f"""<!doctype html>
       montre("#p-merci", "merci");
       gsap.set("#photo-merci", {{ transformOrigin: "40% 45%" }});
       tl.fromTo("#photo-merci", {{ scale: 1.1 }}, {{ scale: 1.18, duration: P.merci[1] - P.merci[0], ease: "none" }}, P.merci[0]);
-      tl.from(".merci", {{ y: 30, opacity: 0, duration: 0.5, ease: "power3.out" }}, P.merci[0] + 0.05);
-      tl.from(".merci .l > span", {{ yPercent: 110, duration: 0.8, ease: "power4.out" }}, P.merci[0] + 0.2);
-      tl.from(".merci p", {{ y: 14, opacity: 0, duration: 0.45, ease: "power3.out" }}, {tb(34.94)});
-      tl.from(".merci .sav", {{ opacity: 0, duration: 0.4 }}, {tb(34.94)} + 0.4);
+      // Plan court (le « Grant-marci » seul, puis « à bientôt ») : le mot se pose en moins d'une demi-seconde.
+      tl.from(".merci", {{ y: 30, opacity: 0, duration: 0.3, ease: "power3.out" }}, P.merci[0] + 0.02);
+      tl.from(".merci .l > span", {{ yPercent: 110, duration: 0.45, ease: "power4.out" }}, P.merci[0] + 0.1);
+      tl.from(".merci .sav", {{ opacity: 0, duration: 0.25 }}, P.merci[0] + 0.5);
 
       // A bientot : punch-in sur la main levee.
       gsap.set("#v-bientot", {{ transformOrigin: "50% 35%" }});

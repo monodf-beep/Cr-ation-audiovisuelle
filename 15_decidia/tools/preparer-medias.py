@@ -15,7 +15,7 @@ GRADE = "eq=brightness=0.02:contrast=1.04:saturation=1.08,colorbalance=rm=0.02:b
 # nom : (rush, entrée, sortie, miroir, son direct)
 # Les selfies du stand sont filmés en miroir (l'enseigne « Traiteur La Rioule » se lit à l'envers) : on les retourne.
 PLANS = {
-    "duo":         ("VID_20261015_103245.mp4", 4.50, 7.24, False, True),    # Franck salue, Rony répond « Arvi ! » (6,78 - 7,22), coupé avant « Nous sommes… »
+    "duo":         ("VID_20261015_103245.mp4", 4.50, 7.10, False, True),    # Franck salue (« Adiato » 4,52 - 5,24), Rony répond « Arvi ! » (6,80 - 6,97) ; « Nous sommes… » commence à 7,00 : son coupé à 6,97
     "allee":       ("VID_20261015_114135.mp4", 2.00, 5.15, False, False),   # allée du hall A
     "accueil":     ("VID_20261015_114308.mp4", 3.90, 6.90, False, False),   # comptoirs badges et presse aux couleurs Décidia
     "frenchtech":  ("VID_20261015_112126.mp4", 0.00, 2.60, False, False),   # stand de la French Tech
@@ -32,6 +32,8 @@ PLANS = {
 def ff(*args):
     subprocess.run(["ffmpeg", "-v", "error", "-y", *args], check=True)
 
+# Fin du son direct quand elle précède la fin de l'image (le plan garde la fin de l'image, sans la parole qui suit).
+SON_FIN = {"duo": 6.97}
 durees = {}
 for nom, (rush, a, b, miroir, son) in PLANS.items():
     vf = "scale=1080:1920:force_original_aspect_ratio=increase:flags=lanczos,crop=1080:1920,fps=30"
@@ -41,7 +43,9 @@ for nom, (rush, a, b, miroir, son) in PLANS.items():
     ff("-ss", f"{a}", "-t", f"{b - a}", "-i", R + rush, "-vf", vf, "-an", "-c:v", "libx264", "-preset", "medium",
        "-crf", "17", "-g", "10", "-pix_fmt", "yuv420p", "-movflags", "+faststart", f"assets/{nom}.mp4")
     if son:
-        ff("-ss", f"{a}", "-t", f"{b - a}", "-i", R + rush, "-vn", "-ac", "2", "-ar", "48000", f"assets/{nom}.wav")
+        fin = SON_FIN.get(nom, b)
+        ff("-ss", f"{a}", "-t", f"{fin - a}", "-i", R + rush, "-vn", "-ac", "2", "-ar", "48000",
+           *(["-af", f"afade=t=out:st={fin - a - 0.03:.3f}:d=0.03"] if nom in SON_FIN else []), f"assets/{nom}.wav")
     durees[nom] = round(b - a, 3)
     print(f"plan   assets/{nom}.mp4  {b - a:.2f} s" + ("  + son direct" if son else ""))
 

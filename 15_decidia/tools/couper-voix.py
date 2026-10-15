@@ -20,7 +20,7 @@ PHRASES = [
     ("metier",     "audio_2",  0.55,  3.75, "C'est utiliser la capacité, les compétences métiers avant tout,"),
     ("couche",     "audio_2",  3.80, 11.90, "et ajouter l'intelligence artificielle en plus, pour une couche supplémentaire."),
     ("cycle",      "audio_3",  0.55,  6.20, "Nous avons parlé de tout le cycle marketing et communication."),
-    ("merci",      "15h18",   33.85, 39.10, "Grant-marci à Rony et à tous !"),
+    ("merci",      "15h18",   33.85, 34.82, "Grant-marci"),   # « à Rony et à tous » (à partir de 34,88) est retiré
 ]
 RESPIRATION = 0.42   # silence maximal gardé dans une phrase (0,30 en v3 : trop serré, peu naturel)
 ENTRE = 0.65         # pause entre deux phrases
