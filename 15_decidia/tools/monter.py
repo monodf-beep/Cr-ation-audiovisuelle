@@ -136,6 +136,27 @@ def brouille(id_, avant, apres, graine, n=7):
     html = ([span("b-avant", avant)] if avant else []) + [span("b-etat", e) for e in etats] + [span("b-final", apres)]
     return f'<span class="brouille" id="{id_}">{"".join(html)}</span>'
 
+# Doodle boil (cercle et flèche dessinés à la main sur l'enseigne « Traiteur La Rioule ») : trois tracés voisins,
+# légèrement différents, qui alternent à 12 images/s ; le trait « frémit » comme un dessin animé image par image.
+import math
+def doodle(graine):
+    r = random.Random(graine)
+    ph = [r.uniform(0, 6.28) for _ in range(3)]
+    pts = []
+    for k in range(48):
+        a = math.radians(-105 + k * (385 / 47))
+        bruit = 1 + 0.025 * sum(math.sin((j + 2) * a + ph[j]) for j in range(3)) + r.uniform(-0.008, 0.008)
+        pts.append((790 + 205 * bruit * math.cos(a), 480 + 190 * bruit * math.sin(a)))
+    cercle = "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+    j = lambda v: v + r.uniform(-5, 5)
+    fleche = (f"M{j(500):.1f},{j(900):.1f} Q{j(560):.1f},{j(760):.1f} {j(655):.1f},{j(700):.1f} "
+              f"M{j(610):.1f},{j(690):.1f} L{j(658):.1f},{j(700):.1f} L{j(632):.1f},{j(744):.1f}")
+    return cercle, fleche
+DOODLES = [doodle(g) for g in (11, 12, 13)]
+DOODLE_SVG = "".join(
+    f'<g class="d-var" id="d{k}"><path class="d-fond" d="{c}" /><path class="d-trait" d="{c}" />'
+    f'<path class="d-fond" d="{f}" /><path class="d-trait" d="{f}" /></g>' for k, (c, f) in enumerate(DOODLES))
+
 ST_HTML = "\n".join(
     f'      <div class="st{" clair" if clair else ""}" data-a="{a}" data-b="{b}">{html_groupe(txt)}</div>'
     for txt, a, b, clair in groupes())
@@ -161,7 +182,7 @@ plan_json = {
                "rioule-3": [round(r_a + R1 + R2, 3), "assets/rioule-3.wav"],
                "bientot": [BIENTOT, "assets/bientot.wav"]},
     "ancres": {"frenchtech_logo": t(A1, 3.78), "savoyia_logo": t(A1, 4.56), "carte_a": round(P["couches"][0] + 0.15, 3),
-               "ent_1": t(A1, 7.64), "art_1": t(A1, 8.40),
+               "arvi": round(HOOK + 2.30, 3), "ent_1": t(A1, 7.64), "art_1": t(A1, 8.40),
                "carte_b": t(A2, 5.32), "en_plus": t(A2, 7.88), "couche": t(A2, 10.02),
                "cycle": round(P["cycle"][0] + 0.05, 3),
                "marketing": t(A3, 3.30), "communication": t(A3, 4.94), "rioule": round(r_a + 1.71, 3),
@@ -207,9 +228,26 @@ HTML = f"""<!doctype html>
       .bloc-nom .r {{ margin-top: 8px; font-size: 24px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }}
 
       /* Pastille posee sur une image */
-      .pastille {{ position: absolute; left: 60px; right: 200px; top: 280px; background: var(--fm-bg); padding: 22px 28px 26px; }}
-      .pastille .k {{ font-size: 24px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fm-bleu-savoie); }}
-      .pastille .v {{ margin-top: 8px; font-size: 54px; font-weight: 700; line-height: 1.12; }}
+      /* Pastille posee sur une image, en verre depoli (glass type) : l'image reste visible, floutee, derriere le texte */
+      .pastille {{ position: absolute; left: 60px; right: 200px; top: 280px; padding: 22px 28px 26px; color: #fff;
+        background: linear-gradient(135deg, rgba(23,23,25,0.52), rgba(23,23,25,0.34)); backdrop-filter: blur(22px) saturate(1.5);
+        -webkit-backdrop-filter: blur(22px) saturate(1.5); border: 1.5px solid rgba(255,255,255,0.35); border-radius: 22px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 20px 50px rgba(0,0,0,0.25); }}
+      .pastille .k {{ font-size: 24px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #c9d7ff; }}
+      .pastille .v {{ margin-top: 8px; font-size: 54px; font-weight: 700; line-height: 1.12; text-shadow: 0 2px 12px rgba(0,0,0,0.35); }}
+
+      /* Digital zoom sur Rony : coins de mise au point et facteur de zoom */
+      #focus {{ position: absolute; left: 40px; top: 620px; width: 330px; height: 470px; }}
+      #focus i {{ position: absolute; width: 56px; height: 56px; border: 0 solid #fff; filter: drop-shadow(0 0 4px rgba(0,0,0,0.6)); }}
+      #focus i:nth-child(1) {{ left: 0; top: 0; border-left-width: 7px; border-top-width: 7px; }}
+      #focus i:nth-child(2) {{ right: 0; top: 0; border-right-width: 7px; border-top-width: 7px; }}
+      #focus i:nth-child(3) {{ left: 0; bottom: 0; border-left-width: 7px; border-bottom-width: 7px; }}
+      #focus i:nth-child(4) {{ right: 0; bottom: 0; border-right-width: 7px; border-bottom-width: 7px; }}
+      #zoom-x {{ position: absolute; left: 60px; top: 430px; background: var(--fm-bleu-savoie); color: #fff; font-size: 40px; font-weight: 700; padding: 6px 18px 10px; border-radius: 8px; }}
+
+      /* Phone mockup : le « a bientot » commence dans un telephone, sur bleu Savoie */
+      #p-tel {{ background: radial-gradient(circle at 50% 40%, #1a4fd6 0%, #0a36af 55%, #072478 100%); }}
+      #tel {{ position: absolute; inset: 0; overflow: hidden; }}   /* le telephone : coins arrondis et bord sombre, sur le conteneur */
 
       /* Logos des partenaires */
       .carte-logo {{ position: absolute; left: 270px; top: 560px; width: 540px; background: #fff; padding: 26px 30px 18px; box-shadow: 0 30px 70px rgba(0,0,0,0.35); }}
@@ -235,7 +273,9 @@ HTML = f"""<!doctype html>
       .lieu-fin .l > span {{ display: inline-block; }}
       .lieu-fin em {{ font-style: italic; }}
       #bague {{ position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }}
-      #bague circle {{ fill: none; stroke-linecap: round; }}
+      #bague path {{ fill: none; stroke-linecap: round; stroke-linejoin: round; }}
+      #bague .d-fond {{ stroke: #fff; stroke-width: 17; }}
+      #bague .d-trait {{ stroke: var(--fm-bleu-savoie); stroke-width: 9; }}
 
       /* La couche en plus : les competences metiers d'abord, l'IA posee dessus */
       #p-couches {{ background: var(--fm-bg-soft); perspective: 1800px; }}
@@ -311,6 +351,8 @@ HTML = f"""<!doctype html>
 
       <!-- Franck et Rony saluent (son direct) -->
       {media("v-duo", "assets/duo.mp4", "duo")}
+      <div id="focus"><i></i><i></i><i></i><i></i></div>
+      <div id="zoom-x">×1,5</div>
       <div class="bloc-nom" id="nom"><div class="n">Franck Monod &amp; Rony Dray</div><div class="r">Atelier Décidia · 15 octobre 2026</div></div>
 
       <!-- Phrase 1 : le salon, la French Tech, Savoy IA -->
@@ -377,7 +419,7 @@ HTML = f"""<!doctype html>
       <video id="v-rioule-2" class="plein" src="assets/rioule-2.mp4" muted playsinline data-start="{round(r_a + R1, 3)}" data-duration="{R2}" data-media-start="0"></video>
       <video id="v-rioule-3" class="plein" src="assets/rioule-3.mp4" muted playsinline data-start="{round(r_a + R1 + R2, 3)}" data-duration="{R3}" data-media-start="0"></video>
       <div class="lieu-fin" id="titre-stand"><span class="l"><span>Au détour</span></span><span class="l"><span>d'un <em>stand</em>…</span></span></div>
-      <svg id="bague" viewBox="0 0 1080 1920"><circle class="b-fond" cx="790" cy="490" r="200" stroke="#ffffff" stroke-width="12" pathLength="1" /><circle class="b-trait" cx="790" cy="490" r="200" stroke="#0a36af" stroke-width="6" pathLength="1" /></svg>
+      <svg id="bague" viewBox="0 0 1080 1920">{DOODLE_SVG}</svg>
 
       <!-- Grant-marci : la scene de l'atelier -->
       {img("photo-merci", "assets/photo-7.jpg", "merci")}
@@ -389,7 +431,8 @@ HTML = f"""<!doctype html>
       </div>
 
       <!-- A bientot (son direct) -->
-      {media("v-bientot", "assets/bientot.mp4", "bientot")}
+      <div class="plan" id="p-tel"></div>
+      <div id="tel">{media("v-bientot", "assets/bientot.mp4", "bientot")}</div>
 
       <!-- Carton final -->
       <div class="plan" id="p-final">
@@ -431,7 +474,7 @@ HTML = f"""<!doctype html>
       }};
       gsap.set(["#pastille-club", "#pastille-cabine", "#mot-1", "#mot-2"], {{ opacity: 0 }});
       gsap.set(["#hook", "#voile-hook", "#nom", "#logo-ft", "#p-savoyia", "#pastille-atelier", "#p-couches", "#p-cycle", "#titre-stand",
-                "#bague", "#p-merci", "#p-final"], {{ opacity: 0 }});
+                "#bague", "#p-merci", "#p-final", "#p-tel"], {{ opacity: 0 }});
 
       // Accroche (0 - {HOOK} s) : les mots claquent un a un, poussee lente sur l'accueil.
       tl.set(["#hook", "#voile-hook"], {{ opacity: 1 }}, 0);
@@ -442,7 +485,17 @@ HTML = f"""<!doctype html>
 
       // Le duo : bandeau nom de gauche a droite.
       gsap.set("#v-duo", {{ transformOrigin: "50% 30%" }});
-      tl.fromTo("#v-duo", {{ scale: 1.0 }}, {{ scale: 1.05, duration: {DUO}, ease: "none" }}, P.duo[0]);
+      const ZOOM = A.arvi - 0.16;   // digital zoom : la mise au point se pose sur Rony, puis deux crans secs
+      tl.fromTo("#v-duo", {{ scale: 1.0 }}, {{ scale: 1.04, duration: ZOOM - P.duo[0], ease: "none" }}, P.duo[0]);
+      gsap.set(["#focus", "#zoom-x"], {{ opacity: 0 }});
+      tl.set("#focus", {{ opacity: 1 }}, ZOOM - 0.2);
+      tl.fromTo("#focus", {{ scale: 1.5 }}, {{ scale: 1, duration: 0.16, ease: "power3.out", immediateRender: false }}, ZOOM - 0.2);
+      tl.set("#focus", {{ opacity: 0 }}, ZOOM);
+      tl.set("#v-duo", {{ transformOrigin: "190px 880px", scale: 1.5, x: 90, y: -40 }}, ZOOM);   // bord gauche du plan tenu dans le cadre
+      tl.set("#v-duo", {{ scale: 2.0, x: 185, y: -60 }}, ZOOM + 0.14);
+      tl.set("#zoom-x", {{ opacity: 1 }}, ZOOM);
+      tl.set("#zoom-x", {{ textContent: "×2" }}, ZOOM + 0.14);
+      tl.set("#zoom-x", {{ opacity: 0 }}, P.duo[1]);
       tl.set("#nom", {{ opacity: 1 }}, P.duo[0] + 0.25);
       tl.fromTo("#nom", {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut", immediateRender: false }}, P.duo[0] + 0.25);
       tl.set("#nom", {{ opacity: 0 }}, P.duo[1]);
@@ -468,10 +521,15 @@ HTML = f"""<!doctype html>
 
       // Programme des conferences.
       gsap.set("#v-affiche", {{ transformOrigin: "60% 30%" }});
-      tl.fromTo("#v-affiche", {{ scale: 1.12 }}, {{ scale: 1.2, duration: P.affiche[1] - P.affiche[0], ease: "none" }}, P.affiche[0]);
+      tl.fromTo("#v-affiche", {{ scale: 1.12 }}, {{ scale: 1.2, duration: P.affiche[1] - P.affiche[0] - 0.28, ease: "none" }}, P.affiche[0]);
+      // Zoom-through cut : on plonge dans « Jeudi 15 octobre » du programme... et l'on ressort dans la salle.
+      tl.to("#v-affiche", {{ transformOrigin: "790px 820px", scale: 5, filter: "blur(8px)", duration: 0.28, ease: "power3.in" }}, P.affiche[1] - 0.28);
 
       // La salle : poussee lente, titre de l'atelier.
-      tl.fromTo("#photo-salle", {{ scale: 1.0, x: 0 }}, {{ scale: 1.1, x: -40, duration: P.salle[1] - P.salle[0], ease: "none" }}, P.salle[0]);
+      // Pull-back reveal : la salle s'ouvre depuis la scene (Franck au micro) jusqu'au public.
+      gsap.set("#photo-salle", {{ transformOrigin: "630px 680px" }});
+      tl.fromTo("#photo-salle", {{ scale: 3.2, filter: "blur(6px)" }}, {{ scale: 1.04, filter: "blur(0px)", duration: 0.5, ease: "power3.out", immediateRender: false }}, P.salle[0]);
+      tl.fromTo("#photo-salle", {{ scale: 1.04 }}, {{ scale: 1.1, duration: P.salle[1] - P.salle[0] - 0.5, ease: "none", immediateRender: false }}, P.salle[0] + 0.5);
       tl.set("#pastille-atelier", {{ opacity: 1 }}, P.salle[0] + 0.2);
       tl.fromTo("#pastille-atelier", {{ clipPath: "inset(0 100% 0 0)" }}, {{ clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.inOut", immediateRender: false }}, P.salle[0] + 0.2);
       tl.set("#pastille-atelier", {{ opacity: 0 }}, P.salle[1]);
@@ -565,10 +623,18 @@ HTML = f"""<!doctype html>
       tl.set("#titre-stand", {{ opacity: 1 }}, P.rioule[0] + 0.05);
       tl.from("#titre-stand .l > span", {{ yPercent: 110, duration: 0.7, ease: "power4.out", stagger: 0.12 }}, P.rioule[0] + 0.05);
       tl.to("#titre-stand", {{ opacity: 0, duration: 0.3 }}, A.rioule - 0.35);
-      gsap.set(["#bague .b-fond", "#bague .b-trait"], {{ strokeDasharray: 1, strokeDashoffset: 1 }});
+      // Doodle boil : le cercle et la fleche se dessinent, puis le trait fremit (trois traces alternes, 12 im/s).
+      document.querySelectorAll("#bague path").forEach((p) => {{ p.setAttribute("pathLength", "1"); }});
+      gsap.set(".d-var", {{ opacity: 0 }});
+      gsap.set("#d0 path", {{ strokeDasharray: 1, strokeDashoffset: 1 }});
       tl.set("#bague", {{ opacity: 1 }}, A.rioule - 0.1);
-      tl.to(["#bague .b-fond", "#bague .b-trait"], {{ strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }}, A.rioule - 0.1);
-      tl.set("#bague", {{ opacity: 0 }}, P.rioule[0] + {R1});
+      tl.set("#d0", {{ opacity: 1 }}, A.rioule - 0.1);
+      tl.to("#d0 path", {{ strokeDashoffset: 0, duration: 0.55, ease: "power2.inOut", stagger: 0.04 }}, A.rioule - 0.1);
+      const BOIL0 = A.rioule + 0.62, BOIL1 = P.rioule[0] + {R1};
+      for (let t = BOIL0, k = 1; t < BOIL1; t += 1 / 12, k++) {{
+        [0, 1, 2].forEach((j) => tl.set("#d" + j, {{ opacity: j === k % 3 ? 1 : 0 }}, t));
+      }}
+      tl.set("#bague", {{ opacity: 0 }}, BOIL1);
       gsap.set(["#v-rioule-1", "#v-rioule-2", "#v-rioule-3"], {{ transformOrigin: "50% 40%" }});
       tl.fromTo("#v-rioule-1", {{ scale: 1.0 }}, {{ scale: 1.05, duration: {R1}, ease: "none" }}, P.rioule[0]);
       tl.fromTo("#v-rioule-2", {{ scale: 1.16 }}, {{ scale: 1.2, duration: {R2}, ease: "none" }}, P.rioule[0] + {R1});
@@ -584,8 +650,14 @@ HTML = f"""<!doctype html>
       tl.from(".merci .sav", {{ opacity: 0, duration: 0.25 }}, P.merci[0] + 0.5);
 
       // A bientot : punch-in sur la main levee.
-      gsap.set("#v-bientot", {{ transformOrigin: "50% 35%" }});
-      tl.fromTo("#v-bientot", {{ scale: 1.0 }}, {{ scale: 1.03, duration: 1.1, ease: "none" }}, P.bientot[0]);
+      // Phone mockup : le selfie arrive dans un telephone, qui s'agrandit jusqu'au plein ecran.
+      montre("#p-tel", "bientot");
+      gsap.set("#v-bientot", {{ transformOrigin: "50% 50%" }});
+      gsap.set("#tel", {{ transformOrigin: "50% 50%" }});
+      tl.fromTo("#tel", {{ scale: 0.56, y: 90, rotation: -4, borderRadius: 110, boxShadow: "0 0 0 40px #111317" }},
+        {{ scale: 0.6, y: 60, rotation: -2, borderRadius: 110, boxShadow: "0 0 0 40px #111317", duration: 0.5, ease: "power2.out", immediateRender: false }}, P.bientot[0]);
+      tl.to("#tel", {{ scale: 1.0, y: 0, rotation: 0, borderRadius: 0, boxShadow: "0 0 0 0px #111317", duration: 0.42, ease: "power3.inOut" }}, P.bientot[0] + 0.5);
+      tl.set("#v-bientot", {{ transformOrigin: "50% 35%" }}, P.bientot[0] + 0.95);
       tl.fromTo("#v-bientot", {{ scale: 1.15 }}, {{ scale: 1.18, duration: P.bientot[1] - P.bientot[0] - 1.1, ease: "none", immediateRender: false }}, P.bientot[0] + 1.1);
 
       // Carton final.

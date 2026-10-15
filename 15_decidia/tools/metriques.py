@@ -1,10 +1,10 @@
 """Métriques du montage, avec alertes. Adapté de 04_montage/metriques.py (branche HyperFrames), mêmes seuils
 (04_montage/BONNES-PRATIQUES.md, section 8). La voix off est en savoyard : pas de débit mesuré mot à mot ;
 sous-titres, rythme visuel, volume, écart voix / musique et zones masquées le sont.
-Écrit metriques.md. Usage (dans 15_decidia/) : python3 tools/metriques.py [renders/decidia-v8.mp4]"""
+Écrit metriques.md. Usage (dans 15_decidia/) : python3 tools/metriques.py [renders/decidia-v9.mp4]"""
 import json, os, re, subprocess, sys
 
-rendu = sys.argv[1] if len(sys.argv) > 1 else "renders/decidia-v8.mp4"
+rendu = sys.argv[1] if len(sys.argv) > 1 else "renders/decidia-v9.mp4"
 SEUILS = {
     "st_mots": (1, 4), "st_caracteres": (None, 24), "st_duree": (0.4, 3.0), "st_cps": (None, 25),
     "st_cles": (0.15, 0.40), "plan_sans_coupe": (None, 4.0), "duree_video": (15, 90),

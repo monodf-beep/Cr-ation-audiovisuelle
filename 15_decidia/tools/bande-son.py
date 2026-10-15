@@ -82,8 +82,12 @@ def effet(nom, t, crete=-16.0):
     x = charger(f"sons/{nom}")
     poser(x * 10 ** ((crete - 20 * np.log10(np.abs(x).max() + 1e-9)) / 20), t)
 effet("whoosh-doux-1.wav", P["duo"][0] - 0.22, -15)           # accroche -> le duo
+effet("clic-interface-1.wav", A["arvi"] - 0.16, -16)          # digital zoom sur Rony, premier cran
+effet("clic-interface-1.wav", A["arvi"] - 0.02, -16)          # deuxième cran
 effet("pop-doux-3.wav", A["frenchtech_logo"] - 0.03, -14)     # le logo French Tech saute
 effet("pop-doux-3.wav", A["savoyia_logo"] - 0.03, -14)        # la sphère de Savoy IA
+effet("whoosh-doux-3.wav", P["affiche"][1] - 0.32, -15)       # zoom-through : on plonge dans le programme
+effet("whoosh-doux-1.wav", P["bientot"][0] + 0.45, -17)       # le téléphone s'agrandit
 for plan in ("salle", "scene", "merci"):           # une photo apparaît
     effet("declencheur-photo-1.wav", P[plan][0] - 0.02, -13)
 effet("pop-doux-3.wav", A["ent_1"] - 0.03, -14)               # « Enteligença » claque

@@ -33,6 +33,17 @@ ramène les silences à 0,42 s (0,65 s entre deux phrases), vitesse normale (`mo
 (plans, sous-titres, motion design) sont des mots-ancres de ces prises. Traduction : celle dictée par Franck ; la
 sixième phrase (« Grant-marci », seul : « a Rony é a tô » est retiré du montage) a été reconnue à la transcription et reste à confirmer.
 
+## Effets (v9, d'après la liste « 17 video effects » que Franck a partagée)
+
+| Effet | Où |
+|---|---|
+| digital zoom | « Arvi ! » : coins de mise au point sur Rony, puis deux crans secs (×1,5, ×2) |
+| zoom-through cut | fin du programme des conférences : on plonge dans « Jeudi 15 octobre » |
+| pull-back reveal | la salle s'ouvre depuis la scène jusqu'au public |
+| glass type | pastilles atelier, club de handball, téléphérique en verre dépoli |
+| doodle boil | cercle et flèche dessinés à la main sur l'enseigne La Rioule, trait qui frémit à 12 im/s |
+| phone mockup | « à bientôt » : le selfie arrive dans un téléphone sur bleu Savoie, qui s'agrandit en plein écran |
+
 ## Chaîne
 
 ```bash
@@ -46,8 +57,8 @@ python3 tools/preparer-medias.py  # plans 1080 × 1920, son direct, photos, logo
 python3 tools/monter.py           # index.html + plan.json (tous les temps viennent de la voix)
 python3 tools/bande-son.py        # mixage -> assets/bande-son.wav (-15 LUFS, musique 16 dB sous la voix)
 npx hyperframes@0.8.75 check
-npx hyperframes@0.8.75 render -o renders/decidia-v8.mp4
-python3 tools/metriques.py renders/decidia-v8.mp4   # seuils de BONNES-PRATIQUES, rapport metriques.md
+npx hyperframes@0.8.75 render -o renders/decidia-v9.mp4
+python3 tools/metriques.py renders/decidia-v9.mp4   # seuils de BONNES-PRATIQUES, rapport metriques.md
 ```
 
 `index.html` est écrit par `tools/monter.py` : on modifie le script, pas le fichier.

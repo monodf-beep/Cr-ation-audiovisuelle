@@ -12,7 +12,7 @@ Seuils et raisons : `04_montage/BONNES-PRATIQUES.md`, section 8 (branche HyperFr
 | st_cles | 0.29  | 0.15 - 0.4 | ok | 8 groupes sur 28 |
 | duree_video | 46.7 s | 15 - 90 | ok |  |
 | plan_sans_coupe | 4.3 s | voulu | ok | de 42.4 à 46.7 s : carton final à lire |
-| coupes détectées | 37 | | | une toutes les 1.3 s en moyenne |
+| coupes détectées | 39 | | | une toutes les 1.2 s en moyenne |
 | lufs | -15.1 LUFS | -16.5 - -13.5 | ok |  |
 | crete_dbtp | -1.4 dBTP | ≤ -1.0 | ok |  |
 | musique_sous_voix | 16.7 dB | 12 - 22 | ok |  |
