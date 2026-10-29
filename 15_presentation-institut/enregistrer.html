@@ -48,6 +48,8 @@ textarea{width:100%;min-height:42vh;resize:vertical;background:var(--panel);bord
 @supports not (aspect-ratio:1){#frame{width:56.25vh}}
 video#cam{width:100%;height:100%;object-fit:cover;display:block}
 video#cam.mirror{transform:scaleX(-1)}
+video#cam.corrige{filter:brightness(1.28) contrast(1.06) saturate(1.1) sepia(.12)}
+#res{position:absolute;top:max(10px,env(safe-area-inset-top));right:10px;z-index:3;font-size:12px;color:#fff;background:rgba(0,0,0,.5);padding:2px 8px;border-radius:999px;font-variant-numeric:tabular-nums}
 #guides{position:absolute;inset:0;pointer-events:none;display:none}
 #guides.on{display:block}
 #guides i{position:absolute;background:rgba(255,255,255,.25)}
@@ -85,7 +87,7 @@ video#cam.mirror{transform:scaleX(-1)}
 <section id="setup">
   <div class="in">
     <h1>Présentation de l'Institut</h1>
-    <p class="hint">Ton texte est déjà chargé. Règle la vitesse, puis lance. Le texte défile en haut de l'écran, au plus près de l'objectif, et la vidéo s'enregistre en 9:16.</p>
+    <p class="hint">Ton texte est déjà chargé. Règle la vitesse, puis lance. Le texte défile en haut de l'écran, au plus près de l'objectif. La caméra filme en pleine résolution ; sur le serveur, chaque prise est ensuite éclaircie et recadrée en 1080 × 1920 (dossier <b>voix-off/traitees</b>).</p>
     <textarea id="script" placeholder="Colle ici le texte à lire…"></textarea>
     <button type="button" id="reset" style="align-self:flex-start;background:none;border:0;color:var(--muted);text-decoration:underline;padding:0">Remettre le texte d'origine</button>
     <div class="row">
@@ -124,6 +126,7 @@ video#cam.mirror{transform:scaleX(-1)}
     <div id="guides"><i style="left:33.3%;top:0;bottom:0;width:1px"></i><i style="left:66.6%;top:0;bottom:0;width:1px"></i><i style="top:33.3%;left:0;right:0;height:1px"></i><i style="top:66.6%;left:0;right:0;height:1px"></i></div>
     <div id="prompt"><div class="txt" id="txt"></div><div id="mark"></div></div>
     <div id="timer">00:00</div>
+    <div id="res" title="Résolution réelle de la caméra"></div>
     <div id="count"></div>
   </div>
   <div id="hud">
@@ -183,9 +186,15 @@ video#cam.mirror{transform:scaleX(-1)}
     }
     try {
       stream && stream.getTracks().forEach(t => t.stop());
+      const portrait = matchMedia('(pointer:coarse)').matches && innerHeight > innerWidth;
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: S.facing, width: { ideal: 1080 }, height: { ideal: 1920 }, aspectRatio: { ideal: 9/16 }, frameRate: { ideal: 30 } },
-        audio: { echoCancellation: true, noiseSuppression: true }
+        // Pleine resolution de la camera, sans recadrage : sur ordinateur l'image reste en paysage et le VPS
+        // la recadre en 1080 x 1920 (ops/vps/traiter-prises.sh) ; sur telephone elle arrive deja en portrait.
+        video: portrait
+          ? { facingMode: S.facing, width: { ideal: 2160 }, height: { ideal: 3840 }, frameRate: { ideal: 30 } }
+          : { facingMode: S.facing, width: { ideal: 3840 }, height: { ideal: 2160 }, frameRate: { ideal: 30 } },
+        // Son brut du micro : sans annulation d'echo, reduction de bruit ni gain automatique du navigateur.
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, sampleRate: 48000, channelCount: { ideal: 2 } }
       });
     } catch(err){
       showErr(err && err.name === 'NotAllowedError'
@@ -193,7 +202,9 @@ video#cam.mirror{transform:scaleX(-1)}
         : "Impossible d'ouvrir la caméra (" + (err && err.name || 'erreur') + "). Essaie d'ouvrir la page directement dans le navigateur du téléphone.");
       return;
     }
-    const v = $('cam'); v.srcObject = stream; v.classList.toggle('mirror', S.facing === 'user');
+    const v = $('cam'); v.srcObject = stream;
+    const reg = stream.getVideoTracks()[0].getSettings();
+    $('res').textContent = (reg.width || '?') + ' × ' + (reg.height || '?'); v.classList.toggle('mirror', S.facing === 'user'); v.classList.add('corrige');
     $('guides').classList.toggle('on', S.guides);
     $('txt').textContent = $('script').value.trim() || "Colle ton texte dans l'écran précédent.";
     $('txt').style.fontSize = S.size + 'px';
@@ -230,7 +241,7 @@ video#cam.mirror{transform:scaleX(-1)}
   $('fast').onclick = () => setSpeed(1);
 
   function pickType(){
-    const types = ['video/mp4;codecs=avc1,mp4a','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+    const types = ['video/webm;codecs=vp9,opus','video/mp4;codecs=avc1,mp4a','video/mp4','video/webm;codecs=vp8,opus','video/webm'];
     if(!window.MediaRecorder) return null;
     return types.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
   }
@@ -250,7 +261,7 @@ video#cam.mirror{transform:scaleX(-1)}
     offset = 0; render();
     await countdown(S.cd);
     chunks = [];
-    try { recorder = new MediaRecorder(stream, type ? { mimeType: type, videoBitsPerSecond: 8000000 } : undefined); }
+    try { recorder = new MediaRecorder(stream, type ? { mimeType: type, videoBitsPerSecond: 16000000, audioBitsPerSecond: 256000 } : undefined); }
     catch(e){ recorder = new MediaRecorder(stream); }
     recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
     recorder.onstop = finish;
