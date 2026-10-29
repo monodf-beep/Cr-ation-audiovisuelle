@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Présentation de l'Institut · prompteur</title>
+<!--
+  Prompteur portrait pour la presentation face camera de l'Institut de la Langue Savoyarde.
+  Le texte defile en haut de l'ecran, au plus pres de l'objectif ; la camera filme en 9:16.
+  Sur le VPS (ops/vps/) : servie sous /enregistrement/15_presentation-institut/enregistrer.html,
+  chaque prise part sur le serveur (voix-off/) puis dans Google Drive.
+-->
+<style>
+:root{
+  --bg:#0d0e10; --panel:#1a1c20; --ink:#f3f1ec; --muted:#a0a4ab; --line:#2e3137;
+  --rec:#e5383b; --accent:#f2c14e; --text-bg:rgba(0,0,0,.55);
+}
+:root[data-theme="light"]{ --bg:#f4f2ed; --panel:#ffffff; --ink:#16181b; --muted:#5d6168; --line:#d9d5cc; }
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --bg:#0d0e10; --panel:#1a1c20; --ink:#f3f1ec; } }
+:root[data-theme="dark"]{ --bg:#0d0e10; --panel:#1a1c20; --ink:#f3f1ec; }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;overflow:hidden}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Réglages */
+#setup{position:fixed;inset:0;overflow-y:auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))}
+#setup .in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:22px;margin:0}
+.hint{color:var(--muted);font-size:14px;margin:0}
+textarea{width:100%;min-height:42vh;resize:vertical;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:17px;line-height:1.5}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.row label{flex:1;min-width:140px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.row input[type=range]{width:100%;accent-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;padding:10px;background:var(--panel);border:0}
+.seg button[aria-pressed=true]{background:var(--accent);color:#16181b;font-weight:600}
+.big{width:100%;padding:16px;border:0;border-radius:12px;background:var(--rec);color:#fff;font-size:18px;font-weight:700}
+.err{background:#3a1d1e;color:#ffb4b4;border-radius:10px;padding:12px;font-size:14px}
+:root[data-theme="light"] .err{background:#fde3e3;color:#7a1518}
+
+/* Studio */
+#studio{position:fixed;inset:0;background:#000;display:none}
+#studio.on{display:block}
+#frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);aspect-ratio:9/16;height:100%;max-width:100%;overflow:hidden;background:#000}
+@supports not (aspect-ratio:1){#frame{width:56.25vh}}
+video#cam{width:100%;height:100%;object-fit:cover;display:block}
+video#cam.mirror{transform:scaleX(-1)}
+#guides{position:absolute;inset:0;pointer-events:none;display:none}
+#guides.on{display:block}
+#guides i{position:absolute;background:rgba(255,255,255,.25)}
+#prompt{position:absolute;left:0;right:0;top:0;overflow:hidden;background:var(--text-bg);
+  -webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+#prompt .txt{padding:0 18px;color:#fff;font-weight:600;white-space:pre-wrap;will-change:transform;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#prompt .txt.mirror{transform-origin:center}
+#mark{position:absolute;left:0;right:0;height:0;border-top:2px dashed rgba(242,193,78,.7);pointer-events:none}
+#hud{position:absolute;left:0;right:0;bottom:0;padding:12px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+#hud button{background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:999px;padding:10px 14px;font-size:15px;backdrop-filter:blur(6px)}
+#recbtn{width:72px;height:72px;border-radius:50%!important;padding:0!important;border:4px solid #fff!important;background:transparent!important;display:grid;place-items:center}
+#recbtn span{display:block;width:54px;height:54px;border-radius:50%;background:var(--rec);transition:all .2s}
+#recbtn.on span{width:28px;height:28px;border-radius:6px}
+#timer{position:absolute;bottom:110px;left:50%;transform:translateX(-50%);color:#fff;font-variant-numeric:tabular-nums;font-weight:700;background:rgba(0,0,0,.5);padding:4px 10px;border-radius:999px;display:none;z-index:3}
+#timer.on{display:block}
+#timer::before{content:"●  ";color:var(--rec)}
+#count{position:absolute;inset:0;display:none;place-items:center;font-size:140px;font-weight:800;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.6);z-index:4}
+#count.on{display:grid}
+#speedctl{display:flex;align-items:center;gap:6px;color:#fff}
+#speedctl b{min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+
+/* Résultat */
+#result{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;gap:12px;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));overflow-y:auto}
+#result.on{display:flex}
+#result video{max-height:62vh;max-width:100%;aspect-ratio:9/16;background:#000;border-radius:12px}
+#result .acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;max-width:420px}
+#result .acts>*{flex:1;min-width:140px;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:center;text-decoration:none;color:var(--ink);font-weight:600}
+#result .acts .primary{background:var(--accent);color:#16181b;border:0}
+.takes{width:100%;max-width:420px;font-size:14px;color:var(--muted)}
+.takes a{color:var(--ink)}
+</style>
+
+</head>
+<body>
+<section id="setup">
+  <div class="in">
+    <h1>Présentation de l'Institut</h1>
+    <p class="hint">Ton texte est déjà chargé. Règle la vitesse, puis lance. Le texte défile en haut de l'écran, au plus près de l'objectif, et la vidéo s'enregistre en 9:16.</p>
+    <textarea id="script" placeholder="Colle ici le texte à lire…"></textarea>
+    <button type="button" id="reset" style="align-self:flex-start;background:none;border:0;color:var(--muted);text-decoration:underline;padding:0">Remettre le texte d'origine</button>
+    <div class="row">
+      <label>Taille du texte <input type="range" id="size" min="22" max="64" value="36"></label>
+      <label>Vitesse <input type="range" id="speed" min="1" max="20" value="6"></label>
+    </div>
+    <div class="row">
+      <label>Hauteur de la zone texte <input type="range" id="height" min="20" max="60" value="34"></label>
+      <label>Compte à rebours
+        <div class="seg" id="cd">
+          <button type="button" data-v="0">0 s</button><button type="button" data-v="3" aria-pressed="true">3 s</button><button type="button" data-v="5">5 s</button>
+        </div>
+      </label>
+    </div>
+    <div class="row">
+      <label>Caméra
+        <div class="seg" id="facing">
+          <button type="button" data-v="user" aria-pressed="true">Selfie</button><button type="button" data-v="environment">Arrière</button>
+        </div>
+      </label>
+      <label>Repères de cadrage
+        <div class="seg" id="guidesSeg">
+          <button type="button" data-v="1">Oui</button><button type="button" data-v="0" aria-pressed="true">Non</button>
+        </div>
+      </label>
+    </div>
+    <div id="err" class="err" hidden></div>
+    <button class="big" id="go">Ouvrir la caméra</button>
+    <p class="hint">Pendant la prise : touche le texte pour mettre le défilement en pause, glisse dessus pour revenir en arrière. Le défilement démarre avec l'enregistrement.</p>
+  </div>
+</section>
+
+<section id="studio" aria-label="Enregistrement">
+  <div id="frame">
+    <video id="cam" playsinline autoplay muted></video>
+    <div id="guides"><i style="left:33.3%;top:0;bottom:0;width:1px"></i><i style="left:66.6%;top:0;bottom:0;width:1px"></i><i style="top:33.3%;left:0;right:0;height:1px"></i><i style="top:66.6%;left:0;right:0;height:1px"></i></div>
+    <div id="prompt"><div class="txt" id="txt"></div><div id="mark"></div></div>
+    <div id="timer">00:00</div>
+    <div id="count"></div>
+  </div>
+  <div id="hud">
+    <button id="back" aria-label="Revenir au texte">Texte</button>
+    <button id="recbtn" aria-label="Enregistrer"><span></span></button>
+    <div id="speedctl"><button id="slow" aria-label="Moins vite">−</button><b id="spv">6</b><button id="fast" aria-label="Plus vite">+</button></div>
+  </div>
+</section>
+
+<section id="result">
+  <video id="out" controls playsinline></video>
+  <div class="acts">
+    <a id="dl" class="primary" href="#">Enregistrer la vidéo</a>
+    <button id="again">Refaire une prise</button>
+  </div>
+  <div class="acts"><button id="edit">Modifier le texte</button></div>
+  <div class="takes" id="takes"></div>
+</section>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const store = {
+    get(k){ try { return localStorage.getItem('prompteur15.'+k); } catch(e){ return null; } },
+    set(k,v){ try { localStorage.setItem('prompteur15.'+k, v); } catch(e){} }
+  };
+  const S = {
+    size: +(store.get('size')||36), speed: +(store.get('speed')||6), height: +(store.get('height')||34),
+    cd: +(store.get('cd')||3), facing: store.get('facing')||'user', guides: store.get('guides')==='1'
+  };
+  const TEXTE = "Bonjorn, je su Franck *Monod, je su lo secrètèro de l'*Enstitut de la Lengoua Savoyârda. Je su devant tot un entreprenor, je travalyo u dèvelopament culturèlo et èconomico entre la Savôya et lo Piemont.\n\nLa gens mè dét prod sovent, y est drôlo de travalyér asse ben sur l'*inteligence artificièla et la lengoua savoyârda, por mè o est naturèlo !\n\nAvouéc l'*Enstitut de la *lengoua *savoyarda, nos pèrmetens u més grant chifro de s'apopriar la lengoua. Travalyens spècialament avouéc de los clubes profèssionèls de calço, de los entreprêses et mèdiâ. Il y at adés més de demandes de pèrsones entre sèze et quaranta cinq ans.\n\nCeta lengoua que vos entendéd est la lengoua savoyârda de la variètât de la Savôya mas el est asse parlâye dens la Val d’Outa et les valâs piemontêses, a Geneva diens lo Vôd, Valês, et u delé adés.\n\nJe remârço William por l'envitacion et a ben-tout !";
+  $('script').value = store.get('script') || TEXTE;
+  $('reset').onclick = () => { $('script').value = TEXTE; store.set('script', TEXTE); };
+  $('size').value = S.size; $('speed').value = S.speed; $('height').value = S.height;
+
+  function seg(id, key, cast){
+    const el = $(id);
+    const sync = () => el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(cast(b.dataset.v) === S[key])));
+    el.addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; S[key] = cast(b.dataset.v); store.set(key, b.dataset.v); sync(); });
+    sync();
+  }
+  seg('cd','cd',Number); seg('facing','facing',String); seg('guidesSeg','guides',v => v==='1');
+
+  $('script').addEventListener('input', e => store.set('script', e.target.value));
+  ['size','speed','height'].forEach(k => $(k).addEventListener('input', e => { S[k] = +e.target.value; store.set(k, S[k]); }));
+
+  let stream = null, recorder = null, chunks = [], recording = false, startT = 0, tick = null;
+  let offset = 0, paused = false, last = 0, raf = 0, takeN = 0, lastUrl = null;
+
+  function showErr(msg){ const e = $('err'); e.textContent = msg; e.hidden = false; }
+
+  async function openCam(){
+    $('err').hidden = true;
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      showErr("Ce navigateur ne donne pas accès à la caméra ici. Ouvre la page dans Safari ou Chrome.");
+      return;
+    }
+    try {
+      stream && stream.getTracks().forEach(t => t.stop());
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: S.facing, width: { ideal: 1080 }, height: { ideal: 1920 }, aspectRatio: { ideal: 9/16 }, frameRate: { ideal: 30 } },
+        audio: { echoCancellation: true, noiseSuppression: true }
+      });
+    } catch(err){
+      showErr(err && err.name === 'NotAllowedError'
+        ? "L'accès à la caméra ou au micro a été refusé. Autorise-les dans les réglages du navigateur, ou ouvre la page directement dans Safari ou Chrome."
+        : "Impossible d'ouvrir la caméra (" + (err && err.name || 'erreur') + "). Essaie d'ouvrir la page directement dans le navigateur du téléphone.");
+      return;
+    }
+    const v = $('cam'); v.srcObject = stream; v.classList.toggle('mirror', S.facing === 'user');
+    $('guides').classList.toggle('on', S.guides);
+    $('txt').textContent = $('script').value.trim() || "Colle ton texte dans l'écran précédent.";
+    $('txt').style.fontSize = S.size + 'px';
+    $('prompt').style.height = S.height + '%';
+    $('mark').style.top = Math.round(S.size * 1.6) + 'px';
+    $('spv').textContent = S.speed;
+    offset = 0; paused = true; render();
+    $('setup').style.display = 'none'; $('result').classList.remove('on'); $('studio').classList.add('on');
+  }
+
+  function render(){ $('txt').style.transform = 'translateY(' + (-offset + S.size * 1.6) + 'px)'; }
+  function loop(t){
+    if(last && !paused){
+      offset += S.speed * 6 * (t - last) / 1000;
+      const max = $('txt').scrollHeight;
+      if(offset > max) offset = max;
+      render();
+    }
+    last = t; raf = requestAnimationFrame(loop);
+  }
+
+  // Pause au toucher, retour en arrière en glissant
+  let dragY = null, moved = false;
+  $('prompt').addEventListener('pointerdown', e => { dragY = e.clientY; moved = false; $('prompt').setPointerCapture(e.pointerId); });
+  $('prompt').addEventListener('pointermove', e => {
+    if(dragY === null) return;
+    const d = e.clientY - dragY;
+    if(Math.abs(d) > 4){ moved = true; offset = Math.max(0, offset - d); dragY = e.clientY; render(); }
+  });
+  $('prompt').addEventListener('pointerup', () => { if(!moved && recording) paused = !paused; dragY = null; });
+
+  function setSpeed(d){ S.speed = Math.min(20, Math.max(1, S.speed + d)); $('spv').textContent = S.speed; $('speed').value = S.speed; store.set('speed', S.speed); }
+  $('slow').onclick = () => setSpeed(-1);
+  $('fast').onclick = () => setSpeed(1);
+
+  function pickType(){
+    const types = ['video/mp4;codecs=avc1,mp4a','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+    if(!window.MediaRecorder) return null;
+    return types.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+  }
+
+  function countdown(n){
+    return new Promise(res => {
+      if(!n) return res();
+      const c = $('count'); c.classList.add('on'); c.textContent = n;
+      const iv = setInterval(() => { n--; if(n <= 0){ clearInterval(iv); c.classList.remove('on'); res(); } else c.textContent = n; }, 1000);
+    });
+  }
+
+  async function startRec(){
+    const type = pickType();
+    if(type === null){ alert("L'enregistrement vidéo n'est pas pris en charge par ce navigateur."); return; }
+    $('recbtn').disabled = true;
+    offset = 0; render();
+    await countdown(S.cd);
+    chunks = [];
+    try { recorder = new MediaRecorder(stream, type ? { mimeType: type, videoBitsPerSecond: 8000000 } : undefined); }
+    catch(e){ recorder = new MediaRecorder(stream); }
+    recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = finish;
+    recorder.start(1000);
+    recording = true; paused = false; startT = Date.now();
+    $('recbtn').classList.add('on'); $('recbtn').disabled = false; $('recbtn').setAttribute('aria-label','Arrêter');
+    $('timer').classList.add('on');
+    tick = setInterval(() => { const s = Math.floor((Date.now() - startT) / 1000); $('timer').textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }, 250);
+  }
+  function stopRec(){
+    recording = false; paused = true; clearInterval(tick);
+    $('timer').classList.remove('on'); $('timer').textContent = '00:00';
+    $('recbtn').classList.remove('on'); $('recbtn').setAttribute('aria-label','Enregistrer');
+    recorder && recorder.state !== 'inactive' && recorder.stop();
+  }
+
+  let lastBlob = null, lastName = '';
+  function finish(){
+    const type = (recorder && recorder.mimeType) || 'video/webm';
+    lastBlob = new Blob(chunks, { type });
+    takeN++;
+    const ext = type.includes('mp4') ? 'mp4' : 'webm';
+    const d = new Date();
+    lastName = 'presentation-institut-prise-' + String(takeN).padStart(2,'0') + '-' + d.toISOString().slice(0,16).replace(/[-:T]/g,'') + '.' + ext;
+    lastUrl = URL.createObjectURL(lastBlob);
+    $('out').src = lastUrl;
+    const a = $('dl'); a.href = lastUrl; a.download = lastName;
+    const line = document.createElement('div');
+    const link = document.createElement('a'); link.href = lastUrl; link.download = lastName; link.textContent = lastName;
+    line.append('Prise ' + takeN + ' · ' + Math.round(lastBlob.size/1e6*10)/10 + ' Mo · ', link);
+    const etat = document.createElement('span'); etat.textContent = ' · envoi…'; line.append(etat);
+    $('takes').prepend(line);
+    fetch('televerser?nom=' + encodeURIComponent(lastName), { method: 'POST', body: lastBlob })
+      .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(j => { etat.textContent = j.drive ? ' · ✓ envoyée dans le Drive' : ' · ✓ enregistrée sur le serveur'; })
+      .catch(() => { etat.textContent = ' · pas envoyée : télécharge-la'; });
+    $('studio').classList.remove('on'); $('result').classList.add('on');
+  }
+
+    let downloads = null;
+  $('dl').addEventListener('click', async e => {
+    if(!downloads || !lastBlob) return;
+    e.preventDefault();
+    try { await downloads.save({ filename: lastName, data: lastBlob }); }
+    catch(err){ const a = document.createElement('a'); a.href = lastUrl; a.download = lastName; a.click(); }
+  });
+
+  $('go').onclick = openCam;
+  $('recbtn').onclick = () => recording ? stopRec() : startRec();
+  $('back').onclick = () => { if(recording) stopRec(); $('studio').classList.remove('on'); $('setup').style.display = ''; };
+  $('again').onclick = () => { $('result').classList.remove('on'); $('studio').classList.add('on'); offset = 0; paused = true; render(); };
+  $('edit').onclick = () => { $('result').classList.remove('on'); $('setup').style.display = ''; };
+
+  raf = requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
