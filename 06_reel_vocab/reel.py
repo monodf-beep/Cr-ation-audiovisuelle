@@ -388,7 +388,7 @@ class WordCard:
         rp = ease_out((t - (self.impact_time() + 0.18)) / 0.25)
         if rp > 0:
             pad = 28
-            box = Image.new("RGBA", (self.fr.width - 60 + 2 * pad, self.fr.height - 60 + 2 * pad),
+            box = Image.new("RGBA", (self.fr.width - 120 + 2 * pad, self.fr.height - 120 + 2 * pad),
                             (255, 255, 255, 245))
             box.alpha_composite(self.fr, (pad - 60, pad - 60))
             xx = int((W - box.width) / 2 + (1 - rp) * 500)
@@ -582,7 +582,7 @@ def main():
                 cp = ease_out((t - 1.1) / 0.3)
                 if cp > 0:
                     lay = text_layer(cta, font(F_BOLD, 58), fill=NUIT, shadow=False)
-                    box = Image.new("RGBA", (lay.width - 60 + 60, lay.height - 60 + 44), (255, 255, 255, 245))
+                    box = Image.new("RGBA", (lay.width - 120 + 60, lay.height - 120 + 44), (255, 255, 255, 245))
                     box.alpha_composite(lay, (30 - 60, 22 - 60))
                     out.alpha_composite(_alpha(box, cp), (int(W / 2 - box.width / 2), 1010))
                 sig = s.get("signature")
