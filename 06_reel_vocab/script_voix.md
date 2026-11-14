@@ -10,7 +10,7 @@ Le ton : complice, enthousiaste, comme un pote dans les tribunes. Pas de lecture
 | 1b | Le stade (ton rush, qui bascule en futurisme) | « **Lo stado** » | 1 s |
 | 1c | Focus ballon (le style change très vite) | *(rien)* | 1 s |
 | 2 | Mot 1, plan ballon | « **Lo pallon** » | 1 s |
-| 3 | Mot 2, en-but | « **Lo bu** » | 1 s |
+| 3 | Mot 2, en-but | « **L'èssê** » | 1 s |
 | 4 | Mot 3, plaquage | « **Lo placâjo** » | 1 s |
 | 5 | Mot 4, mêlée | « **La mècllâye** » | 1 s |
 | 6 | Mot 5, touche | « **La toche** » | 1 s |

@@ -14,7 +14,7 @@
   "mots": [
     {"sv": "Lo stado", "fr": "le stade"},
     {"sv": "Lo pallon", "fr": "le ballon", "plan": ["125950", 2.0, 1.0]},
-    {"sv": "Lo bu", "fr": "l'en-but", "plan": ["130210", 0.2, 1.0]},
+    {"sv": "L'èssê", "fr": "l'essai", "plan": ["130210", 0.2, 1.0]},
     {"sv": "Lo placâjo", "fr": "le plaquage", "plan": ["125950", 12.0, 1.0]},
     {"sv": "La mècllâye", "fr": "la mêlée", "plan": ["125704", 0.2, 1.0]},
     {"sv": "La toche", "fr": "la touche", "plan": ["125950", 20.0, 1.0]},

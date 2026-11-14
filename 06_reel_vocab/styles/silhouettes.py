@@ -668,8 +668,24 @@ def trouver_melee(rgb, dets):
         dxp, dyp = xv.mean() - xb.mean(), yv.mean() - yb.mean()
     else:
         dxp, dyp = xb.mean() - xv.mean(), yb.mean() - yv.mean()
-    pente = float(np.clip(dyp / max(abs(dxp), 1.0), -1.2, 1.2))
+    # le paquet le plus proche descend plus bas dans l'image : on n'en garde qu'une partie
+    pente = float(np.clip(0.45 * dyp / max(abs(dxp), 1.0), -0.5, 0.5))
     membres = {id(pen[i]) for i in g}
+    # échelle (px par mètre) : longueur d'un paquet non coupé par le cadre (~3 m),
+    # sinon taille des joueurs debout proches, sinon taille des boîtes penchées
+    cyaw = np.cos(np.arctan2(pente, np.sin(ELEV)))
+    ech = []
+    if x0 > 60:
+        ech.append((xc - x0) / (3.0 * cyaw))
+    if x1 < W - 60:
+        ech.append((x1 - xc) / (3.0 * cyaw))
+    for d in dets:
+        b = d["box"]
+        if id(d) not in membres and _debout(d) and abs(b[3] - y1) < 0.6 * (y1 - y0) and b[0] > 4 and b[2] < W - 4:
+            ech.append((b[3] - b[1]) / 1.85)
+    if not ech:
+        ech.append(np.percentile([max(pen[i]["box"][2] - pen[i]["box"][0], pen[i]["box"][3] - pen[i]["box"][1]) for i in g], 75) / 1.0)
+    ech = float(np.median(ech))
     reste = []
     for d in dets:
         if id(d) in membres:
@@ -679,7 +695,7 @@ def trouver_melee(rgb, dets):
         if x0 < cx < x1 and y0 < cy < y1 and (not _debout(d) or b[1] > y0 - 0.25 * (y1 - y0)):
             continue                       # dans la mêlée : redessiné par le modèle
         reste.append(d)
-    return dict(y0=y0, y1=y1, x0=x0, x1=x1, xc=xc, pente=pente, g=gauche, d=droite), reste
+    return dict(y0=y0, y1=y1, x0=x0, x1=x1, xc=xc, pente=pente, ech=ech, g=gauche, d=droite), reste
 
 
 # Mêlée en 3D (mètres ; X = axe de poussée, Y = travers, Z = haut), projetée avec
@@ -711,7 +727,7 @@ def _corps_melee(Xs, Y, sd, role, pompe, rng):
     elif role == "L":
         bras = ((0.16, 0.34, 0.62), (0.38, 0.4, 0.7))
     else:                                    # bras de liaison sur le dos du voisin
-        bras = ((-0.04, 0.4, 0.8), (-0.26, 0.56, 0.84))
+        bras = ((0.0, 0.33, 0.72), (-0.14, 0.45, 0.74))
     (ex, ey, ez), (wx, wy, wz) = bras
     for (ei, wi), sg in (((CG, PG), 1), ((CD, PD), -1)):
         k[ei] = np.float32([Xs + sd * ex, Y, ez]) + sg * ey * L
@@ -745,8 +761,7 @@ def joueurs_melee(sc, t):
             K3 = _corps_melee(Xs_, Y + dy, sd, role, pompe, rng)
             corps.append((sd, eq, k, K3))
     allp = np.concatenate([proj(c[3]) for c in corps])
-    hb = allp[:, 1].max() - allp[:, 1].min()
-    s = (sc["y1"] - sc["y0"]) / max(hb, 1e-3)
+    s = sc["ech"]
     vb = allp[:, 1].max()
     out = []
     for sd, eq, k, K3 in corps:
@@ -1060,7 +1075,7 @@ class Style:
             if self.sc is None:
                 self.sc = dict(sc)
             else:
-                for c in ("y0", "y1", "x0", "x1", "xc", "pente"):
+                for c in ("y0", "y1", "x0", "x1", "xc", "pente", "ech"):
                     self.sc[c] = 0.7 * self.sc[c] + 0.3 * sc[c]
                 self.sc["g"], self.sc["d"] = sc["g"], sc["d"]
             self.sc_miss = 0
@@ -1112,7 +1127,7 @@ class Style:
         nsc = sum(x is not None for x in scs)
         melee = [None] * Np
         if nsc >= max(2, 0.4 * Np):
-            keys = ("y0", "y1", "x0", "x1", "xc", "pente")
+            keys = ("y0", "y1", "x0", "x1", "xc", "pente", "ech")
             vals = {c: np.array([x[c] if x is not None else np.nan for x in scs], np.float32) for c in keys}
             gl = [x["g"] for x in scs if x is not None]
             g = max(set(gl), key=gl.count)
