@@ -207,15 +207,41 @@ def read_frames(path, n):
     raw = run(["ffmpeg", "-v", "error", "-i", path, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"])
     k = len(raw) // (W * H * 3)
     fr = np.frombuffer(raw, np.uint8)[: k * W * H * 3].reshape(k, H, W, 3)
+    if n is None:
+        return fr
     if k < n:
         fr = np.concatenate([fr, np.repeat(fr[-1:], n - k, 0)])
     return fr[:n]
 
 
+def suite_images(s, nf, nclip):
+    """Montage « sur le contact » : numéros des images du clip à montrer, une par
+    image du plan. « entree » = première image jouée (on entre juste avant le
+    choc), « sauter » = [a, b] images retirées, « gel » = [image, n] : l'image du
+    contact est tenue n images de plus. Si le clip est trop court après un gel,
+    la queue est étirée (1,5 fois au plus), puis la dernière image est tenue."""
+    idx = list(range(min(s.get("entree", 0), nclip - 1), nclip))
+    if s.get("sauter"):
+        a, b = s["sauter"]
+        idx = [k for k in idx if not a <= k <= b]
+    gel = s.get("gel")
+    if gel and gel[0] in idx:
+        p = idx.index(gel[0])
+        tete, queue = idx[:p + 1] + [gel[0]] * gel[1], idx[p + 1:]
+        manque = nf - len(tete)
+        if queue and manque > len(queue):
+            f = min(1.5, manque / len(queue))
+            queue = [queue[min(len(queue) - 1, int(j / f))] for j in range(int(round(len(queue) * f)))]
+        idx = tete + queue
+    idx += [idx[-1]] * max(0, nf - len(idx))
+    return idx[:nf]
+
+
 def read_audio(cfg, seg, piste):
     """Audio stéréo 48 kHz (n, 2) du segment. piste : 'plein' (avec commentateur),
     'foule' (stem sans voix), 'aucun'."""
-    n = int(seg["dur"] * SR)
+    dur = seg.get("son_dur", seg["dur"])   # « son_dur » : une ambiance continue sous plusieurs plans
+    n = int(dur * SR)
     if piste == "aucun":
         return np.zeros((n, 2), np.float32)
     src = cfg["sources"][seg["src"]]
@@ -228,12 +254,13 @@ def read_audio(cfg, seg, piste):
         start = start - src.get("foule_offset", 0.0)
     speed = seg.get("son_vitesse", seg.get("vitesse", 1.0))
     af = f"atempo={max(0.5, speed)}" if speed != 1 else "anull"
-    raw = run(["ffmpeg", "-v", "error", "-ss", f"{max(0, start):.3f}", "-t", f"{seg['dur']*speed+0.2:.3f}",
+    raw = run(["ffmpeg", "-v", "error", "-ss", f"{max(0, start):.3f}", "-t", f"{dur*speed+0.2:.3f}",
                "-i", path, "-af", af, "-ac", "2", "-ar", str(SR), "-f", "s16le", "-"])
     a = np.frombuffer(raw, np.int16).astype(np.float32).reshape(-1, 2) / 32768
     a = np.pad(a, ((0, max(0, n - len(a))), (0, 0)))[:n].copy()
     f = int(0.04 * SR)
     a[:f] *= np.linspace(0, 1, f)[:, None]
+    f = int(seg.get("son_fondu", 0.04) * SR)
     a[-f:] *= np.linspace(1, 0, f)[:, None]
     return a
 
@@ -250,8 +277,11 @@ def read_audio(cfg, seg, piste):
 #    montée qui FINIT 150 ms avant l'impact (un temps d'air) ;
 #  - niveaux crête par rôle (dBFS) puis master -14 LUFS, -1 dBTP.
 SONS = os.path.join(HERE, "sons")
-CRETE = {"impact": -4, "whoosh": -9, "montee": -12, "sifflet": -8, "clameur": -8,
-         "pop": -10, "musique": -3, "coup_de_pied": -5}
+#  - v7 : le mot claque avec un corps (impact_1, audible sur téléphone) + un
+#    transitoire médium réel (« claque ») ; le dernier mot (« heros ») est le
+#    sommet du film ; les sifflets passent sur la coupe, sous le niveau de la voix.
+CRETE = {"impact": -8, "claque": -9, "heros": -3, "whoosh": -9, "montee": -12, "sifflet": -12,
+         "clameur": -8, "foule": -14, "pop": -10, "musique": -3, "coup_de_pied": -5}
 _CACHE = {}
 
 
@@ -313,7 +343,7 @@ def pitch(a, st):
 
 
 # effets secs et centrés (règle earshot) ; whoosh, montée, clameur, musique restent larges
-MONO_ROLES = ("impact", "sifflet", "coup_de_pied", "pop")
+MONO_ROLES = ("impact", "claque", "heros", "sifflet", "coup_de_pied", "pop")
 
 
 class SfxTrack:
@@ -321,10 +351,14 @@ class SfxTrack:
 
     def __init__(self, n):
         self.buf = np.zeros((n, 2), np.float32)
+        self.libre = np.zeros((n, 2), np.float32)   # sons jamais atténués (explosion finale)
         self.cues = []
         self._last = {}
 
-    def add(self, t, role, name=None, anchor="arrive", gain_db=0.0, st=0.0, max_dur=None, label=""):
+    def add(self, t, role, name=None, anchor="arrive", gain_db=0.0, st=0.0, max_dur=None, label="",
+            fondu=0.03, coupe_avant=False, libre=False):
+        """fondu : fondu de sortie quand max_dur coupe le son ; coupe_avant : le son
+        démarre sur son arrivée (rien ne joue avant le repère) ; libre : hors atténuation."""
         if name is None:  # pool : on tourne, jamais deux fois la même prise
             p = pool(role)
             if not p:
@@ -340,15 +374,20 @@ class SfxTrack:
         if role in MONO_ROLES:
             a = np.repeat(a.mean(1, keepdims=True), 2, 1)
         a = pitch(a, st)
+        if coupe_avant:
+            i = max(0, int((anchor_offset(a, anchor) - 0.03) * SR))
+            a = a[i:].copy()
+            f = min(len(a), int(0.03 * SR))
+            a[:f] *= np.linspace(0, 1, f)[:, None]
         if max_dur:
             n = int(max_dur * SR)
             if len(a) > n:
                 a = a[:n].copy()
-                f = int(0.03 * SR)
+                f = int(fondu * SR)
                 a[-f:] *= np.linspace(1, 0, f)[:, None]
         off = anchor_offset(a, anchor)
         g = 10 ** ((CRETE.get(role, -10) + gain_db) / 20)
-        mix_at(self.buf, a * g, t - off)
+        mix_at(self.libre if libre else self.buf, a * g, t - off)
         self.cues.append((round(t, 3), role, name, label))
 
 
@@ -403,9 +442,10 @@ class WordCard:
     """Mot géant façon teaser : lettres qui tombent une à une, bandeau rouge
     oblique, traduction qui glisse dessous."""
 
-    def __init__(self, sv, fr, idx, n):
+    def __init__(self, sv, fr, idx, n, impact=0.5, largeur=960):
         art, noun = split_article(sv)
-        self.f = fit(F_DISPLAY, noun, 960, 330)
+        self.IMPACT = impact   # la dernière lettre tombe sur l'image du contact
+        self.f = fit(F_DISPLAY, noun, largeur, 330)
         tr = TRACK * self.f.size
         self.letters = []
         for k, ch in enumerate(noun):  # positions avec crénage (longueur des préfixes)
@@ -423,8 +463,8 @@ class WordCard:
         self.n_letters = sum(1 for l in self.letters if l[0] is not None)
 
     STAGGER, LAND = 0.045, 0.14
-    IMPACT = 0.5   # la dernière lettre tombe toujours 0,5 s après la coupe :
-                   # mots de 2 s (= 1 mesure à 120 BPM) -> impacts sur les temps forts
+    IMPACT = 0.5   # par défaut ; « impact » du plan sinon (les MOTS restent sur les
+                   # temps de la musique, ce sont les coupes qui se décalent)
 
     def _timing(self):
         n = max(1, self.n_letters - 1)
@@ -434,10 +474,16 @@ class WordCard:
     def impact_time(self, t0=None):
         return self.IMPACT
 
+    def debut(self):
+        """Instant où l'habillage arrive : juste avant les lettres, pour laisser
+        l'action nue jusqu'au contact."""
+        return max(0.0, self._timing()[0] - 0.12)
+
     def draw(self, fr, t, dur, cy=900):
         t0, stag = self._timing()
+        tb = self.debut()
         # bandeau rouge oblique qui balaie
-        bp = ease_out((t - 0.0) / 0.22)
+        bp = ease_out((t - tb) / 0.2)
         if bp > 0:
             band_h = int(self.noun_h * 0.62)
             band = Image.new("RGBA", (W + 400, band_h), ROUGE + (255,))
@@ -449,7 +495,7 @@ class WordCard:
         # article au-dessus, à gauche
         x_start = (W - self.noun_w) / 2
         if self.art is not None:
-            ap = ease_out((t - 0.02) / 0.18)
+            ap = ease_out((t - tb - 0.02) / 0.18)
             if ap > 0:
                 lay = self.art
                 fr.alpha_composite(_alpha(lay, ap), (int(x_start - 30 + (1 - ap) * -80),
@@ -510,25 +556,31 @@ def grade(img, kind):
 _VIGN = None
 
 
-def finish(a, darken_center=0.0):
+_BANDS = {}
+
+
+def finish(a, darken_center=0.0, cy=950):
     global _VIGN
     if _VIGN is None:
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
         r = np.sqrt(((xx - W / 2) / (W / 2)) ** 2 + ((yy - H / 2) / (H / 2)) ** 2)
         _VIGN = (1 - 0.3 * np.clip(r - 0.5, 0, 1) ** 1.5)[..., None]
-        band = np.exp(-((yy - 950) / 420) ** 2)[..., None]
-        globals()["_BAND"] = band
     a = a * _VIGN
     if darken_center:
-        a = a * (1 - darken_center * globals()["_BAND"])
+        if cy not in _BANDS:
+            yy = np.arange(H, dtype=np.float32)[:, None, None]
+            _BANDS[cy] = np.exp(-((yy - (cy + 50)) / 420) ** 2)
+        a = a * (1 - darken_center * _BANDS[cy])
     return np.clip(a * 255, 0, 255).astype(np.uint8)
 
 
 def zoom(img, k, dx=0, dy=0):
+    """Agrandit de k ; (dx, dy) décale l'image (la fenêtre reste dans le cadre)."""
     if abs(k - 1) < 1e-3 and dx == 0 and dy == 0:
         return img
     cw, ch = W / k, H / k
-    x0, y0 = (W - cw) / 2 - dx, (H - ch) / 2 - dy
+    x0 = min(max((W - cw) / 2 - dx, 0), W - cw)
+    y0 = min(max((H - ch) / 2 - dy, 0), H - ch)
     return np.asarray(Image.fromarray(img).resize((W, H), Image.BILINEAR, box=(x0, y0, x0 + cw, y0 + ch)))
 
 
@@ -543,6 +595,14 @@ def main():
     mots = [s for s in segs if s["type"] == "mot"]
     N = len(mots)
     audio_seul = "--audio" in sys.argv   # mix son seul (+ couches séparées), sans calcul d'image
+    # --apercu=12.3,13.0 : n'écrit que ces images (travail/apercu/), pour vérifier un cadrage
+    apercu = None
+    for arg in sys.argv:
+        if arg.startswith("--apercu="):
+            apercu = {int(round(float(x) * FPS)) for x in arg.split("=")[1].split(",")}
+            os.makedirs(os.path.join(work, "apercu"), exist_ok=True)
+    for s in segs:   # durées calées sur l'image : l'image et le son ne dérivent pas
+        s["dur"] = round(s["dur"] * FPS) / FPS
 
     # --- PREP
     for i, s in enumerate([] if audio_seul else segs):
@@ -566,7 +626,7 @@ def main():
     total = sum(s["dur"] for s in segs)
     audio = np.zeros((int((total + 1) * SR), 2), np.float32)
     kick_t = hero_t = None
-    enc = None if audio_seul else subprocess.Popen(
+    enc = None if (audio_seul or apercu is not None) else subprocess.Popen(
         ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
          "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
          "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p",
@@ -577,9 +637,12 @@ def main():
     wi = 0
     for si, s in enumerate(segs):
         nf = 0 if audio_seul else int(round(s["dur"] * FPS))
-        frames = None if audio_seul else read_frames(s["_clip"], nf)
+        if apercu is not None and not any(round(t0 * FPS) <= x < round(t0 * FPS) + nf for x in apercu):
+            nf = 0
+        frames = read_frames(s["_clip"], None) if nf else None
+        ordre = suite_images(s, nf, len(frames)) if nf else []
         kind = s["type"]
-        a = read_audio(cfg, s, s.get("son", "foule" if s["src"] == "pro" else "plein"))
+        a = read_audio(cfg, s, s.get("son", "foule" if s.get("src") == "pro" else "plein"))
         # ambiance nivelée plan par plan : la foule ne doit pas sauter de 20 dB entre
         # un plan TV (stem sans voix) et un rush téléphone. L'ouverture garde son
         # niveau d'origine (cri du commentateur).
@@ -593,22 +656,40 @@ def main():
         card = None
         rng = np.random.default_rng(si)
         if kind == "mot":
-            card = WordCard(s["sv"], s["fr"], wi, N)
+            card = WordCard(s["sv"], s["fr"], wi, N, s.get("impact", 0.5), s.get("largeur", 960))
             wi += 1
             ti = t0 + card.impact_time()
             last = wi == N
-            if last:  # moment héroïque : (montée -> temps d'air ->) impact + clameur
+            if last:  # moment héroïque : (montée -> temps d'air ->) impact + clameur.
+                # C'est le sommet du film : deux impacts superposés à niveau fixe, la
+                # clameur démarre SUR l'impact (rien dans le silence qui précède),
+                # et rien de tout cela ne baisse sous la voix.
                 if not any(x["type"] == "leone" for x in segs):
                     sfx.add(ti - 0.15, "montee", anchor="end", label="montée transformation")
-                sfx.add(ti + 0.01, "clameur", anchor="arrive", gain_db=-2, label="clameur")
-            if last:
                 hero_t = ti
-            sfx.add(ti, "impact", anchor="arrive", gain_db=float(rng.uniform(-1.5, 1.5)),
-                    st=float(rng.uniform(-0.4, 0.4)), label=s["sv"])
-            if s.get("sifflet"):
-                sfx.add(ti + 0.05, "sifflet", anchor="arrive", max_dur=0.7, label="sifflet")
+                sfx.add(ti, "heros", name="impact_1", label=s["sv"], libre=True)
+                sfx.add(ti, "heros", name="impact_3", gain_db=-1.0, label=s["sv"] + " (grave)", libre=True)
+                # la clameur retombe avant la question finale (elle ne doit pas la couvrir)
+                sfx.add(ti + 0.01, "clameur", name="clameur_2", gain_db=-3.0, coupe_avant=True, libre=True, max_dur=2.4,
+                        fondu=1.0, label="clameur")
+                sfx.add(ti + 0.01, "clameur", name="clameur_1", gain_db=-4.0, coupe_avant=True, libre=True, max_dur=3.2,
+                        fondu=1.6, label="clameur (longue)")
+            else:
+                # corps (impact_1, le seul qui passe sur un haut-parleur de téléphone)
+                # + transitoire médium, deux prises en alternance ; queue courte pour
+                # laisser la place à la voix qui suit
+                sfx.add(ti, "impact", name="impact_1", gain_db=float(rng.uniform(-1.5, 1.5)),
+                        st=float(rng.uniform(-0.8, 0.8)), max_dur=0.45, fondu=0.15, label=s["sv"])
+                sfx.add(ti, "claque", name=("pop_4", "tic_lettre")[wi % 2], gain_db=float(rng.uniform(-1, 1)),
+                        st=float(rng.uniform(-0.5, 0.5)), label=s["sv"] + " (claque)")
+            if s.get("sifflet"):   # sur la coupe, court : il annonce le plan sans couvrir le mot
+                sfx.add(t0 + 0.05, "sifflet", anchor="arrive", max_dur=0.42, fondu=0.06, label="sifflet")
+            # sons de contact réels : [{"son", "role", "db", "dt", "max"}], calés sur le contact
+            for c in s.get("contact", []):
+                sfx.add(ti + c.get("dt", 0.0), c.get("role", "claque"), name=c["son"], gain_db=c.get("db", 0.0),
+                        max_dur=c.get("max"), fondu=0.08, label="contact " + s["sv"])
         if kind == "accroche":  # seul « RUGBY » claque ; la musique entre dessus
-            sfx.add(t0 + 0.35 + 0.16, "impact", anchor="arrive", gain_db=1.0, label="RUGBY")
+            sfx.add(t0 + 0.35 + 0.16, "impact", name="impact_1", gain_db=3.0, label="RUGBY")
             music_start = t0 + 0.35 + 0.16
         if kind == "leone":
             # finale à la Leone : la musique s'arrête net sur la mesure, l'ambiance
@@ -620,6 +701,9 @@ def main():
                 sfx.add(t0 + s["dur"] - 0.12, "montee", anchor="end", label="montée Leone")
                 kick_t = t0 + s["dur"]
                 sfx.add(t0 + s["dur"] - 0.01, "coup_de_pied", name="coup_de_pied", anchor="arrive", label="frappe")
+                # le coup de pied seul n'est que du grave : deux transitoires pour le téléphone
+                sfx.add(t0 + s["dur"] - 0.01, "claque", name="tic_lettre", gain_db=-2.0, label="frappe (claque)")
+                sfx.add(t0 + s["dur"] - 0.01, "claque", name="pop_4", label="frappe (claque)")
         if kind == "ballon":
             # pas de mitraillette : prises différentes en rotation, rythme qui
             # accélère puis ralentit (celui de la cadence), hauteur qui monte,
@@ -634,38 +718,68 @@ def main():
             sfx.add(t0 + s["dur"] - 0.25, "whoosh", anchor="peak", max_dur=0.9, label="zoom ouverture")
         if kind == "fin":
             music_end = t0 if music_end is None else music_end
-            sfx.add(t0 + 0.4 + 0.18, "impact", anchor="arrive", gain_db=-9.0, label="COMBIEN")
+            sfx.add(t0 + 0.4 + 0.18, "impact", name="impact_1", gain_db=-5.0, max_dur=0.45, fondu=0.15, label="COMBIEN")
         impact = (card.impact_time() if card else
                   0.51 if kind == "accroche" else None)
 
+        # --- caméra du plan (v7)
+        #  « cadre » {k, x, y} : recadrage fixe centré sur un point du clip ;
+        #  « punch » {k, x, y} : coup de zoom sur l'image du contact, vers ce point,
+        #     tenu pendant le gel puis relâché en 8 images ;
+        #  « crans » [[image, dk], ...] : crans de zoom secs (ouverture à froid) ;
+        #  « pousse » : zoom lent sur la durée du plan (0,06 par défaut).
+        cad, pun = s.get("cadre"), s.get("punch")
+        foyer = ((cad or pun or {}).get("x", W / 2), (cad or pun or {}).get("y", H / 2))
+        if s.get("foyer"):
+            foyer = tuple(s["foyer"])
+        pk = pun["k"] if pun else (0.05 if kind != "mot" else 0.08)
+        gel_s = s["gel"][1] / FPS if (s.get("gel") and impact is not None) else 0.0
+        heros = kind == "mot" and wi == N
+        cy = s.get("cy", 900)
         for fi in range(nf):
+            if apercu is not None and round(t0 * FPS) + fi not in apercu:
+                continue
             t = fi / FPS
             p = fi / max(1, nf - 1)
-            img = frames[fi]
-            # caméra : zoom lent + secousse à l'impact + coup de zoom final à froid
-            k = 1.0 + 0.06 * p
+            img = frames[ordre[fi]]
+            k = (cad["k"] if cad else 1.0) * (1.0 + s.get("pousse", 0.06) * p)
+            for f0, dk in s.get("crans", []):
+                k += dk * clamp01((fi - f0 + 1) / 2)
             dx = dy = 0
-            if impact is not None and 0 <= t - impact < 0.25:
-                e = 1 - (t - impact) / 0.25
-                dx = 18 * e * np.sin(t * 90)
-                dy = 14 * e * np.cos(t * 77)
-                k += 0.05 * e
+            if impact is not None and t >= impact:
+                e = clamp01(1 - (t - impact) / 0.25)                 # secousse : dès le contact
+                ez = clamp01(1 - (t - impact - gel_s) / 0.27)        # zoom : tenu pendant le gel
+                amp = 24 if kind == "mot" else 18
+                dx = amp * e * np.sin(t * 90)
+                dy = amp * 0.75 * e * np.cos(t * 77)
+                k += pk * ez
             if kind == "froid" and t > s["dur"] - 0.6:
-                k += 0.25 * ease_out((t - (s["dur"] - 0.6)) / 0.6)
+                k += s.get("zoom_final", 0.25) * ease_out((t - (s["dur"] - 0.6)) / 0.6)
+            # fenêtre : centrée sur le point (cadre) ou zoom VERS le point (punch, crans)
+            if cad:
+                dx += W / 2 - foyer[0]
+                dy += H / 2 - foyer[1]
+            else:
+                dx -= (foyer[0] - W / 2) * (1 - 1 / k)
+                dy -= (foyer[1] - H / 2) * (1 - 1 / k)
             img = zoom(img, k, dx, dy)
-            a_ = grade(img, "pro" if (s["src"] == "pro" or s.get("clip")) else "rush")
-            # flash d'impact / de coupe
+            a_ = grade(img, "pro" if (s.get("src") == "pro" or s.get("clip")) else "rush")
+            # un seul flash, sur l'image du contact (plus de flash de coupe : il diluait l'impact)
             fl = 0
-            if si > 0 and fi < 3 and kind not in ("leone", "ballon"):
-                fl = 0.5 * (1 - fi / 3)
-            if impact is not None and 0 <= t - impact < 0.1:
-                fl = max(fl, 0.55 * (1 - (t - impact) / 0.1))
+            if impact is not None:
+                n_fl, f_fl = (3, 0.6) if heros else (2, 0.35)
+                kf = int(round((t - impact) * FPS))
+                if 0 <= kf < n_fl:
+                    fl = f_fl * (1 - kf / n_fl)
             if fl:
                 a_ = a_ * (1 - fl) + fl
-            out = Image.fromarray(finish(a_, 0.45 if kind == "mot" else 0 if kind in ("froid", "leone", "ballon") else 0.25)).convert("RGBA")
+            # l'image reste nue jusqu'à l'arrivée du mot, puis s'assombrit derrière la carte
+            sombre = 0.45 * clamp01((t - card.debut()) / 0.15) if kind == "mot" else \
+                0 if kind in ("froid", "leone", "ballon") else 0.25
+            out = Image.fromarray(finish(a_, sombre, cy)).convert("RGBA")
 
             if kind == "mot":
-                card.draw(out, t, s["dur"])
+                card.draw(out, t, s["dur"], cy)
                 # barre de progression haute
                 d = ImageDraw.Draw(out)
                 bw, y = W - 140, 210
@@ -723,12 +837,22 @@ def main():
                     out = Image.fromarray(arr.astype(np.uint8)).convert("RGBA")
             elif kind == "froid" and s.get("texte"):
                 pass
-            enc.stdin.write(out.convert("RGB").tobytes())
+            if apercu is not None:
+                out.convert("RGB").save(os.path.join(work, "apercu", f"t_{t0 + t:06.2f}.jpg"), quality=88)
+            else:
+                enc.stdin.write(out.convert("RGB").tobytes())
         t0 += s["dur"]
         print(f"montage {si+1}/{len(segs)} ({kind})", flush=True)
     if enc is not None:
         enc.stdin.close()
         enc.wait()
+    if apercu is not None:
+        print("=> " + os.path.join(work, "apercu"))
+        return
+    # la musique peut courir sous les premiers plans du final et s'arrêter net
+    # sur une barre de mesure (« musique.fin_s », temps dans le reel)
+    if cfg.get("musique", {}).get("fin_s"):
+        music_end = cfg["musique"]["fin_s"]
 
     # --- musique : entre sur « RUGBY », s'arrête net sur la fin (un temps de
     # quasi-silence avant le dernier carton), niveau réglé dans montage.json
@@ -753,7 +877,7 @@ def main():
         raw = run(["ffmpeg", "-v", "error", "-i", vo["fichier"], "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"])
         v = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
         v = v / max(1e-6, np.abs(v).max())
-        for tr, tf, d in vo["reperes"]:
+        for tr, tf, d, *g_rep in vo["reperes"]:   # 4e valeur facultative : gain de la réplique (dB)
             piece = v[int(tf * SR): int((tf + d) * SR)].copy()
             # nivelage réplique par réplique (±4 dB max) vers -17 dBFS RMS sur la partie parlée,
             # puis petits fondus pour ne jamais entendre une coupe
@@ -765,9 +889,11 @@ def main():
             fi, fo = int(0.012 * SR), int(0.045 * SR)
             piece[:fi] *= np.linspace(0, 1, fi)
             piece[-fo:] *= np.linspace(1, 0, fo)
-            mix_at(voice, np.repeat(piece[:, None], 2, 1), tr, 10 ** (vo.get("gain_db", -2) / 20))
+            mix_at(voice, np.repeat(piece[:, None], 2, 1), tr,
+                   10 ** ((vo.get("gain_db", -2) + (g_rep[0] if g_rep else 0)) / 20))
             i, j = int(tr * SR), int((tr + d) * SR)
             duck[max(0, i - 4800): j + 4800] = 0.0
+        duck[j:] = 0.0   # après la dernière réplique, rien ne remonte pendant le fondu final
         k = int(0.12 * SR)  # lissage des remontées (pas d'effet de pompage)
         duck = np.convolve(duck, np.ones(k) / k, mode="same")
     # « stop-down » à la Leone : tout retombe presque au silence entre le contact
@@ -780,15 +906,19 @@ def main():
         g = np.convolve(g, np.ones(r) / r, mode="same")
         audio *= g[:, None]
         mus *= g[:, None]
+        # les effets aussi (queue de la montée…), une fois le coup de pied éteint
+        g2 = np.ones(len(audio), np.float32)
+        g2[int((kick_t + 0.35) * SR):a1] = 10 ** (-20 / 20)
+        sfx.buf *= np.convolve(g2, np.ones(r) / r, mode="same")[:, None]
     # profondeur d'atténuation sous la voix, couche par couche : la musique baisse
     # peu (le tapis reste stable), la foule un peu plus, les effets à peine
     prof = cfg.get("ducking_db", {"musique": -5, "ambiance": -7, "effets": -3})
     w = 1 - duck[:, None]   # 1 sous la voix, 0 ailleurs
     gk = lambda db: 1 + w * (10 ** (db / 20) - 1)
     couches = {"ambiance": audio * gk(prof["ambiance"]), "musique": mus * gk(prof["musique"]),
-               "effets": sfx.buf * gk(prof["effets"]), "voix": voice}
+               "effets": sfx.buf * gk(prof["effets"]) + sfx.libre, "voix": voice}
     audio = sum(couches.values())
-    f = int(0.45 * SR)  # extinction finale (pas de son coupé net)
+    f = int(0.8 * SR)  # extinction finale (pas de son coupé net)
     end = int(total * SR)
     audio[end - f:end] *= np.linspace(1, 0, f)[:, None] ** 1.5
     audio = audio[: int(total * SR)]
@@ -807,15 +937,22 @@ def main():
     with wave.open(wpath, "wb") as w:
         w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes(np.ascontiguousarray(audio * 32767).astype(np.int16).tobytes())
+    # -14 LUFS par un gain FIXE + limiteur (le loudnorm en une passe remontait
+    # l'ouverture de 9 dB puis glissait : les rapports du mix bougeaient)
+    mes = subprocess.run(["ffmpeg", "-hide_banner", "-i", wpath, "-af", "loudnorm=I=-14:TP=-1:print_format=json",
+                          "-f", "null", "-"], capture_output=True, text=True).stderr
+    lufs = float(json.loads(mes[mes.rindex("{"):])["input_i"])
+    norm_af = f"volume={-14 - lufs:.2f}dB,alimiter=limit=0.85:level=false:attack=2:release=60"
+    print(f"mix : {lufs:.1f} LUFS -> gain {-14 - lufs:+.1f} dB")
     out = cfg["sortie"]
     if audio_seul:
         out = os.path.splitext(out)[0] + "_son.m4a"
         run(["ffmpeg", "-v", "error", "-y", "-i", wpath, "-c:a", "aac", "-b:a", "192k",
-             "-af", "loudnorm=I=-14:TP=-1", out])
+             "-af", norm_af, out])
         print(f"=> {out} ({total:.1f} s, son seul)")
         return
     run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(work, "_v.mp4"), "-i", wpath,
-         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-af", "loudnorm=I=-14:TP=-1",
+         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-af", norm_af,
          "-shortest", "-movflags", "+faststart", out])
     print(f"=> {out} ({total:.1f} s)")
 
