@@ -639,7 +639,7 @@ def trouver_melee(rgb, dets):
     for i in g:
         mb |= pen[i]["mask"]
     ys, xs = np.nonzero(mb)
-    y0, y1 = np.percentile(ys, 6) * DS, np.percentile(ys, 98) * DS
+    y0, y1 = np.percentile(ys, 2) * DS, np.percentile(ys, 98) * DS
     x0, x1 = np.percentile(xs, 1) * DS, np.percentile(xs, 99) * DS
     if (x1 - x0) < 1.3 * (y1 - y0):
         return None, dets
@@ -669,7 +669,7 @@ def trouver_melee(rgb, dets):
     else:
         dxp, dyp = xb.mean() - xv.mean(), yb.mean() - yv.mean()
     # le paquet le plus proche descend plus bas dans l'image : on n'en garde qu'une partie
-    pente = float(np.clip(0.45 * dyp / max(abs(dxp), 1.0), -0.5, 0.5))
+    pente = float(np.clip(0.2 * dyp / max(abs(dxp), 1.0), -0.5, 0.5))
     membres = {id(pen[i]) for i in g}
     # échelle (px par mètre) : longueur d'un paquet non coupé par le cadre (~3 m),
     # sinon taille des joueurs debout proches, sinon taille des boîtes penchées
@@ -703,8 +703,8 @@ def trouver_melee(rgb, dets):
 # rôles : (X épaules, Y, rôle) pour le paquet qui pousse vers +X
 PAQUET = [(-0.22, -0.56, "P"), (-0.22, 0.0, "P"), (-0.22, 0.56, "P"),
           (-0.98, -0.29, "L"), (-0.98, 0.29, "L"),
-          (-0.92, -0.92, "F"), (-0.92, 0.92, "F"), (-1.72, 0.0, "8")]
-ELEV = np.deg2rad(35)
+          (-0.92, -0.82, "F"), (-0.92, 0.82, "F"), (-1.72, 0.0, "8")]
+ELEV = np.deg2rad(16)
 
 
 def _corps_melee(Xs, Y, sd, role, pompe, rng):
@@ -761,15 +761,31 @@ def joueurs_melee(sc, t):
             K3 = _corps_melee(Xs_, Y + dy, sd, role, pompe, rng)
             corps.append((sd, eq, k, K3))
     allp = np.concatenate([proj(c[3]) for c in corps])
-    s = sc["ech"]
     vb = allp[:, 1].max()
+    # échelle : la masse projetée doit couvrir la masse détectée (hauteur visible,
+    # et longueur des paquets quand ils ne sont pas coupés par le cadre)
+    bh = sc["y1"] - sc["y0"]
+    best, s = 1e9, sc["ech"]
+    for cand in np.linspace(120, 700, 59):
+        X = sc["xc"] + cand * allp[:, 0]
+        Yv = sc["y1"] + cand * (allp[:, 1] - vb)
+        vis = (X > 0) & (X < W)
+        if vis.sum() < 20:
+            continue
+        c = abs((Yv[vis].max() - Yv[vis].min()) - bh) / bh
+        if sc["x0"] > 60:
+            c += 0.5 * abs(X.min() - sc["x0"]) / bh
+        if sc["x1"] < W - 60:
+            c += 0.5 * abs(X.max() - sc["x1"]) / bh
+        if c < best:
+            best, s = c, cand
     out = []
     for sd, eq, k, K3 in corps:
         P = proj(K3)
         k17 = np.float32(np.stack([sc["xc"] + s * P[:, 0], sc["y1"] + s * (P[:, 1] - vb)], 1))
         sol = proj(np.float32([(K3[HG, 0] + K3[HD, 0]) / 2, (K3[HG, 1] + K3[HD, 1]) / 2, 0.0]))
         j = Joueur()
-        j.id, j.k, j.vis, j.T = 10000 + (sd > 0) * 100 + k, k17, np.ones(17, bool), 0.55 * s
+        j.id, j.k, j.vis, j.T = 10000 + (sd > 0) * 100 + k, k17, np.ones(17, bool), 0.62 * s
         j.box = np.float32([k17[:, 0].min(), k17[:, 1].min(), k17[:, 0].max(), k17[:, 1].max()])
         j.eq = eq
         j.short = EQUIPES[eq]["s"]
