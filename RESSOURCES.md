@@ -46,4 +46,9 @@ Autres banques trouvées en cherchant :
 
 ## Polices
 
+**Préférences de Franck :** la **Semplicità** (Alessandro Butti, fonderie Nebiolo, Turin, 1930)
+et tout ce qui vient de **Bodoni** (Giambattista Bodoni, né à Saluzzo, Piémont) et de la
+**fonderie Nebiolo** (Augustea, Microgramma, Eurostile, Egizio…). À privilégier en premier.
+Détails, licences et versions disponibles : `06_reel_vocab/polices/TYPO_PIEMONT.md`.
+
 Google Fonts (licence OFL) — téléchargées via fonts.googleapis.com : Anton, Archivo Black, Bebas Neue.
