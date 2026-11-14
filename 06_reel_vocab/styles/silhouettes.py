@@ -240,6 +240,60 @@ def classe_couleur(rgb, kp, mask_full):
     return hist(zone(torse, 3)), hist(zone(short, 3))
 
 
+
+def ballon_en_main(rgb, dets, hsv=None):
+    """Ballon porté : tache claire (blanc du ballon), de la taille d'un ballon à
+    l'échelle du joueur, collée à un poignet ; ni le short, ni la tête, ni le strap
+    du poignet. -> liste de dict(box, score, mask(rés. détection))"""
+    out = []
+    if hsv is None:
+        hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    for d in dets:
+        kp = d["kp"]
+        bx = d["box"]
+        T = max(0.25 * (bx[3] - bx[1]), 20)
+        x0, y0 = int(max(0, bx[0] - 0.5 * T)), int(max(0, bx[1]))
+        x1, y1 = int(min(W, bx[2] + 0.5 * T)), int(min(H, bx[3]))
+        if x1 - x0 < 10 or y1 - y0 < 10:
+            continue
+        sub = hsv[y0:y1, x0:x1]
+        clair = ((sub[..., 1] < 48) & (sub[..., 2] > 180)).astype(np.uint8)
+        # on retire le short (rétréci), la tête, les chaussettes / crampons
+        ex = np.zeros_like(clair)
+        o = np.float32([x0, y0])
+        hg, hd, gg, gd = kp[HG, :2], kp[HD, :2], kp[GG, :2], kp[GD, :2]
+        sh = np.array([hg, hd, hd + (gd - hd) * 0.4, hg + (gg - hg) * 0.4]) - o
+        c = sh.mean(0)
+        cv2.fillConvexPoly(ex, np.int32(c + (sh - c) * 0.85), 1)
+        tete = kp[[NEZ, OG, OD, ORG, ORD], :2].mean(0) - o
+        cv2.circle(ex, (int(tete[0]), int(tete[1])), int(0.45 * T), 1, -1)
+        for a in (GG, GD, CHG, CHD):
+            q = kp[a, :2] - o
+            cv2.circle(ex, (int(q[0]), int(q[1])), int(0.35 * T), 1, -1)
+        clair[ex > 0] = 0
+        clair = cv2.morphologyEx(clair, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+        n, lab, st, cen = cv2.connectedComponentsWithStats(clair)
+        for i in range(1, n):
+            a = st[i, cv2.CC_STAT_AREA]
+            if not (0.045 * T * T < a < 0.3 * T * T):
+                continue
+            cx, cy = cen[i] + o
+            dw = min(np.hypot(*(kp[w, :2] - [cx, cy])) for w in (PG, PD) if kp[w, 2] > 0.25) \
+                if (kp[[PG, PD], 2] > 0.25).any() else 1e9
+            if dw > 0.5 * T:
+                continue
+            m = (lab == i).astype(np.uint8)
+            full = np.zeros((H, W), np.uint8)
+            full[y0:y1, x0:x1] = m
+            sm = cv2.resize(full, (DW, DH), interpolation=cv2.INTER_NEAREST) > 0
+            if sm.sum() < 3:
+                continue
+            w_, h_ = st[i, cv2.CC_STAT_WIDTH], st[i, cv2.CC_STAT_HEIGHT]
+            out.append(dict(box=np.float32([cx - w_ / 2, cy - h_ / 2, cx + w_ / 2, cy + h_ / 2]),
+                            score=float(0.45 - 0.3 * dw / T), mask=sm))
+    return out
+
+
 # ================================================================ GÉOMÉTRIE DU DESSIN
 def fuseau(p, q, r1, r2, n=14):
     """Polygone d'un membre : deux cercles reliés par leurs tangentes."""
@@ -889,6 +943,7 @@ class Style:
             lig = lignes_terrain(rgb, hz, mm)
         # ballon : proche d'un joueur, sous l'horizon, taille plausible
         bal = None
+        bals = bals + ballon_en_main(rgb, final)
         for b in sorted(bals, key=lambda b: -b["score"]):
             x0, y0, x1, y1 = b["box"]
             w, h = x1 - x0, y1 - y0

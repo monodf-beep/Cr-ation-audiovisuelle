@@ -542,9 +542,10 @@ def main():
     segs = cfg["timeline"]
     mots = [s for s in segs if s["type"] == "mot"]
     N = len(mots)
+    audio_seul = "--audio" in sys.argv   # mix son seul (+ couches séparées), sans calcul d'image
 
     # --- PREP
-    for i, s in enumerate(segs):
+    for i, s in enumerate([] if audio_seul else segs):
         styl = s.get("styliser", s["src"] == "pro")
         extra = f"_{s['cx']}_{s.get('cy','')}_{s['z']}" if "z" in s else ""
         import hashlib
@@ -562,20 +563,30 @@ def main():
     total = sum(s["dur"] for s in segs)
     audio = np.zeros((int((total + 1) * SR), 2), np.float32)
     kick_t = hero_t = None
-    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
-                           "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
-                           "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p",
-                           os.path.join(work, "_v.mp4")], stdin=subprocess.PIPE)
+    enc = None if audio_seul else subprocess.Popen(
+        ["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
+         "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
+         "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p",
+         os.path.join(work, "_v.mp4")], stdin=subprocess.PIPE)
     sfx = SfxTrack(len(audio))
     music_start, music_end = None, None
     t0 = 0.0
     wi = 0
     for si, s in enumerate(segs):
-        nf = int(round(s["dur"] * FPS))
-        frames = read_frames(s["_clip"], nf)
+        nf = 0 if audio_seul else int(round(s["dur"] * FPS))
+        frames = None if audio_seul else read_frames(s["_clip"], nf)
         kind = s["type"]
         a = read_audio(cfg, s, s.get("son", "foule" if s["src"] == "pro" else "plein"))
-        mix_at(audio, a, t0, s.get("gain", 0.6))
+        # ambiance nivelée plan par plan : la foule ne doit pas sauter de 20 dB entre
+        # un plan TV (stem sans voix) et un rush téléphone. L'ouverture garde son
+        # niveau d'origine (cri du commentateur).
+        cibles = cfg.get("ambiance_cible_db", {"defaut": -30, "leone": -33, "fin": -31, "accroche": -30})
+        if kind != "froid" and np.abs(a).max() > 1e-4:
+            rms = np.sqrt((a ** 2).mean())
+            g_amb = np.clip(cibles.get(kind, cibles["defaut"]) - 20 * np.log10(rms + 1e-9), -18, 12)
+            mix_at(audio, a, t0, 10 ** (g_amb / 20))
+        else:
+            mix_at(audio, a, t0, s.get("gain", 0.6))
         card = None
         rng = np.random.default_rng(si)
         if kind == "mot":
@@ -712,8 +723,9 @@ def main():
             enc.stdin.write(out.convert("RGB").tobytes())
         t0 += s["dur"]
         print(f"montage {si+1}/{len(segs)} ({kind})", flush=True)
-    enc.stdin.close()
-    enc.wait()
+    if enc is not None:
+        enc.stdin.close()
+        enc.wait()
 
     # --- musique : entre sur « RUGBY », s'arrête net sur la fin (un temps de
     # quasi-silence avant le dernier carton), niveau réglé dans montage.json
@@ -752,8 +764,8 @@ def main():
             piece[-fo:] *= np.linspace(1, 0, fo)
             mix_at(voice, np.repeat(piece[:, None], 2, 1), tr, 10 ** (vo.get("gain_db", -2) / 20))
             i, j = int(tr * SR), int((tr + d) * SR)
-            duck[max(0, i - 4800): j + 4800] = 10 ** (-9 / 20)
-        k = int(0.08 * SR)  # lissage des remontées
+            duck[max(0, i - 4800): j + 4800] = 0.0
+        k = int(0.12 * SR)  # lissage des remontées (pas d'effet de pompage)
         duck = np.convolve(duck, np.ones(k) / k, mode="same")
     # « stop-down » à la Leone : tout retombe presque au silence entre le contact
     # du pied et l'impact du dernier mot, puis tout explose
@@ -765,13 +777,26 @@ def main():
         g = np.convolve(g, np.ones(r) / r, mode="same")
         audio *= g[:, None]
         mus *= g[:, None]
-    dk = duck[:, None]
-    audio = audio * dk + mus * dk + sfx.buf * dk + voice
+    # profondeur d'atténuation sous la voix, couche par couche : la musique baisse
+    # peu (le tapis reste stable), la foule un peu plus, les effets à peine
+    prof = cfg.get("ducking_db", {"musique": -5, "ambiance": -7, "effets": -3})
+    w = 1 - duck[:, None]   # 1 sous la voix, 0 ailleurs
+    gk = lambda db: 1 + w * (10 ** (db / 20) - 1)
+    couches = {"ambiance": audio * gk(prof["ambiance"]), "musique": mus * gk(prof["musique"]),
+               "effets": sfx.buf * gk(prof["effets"]), "voix": voice}
+    audio = sum(couches.values())
     f = int(0.45 * SR)  # extinction finale (pas de son coupé net)
     end = int(total * SR)
     audio[end - f:end] *= np.linspace(1, 0, f)[:, None] ** 1.5
     audio = audio[: int(total * SR)]
-    audio /= max(1e-6, np.abs(audio).max()) / 0.9
+    norm = max(1e-6, np.abs(audio).max()) / 0.9
+    audio /= norm
+    # couches séparées (même gain que le master) pour le plan des niveaux
+    os.makedirs(os.path.join(work, "couches"), exist_ok=True)
+    for nom, c in couches.items():
+        with wave.open(os.path.join(work, "couches", nom + ".wav"), "wb") as w:
+            w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
+            w.writeframes(np.ascontiguousarray(np.clip(c[: int(total * SR)] / norm, -1, 1) * 32767).astype(np.int16).tobytes())
     with open(os.path.join(work, "repere_sons.txt"), "w", encoding="utf-8") as fh:
         for c in sfx.cues:
             fh.write(f"{c[0]:7.3f}  {c[1]:8s} {c[2] or 'MUET (aucun son)'}  {c[3]}\n")
@@ -780,6 +805,12 @@ def main():
         w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes(np.ascontiguousarray(audio * 32767).astype(np.int16).tobytes())
     out = cfg["sortie"]
+    if audio_seul:
+        out = os.path.splitext(out)[0] + "_son.m4a"
+        run(["ffmpeg", "-v", "error", "-y", "-i", wpath, "-c:a", "aac", "-b:a", "192k",
+             "-af", "loudnorm=I=-14:TP=-1", out])
+        print(f"=> {out} ({total:.1f} s, son seul)")
+        return
     run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(work, "_v.mp4"), "-i", wpath,
          "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-af", "loudnorm=I=-14:TP=-1",
          "-shortest", "-movflags", "+faststart", out])
