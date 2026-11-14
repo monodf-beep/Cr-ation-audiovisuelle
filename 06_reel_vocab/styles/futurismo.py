@@ -293,6 +293,8 @@ class Style:
             pt[0] = False
             if pt.any():
                 petit |= pt[cc]
+        if ballon is not None and getattr(self, "_anneau", None) is not None:
+            petit |= self._anneau & fig
         out = self._combler(out, petit, fig)
         return out
 
@@ -558,10 +560,20 @@ class Style:
         bal_lr = None
         if P is not None:
             em = np.zeros((h, w), np.uint8)
-            cv2.ellipse(em, ((float(P["c"][0]), float(P["c"][1])), (float(P["ax"][0]), float(P["ax"][1])),
+            cv2.ellipse(em, ((float(P["c"][0]), float(P["c"][1])), (float(P["ax"][0] * 1.04), float(P["ax"][1] * 1.04)),
                              float(P["ang"])), 1, -1)
-            bal_lr = em.astype(bool) & self._bal_coul
-            fig = fig | em.astype(bool)
+            em = em.astype(bool)
+            # doigts = vraie couleur chair (pas les ombres du ballon), en zones franches
+            Ls, As, Bs = lab_src[..., 0], lab_src[..., 1], lab_src[..., 2]
+            hue = np.degrees(np.arctan2(Bs, As)) % 360
+            chair = (hue > 18) & (hue < 85) & (np.hypot(As, Bs) > 13) & (Ls > 22) & ~self._bal_coul
+            doigts = cv2.morphologyEx((em & chair).astype(np.uint8), cv2.MORPH_OPEN, B._disque(3 * k)).astype(bool)
+            bal_lr = em & ~doigts
+            fig = fig | em
+            e2 = np.zeros((h, w), np.uint8)
+            cv2.ellipse(e2, ((float(P["c"][0]), float(P["c"][1])), (float(P["ax"][0] * 1.3), float(P["ax"][1] * 1.3)),
+                             float(P["ang"])), 1, -1)
+            self._anneau = e2.astype(bool) & ~em & self._bal_coul     # bavures du ballon autour de l'ellipse
         ci = self._nettoyer(ci, fig, cl, pers, lab_src, b.prev["lab"], k, bal_lr)
         ci[~fig] = -1
 
@@ -633,7 +645,7 @@ class Style:
             M = self._affine_ballon(P, z, 64)
             ell = np.zeros((H, W), np.uint8)
             cpx = P["c"] * z
-            cv2.ellipse(ell, ((float(cpx[0]), float(cpx[1])), (float(P["ax"][0] * z), float(P["ax"][1] * z)),
+            cv2.ellipse(ell, ((float(cpx[0]), float(cpx[1])), (float(P["ax"][0] * z * 1.04), float(P["ax"][1] * z * 1.04)),
                               float(P["ang"])), 1, -1, cv2.LINE_8)
             ell = ell.astype(bool)
             doigts = np.isin(CF, C_PEAU) & ell
@@ -660,10 +672,13 @@ class Style:
         t_in = np.clip(1.25 * f + 0.5 - dt, 0, 1)
         sil = np.zeros((H, W), np.uint8)
         cv2.polylines(sil, polyF, True, 255, max(2, int(round(5.0 * f))), cv2.LINE_AA)
-        if P is not None:
+        if P is not None:              # contour net du ballon, interrompu par les doigts
             cpx = P["c"] * z
-            cv2.ellipse(sil, ((float(cpx[0]), float(cpx[1])), (float(P["ax"][0] * z), float(P["ax"][1] * z)),
-                              float(P["ang"])), 255, max(2, int(round(4.0 * f))), cv2.LINE_AA)
+            tb = np.zeros((H, W), np.uint8)
+            cv2.ellipse(tb, ((float(cpx[0]), float(cpx[1])), (float(P["ax"][0] * z * 1.04), float(P["ax"][1] * z * 1.04)),
+                             float(P["ang"])), 255, max(2, int(round(4.5 * f))), cv2.LINE_AA)
+            tb[cv2.dilate(doigts.astype(np.uint8), B._disque(3 * f)) > 0] = 0
+            sil = np.maximum(sil, tb)
         t = np.maximum(t_in, sil.astype(np.float32) / 255)
         out = out * (1 - t[..., None]) + np.float32(ENCRE) * t[..., None]
 

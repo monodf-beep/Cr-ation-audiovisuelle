@@ -7,7 +7,7 @@ Le ton : complice, enthousiaste, comme un pote dans les tribunes. Pas de lecture
 |---|---|---|---|
 | 0 | Ouverture à froid : l'essai animé, cri du commentateur, la foule explose | *(rien, on laisse le stade parler)* | 2,5 s |
 | 1 | Ton selfie dans les tribunes | « Turin. Et si on parlait rugby… en savoyard ? » | 2,5 s |
-| 1b | Le stade (ton rush, qui bascule en futurisme) | « **Stado** » | 1 s |
+| 1b | Le stade (ton rush, qui bascule en futurisme) | « **Lo stado** » | 1 s |
 | 1c | Focus ballon (le style change très vite) | *(rien)* | 1 s |
 | 2 | Mot 1, plan ballon | « **Lo pallon** » | 1 s |
 | 3 | Mot 2, en-but | « **Lo bu** » | 1 s |
@@ -19,7 +19,7 @@ Le ton : complice, enthousiaste, comme un pote dans les tribunes. Pas de lecture
 | 10 | Mot 9, terrain | « **Lo champ** » | 1 s |
 | 11 | Mot 10, passe | « **Lo passâjo** » | 1 s |
 | 12 | Mot 11, coup de pied | « **Lo calço** » | 1 s |
-| 12b | Les supporters (ton rush au ralenti, qui bascule en futurisme) | « **Fanatico** » | 1 s |
+| 12b | Les supporters (ton rush au ralenti, qui bascule en futurisme) | « **Lo fanaticos** » | 1 s |
 | 12c | Finale à la Leone | *(rien : silence total)* | 2,8 s |
 | 13 | Mot 12, transformation (2e cri du commentateur juste après) | « Et pour finir… **la transformacion** ! » | 2 s |
 | 14 | Ton selfie de fin | « Tu en connaissais combien ? Dis-le-moi en commentaire ! » + une formule d'au revoir en savoyard de ton choix | 4 s |
