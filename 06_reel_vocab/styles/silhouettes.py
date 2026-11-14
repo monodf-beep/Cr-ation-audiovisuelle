@@ -66,7 +66,7 @@ EQUIPES = {
     "RSA": dict(m=(11, 93, 59), s=(242, 238, 224), c=(11, 93, 59), acc=(232, 182, 40)),
     "ARB": dict(m=(226, 84, 44), s=(30, 26, 28), c=(30, 26, 28), acc=None),
     "JAU": dict(m=(226, 214, 64), s=(30, 26, 28), c=(30, 26, 28), acc=None),
-    "AUT": dict(m=(150, 140, 128), s=(30, 26, 28), c=(30, 26, 28), acc=None),
+    "AUT": dict(m=(236, 226, 200), s=(30, 26, 28), c=(30, 26, 28), acc=None),
 }
 SHORT_TON = {"blanc": (242, 238, 224), "noir": (30, 26, 28)}
 
@@ -182,7 +182,7 @@ def lignes_terrain(rgb, hz, masques):
     out = []
     if segs is None:
         return out
-    for x0, y0, x1, y1 in segs[:, 0]:
+    for x0, y0, x1, y1 in segs.reshape(-1, 4):
         th = np.arctan2(y1 - y0, x1 - x0) % np.pi
         nx, ny = -np.sin(th), np.cos(th)
         rho = (x0 * nx + y0 * ny) * f
@@ -604,9 +604,10 @@ def apparier(pistes, dets):
 def _hist_vote(h):
     if h is None:
         return None
-    eq = {"ITA": h["bleu"], "RSA": h["vert"], "ARB": h["rouge"], "JAU": h["jaune"]}
+    eq = {"ITA": h["bleu"], "RSA": h["vert"], "ARB": h["rouge"] * 0.8, "JAU": h["jaune"] * 0.6}
     e = max(eq, key=eq.get)
-    return (e, eq[e]) if eq[e] > 0.12 else None
+    seuil = {"ITA": 0.12, "RSA": 0.12, "ARB": 0.22, "JAU": 0.22}[e]
+    return (e, eq[e]) if eq[e] > seuil else None
 
 
 # ================================================================ STYLE
@@ -638,7 +639,13 @@ class Style:
         keep = []
         for d in pers:
             x0, y0, x1, y1 = d["box"]
-            if y1 < hz + 0.012 * H or (y1 - y0) < 45:
+            w, h = x1 - x0, y1 - y0
+            if y1 < hz + 0.012 * H or h < 45:
+                continue
+            # joueur coupé par le bord du cadre : on ne dessine pas un morceau
+            if (x0 < 6 or x1 > W - 6) and w < 0.33 * h:
+                continue
+            if w < 0.12 * h:
                 continue
             keep.append(d)
         # doublons (même joueur détecté deux fois) : recouvrement de masques
@@ -692,6 +699,22 @@ class Style:
             pres = any((d["box"][0] - 0.4 * (d["box"][2] - d["box"][0]) < cx < d["box"][2] + 0.4 * (d["box"][2] - d["box"][0]))
                        and (d["box"][1] - 0.1 * (d["box"][3] - d["box"][1]) < cy < d["box"][3]) for d in final)
             if not pres and b["score"] < 0.5:
+                continue
+            # un ballon est clair et peu saturé (pas un crampon fluo)
+            bm = cv2.resize(b["mask"].astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST) > 0
+            if bm.sum() < 20:
+                continue
+            hsvb = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)[bm]
+            if np.median(hsvb[:, 1]) > 85 or np.median(hsvb[:, 2]) < 140:
+                continue
+            # pas collé à une cheville (crampons, chaussettes blanches)
+            pied = False
+            for d in final:
+                Tq = 0.25 * (d["box"][3] - d["box"][1])
+                for a in (CHG, CHD):
+                    if d["kp"][a, 2] > 0.3 and np.hypot(*(d["kp"][a, :2] - [cx, cy])) < 0.45 * Tq:
+                        pied = True
+            if pied and b["score"] < 0.6:
                 continue
             ell = None
             cs, _ = cv2.findContours(b["mask"].astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
