@@ -355,13 +355,14 @@ class Style:
                 if wf < 0.3 or bf < 0.06 or wf + bf < 0.8:
                     continue
                 # partie la plus « épaisse » seulement (coupe les appendices collés au ballon)
+                m = _remplir_trous(m, 0.5)
                 dtm = cv2.distanceTransform(np.pad(m.astype(np.uint8), 1), cv2.DIST_L2, 5)[1:-1, 1:-1]
                 ry, rx = np.unravel_index(int(np.argmax(dtm)), dtm.shape)
                 rr = float(dtm[ry, rx])
                 if rr < 2.5 * k:
                     continue
                 yy, xx = np.ogrid[:bh, :bw]
-                m = m & (((yy - ry) ** 2 + (xx - rx) ** 2) < (1.75 * rr) ** 2)
+                m = m & (((yy - ry) ** 2 + (xx - rx) ** 2) < (1.9 * rr) ** 2)
                 cs, _ = cv2.findContours(m.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
                 c = max(cs, key=cv2.contourArea)
                 pts = cv2.convexHull(c).reshape(-1, 2)
