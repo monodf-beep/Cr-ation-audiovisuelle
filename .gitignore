@@ -17,3 +17,5 @@ __pycache__/
 04_montage/coupes.json
 22_drapeaux/
 06_reel_vocab/prompteur/prompteur.html
+06_reel_vocab/modeles/maskrcnn_v2_coco.onnx
+06_reel_vocab/modeles/rtmpose-m_body7_256x192.onnx
