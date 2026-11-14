@@ -180,13 +180,22 @@ class Style(LC.Style):
             ok[np.unique(cc[(e == E_FD) & (dec > 0)])] = True
             ok[0] = False
             e[ok[cc]] = E_FD
+        # panneaux clairs épais collés aux tribunes -> fond (les lignes fines restent)
+        n, cc, st, _ = cv2.connectedComponentsWithStats(((e == E_PAP) & ~pers).astype(np.uint8), connectivity=8)
+        if n > 1:
+            colle = np.zeros(n, bool)
+            colle[np.unique(cc[cv2.dilate((e == E_FD).astype(np.uint8), np.ones((3, 3), np.uint8)) > 0])] = True
+            epais = st[:, cv2.CC_STAT_AREA] / np.maximum(1, st[:, [2, 3]].max(1)) > 5 * min(h, w) / 540
+            ok = colle & epais
+            ok[0] = False
+            e[ok[cc]] = E_FD
         # vermillon enclavé (ne touchant pas le haut de l'image) -> pelouse
         n, cc = cv2.connectedComponents((e == E_FD).astype(np.uint8), connectivity=8)
         if n > 1:
             haut = np.zeros(n, bool)
             haut[np.unique(cc[:max(2, h // 25)])] = True
-            haut[np.unique(cc[:h // 2, :2])] = True          # ou les bords latéraux, en haut
-            haut[np.unique(cc[:h // 2, -2:])] = True
+            haut[np.unique(cc[:h // 3, :2])] = True          # ou les bords latéraux, en haut
+            haut[np.unique(cc[:h // 3, -2:])] = True
             haut[0] = True
             e[~haut[cc]] = E_PEL
 

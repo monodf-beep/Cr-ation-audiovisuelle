@@ -21,6 +21,15 @@
   },
   "r143332": {
    "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/143332.mp4"
+  },
+  "r130210": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/130210.mp4"
+  },
+  "r125644": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/125644.mp4"
+  },
+  "r125950": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/125950.mp4"
   }
  },
  "musique": {
@@ -191,17 +200,144 @@
    "gain": 0.75
   },
   {
+   "type": "leone",
+   "src": "r130210",
+   "start": 0.4,
+   "dur": 0.4,
+   "vitesse": 1.0,
+   "cx": 540,
+   "cy": 960,
+   "z": 1.0,
+   "role": "large",
+   "styliser": true,
+   "son": "plein",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "pro",
+   "start": 120.55,
+   "dur": 0.333,
+   "vitesse": 1.0,
+   "cx": 445,
+   "cy": 222,
+   "z": 0.4,
+   "role": "detail",
+   "styliser": true,
+   "son": "foule",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "pro",
+   "start": 59.2,
+   "dur": 0.3,
+   "vitesse": 1.0,
+   "cx": 295,
+   "cy": 180,
+   "z": 1.0,
+   "role": "large",
+   "styliser": true,
+   "son": "foule",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "pro",
+   "start": 241.3,
+   "dur": 0.267,
+   "vitesse": 1.0,
+   "cx": 165,
+   "cy": 280,
+   "z": 0.4,
+   "role": "detail",
+   "styliser": true,
+   "son": "foule",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "r125644",
+   "start": 0.5,
+   "dur": 0.2,
+   "vitesse": 1.0,
+   "cx": 540,
+   "cy": 860,
+   "z": 1.0,
+   "role": "large",
+   "styliser": true,
+   "son": "plein",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "pro",
+   "start": 142.4,
+   "dur": 0.167,
+   "vitesse": 1.0,
+   "cx": 228,
+   "cy": 135,
+   "z": 0.45,
+   "role": "detail",
+   "styliser": true,
+   "son": "foule",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "r125950",
+   "start": 10.0,
+   "dur": 0.133,
+   "vitesse": 1.0,
+   "cx": 540,
+   "cy": 960,
+   "z": 1.0,
+   "role": "large",
+   "styliser": true,
+   "son": "plein",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "r135004",
+   "start": 9.0,
+   "dur": 0.1,
+   "vitesse": 1.0,
+   "cx": 870,
+   "cy": 1250,
+   "z": 0.35,
+   "role": "detail",
+   "styliser": true,
+   "son": "plein",
+   "gain": 0.25
+  },
+  {
+   "type": "leone",
+   "src": "pro",
+   "start": 280.617,
+   "dur": 0.9,
+   "vitesse": 0.5,
+   "cx": 120,
+   "cy": 245,
+   "z": 0.33,
+   "role": "frappe",
+   "styliser": true,
+   "son": "foule",
+   "gain": 0.25
+  },
+  {
    "type": "mot",
    "sv": "La transformacion",
    "fr": "la transformation",
    "dur": 2.5,
    "src": "pro",
-   "start": 218.6,
+   "start": 283.4,
    "vitesse": 1.0,
-   "cx_debut": 105,
-   "cx_fin": 105,
    "son": "foule",
-   "gain": 0.75
+   "gain": 0.8,
+   "cx": 92,
+   "cy": 243,
+   "z": 0.34
   },
   {
    "type": "fin",

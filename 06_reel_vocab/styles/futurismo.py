@@ -213,7 +213,7 @@ class Style:
                 v = np.median(fl[f2], axis=0) - dcam
                 sp = float(np.linalg.norm(v))
                 if sp > 0.3:
-                    a = min(0.12, 0.03 * sp)
+                    a = min(0.05, 0.015 * sp)       # lent : lignes de force sans balancement
                     d = (1 - a) * self.dir + a * (v / sp)
                     self.dir = d / max(1e-6, np.linalg.norm(d))
                 self.vit = 0.9 * self.vit + 0.1 * sp
