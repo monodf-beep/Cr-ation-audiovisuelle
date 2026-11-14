@@ -692,6 +692,8 @@ def main():
         if kind == "accroche":  # seul « RUGBY » claque ; la musique entre dessus
             sfx.add(t0 + 0.35 + 0.16, "impact", name="impact_1", gain_db=3.0, label="RUGBY")
             music_start = t0 + 0.35 + 0.16
+            if s.get("promesse"):
+                sfx.add(t0 + s.get("promesse_t", 1.25) + 0.1, "claque", name="pop_4", label="promesse")
         if kind == "leone":
             # finale à la Leone : la musique s'arrête net sur la mesure, l'ambiance
             # retombe, la montée court sur les plans qui raccourcissent et s'arrête
@@ -815,6 +817,17 @@ def main():
                     sc = 1 + 1.2 * (1 - ease_out_back(pp, 1.3)) if pp < 1 else 1
                     l2 = lay.resize((int(lay.width * sc), int(lay.height * sc)), Image.BICUBIC) if sc != 1 else lay
                     out.alpha_composite(_alpha(l2, ease_out(pp * 2)), (int(W / 2 - l2.width / 2), int(yy - l2.height / 2)))
+                # promesse écrite : une étiquette blanche qui claque après la question
+                if s.get("promesse"):
+                    pp = (t - s.get("promesse_t", 1.25)) / 0.16
+                    if pp > 0:
+                        lay = text_layer(s["promesse"], font(F_BOLD, 60), fill=NUIT, shadow=False)
+                        box = Image.new("RGBA", (lay.width - 120 + 64, lay.height - 120 + 48), (255, 255, 255, 250))
+                        box.alpha_composite(lay, (32 - 60, 24 - 60))
+                        box = box.rotate(-4, expand=True, resample=Image.BICUBIC)
+                        sc = 1 + 0.8 * (1 - ease_out_back(pp, 1.3)) if pp < 1 else 1
+                        b2 = box.resize((int(box.width * sc), int(box.height * sc)), Image.BICUBIC) if sc != 1 else box
+                        out.alpha_composite(_alpha(b2, ease_out(pp * 2)), (int(W / 2 - b2.width / 2), int(1290 - b2.height / 2)))
             elif kind == "fin":
                 lines = s.get("texte", ["TU EN CONNAISSAIS", "COMBIEN ?"])
                 for li, txt in enumerate(lines):
