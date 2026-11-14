@@ -1035,14 +1035,14 @@ class Style:
 
     @staticmethod
     def _teinte(c, f):
-        return tuple(int(round(a * (1 - f) + b * f)) for a, b in zip(c, PELOUSE))
+        return tuple(int(round(a * (1 - f) + b * f)) for a, b in zip(c, CREME))
 
     def _echos(self, p, j):
         out = []
         if not self.echos or len(p.hist) < 3:
             return out
         mh = (j.k[HG] + j.k[HD]) / 2
-        for lag, f in ((4, 0.72), (2, 0.5)):
+        for lag, f in ((4, 0.62), (2, 0.42)):
             if len(p.hist) > lag:
                 old = p.hist[-1 - lag]
                 d = np.hypot(*(((old.k[HG] + old.k[HD]) / 2) - mh))
@@ -1267,6 +1267,14 @@ class Style:
                 obs.append(dict(t=t, i=best[1], rel=best[2], T=best[3], b=b))
             elif b[3] > 0.5:
                 obs.append(dict(t=t, i=None, rel=None, T=None, b=b))
+        # un seul porteur par plan (le plus souvent vu avec le ballon), sauf évidence forte
+        cnt = {}
+        for o in obs:
+            if o["i"] is not None:
+                cnt[o["i"]] = cnt.get(o["i"], 0) + 1
+        if cnt:
+            top = max(cnt, key=cnt.get)
+            obs = [o for o in obs if o["i"] == top or (o["i"] is not None and cnt[o["i"]] >= 3)]
         # confirmation : au moins 2 détections pour le même porteur (ou proches dans le temps)
         conf = []
         for o in obs:
@@ -1296,7 +1304,7 @@ class Style:
                     rel = (1 - w) * pr["rel"] + w * nx["rel"]
                 mh, T = repere(Ks[t], Bx[t])
                 c = mh + rel * T
-                ax = o["b"][1] * T / o["T"]
+                ax = np.float32([0.25 * T, 0.16 * T])   # ballon à l'échelle du porteur
                 res[t] = (c, ax, o["b"][2], 0)
             elif o["t"] == t:
                 res[t] = (o["b"][0], o["b"][1], o["b"][2], 0)

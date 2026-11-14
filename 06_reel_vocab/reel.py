@@ -739,7 +739,17 @@ def main():
         v = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
         v = v / max(1e-6, np.abs(v).max())
         for tr, tf, d in vo["reperes"]:
-            piece = v[int(tf * SR): int((tf + d) * SR)]
+            piece = v[int(tf * SR): int((tf + d) * SR)].copy()
+            # nivelage réplique par réplique (±4 dB max) vers -17 dBFS RMS sur la partie parlée,
+            # puis petits fondus pour ne jamais entendre une coupe
+            e = envelope(piece, 0.02)
+            act = piece[e > e.max() * 0.25]
+            if len(act):
+                rms = np.sqrt((act ** 2).mean())
+                piece *= 10 ** (np.clip(-17 - 20 * np.log10(rms + 1e-9), -4, 4) / 20)
+            fi, fo = int(0.012 * SR), int(0.045 * SR)
+            piece[:fi] *= np.linspace(0, 1, fi)
+            piece[-fo:] *= np.linspace(1, 0, fo)
             mix_at(voice, np.repeat(piece[:, None], 2, 1), tr, 10 ** (vo.get("gain_db", -2) / 20))
             i, j = int(tr * SR), int((tr + d) * SR)
             duck[max(0, i - 4800): j + 4800] = 10 ** (-9 / 20)
