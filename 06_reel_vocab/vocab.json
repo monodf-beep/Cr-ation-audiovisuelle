@@ -20,7 +20,7 @@
     {"sv": "L'arbitro", "fr": "l'arbitre", "plan": ["143416", 0.5, 1.0]},
     {"sv": "La pènalitât", "fr": "la pénalité", "plan": ["125950", 26.0, 1.0]},
     {"sv": "Lo champ", "fr": "le terrain", "plan": ["135004", 20.0, 1.0]},
-    {"sv": "La pâsse", "fr": "la passe", "plan": ["143456", 5.0, 1.0]},
+    {"sv": "Lo passâjo", "fr": "la passe", "plan": ["143456", 5.0, 1.0]},
     {"sv": "Lo calço", "fr": "le coup de pied", "plan": ["143456", 25.0, 1.0]},
     {"sv": "La transformacion", "fr": "la transformation", "plan": ["125644", 0.5, 0.6]}
   ]
