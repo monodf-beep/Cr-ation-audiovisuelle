@@ -96,7 +96,7 @@ def detecter(rgb):
     for i in range(len(l)):
         if l[i] == 1 and s[i] >= 0.3:
             pers.append(dict(box=b[i] * DS, score=float(s[i]), mask=m[i, 0] > 0.5))
-        elif l[i] == 37 and s[i] >= 0.12:
+        elif l[i] == 37 and s[i] >= 0.08:
             bal.append(dict(box=b[i] * DS, score=float(s[i]), mask=m[i, 0] > 0.5))
     return pers, bal
 
@@ -142,16 +142,25 @@ def poses(rgb, boxes):
 def horizon(rgb):
     """Ligne haute de la pelouse (y en px 1080x1920, droite horizontale), 0 si tout pelouse."""
     sm = cv2.resize(rgb, (135, 240), interpolation=cv2.INTER_AREA)
-    hsv = cv2.cvtColor(sm, cv2.COLOR_RGB2HSV)
-    g = ((hsv[..., 0] > 30) & (hsv[..., 0] < 90) & (hsv[..., 1] > 55) & (hsv[..., 2] > 45)).astype(np.float32)
+    hsv = cv2.cvtColor(sm, cv2.COLOR_RGB2HSV).astype(np.float32)
+    # couleur de référence de la pelouse : bas de l'image, pixels verts
+    bas = hsv[-60:].reshape(-1, 3)
+    vb = bas[(bas[:, 0] > 28) & (bas[:, 0] < 95) & (bas[:, 1] > 35)]
+    if len(vb) < 200:
+        return 0.0
+    rh, rs = np.median(vb[:, 0]), np.median(vb[:, 1])
+    g = ((np.abs(hsv[..., 0] - rh) < 13) & (hsv[..., 1] > 0.55 * rs) & (hsv[..., 2] > 45)).astype(np.float32)
     f = np.convolve(g.mean(1), np.ones(3) / 3, "same")
-    w = 18
-    best, by = 0.0, 0
-    for y in range(4, 240 - w):
-        sc = f[y:y + w].mean() - f[max(0, y - w):y].mean()
-        if sc > best:
-            best, by = sc, y
-    if best < 0.35 or f[:by].mean() > 0.45:
+    # frontière la plus haute : au-dessus pas de pelouse, en dessous surtout pelouse
+    # (les joueurs masquent une partie de la pelouse, d'où un seuil modéré)
+    if f[:12].mean() > 0.5:
+        return 0.0
+    by = None
+    for y in range(6, 240 - 30):
+        if f[max(0, y - 18):y].mean() < 0.15 and f[y:y + 30].mean() > 0.3 and f[y:y + 4].mean() > 0.2:
+            by = y
+            break
+    if by is None:
         return 0.0
     return by * H / 240.0
 
@@ -1199,7 +1208,7 @@ class Style:
         # rendu
         Piste_rel_reset = {}
         res = [None] * n
-        bal = self._ballon_shot(ans)
+        bal = self._ballon_shot(ans, tracks)
         for t, k in enumerate(idxs):
             joueurs, echos = [], []
             for p, Ks, Bx, have in tracks:
@@ -1227,33 +1236,83 @@ class Style:
             seen[p.id] = p
         return list(seen.values())
 
-    def _ballon_shot(self, ans):
+    def _ballon_shot(self, ans, tracks):
+        """Ballon sur le plan entier. Chaque détection est rattachée à son porteur
+        (poignets / buste les plus proches) ; entre deux détections, ou juste avant /
+        après, le ballon suit le porteur (position relative interpolée)."""
         Np = len(ans)
-        obs = [a["bal"] for a in ans]
+
+        def repere(k, box):
+            mh = (k[HG, :2] + k[HD, :2]) / 2
+            ms = (k[EG, :2] + k[ED, :2]) / 2
+            T = max(float(np.hypot(*(ms - mh))), 0.22 * (box[3] - box[1]))
+            return mh, T
+
+        obs = []
+        for t, a in enumerate(ans):
+            b = a["bal"]
+            if b is None:
+                continue
+            best = None
+            for i, (p, Ks, Bx, have) in enumerate(tracks):
+                if not have[t]:
+                    continue
+                k = Ks[t]
+                mh, T = repere(k, Bx[t])
+                pts = [k[PG, :2], k[PD, :2], (k[EG, :2] + k[ED, :2] + k[HG, :2] + k[HD, :2]) / 4]
+                d = min(np.hypot(*(q - b[0])) for q in pts)
+                if d < 1.1 * T and (best is None or d < best[0]):
+                    best = (d, i, (b[0] - mh) / T, T)
+            if best is not None:
+                obs.append(dict(t=t, i=best[1], rel=best[2], T=best[3], b=b))
+            elif b[3] > 0.5:
+                obs.append(dict(t=t, i=None, rel=None, T=None, b=b))
+        # confirmation : au moins 2 détections pour le même porteur (ou proches dans le temps)
+        conf = []
+        for o in obs:
+            n_same = sum(1 for q in obs if q is not o and q["i"] == o["i"] and o["i"] is not None)
+            n_near = sum(1 for q in obs if q is not o and abs(q["t"] - o["t"]) <= 3)
+            if n_same >= 1 or n_near >= 1:
+                conf.append(o)
         res = [None] * Np
-        ok = [o is not None for o in obs]
         for t in range(Np):
-            # confirmé si une autre détection à <=3 images dessinées
-            if ok[t] and any(ok[u] for u in range(max(0, t - 3), min(Np, t + 4)) if u != t):
-                res[t] = obs[t]
-        # trous courts : interpolation
-        ts = [t for t in range(Np) if res[t] is not None]
-        for a, b in zip(ts[:-1], ts[1:]):
-            if 1 < b - a <= 4:
-                for t in range(a + 1, b):
-                    w = (t - a) / (b - a)
-                    res[t] = ((1 - w) * res[a][0] + w * res[b][0], (1 - w) * res[a][1] + w * res[b][1], res[b][2], 0)
+            if not conf:
+                break
+            av = [o for o in conf if o["t"] <= t]
+            ap = [o for o in conf if o["t"] >= t]
+            pr = av[-1] if av else None
+            nx = ap[0] if ap else None
+            cand = [o for o in (pr, nx) if o is not None and abs(o["t"] - t) <= 8]
+            if not cand:
+                continue
+            o = min(cand, key=lambda o: abs(o["t"] - t))
+            if o["i"] is not None:
+                p, Ks, Bx, have = tracks[o["i"]]
+                if not have[t]:
+                    continue
+                rel = o["rel"]
+                if pr is not None and nx is not None and pr["i"] == nx["i"] == o["i"] and nx["t"] > pr["t"]:
+                    w = (t - pr["t"]) / (nx["t"] - pr["t"])
+                    rel = (1 - w) * pr["rel"] + w * nx["rel"]
+                mh, T = repere(Ks[t], Bx[t])
+                c = mh + rel * T
+                ax = o["b"][1] * T / o["T"]
+                res[t] = (c, ax, o["b"][2], 0)
+            elif o["t"] == t:
+                res[t] = (o["b"][0], o["b"][1], o["b"][2], 0)
+        # lissage léger de la position
         out = []
-        prev = None
-        for r in res:
+        for t in range(Np):
+            r = res[t]
             if r is None:
                 out.append(None)
-                prev = None
                 continue
-            if prev is not None:
-                r = (0.5 * prev[0] + 0.5 * r[0], 0.6 * prev[1] + 0.4 * r[1], r[2], 0)
-            out.append(r)
-            prev = r
+            num, den = np.zeros(2, np.float32), 0.0
+            for u, w in ((t - 1, 0.25), (t, 0.5), (t + 1, 0.25)):
+                if 0 <= u < Np and res[u] is not None:
+                    num += w * res[u][0]
+                    den += w
+            out.append((num / den, r[1], r[2], 0))
         return out
 
 
