@@ -110,25 +110,8 @@ footer { color: var(--dim); font-size: 12px; line-height: 1.5; }
 
 <script>
 // Répliques calées sur le montage (secondes du reel). say = instant où parler.
-const CUES = [
-  { t0: 0.0,  t1: 3.2,  silence: true, text: "Ouverture : le stade et le commentateur. Silence." },
-  { t0: 3.2,  t1: 5.7,  say: 3.25, text: "Turin. Et si on parlait rugby… en savoyard ?" },
-  { t0: 5.7,  t1: 6.7,  silence: true, text: "Focus sur le ballon. Silence." },
-  { t0: 6.70,  t1: 8.70,  say: 7.25, text: "Lo pallon",    fr: "le ballon" },
-  { t0: 8.70,  t1: 10.70,  say: 9.25, text: "Lo bu",        fr: "l'en-but" },
-  { t0: 10.70,  t1: 12.70, say: 11.25, text: "Lo placâjo",  fr: "le plaquage" },
-  { t0: 12.70, t1: 14.70, say: 13.25, text: "La mècllâye", fr: "la mêlée" },
-  { t0: 14.70, t1: 16.70, say: 15.25, text: "La toche",    fr: "la touche" },
-  { t0: 16.70, t1: 18.70, say: 17.25, text: "L'arbitro",   fr: "l'arbitre" },
-  { t0: 18.70, t1: 20.70, say: 19.25, text: "La pènalitât", fr: "la pénalité" },
-  { t0: 20.70, t1: 22.70, say: 21.25, text: "Lo champ",    fr: "le terrain" },
-  { t0: 22.70, t1: 24.70, say: 23.25, text: "Lo passâjo",    fr: "la passe" },
-  { t0: 24.70, t1: 26.70, say: 25.25, text: "Lo calço",    fr: "le coup de pied" },
-  { t0: 26.70, t1: 29.50, silence: true, text: "Finale à la Leone. Silence total." },
-  { t0: 29.50, t1: 32.0, say: 29.75, text: "Et pour finir… la transformacion !", fr: "la transformation" },
-  { t0: 32.0, t1: 35.40, say: 32.15, text: "Tu en connaissais combien ? Dis-le en commentaire !" },
-];
-const TOTAL = 35.4, LEAD = 0.9, SAYLEN = 1.1;
+const CUES = __CUES__;
+const TOTAL = __TOTAL__, LEAD = 0.9, SAYLEN = 1.1;
 const $ = (id) => document.getElementById(id);
 const vid = $("vid");
 let ctx = null, t0 = null, raf = null, running = false, wake = null;

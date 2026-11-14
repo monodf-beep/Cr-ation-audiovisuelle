@@ -66,10 +66,10 @@ GRIS = (96, 84, 76)
 PEAUX_F = [(238, 194, 152), (212, 152, 106), (166, 106, 70), (112, 70, 46)]   # chair clair -> foncé
 BAL_BLANC = (250, 247, 238)
 BAL_BLEU = (34, 62, 164)
-FP = [NERO, TERRA, OCRE, CREMA, GRIS, LC.AZUR_LC, LC.SB_VERT_LC, LC.OR_LC] + PEAUX_F + [BAL_BLANC, BAL_BLEU]
+FP = [NERO, TERRA, OCRE, CREMA, GRIS, LC.AZUR_LC, LC.SB_VERT_LC, LC.OR_LC] + PEAUX_F + [BAL_BLANC, BAL_BLEU, VERMIGLIO]
 C_NERO, C_TERRA, C_OCRE, C_CREMA, C_GRIS, C_AZ, C_SB, C_OR = range(8)
 C_PEAU = list(range(8, 8 + len(PEAUX_F)))
-C_BB, C_BL = 8 + len(PEAUX_F), 9 + len(PEAUX_F)
+C_BB, C_BL, C_VE = 8 + len(PEAUX_F), 9 + len(PEAUX_F), 10 + len(PEAUX_F)
 C_EQUIPE = (C_AZ, C_SB, C_OR)
 FP_RGB = np.array(FP, np.uint8)
 FP_LAB = B._lab(FP)
@@ -191,14 +191,51 @@ class Style:
         return out
 
     # -- nettoyage de la carte de classes (basse résolution) -----------------------
-    def _nettoyer(self, ci, fig, cl, pers, lab_src, k):
+    def _tenues(self, lab, ci, autre):
+        """Classe des vêtements / reste des figures d'après la couleur (Lab stable) :
+        couleurs d'équipe franches, sinon crème ou noir. Hystérésis par pixel."""
+        L, A, Bb = lab[..., 0], lab[..., 1], lab[..., 2]
+        C = np.hypot(A, Bb)
+        hue = np.degrees(np.arctan2(Bb, A)) % 360
+        pv = self.prev_c if (self.prev_c is not None and self.prev_c.shape == ci.shape) else None
+
+        def regles(r):
+            # r = 1 : strict ; r < 1 : relâché (pour garder la classe précédente)
+            m = {}
+            m[C_SB] = (hue > 105) & (hue < 215) & (C > np.where(L < 25, 5.0, 9.0) * r)
+            m[C_AZ] = (hue > 225) & (hue < 315) & (C > 14 * r)
+            m[C_OR] = (hue > 62) & (hue < 102) & (C > 38 * r) & (L > 55 * r)
+            m[C_VE] = ((hue < 58) | (hue > 340)) & (C > 46 * r) & (L > 30)
+            return m
+        out = ci.copy()
+        strict = regles(1.0)
+        res = np.where(L > 44, C_CREMA, C_NERO).astype(np.int32)
+        for c in (C_OR, C_VE, C_AZ, C_SB):
+            res[strict[c]] = c
+        if pv is not None:
+            rel = regles(0.6)
+            for c in (C_SB, C_AZ, C_OR, C_VE):
+                keep = (pv == c) & rel[c]
+                res[keep] = c
+            keep = (pv == C_CREMA) & (L > 36) & (res == C_NERO)
+            res[keep] = C_CREMA
+            keep = (pv == C_NERO) & (L < 52) & (res == C_CREMA)
+            res[keep] = C_NERO
+        # les couleurs d'équipe déjà trouvées par le Stylizer de base sont gardées
+        m = autre & ~np.isin(ci, C_EQUIPE)
+        out[m] = res[m]
+        return out
+
+    def _nettoyer(self, ci, fig, cl, pers, lab_src, lab_st, k, ballon=None):
         h, w = ci.shape
         L = lab_src[..., 0]
         equipe = np.isin(ci, C_EQUIPE)
+        hors_bal = np.ones((h, w), bool) if ballon is None else ~ballon
         # peau : étiquettes chair + peau MediaPipe (ombres comprises), hors couleurs d'équipe
         skin = (ci == C_SKIN)
         if cl is not None:
             skin |= pers & ((cl == 2) | (cl == 3)) & ~equipe
+        skin &= hors_bal
         # visages suivis : toujours un aplat chair plein (anonymat)
         for p in self.lc.base.visages.pistes:
             if p.get("age", 0) > 8:
@@ -210,11 +247,12 @@ class Style:
             skin |= e.astype(bool) & fig
         skin &= fig
         skin = cv2.morphologyEx(skin.astype(np.uint8), cv2.MORPH_CLOSE, B._disque(3 * k)).astype(bool) & fig
-        skin = _remplir_trous(skin, 0.12) & fig
+        skin = _remplir_trous(skin, 0.12) & fig & hors_bal
         cheveux = np.zeros((h, w), bool)
         if cl is not None:
-            cheveux = pers & (cl == 1) & ~equipe & ~skin & fig
-        out = ci.copy()
+            cheveux = pers & (cl == 1) & ~equipe & ~skin & fig & hors_bal
+        autre = fig & ~skin & ~cheveux & hors_bal
+        out = self._tenues(lab_st, ci, autre)
         out[skin] = C_PEAU[1]
         # une teinte chair par personne (composante connexe de peau)
         n, cc, st, _ = cv2.connectedComponentsWithStats(skin.astype(np.uint8), connectivity=8)
@@ -235,6 +273,8 @@ class Style:
             m = cc[sl] == i
             pv = None if self.prev_c is None else self.prev_c[sl]
             out[sl][m] = self._ton_dans(m, L[sl], pv, ch_c, ch_L, 10)
+        if ballon is not None:
+            out[ballon & fig] = C_BB
         out[~fig] = -1
         out[out == C_SKIN] = C_PEAU[1]
         # îlots : composantes trop petites -> aplat voisin (le plus proche)
@@ -242,7 +282,7 @@ class Style:
         amin = float(np.clip(0.004 * aire_fig, 14 * k * k, 700 * k * k))
         petit = np.zeros((h, w), bool)
         for c in np.unique(out):
-            if c < 0:
+            if c < 0 or c == C_BB:
                 continue
             m = (out == c).astype(np.uint8)
             n, cc, st, _ = cv2.connectedComponentsWithStats(m, connectivity=4)
@@ -291,60 +331,74 @@ class Style:
 
     # -- ballon ----------------------------------------------------------------------
     def _detecter_ballon(self, petit, fig, skin, k):
+        """Ballon = tache blanche + bande bleue de forme elliptique (près des mains)."""
         h, w = skin.shape
         hsv = cv2.cvtColor(cv2.medianBlur(petit, 3), cv2.COLOR_RGB2HSV)
         Hh, S, V = hsv[..., 0].astype(np.int16), hsv[..., 1].astype(np.int16), hsv[..., 2].astype(np.int16)
-        blanc = (S < 62) & (V > 140)
-        bleu = (Hh >= 100) & (Hh <= 135) & (S > 70) & (V > 45)
-        cand = (blanc | bleu).astype(np.uint8)
-        cand = cv2.morphologyEx(cand, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
-        cand = cv2.morphologyEx(cand, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
-        n, cc, st, _ = cv2.connectedComponentsWithStats(cand, connectivity=8)
+        blanc = (S < 46) & (V > 172)
+        bleu = (Hh >= 100) & (Hh <= 140) & (S > 45) & (V > 25)
+        self._bal_coul = blanc | bleu
         best, bs = None, 0.0
-        for i in range(1, n):
-            x, y, bw, bh, a = st[i]
-            if a < 22 * k * k or a > 0.2 * w * h:
-                continue
-            sl = (slice(y, y + bh), slice(x, x + bw))
-            m = cc[sl] == i
-            wf = float(blanc[sl][m].mean())
-            bf = float(bleu[sl][m].mean())
-            if wf < 0.2 or bf < 0.06 or wf + bf < 0.8:
-                continue
-            cs, _ = cv2.findContours(m.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-            c = max(cs, key=cv2.contourArea)
-            hull = cv2.convexHull(c)
-            pts = hull.reshape(-1, 2)
-            # points du bord de l'image exclus de l'ajustement (ballon coupé)
-            gx, gy = pts[:, 0] + x, pts[:, 1] + y
-            ok = (gx > 1) & (gx < w - 2) & (gy > 1) & (gy < h - 2)
-            if ok.sum() < 5:
-                continue
-            (ex, ey), (d1, d2), ang = cv2.fitEllipse(pts[ok].reshape(-1, 1, 2).astype(np.float32))
-            if not (np.isfinite(ex) and d1 > 2 and d2 > 2):
-                continue
-            ra = max(d1, d2) / min(d1, d2)
-            if ra > 2.3:
-                continue
-            em = np.zeros((h, w), np.uint8)
-            cv2.ellipse(em, ((ex + x, ey + y), (d1, d2), ang), 1, -1)
-            em = em.astype(bool)
-            ae = em.sum()
-            if ae < 10:
-                continue
-            reg = np.zeros((h, w), bool)
-            reg[sl] = m
-            occ = reg | (skin & em)
-            inter = (occ & em).sum()
-            iou = inter / max(1, (occ | em).sum())
-            plein = reg[em].mean()
-            if iou < 0.62 or plein < 0.5:
-                continue
-            sc = iou * min(1.0, bf / 0.15) * (1.15 if (skin & cv2.dilate(em.astype(np.uint8),
-                                                                     B._disque(5 * k)).astype(bool)).any() else 1.0)
-            if sc > bs:
-                bs, best = sc, dict(c=np.array([ex + x, ey + y], np.float32), ax=np.array([d1, d2], np.float32),
-                                     ang=float(ang), sc=sc)
+        for r in (3, 5, 7):
+            cand = (blanc | bleu).astype(np.uint8)
+            cand = cv2.morphologyEx(cand, cv2.MORPH_OPEN, B._disque(r))
+            cand = cv2.morphologyEx(cand, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+            n, cc, st, _ = cv2.connectedComponentsWithStats(cand, connectivity=8)
+            for i in range(1, n):
+                x, y, bw, bh, a = st[i]
+                if a < 22 * k * k or a > 0.2 * w * h:
+                    continue
+                sl = (slice(y, y + bh), slice(x, x + bw))
+                m = cc[sl] == i
+                wf = float(blanc[sl][m].mean())
+                bf = float(bleu[sl][m].mean())
+                if wf < 0.3 or bf < 0.06 or wf + bf < 0.8:
+                    continue
+                # partie la plus « épaisse » seulement (coupe les appendices collés au ballon)
+                dtm = cv2.distanceTransform(np.pad(m.astype(np.uint8), 1), cv2.DIST_L2, 5)[1:-1, 1:-1]
+                ry, rx = np.unravel_index(int(np.argmax(dtm)), dtm.shape)
+                rr = float(dtm[ry, rx])
+                if rr < 2.5 * k:
+                    continue
+                yy, xx = np.ogrid[:bh, :bw]
+                m = m & (((yy - ry) ** 2 + (xx - rx) ** 2) < (1.75 * rr) ** 2)
+                cs, _ = cv2.findContours(m.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                c = max(cs, key=cv2.contourArea)
+                pts = cv2.convexHull(c).reshape(-1, 2)
+                gx, gy = pts[:, 0] + x, pts[:, 1] + y
+                ok = (gx > 1) & (gx < w - 2) & (gy > 1) & (gy < h - 2)
+                if ok.sum() < 5:
+                    continue
+                (ex, ey), (d1, d2), ang = cv2.fitEllipse(pts[ok].reshape(-1, 1, 2).astype(np.float32))
+                if not (np.isfinite(ex) and d1 > 3 and d2 > 3):
+                    continue
+                if max(d1, d2) / min(d1, d2) > 2.2:
+                    continue
+                em = np.zeros((h, w), np.uint8)
+                cv2.ellipse(em, ((ex + x, ey + y), (d1, d2), ang), 1, -1)
+                em = em.astype(bool)
+                if em.sum() < 12:
+                    continue
+                reg = np.zeros((h, w), bool)
+                reg[sl] = m
+                hm = np.zeros((h, w), np.uint8)
+                cv2.fillPoly(hm, [cv2.convexHull(c) + np.int32([x, y])], 1)
+                occ = hm.astype(bool) | (skin & em)
+                iou = (occ & em).sum() / max(1, (occ | em).sum())
+                plein = reg[em].mean()
+                if iou < 0.78 or plein < 0.45:
+                    continue
+                main = (skin & cv2.dilate(em.astype(np.uint8), B._disque(5 * k)).astype(bool)).any()
+                sc = iou * min(1.0, bf / 0.15) * (1.15 if main else 1.0)
+                if self.bal is not None:      # continuité avec la piste (position, taille)
+                    dd = np.linalg.norm(np.array([ex + x, ey + y]) - self.bal["c"]) / max(4.0, float(self.bal["ax"].max()))
+                    rt = np.sqrt(d1 * d2 / max(1.0, float(self.bal["ax"].prod())))
+                    if rt < 0.55 or rt > 1.8:
+                        continue
+                    sc *= (1.3 if dd < 0.8 else 0.8) * float(np.exp(-2.0 * abs(np.log(rt))))
+                if sc > bs:
+                    bs, best = sc, dict(c=np.array([ex + x, ey + y], np.float32),
+                                         ax=np.array([d1, d2], np.float32), ang=float(ang), sc=sc)
         if best is None:
             return None
         bl = (bleu & ~skin).astype(np.float32)
@@ -369,7 +423,8 @@ class Style:
                 P["bleu_img"] = det["bleu"]
                 return P
             A = self.bal_att
-            if A is not None and np.linalg.norm(det["c"] - A["c"]) < 0.9 * float(A["ax"].max()) + 6:
+            if A is not None and det["sc"] > 0.8 and A["sc"] > 0.8 \
+                    and np.linalg.norm(det["c"] - A["c"]) < 0.9 * float(A["ax"].max()) + 6:
                 det["miss"] = 0
                 det["v"] = np.zeros(2, np.float32)
                 det["can"] = None
@@ -493,13 +548,21 @@ class Style:
         hors = fig & (np.isin(e, list(foule)) | (e == ipel))
         ci[hors] = -1
         ci = self._combler(ci, np.zeros_like(fig), fig)
-        ci = self._nettoyer(ci, fig, cl, pers, lab_src, k)
-        ci[~fig] = -1
-
-        # ballon : détection + suivi
-        skin_lr = np.isin(ci, C_PEAU)
-        det = self._detecter_ballon(petit, fig | pers, skin_lr, k)
+        # ballon : détection + suivi (avant le nettoyage : il n'est ni peau ni tenue)
+        skin0 = (ci == C_SKIN)
+        if cl is not None:
+            skin0 = skin0 | (pers & ((cl == 2) | (cl == 3)))
+        det = self._detecter_ballon(petit, fig | pers, skin0, k)
         P = self._suivre_ballon(det, None)
+        bal_lr = None
+        if P is not None:
+            em = np.zeros((h, w), np.uint8)
+            cv2.ellipse(em, ((float(P["c"][0]), float(P["c"][1])), (float(P["ax"][0]), float(P["ax"][1])),
+                             float(P["ang"])), 1, -1)
+            bal_lr = em.astype(bool) & self._bal_coul
+            fig = fig | em.astype(bool)
+        ci = self._nettoyer(ci, fig, cl, pers, lab_src, b.prev["lab"], k, bal_lr)
+        ci[~fig] = -1
 
         # mouvement : caméra (fond) et action (figures), lissés
         gris = cv2.resize(cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY), (w // 2, h // 2),

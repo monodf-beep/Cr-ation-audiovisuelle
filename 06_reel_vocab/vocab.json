@@ -12,6 +12,7 @@
   "cta": "Dis-le en commentaire",
   "signature": "langue-savoyarde.com",
   "mots": [
+    {"sv": "Stado", "fr": "le stade"},
     {"sv": "Lo pallon", "fr": "le ballon", "plan": ["125950", 2.0, 1.0]},
     {"sv": "Lo bu", "fr": "l'en-but", "plan": ["130210", 0.2, 1.0]},
     {"sv": "Lo placâjo", "fr": "le plaquage", "plan": ["125950", 12.0, 1.0]},
@@ -22,6 +23,7 @@
     {"sv": "Lo champ", "fr": "le terrain", "plan": ["135004", 20.0, 1.0]},
     {"sv": "Lo passâjo", "fr": "la passe", "plan": ["143456", 5.0, 1.0]},
     {"sv": "Lo calço", "fr": "le coup de pied", "plan": ["143456", 25.0, 1.0]},
+    {"sv": "Fanatico", "fr": "le supporter"},
     {"sv": "La transformacion", "fr": "la transformation", "plan": ["125644", 0.5, 0.6]}
   ]
 }
