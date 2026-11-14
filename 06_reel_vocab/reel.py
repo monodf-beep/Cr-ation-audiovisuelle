@@ -172,13 +172,31 @@ def prep_clip(seg, cfg, style_obj, out):
     styl = style_obj is not None and seg.get("styliser", pro)
     if styl:
         style_obj.reset()
+    # focus ballon : le style change très vite (liste « styles_seq », une durée en
+    # images par changement dans « cadence »), « reel » = image non stylisée
+    seq = seg.get("styles_seq")
+    sched = []
+    if seq:
+        for j, nfr in enumerate(seg["cadence"]):
+            sched += [seq[j % len(seq)]] * nfr
+        _styles = {}
+    prev = None
     for k, f in enumerate(frames):
         win = window(k)
         if win is not None:
             x, y, cw, ch = win
             f = cv2.resize(np.ascontiguousarray(f[y:y + ch, x:x + cw]), (W, H),
                            interpolation=cv2.INTER_LANCZOS4)
-        if styl:
+        if seq:
+            name = sched[min(k, len(sched) - 1)]
+            if name != "reel":
+                if name not in _styles:
+                    _styles[name] = load_style(name)
+                if name != prev:
+                    _styles[name].reset()
+                f = _styles[name](np.ascontiguousarray(f))
+            prev = name
+        elif styl:
             f = style_obj(np.ascontiguousarray(f))
         enc.stdin.write(np.ascontiguousarray(f).tobytes())
     enc.stdin.close()
@@ -233,7 +251,7 @@ def read_audio(cfg, seg, piste):
 #  - niveaux crête par rôle (dBFS) puis master -14 LUFS, -1 dBTP.
 SONS = os.path.join(HERE, "sons")
 CRETE = {"impact": -4, "whoosh": -9, "montee": -12, "sifflet": -8, "clameur": -8,
-         "pop": -14, "musique": -3, "coup_de_pied": -5}
+         "pop": -10, "musique": -3, "coup_de_pied": -5}
 _CACHE = {}
 
 
@@ -532,6 +550,8 @@ def main():
         import hashlib
         mk = masks_for(cfg, s)
         extra += f"_{s.get('cx_debut','')}_{s.get('cx_fin','')}_v2"
+        if s.get("styles_seq"):
+            extra += "_seq" + hashlib.md5(json.dumps([s["styles_seq"], s["cadence"]]).encode()).hexdigest()[:6]
         if mk:
             extra += "_m" + hashlib.md5(json.dumps(mk, sort_keys=True).encode()).hexdigest()[:8]
         tag = f"{i:02d}_{s['src']}_{s['start']}_{s['dur']}_{s.get('vitesse',1)}{extra}_{cfg.get('style') if styl else 'brut'}"
@@ -586,6 +606,16 @@ def main():
                 sfx.add(t0 + s["dur"] - 0.12, "montee", anchor="end", label="montée Leone")
                 kick_t = t0 + s["dur"]
                 sfx.add(t0 + s["dur"] - 0.01, "coup_de_pied", name="coup_de_pied", anchor="arrive", label="frappe")
+        if kind == "ballon":
+            # pas de mitraillette : prises différentes en rotation, rythme qui
+            # accélère puis ralentit (celui de la cadence), hauteur qui monte,
+            # volume qui varie de ±2 dB
+            tt = t0
+            nch = len(s["cadence"])
+            for j, nfr in enumerate(s["cadence"]):
+                sfx.add(tt, "pop", anchor="arrive", st=-2 + 6 * j / max(1, nch - 1),
+                        gain_db=float(rng.uniform(-2, 2)), max_dur=0.18, label=f"ballon {j}")
+                tt += nfr / FPS
         if kind == "froid":  # coup de zoom final = mouvement de caméra -> whoosh
             sfx.add(t0 + s["dur"] - 0.25, "whoosh", anchor="peak", max_dur=0.9, label="zoom ouverture")
         if kind == "fin":
@@ -612,13 +642,13 @@ def main():
             a_ = grade(img, "pro" if s["src"] == "pro" else "rush")
             # flash d'impact / de coupe
             fl = 0
-            if si > 0 and fi < 3 and kind != "leone":
+            if si > 0 and fi < 3 and kind not in ("leone", "ballon"):
                 fl = 0.5 * (1 - fi / 3)
             if impact is not None and 0 <= t - impact < 0.1:
                 fl = max(fl, 0.55 * (1 - (t - impact) / 0.1))
             if fl:
                 a_ = a_ * (1 - fl) + fl
-            out = Image.fromarray(finish(a_, 0.45 if kind == "mot" else 0 if kind in ("froid", "leone") else 0.25)).convert("RGBA")
+            out = Image.fromarray(finish(a_, 0.45 if kind == "mot" else 0 if kind in ("froid", "leone", "ballon") else 0.25)).convert("RGBA")
 
             if kind == "mot":
                 card.draw(out, t, s["dur"])

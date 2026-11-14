@@ -46,3 +46,9 @@ Si `musique.wav` est utilisée :
 Tout le reste est en CC0 : pas de crédit obligatoire. Une mention reste possible, par courtoisie :
 
 > Sons : Freesound / Wikimedia Commons (CC0) — XHALE303, Rizzard, Kievinay, D4XX, LloydEvans09, qubodup, SpliceSound, 14FPanskaBubik_Lukas, jonsept, Pól, NovaSoundTechnology, Nicolas4677, mrrap4food, yottasounds
+
+## Sons dérivés (focus ballon)
+
+`pop_1` … `pop_6` sont de courts extraits (≤ 0,18 s) des fichiers ci-dessus, découpés et
+normalisés pour la séquence « focus ballon » : pop_1 ← tic_lettre, pop_2 ← coup_de_pied,
+pop_3 ← impact_2, pop_4 ← whoosh_3, pop_5 ← sifflet, pop_6 ← impact_1 (mêmes auteurs, CC0).
