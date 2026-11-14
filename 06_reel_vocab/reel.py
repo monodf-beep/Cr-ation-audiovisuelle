@@ -321,12 +321,19 @@ class WordCard:
         self.n_letters = sum(1 for l in self.letters if l[0] is not None)
 
     STAGGER, LAND = 0.045, 0.14
+    IMPACT = 0.5   # la dernière lettre tombe toujours 0,5 s après la coupe :
+                   # mots de 2 s (= 1 mesure à 120 BPM) -> impacts sur les temps forts
 
-    def impact_time(self, t0=0.10):
-        return t0 + self.STAGGER * max(0, self.n_letters - 1) + self.LAND
+    def _timing(self):
+        n = max(1, self.n_letters - 1)
+        st = min(self.STAGGER, (self.IMPACT - self.LAND - 0.03) / n)
+        return self.IMPACT - self.LAND - st * n, st
+
+    def impact_time(self, t0=None):
+        return self.IMPACT
 
     def draw(self, fr, t, dur, cy=900):
-        t0 = 0.10
+        t0, stag = self._timing()
         # bandeau rouge oblique qui balaie
         bp = ease_out((t - 0.0) / 0.22)
         if bp > 0:
@@ -350,7 +357,7 @@ class WordCard:
         for lay, x, adv in self.letters:
             if lay is None:
                 continue
-            ts = t0 + self.STAGGER * k
+            ts = t0 + stag * k
             k += 1
             p = (t - ts) / self.LAND
             if p <= 0:

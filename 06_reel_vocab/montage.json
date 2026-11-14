@@ -24,8 +24,8 @@
   }
  },
  "musique": {
-  "debut_s": 0.0,
-  "gain_db": -12
+  "debut_s": 16.0,
+  "gain_db": -14
  },
  "timeline": [
   {
@@ -42,7 +42,7 @@
    "type": "accroche",
    "src": "r125433",
    "start": 0.0,
-   "dur": 2.4,
+   "dur": 2.5,
    "son": "plein",
    "gain": 0.45,
    "texte": [
