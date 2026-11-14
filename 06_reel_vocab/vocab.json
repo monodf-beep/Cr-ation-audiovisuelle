@@ -1,18 +1,20 @@
 {
-  "_note": "BROUILLON : les mots ci-dessous sont des emplacements provisoires, à remplacer par la liste fournie.",
   "theme": "RUGBY",
   "hook": ["Tu sais parler", "RUGBY", "en savoyard ?"],
   "outro": ["Tu en connaissais", "combien ?"],
   "cta": "Dis-le en commentaire",
   "signature": "langue-savoyarde.com",
   "mots": [
-    {"sv": "[mot 1]", "pron": "[prononciation]", "fr": "le ballon"},
-    {"sv": "[mot 2]", "pron": "[prononciation]", "fr": "la mêlée"},
-    {"sv": "[mot 3]", "pron": "[prononciation]", "fr": "l'essai"},
-    {"sv": "[mot 4]", "pron": "[prononciation]", "fr": "le terrain"},
-    {"sv": "[mot 5]", "pron": "[prononciation]", "fr": "les supporters"},
-    {"sv": "[mot 6]", "pron": "[prononciation]", "fr": "gagner"},
-    {"sv": "[mot 7]", "pron": "[prononciation]", "fr": "l'équipe"},
-    {"sv": "[mot 8]", "pron": "[prononciation]", "fr": "le match"}
+    {"sv": "La bâla",           "fr": "le ballon",         "plan": ["125950", 2.0, 1.0]},
+    {"sv": "L'at bu",           "fr": "l'en-but",          "plan": ["130210", 0.2, 1.0]},
+    {"sv": "Lo placâjo",        "fr": "le plaquage",       "plan": ["125950", 12.0, 1.0]},
+    {"sv": "La mècllâye",       "fr": "la mêlée",          "plan": ["125704", 0.2, 1.0]},
+    {"sv": "La toche",          "fr": "la touche",         "plan": ["125950", 20.0, 1.0]},
+    {"sv": "Lo colonèt",        "fr": "le poteau",         "plan": ["143332", 2.0, 1.0]},
+    {"sv": "L'arbitro",         "fr": "l'arbitre",         "plan": ["143416", 0.5, 1.0]},
+    {"sv": "Lo champ",          "fr": "le terrain",        "plan": ["135004", 20.0, 1.0]},
+    {"sv": "La pâsse",          "fr": "la passe",          "plan": ["143456", 5.0, 1.0]},
+    {"sv": "Lo calço",          "fr": "le coup de pied",   "plan": ["143456", 25.0, 1.0]},
+    {"sv": "La transformacion", "fr": "la transformation", "plan": ["125644", 0.5, 0.6]}
   ]
 }

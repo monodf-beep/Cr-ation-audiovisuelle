@@ -63,8 +63,8 @@ BROLL = [
     ("143456", 25.0, 1.0),
 ]
 
-T_HOOK, T_WORD, T_OUTRO = 2.6, 3.3, 3.6
-REVEAL = 1.15                        # délai avant la traduction
+T_HOOK, T_WORD, T_OUTRO = 2.6, 3.0, 3.6
+REVEAL = 1.0                        # délai avant la traduction
 
 
 # ---------------------------------------------------------------- outils
@@ -256,7 +256,7 @@ def main():
 
     cards = []
     for i, m in enumerate(mots):
-        sv = pill(m["sv"], fit_font(F_BLACK, m["sv"], 860, 150), BLANC, ROUGE + (255,),
+        sv = pill(m["sv"], fit_font(F_BLACK, m["sv"], 820, 140), BLANC, ROUGE + (255,),
                   padx=54, pady=34)
         pr = shadow_text(m.get("pron", ""), font(F_ITAL, 54)) if m.get("pron") else None
         fr = pill(m["fr"], fit_font(F_BOLD, m["fr"], 760, 84), NUIT, (255, 255, 255, 245),
@@ -268,7 +268,7 @@ def main():
     # --- plan de montage
     segs = [("hook", HOOK, T_HOOK, None)]
     for i in range(N):
-        segs.append(("mot", BROLL[i % len(BROLL)], T_WORD, i))
+        segs.append(("mot", tuple(mots[i]["plan"]) if "plan" in mots[i] else BROLL[i % len(BROLL)], T_WORD, i))
     segs.append(("outro", OUTRO, T_OUTRO, None))
     total = sum(s[2] for s in segs)
 
