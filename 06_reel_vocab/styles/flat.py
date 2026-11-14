@@ -183,6 +183,14 @@ class Style:
             perso = np.zeros((h, w), bool)
         # personnes prises pour de la foule (gros plans texturés) : on les reclasse
         a_refaire = perso & (e == F_TRIB)
+        # « foule » sous le bord haut de la pelouse (mêlée texturée, joueurs flous) :
+        # impossible en vrai -> reclassée entièrement
+        cum = np.cumsum((e == F_PEL), axis=0)
+        haut = np.argmax(cum >= max(4, int(6 * k)), axis=0).astype(np.float32)
+        haut[cum[-1] < max(4, int(6 * k))] = h
+        sous = (np.arange(h)[:, None] > haut[None, :] + 8 * k) & (e == F_TRIB)
+        a_refaire_tout = sous & ~a_refaire
+        a_refaire |= sous
         # tout ce qui n'est ni pelouse ni tribune : couleur flat la plus proche
         libre = (e != F_PEL) & (e != F_TRIB) | a_refaire
         visage_base = etiq >= b.n_normal + B.N_FOULE
@@ -213,14 +221,14 @@ class Style:
         if mp.sum() > 200:
             ref = np.median(lab[mp], axis=0)
             dg = np.linalg.norm((lab - ref) * np.array([0.8, 1, 1], np.float32), axis=2)
-            herbe = (dg < 11) & ~visage_base & np.isin(proche, [F_VE, F_VEO, F_GR, F_MA, F_BLO, F_JA])
+            herbe = (dg < 17) & ~visage_base & ~perso & np.isin(proche, [F_VE, F_VEO, F_GR, F_MA, F_BLO, F_JA])
             proche[herbe] = F_PEL
         # halo gris entre un maillot azur et l'herbe -> ombre azur
-        pres_az = cv2.dilate(np.isin(proche, [F_AZ, F_AZO]).astype(np.uint8), B._disque(3 * k)).astype(bool)
+        pres_az = cv2.dilate(np.isin(proche, [F_AZ, F_AZO]).astype(np.uint8), B._disque(7 * k)).astype(bool)
         proche[pres_az & np.isin(proche, [F_GR, F_MA, F_BLO])] = F_AZO
         # dans la foule reclassée, on ne garde que maillots / blanc / peau (sinon : tribune)
         utile = np.isin(proche, [F_AZ, F_AZO, F_VE, F_VEO, F_OR, F_ORO, F_BL] + PEAUX_F)
-        proche[a_refaire & ~utile] = F_TRIB
+        proche[a_refaire & ~a_refaire_tout & ~utile] = F_TRIB
         e = np.where(libre, proche, e)
 
         # peau : MediaPipe (visage + corps) -> aplat chair ; rouge sur peau = peau
