@@ -85,7 +85,7 @@ class Style:
     temporel : False pour une image isolée
     """
 
-    def __init__(self, temporel=True, fps=25.0, cote=540, epaisseur=2.6):
+    def __init__(self, temporel=True, fps=25.0, cote=450, epaisseur=2.6):
         self.lc = LC.Style(temporel=temporel, cote=cote)
         self.fps = fps
         self.epaisseur = epaisseur

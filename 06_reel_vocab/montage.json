@@ -1,0 +1,221 @@
+{
+ "travail": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/montage_v3",
+ "sortie": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/montage_v3/reel_v3.mp4",
+ "style": "ligne_claire",
+ "sources": {
+  "pro": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/pro/resume.mp4",
+   "w": 640,
+   "h": 360,
+   "foule": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/pro/sep/htdemucs/resume44/no_vocals.wav",
+   "foule_offset": 0.0
+  },
+  "r125433": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/125433.mp4"
+  },
+  "r132647": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/132647.mp4"
+  },
+  "r135004": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/135004.mp4"
+  },
+  "r143332": {
+   "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/rushes/143332.mp4"
+  }
+ },
+ "musique": {
+  "debut_s": 0.0,
+  "gain_db": -12
+ },
+ "timeline": [
+  {
+   "type": "froid",
+   "src": "pro",
+   "start": 165.8,
+   "dur": 3.2,
+   "cx_debut": 370,
+   "cx_fin": 390,
+   "son": "plein",
+   "gain": 1.0
+  },
+  {
+   "type": "accroche",
+   "src": "r125433",
+   "start": 0.0,
+   "dur": 2.4,
+   "son": "plein",
+   "gain": 0.45,
+   "texte": [
+    "ET SI ON PARLAIT",
+    "RUGBY",
+    "EN SAVOYARD ?"
+   ]
+  },
+  {
+   "type": "mot",
+   "sv": "Lo pallon",
+   "fr": "le ballon",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 120.6,
+   "vitesse": 0.6,
+   "cx_debut": 430,
+   "cx_fin": 250,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "Lo bu",
+   "fr": "l'en-but",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 296.65,
+   "vitesse": 0.6,
+   "cx_debut": 280,
+   "cx_fin": 230,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "Lo placâjo",
+   "fr": "le plaquage",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 82.0,
+   "vitesse": 0.8,
+   "cx_debut": 280,
+   "cx_fin": 250,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "La mècllâye",
+   "fr": "la mêlée",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 289.2,
+   "vitesse": 1.0,
+   "cx_debut": 330,
+   "cx_fin": 300,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "La toche",
+   "fr": "la touche",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 141.62,
+   "vitesse": 0.8,
+   "cx_debut": 420,
+   "cx_fin": 280,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "La colonèta",
+   "fr": "le poteau",
+   "dur": 2.0,
+   "src": "r143332",
+   "start": 2.0,
+   "son": "plein",
+   "gain": 0.5
+  },
+  {
+   "type": "mot",
+   "sv": "L'arbitro",
+   "fr": "l'arbitre",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 107.0,
+   "vitesse": 1.0,
+   "cx_debut": 420,
+   "cx_fin": 410,
+   "son": "foule",
+   "gain": 0.75,
+   "sifflet": true
+  },
+  {
+   "type": "mot",
+   "sv": "La pènalitât",
+   "fr": "la pénalité",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 265.4,
+   "vitesse": 1.0,
+   "cx_debut": 160,
+   "cx_fin": 160,
+   "son": "foule",
+   "gain": 0.75,
+   "sifflet": true
+  },
+  {
+   "type": "mot",
+   "sv": "Lo champ",
+   "fr": "le terrain",
+   "dur": 2.0,
+   "src": "r135004",
+   "start": 20.0,
+   "son": "plein",
+   "gain": 0.5
+  },
+  {
+   "type": "mot",
+   "sv": "La pâsse",
+   "fr": "la passe",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 259.4,
+   "vitesse": 0.6,
+   "cx_debut": 270,
+   "cx_fin": 320,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "Lo calço",
+   "fr": "le coup de pied",
+   "dur": 2.0,
+   "src": "pro",
+   "start": 123.5,
+   "vitesse": 0.7,
+   "cx_debut": 130,
+   "cx_fin": 115,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "mot",
+   "sv": "La transformacion",
+   "fr": "la transformation",
+   "dur": 2.5,
+   "src": "pro",
+   "start": 218.6,
+   "vitesse": 1.0,
+   "cx_debut": 105,
+   "cx_fin": 105,
+   "son": "foule",
+   "gain": 0.75
+  },
+  {
+   "type": "fin",
+   "src": "r132647",
+   "start": 4.6,
+   "dur": 3.4,
+   "son": "plein",
+   "gain": 0.45,
+   "texte": [
+    "TU EN CONNAISSAIS",
+    "COMBIEN ?"
+   ],
+   "cta": "Dis-le en commentaire",
+   "signature": "langue-savoyarde.com"
+  }
+ ]
+}
