@@ -3,15 +3,18 @@
 Miniature (couverture) du reel, alignée sur les slides « HOOK PHOTO » du
 carrousel Instagram publié (Template Master Carousel, brand kit franck monod) :
 
-- la photo occupe le haut et se fond en dégradé dans le rosso mattone ;
+- la photo occupe le haut et se fond en dégradé dans la couleur de fond
+  (Blu Savoia ou rosso mattone) ;
 - titre en Semplicità Gras, blanc, aligné à gauche, en phrase (pas en capitales),
   lettres serrées (-60) et interligne 0,9 ; le jaune ne sert qu'au chiffre ;
 - « fm » en bas à droite ;
 - tout le texte tient dans la zone 4:5 que la grille du profil affiche.
 
-Usage : miniature.py image_fond.png sortie.png [x_ballon y_ballon]
-(le ballon, s'il est donné, reste net par-dessus le dégradé)
+Usage : miniature.py image.png sortie.png [--fond blu|rosso] [--decalage N] [--ballon X,Y]
+  --decalage : déplacement vertical de la photo en px (négatif = vers le haut)
+  --ballon   : un point sur le ballon, qui reste alors net par-dessus le dégradé
 """
+import argparse
 import os
 import sys
 
@@ -22,12 +25,11 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOLD = os.path.join(HERE, "polices", "Semplicita-Bold.otf")
 MEDIUM = os.path.join(HERE, "polices", "Semplicita-Medium.otf")
-ROSSO, GIALLO, BLANC, NOIR = (0x93, 0x1E, 0x1E), (0xFF, 0xCF, 0x26), (0xFF, 0xFF, 0xFF), (0x1A, 0x1A, 0x1A)
+BLU, ROSSO, GIALLO, BLANC, NOIR = (0x4B, 0x61, 0xD1), (0x93, 0x1E, 0x1E), (0xFF, 0xCF, 0x26), (0xFF, 0xFF, 0xFF), (0x1A, 0x1A, 0x1A)
 W, H = 1080, 1920
 K = W / 1200                      # le brand kit est défini sur un canvas de 1200 px
 Y45 = (H - W * 5 // 4) // 2       # haut de la zone 4:5 (grille du profil) : 285
 MARGE = round(64 * K)
-DECALAGE = 110                    # la photo descend : la tête reste dans la zone 4:5
 
 TITRE = [[("13", GIALLO), (" mots de rugby", BLANC)], [("en savoyard.", BLANC)]]
 TAILLE_TITRE = round(110 * K)
@@ -47,28 +49,40 @@ def ecrit(d, x, y, morceaux, f, track):
         x += largeur(texte, f, track) + track * f.size
 
 
-src = Image.open(sys.argv[1]).convert("RGB").resize((W, H), Image.LANCZOS)
-# photo descendue de DECALAGE px ; la bande libérée en haut est noire et la photo
-# y entre en fondu (hors de la zone 4:5, sous l'en-tête des Reels)
+ap = argparse.ArgumentParser()
+ap.add_argument("image")
+ap.add_argument("sortie")
+ap.add_argument("--fond", choices=["blu", "rosso"], default="blu")
+ap.add_argument("--decalage", type=int, default=0)
+ap.add_argument("--ballon")
+arg = ap.parse_args()
+COULEUR = BLU if arg.fond == "blu" else ROSSO
+DECALAGE = arg.decalage
+
+src = Image.open(arg.image).convert("RGB")
+src = src.resize((W, round(src.height * W / src.width)), Image.LANCZOS)
 fond = Image.new("RGB", (W, H), NOIR)
 fond.paste(src, (0, DECALAGE))
-h0, h1 = DECALAGE, DECALAGE + 170
-u = np.clip((np.arange(H) - h0) / (h1 - h0), 0, 1)[:, None, None]
-fond = Image.fromarray((np.asarray(fond, np.float32) * u + np.array(NOIR, np.float32) * (1 - u)).astype(np.uint8))
+if DECALAGE > 0:
+    # bande libérée en haut : noire, la photo y entre en fondu (hors zone 4:5)
+    h0, h1 = DECALAGE, DECALAGE + 170
+    u = np.clip((np.arange(H) - h0) / (h1 - h0), 0, 1)[:, None, None]
+    fond = Image.fromarray((np.asarray(fond, np.float32) * u + np.array(NOIR, np.float32) * (1 - u)).astype(np.uint8))
 
-# fondu de la photo dans le rosso (comme les slides d'accroche du carrousel)
+# fondu de la photo dans la couleur de fond (comme les slides d'accroche du carrousel)
 d0, d1 = 1080, 1340
 t = np.clip((np.arange(H) - d0) / (d1 - d0), 0, 1)
 t = t * t * (3 - 2 * t)
 a = np.asarray(fond, np.float32)
-a = a * (1 - t)[:, None, None] + np.array(ROSSO, np.float32) * t[:, None, None]
+a = a * (1 - t)[:, None, None] + np.array(COULEUR, np.float32) * t[:, None, None]
 img = Image.fromarray(a.astype(np.uint8))
 
 # le ballon reste net devant le dégradé
-if len(sys.argv) > 4:
+if arg.ballon:
     p = np.asarray(fond)
     clair = (p.min(axis=2) > 170).astype(np.uint8)
-    bx, by = int(sys.argv[3]), int(sys.argv[4]) + DECALAGE
+    bx, by = (int(v) for v in arg.ballon.split(","))
+    by += DECALAGE
     zone = np.zeros_like(clair)
     zone[max(0, by - 210):by + 210, max(0, bx - 210):bx + 210] = 1
     clair = cv2.morphologyEx(clair * zone, cv2.MORPH_OPEN, np.ones((9, 9), np.uint8))
@@ -96,5 +110,5 @@ for ligne in TITRE:
 ffm = ImageFont.truetype(MEDIUM, round(64 * K))
 x_fm = round(1066 * K) - ffm.getlength("fm") / 2
 d.text((x_fm, Y45 + round(1365 * K) - ffm.getbbox("fm")[3] + 6), "fm", font=ffm, fill=BLANC)
-img.save(sys.argv[2])
-print("=>", sys.argv[2], f"titre {TAILLE_TITRE} px, bas du titre {bas_titre}, zone 4:5 {Y45}-{H - Y45}")
+img.save(arg.sortie)
+print("=>", arg.sortie, f"titre {TAILLE_TITRE} px, bas du titre {bas_titre}, zone 4:5 {Y45}-{H - Y45}")
