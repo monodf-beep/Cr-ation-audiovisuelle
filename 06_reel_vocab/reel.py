@@ -30,9 +30,15 @@ ROUGE = (200, 16, 46)
 BLANC = (255, 255, 255)
 NUIT = (14, 14, 20)
 
-F_DISPLAY = os.path.join(HERE, "polices", "Anton.ttf")
-F_BOLD = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
-F_BLACK = "/usr/share/fonts/opentype/inter/InterDisplay-Black.otf"
+# Typographie « R » : Bodoni (né à Saluzzo) pour les mots qui claquent,
+# Semplicità (fonderie Nebiolo, Turin, 1930) pour le texte.
+# Bodoni Moda : instance optique 11 pt (déliés plus épais, lisibles sur téléphone), OFL.
+# Semplicità : numérisation Leonardo Di Lena, CC BY-ND 3.0 (à créditer, fichier non modifié).
+F_DISPLAY = os.path.join(HERE, "polices", "BodoniModa-BlackItalic.ttf")
+F_ARTICLE = os.path.join(HERE, "polices", "BodoniModa-MediumItalic.ttf")
+F_BOLD = os.path.join(HERE, "polices", "Semplicita-Medium.otf")
+F_BLACK = os.path.join(HERE, "polices", "Semplicita-Bold.otf")
+TRACK = -0.01   # interlettrage des mots (em)
 
 
 # ================================================================ outils
@@ -71,51 +77,107 @@ def load_style(name):
     return mod.Style() if hasattr(mod, "Style") else mod.Stylizer()
 
 
+def masks_for(cfg, seg):
+    """Zones à nettoyer : celles de la source (habillage TV, écran géant…)
+    + celles du plan. Rectangles {x,y,w,h[,t0,t1]} en pixels de la source
+    (pro : 640x360 ; rushes : image redressée 1080x1920), temps en secondes
+    de la SOURCE."""
+    return cfg["sources"][seg["src"]].get("masques", []) + seg.get("masques", [])
+
+
+def inpaint_frames(frames, masks, start, speed, scale=1.0):
+    """Efface les zones (inpainting Telea) image par image."""
+    import cv2
+    if not masks:
+        return frames
+    out = []
+    h, w = frames.shape[1:3]
+    for k, f in enumerate(frames):
+        t = start + k / FPS * speed
+        m = np.zeros((h, w), np.uint8)
+        for r in masks:
+            if t < r.get("t0", -1e9) or t > r.get("t1", 1e9):
+                continue
+            x, y = int(r["x"]), int(r["y"])
+            m[max(0, y):y + int(r["h"]), max(0, x):x + int(r["w"])] = 255
+        if not m.any():
+            out.append(f)
+            continue
+        m = cv2.dilate(m, np.ones((5, 5), np.uint8))
+        if scale != 1.0:  # grandes images : on bouche en basse définition puis on recolle
+            sw, sh = int(w * scale), int(h * scale)
+            small = cv2.resize(f, (sw, sh), interpolation=cv2.INTER_AREA)
+            ms = cv2.resize(m, (sw, sh), interpolation=cv2.INTER_NEAREST)
+            fill = cv2.resize(cv2.inpaint(small, ms, 5, cv2.INPAINT_TELEA), (w, h),
+                              interpolation=cv2.INTER_CUBIC)
+            a = cv2.GaussianBlur(m, (0, 0), 3).astype(np.float32)[..., None] / 255
+            out.append((f * (1 - a) + fill * a).astype(np.uint8))
+        else:
+            out.append(cv2.inpaint(f, m, 4, cv2.INPAINT_TELEA))
+    return np.stack(out)
+
+
 def prep_clip(seg, cfg, style_obj, out):
-    """Écrit un clip 1080x1920 30 i/s (vidéo seule) pour le segment."""
+    """Écrit un clip 1080x1920 30 i/s (vidéo seule) pour le segment :
+    lecture à la résolution de la source -> nettoyage des incrustations ->
+    recadrage 9:16 (panoramique ou très gros plan) -> agrandissement -> style."""
+    import cv2
     if os.path.exists(out):
         return
     src = cfg["sources"][seg["src"]]
+    pro = seg["src"] == "pro"
     speed = seg.get("vitesse", 1.0)
     dur = seg["dur"]
     sdur = dur * speed + 0.15
-    if "z" in seg:
-        # très gros plan (finale à la Leone) : fenêtre 9:16 de hauteur z * hauteur source,
-        # centrée en (cx, cy) ; les rushes sont d'abord redressés en 1080x1920
-        pre = "" if seg["src"] == "pro" else f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
-        sw, sh = (src["w"], src["h"]) if seg["src"] == "pro" else (W, H)
-        ch = int(round(sh * seg["z"])) // 2 * 2
-        cw = int(round(ch * 9 / 16)) // 2 * 2
-        x = int(min(max(seg["cx"] - cw / 2, 0), sw - cw))
-        y = int(min(max(seg.get("cy", sh / 2) - ch / 2, 0), sh - ch))
-        vf = pre + f"crop={cw}:{ch}:{x}:{y},hqdn3d=3:3:4:4,scale={W}:{H}:flags=lanczos,"
-    elif seg["src"] == "pro":
-        # recadrage 9:16 avec panoramique linéaire cx_debut -> cx_fin
+    if pro:
         sw, sh = src["w"], src["h"]
-        cw = int(round(sh * 9 / 16)) // 2 * 2
-        a, b = seg.get("cx_debut", sw / 2), seg.get("cx_fin", seg.get("cx_debut", sw / 2))
-        x0 = f"min(max(({a}+({b}-{a})*t/{sdur:.3f})-{cw/2},0),{sw-cw})"
-        vf = (f"crop={cw}:{sh}:'{x0}':0,"
-              f"hqdn3d=3:3:4:4,scale={W}:{H}:flags=lanczos,")
+        vf = "hqdn3d=3:3:4:4,"
     else:
+        sw, sh = W, H
         vf = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
     vf += (f"setpts={1/speed:.4f}*PTS," if speed != 1 else "") + f"fps={FPS}"
     raw = run(["ffmpeg", "-v", "error", "-ss", str(seg["start"]), "-t", f"{sdur:.3f}",
                "-i", src["path"], "-vf", vf, "-an", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"])
-    n = len(raw) // (W * H * 3)
-    frames = np.frombuffer(raw, np.uint8)[: n * W * H * 3].reshape(n, H, W, 3)
+    n = len(raw) // (sw * sh * 3)
+    frames = np.frombuffer(raw, np.uint8)[: n * sw * sh * 3].reshape(n, sh, sw, 3)
     need = int(round(dur * FPS))
     if n < need:
         frames = np.concatenate([frames, np.repeat(frames[-1:], need - n, 0)])
     frames = frames[:need]
+    frames = inpaint_frames(frames, masks_for(cfg, seg), seg["start"], speed,
+                            scale=1.0 if pro else 0.5)
+
+    def window(k):
+        if "z" in seg:
+            ch = int(round(sh * seg["z"])) // 2 * 2
+            cw = int(round(ch * 9 / 16)) // 2 * 2
+            cx, cy = seg["cx"], seg.get("cy", sh / 2)
+        elif pro:
+            ch = sh
+            cw = int(round(sh * 9 / 16)) // 2 * 2
+            a = seg.get("cx_debut", sw / 2)
+            b = seg.get("cx_fin", a)
+            cx = a + (b - a) * min(1.0, (k / FPS * speed) / sdur)
+            cy = sh / 2
+        else:
+            return None
+        x = int(min(max(cx - cw / 2, 0), sw - cw))
+        y = int(min(max(cy - ch / 2, 0), sh - ch))
+        return x, y, cw, ch
+
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
                             "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
                             "-crf", "14", "-preset", "fast", "-pix_fmt", "yuv420p", out],
                            stdin=subprocess.PIPE)
-    styl = style_obj is not None and seg.get("styliser", seg["src"] == "pro")
+    styl = style_obj is not None and seg.get("styliser", pro)
     if styl:
         style_obj.reset()
-    for f in frames:
+    for k, f in enumerate(frames):
+        win = window(k)
+        if win is not None:
+            x, y, cw, ch = win
+            f = cv2.resize(np.ascontiguousarray(f[y:y + ch, x:x + cw]), (W, H),
+                           interpolation=cv2.INTER_LANCZOS4)
         if styl:
             f = style_obj(np.ascontiguousarray(f))
         enc.stdin.write(np.ascontiguousarray(f).tobytes())
@@ -298,14 +360,15 @@ def fit(path, text, max_w, start, mini=60):
 
 
 def split_article(sv):
-    """« La mècllâye » -> ('LA', 'MÈCLLÂYE') ; « L'arbitro » -> ("L'", 'ARBITRO')."""
+    """« La mècllâye » -> ('La', 'mècllâye') ; « L'arbitro » -> ("L'", 'arbitro').
+    Bas de casse : l'italique Bodoni y est plus grand et plus élégant."""
     s = sv.strip()
     if s[:2].lower() == "l'" or s[:2].lower() == "l’":
-        return "L'", s[2:].upper()
+        return "L'", s[2:].lower()
     parts = s.split(" ", 1)
     if len(parts) == 2 and parts[0].lower() in ("lo", "la", "los", "les", "le", "lé", "lés"):
-        return parts[0].upper(), parts[1].upper()
-    return "", s.upper()
+        return parts[0].capitalize(), parts[1].lower()
+    return "", s.lower()
 
 
 class WordCard:
@@ -314,21 +377,21 @@ class WordCard:
 
     def __init__(self, sv, fr, idx, n):
         art, noun = split_article(sv)
-        self.f = fit(F_DISPLAY, noun, 980, 330)
+        self.f = fit(F_DISPLAY, noun, 960, 330)
+        tr = TRACK * self.f.size
         self.letters = []
-        x = 0
-        for ch in noun:
+        for k, ch in enumerate(noun):  # positions avec crénage (longueur des préfixes)
+            x = self.f.getlength(noun[:k]) + tr * k
+            adv = self.f.getlength(noun[:k + 1]) + tr * (k + 1) - x
             lay = text_layer(ch, self.f, stroke=0, shadow=True) if ch != " " else None
-            adv = self.f.getlength(ch)
             self.letters.append((lay, x, adv))
-            x += adv
-        self.noun_w = x
+        self.noun_w = self.f.getlength(noun) + tr * (len(noun) - 1)
         asc, desc = self.f.getmetrics()
         self.noun_h = asc
-        self.art = text_layer(art, font(F_DISPLAY, 120), shadow=True) if art else None
-        self.fr = text_layer(fr, font(F_BOLD, 64), fill=NUIT, shadow=False)
-        self.cnt = text_layer(f"{idx+1:02d}", font(F_DISPLAY, 70), shadow=True)
-        self.cnt_tot = text_layer(f"/{n:02d}", font(F_DISPLAY, 40), fill=(255, 255, 255, 200), shadow=True)
+        self.art = text_layer(art, font(F_ARTICLE, int(min(130, self.f.size * 0.5))), shadow=True) if art else None
+        self.fr = text_layer(fr, font(F_BOLD, 70), fill=NUIT, shadow=False)
+        self.cnt = text_layer(f"{idx+1:02d}", font(F_BLACK, 70), shadow=True)
+        self.cnt_tot = text_layer(f"/{n:02d}", font(F_BOLD, 40), fill=(255, 255, 255, 200), shadow=True)
         self.n_letters = sum(1 for l in self.letters if l[0] is not None)
 
     STAGGER, LAND = 0.045, 0.14
@@ -456,6 +519,11 @@ def main():
     for i, s in enumerate(segs):
         styl = s.get("styliser", s["src"] == "pro")
         extra = f"_{s['cx']}_{s.get('cy','')}_{s['z']}" if "z" in s else ""
+        import hashlib
+        mk = masks_for(cfg, s)
+        extra += f"_{s.get('cx_debut','')}_{s.get('cx_fin','')}_v2"
+        if mk:
+            extra += "_m" + hashlib.md5(json.dumps(mk, sort_keys=True).encode()).hexdigest()[:8]
         tag = f"{i:02d}_{s['src']}_{s['start']}_{s['dur']}_{s.get('vitesse',1)}{extra}_{cfg.get('style') if styl else 'brut'}"
         s["_clip"] = os.path.join(work, "clips", tag.replace(".", "-") + ".mp4")
         prep_clip(s, cfg, style_obj, s["_clip"])
@@ -554,7 +622,7 @@ def main():
                     pp = (t - ts) / 0.16
                     if pp <= 0:
                         continue
-                    f = fit(F_DISPLAY, txt, 960, 260 if li == 1 else 120)
+                    f = fit(F_DISPLAY if li == 1 else F_BOLD, txt, 960, 260 if li == 1 else 96)
                     lay = text_layer(txt, f, fill=BLANC)
                     if li == 1:
                         box = Image.new("RGBA", (lay.width - 40, lay.height - 70), ROUGE + (255,))
@@ -573,7 +641,7 @@ def main():
                     pp = (t - ts) / 0.18
                     if pp <= 0:
                         continue
-                    f = fit(F_DISPLAY, txt, 960, 230 if li == 1 else 110)
+                    f = fit(F_DISPLAY if li == 1 else F_BOLD, txt, 960, 230 if li == 1 else 92)
                     lay = text_layer(txt, f)
                     sc = 1 + 1.0 * (1 - ease_out_back(pp, 1.3)) if pp < 1 else 1
                     l2 = lay.resize((int(lay.width * sc), int(lay.height * sc)), Image.BICUBIC) if sc != 1 else lay

@@ -1,7 +1,7 @@
 {
  "travail": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/montage_v3",
- "sortie": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/montage_v3/reel_v4.mp4",
- "style": "ligne_claire",
+ "sortie": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/montage_v3/reel_v5.mp4",
+ "style": "futurismo",
  "sources": {
   "pro": {
    "path": "/tmp/claude-0/-home-user-Cr-ation-audiovisuelle/b36772e0-28fc-5921-8af7-fec5b9e4b640/scratchpad/pro/resume.mp4",
@@ -127,16 +127,6 @@
   },
   {
    "type": "mot",
-   "sv": "La colonèta",
-   "fr": "le poteau",
-   "dur": 2.0,
-   "src": "r143332",
-   "start": 2.0,
-   "son": "plein",
-   "gain": 0.5
-  },
-  {
-   "type": "mot",
    "sv": "L'arbitro",
    "fr": "l'arbitre",
    "dur": 2.0,
@@ -171,7 +161,8 @@
    "src": "r135004",
    "start": 20.0,
    "son": "plein",
-   "gain": 0.5
+   "gain": 0.5,
+   "styliser": true
   },
   {
    "type": "mot",

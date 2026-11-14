@@ -12,7 +12,6 @@ Le ton : complice, enthousiaste, comme un pote dans les tribunes. Pas de lecture
 | 4 | Mot 3, plaquage | « **Lo placâjo** » | 1 s |
 | 5 | Mot 4, mêlée | « **La mècllâye** » | 1 s |
 | 6 | Mot 5, touche | « **La toche** » | 1 s |
-| 7 | Mot 6, poteau | « **La colonèta** » | 1 s |
 | 8 | Mot 7, arbitre | « **L'arbitro** » | 1 s |
 | 9 | Mot 8, pénalité | « **La pènalitât** » | 1 s |
 | 10 | Mot 9, terrain | « **Lo champ** » | 1 s |
