@@ -546,6 +546,9 @@ def main():
 
     # --- PREP
     for i, s in enumerate([] if audio_seul else segs):
+        if s.get("clip"):            # plan déjà prêt (redessiné ailleurs), 1080x1920 30 i/s
+            s["_clip"] = s["clip"]
+            continue
         styl = s.get("styliser", s["src"] == "pro")
         extra = f"_{s['cx']}_{s.get('cy','')}_{s['z']}" if "z" in s else ""
         import hashlib
@@ -650,7 +653,7 @@ def main():
             if kind == "froid" and t > s["dur"] - 0.6:
                 k += 0.25 * ease_out((t - (s["dur"] - 0.6)) / 0.6)
             img = zoom(img, k, dx, dy)
-            a_ = grade(img, "pro" if s["src"] == "pro" else "rush")
+            a_ = grade(img, "pro" if (s["src"] == "pro" or s.get("clip")) else "rush")
             # flash d'impact / de coupe
             fl = 0
             if si > 0 and fi < 3 and kind not in ("leone", "ballon"):
