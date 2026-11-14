@@ -88,6 +88,22 @@ class Style:
         tmp = np.where(mm, lab_id, 0)
         tmp = _lisse_labels(tmp, k, max(2.5, h / 70))
         tmp = _lisse_labels(tmp, k, max(4.0, h / 40))
+        # nettoyage par joueur : une seule teinte de peau, une seule couleur de maillot
+        # (les encres de maillot minoritaires, dues aux voisins ou aux reflets,
+        # rejoignent la dominante ; le rouge n'existe que pour l'arbitre)
+        I = {n: i for i, n in enumerate(NOMS)}
+        tmp[tmp == I["peau_ombre"]] = I["peau"]
+        parts = {f: int(((tmp == I[f]) | (tmp == I.get(f + "_ombre", -9)))[mm].sum()) for f in ("azur", "vert", "rouge")}
+        dom = max(parts, key=parts.get)
+        tot = max(1, sum(parts.values()))
+        for f in ("azur", "vert", "rouge"):
+            if f != dom and (parts[f] < 0.35 * tot or f == "rouge"):
+                cible = I["peau"] if f == "rouge" else I[dom]
+                tmp[tmp == I[f]] = cible
+                if f + "_ombre" in I:
+                    tmp[tmp == I[f + "_ombre"]] = I.get(dom + "_ombre", I[dom])
+        tmp[tmp == I["or"]] = I["or"] if dom == "vert" else I["creme"]
+        tmp = _lisse_labels(tmp, k, max(3.0, h / 55))
         couleur = PAL[tmp]
         sub = toile[y0:y1, x0:x1]
         sub[mm] = couleur[mm]
@@ -132,7 +148,12 @@ class Style:
             m = cv2.resize(p["mask"].astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST) > 0
             if m.sum() > 0.0015 * H * W:
                 ys = np.nonzero(m)[0]
-                items.append((ys.max(), m))
+                items.append((ys.max(), m, int(m.sum())))
+        # on ne garde que les joueurs de l'action : assez grands par rapport au plus
+        # grand (les silhouettes lointaines, spectateurs, stadiers disparaissent)
+        if items:
+            gmax = max(a for _, _, a in items)
+            items = [(b, m) for b, m, a in items if a >= 0.22 * gmax]
         for _, m in sorted(items, key=lambda x: x[0]):
             self._joueur(rgb, m, toile, True)
         self._ballon(bal, toile, H, W)
