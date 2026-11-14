@@ -633,6 +633,7 @@ def main():
          os.path.join(work, "_v.mp4")], stdin=subprocess.PIPE)
     sfx = SfxTrack(len(audio))
     music_start, music_end = None, None
+    mus_fen = []
     t0 = 0.0
     wi = 0
     for si, s in enumerate(segs):
@@ -714,13 +715,21 @@ def main():
                 sfx.add(tt, "pop", anchor="arrive", st=-2 + 6 * j / max(1, nch - 1),
                         gain_db=float(rng.uniform(-2, 2)), max_dur=0.18, label=f"ballon {j}")
                 tt += nfr / FPS
-        if kind == "froid":  # coup de zoom final = mouvement de caméra -> whoosh
+        if kind == "froid" and s.get("whoosh", True):  # coup de zoom final = mouvement de caméra -> whoosh
             sfx.add(t0 + s["dur"] - 0.25, "whoosh", anchor="peak", max_dur=0.9, label="zoom ouverture")
+        if kind == "froid" and s.get("impact") is not None:
+            # relance en plein milieu (v8) : un essai plein écran, sans carte ; l'impact
+            # tombe sur le plongeon, la foule réelle explose juste après
+            sfx.add(t0 + s["impact"], "impact", name="impact_1", gain_db=2.0, label="essai (relance)")
+            sfx.add(t0 + s["impact"] + 0.02, "clameur", name="clameur_1", gain_db=-7.0, max_dur=1.6, fondu=0.7,
+                    label="clameur relance")
+        if s.get("musique_db") is not None:   # la musique s'efface sous un commentateur
+            mus_fen.append((t0, t0 + s["dur"], s["musique_db"]))
         if kind == "fin":
             music_end = t0 if music_end is None else music_end
             sfx.add(t0 + 0.4 + 0.18, "impact", name="impact_1", gain_db=-5.0, max_dur=0.45, fondu=0.15, label="COMBIEN")
         impact = (card.impact_time() if card else
-                  0.51 if kind == "accroche" else None)
+                  0.51 if kind == "accroche" else s.get("impact") if kind == "froid" else None)
 
         # --- caméra du plan (v7)
         #  « cadre » {k, x, y} : recadrage fixe centré sur un point du clip ;
@@ -867,6 +876,12 @@ def main():
         if len(piece) > f:
             piece[-f:] *= np.linspace(1, 0, f)[:, None]
         mix_at(mus, piece, music_start, 10 ** (cfg.get("musique", {}).get("gain_db", -12) / 20))
+
+    for a0, a1, db in mus_fen:
+        g = np.ones(len(mus), np.float32)
+        g[int(a0 * SR):int(a1 * SR)] = 10 ** (db / 20)
+        r = int(0.1 * SR)
+        mus *= np.convolve(g, np.ones(r) / r, mode="same")[:, None]
 
     # --- voix off éventuelle (fichier + repères [t_reel, t_fichier, durée]) :
     # la musique et l'ambiance baissent dessous, les effets aussi (≈ -9 dB)
