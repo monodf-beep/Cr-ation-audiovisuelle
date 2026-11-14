@@ -8,7 +8,7 @@ Le ton : complice, enthousiaste, comme un pote dans les tribunes. Pas de lecture
 | 0 | Ouverture à froid : l'essai animé, cri du commentateur, la foule explose | *(rien, on laisse le stade parler)* | 2,5 s |
 | 1 | Ton selfie dans les tribunes | « Turin, Italie – Afrique du Sud. Et si on parlait rugby… en savoyard ? » | 4 s |
 | 2 | Mot 1, plan ballon | « **Lo pallon** » | 1 s |
-| 3 | Mot 2, en-but | « **L'at bu** » | 1 s |
+| 3 | Mot 2, en-but | « **Lo bu** » | 1 s |
 | 4 | Mot 3, plaquage | « **Lo placâjo** » | 1 s |
 | 5 | Mot 4, mêlée | « **La mècllâye** » | 1 s |
 | 6 | Mot 5, touche | « **La toche** » | 1 s |
