@@ -9,21 +9,115 @@
     "Tu en connaissais",
     "combien ?"
   ],
-  "cta": "Dis-le en commentaire",
-  "signature": "langue-savoyarde.com",
+  "cta": "Lequel manque selon toi ?",
+  "signature": "",
   "mots": [
-    {"sv": "Lo stado", "fr": "le stade"},
-    {"sv": "Lo pallon", "fr": "le ballon", "plan": ["125950", 2.0, 1.0]},
-    {"sv": "L'èssê", "fr": "l'essai", "plan": ["130210", 0.2, 1.0]},
-    {"sv": "Lo placâjo", "fr": "le plaquage", "plan": ["125950", 12.0, 1.0]},
-    {"sv": "La mècllâye", "fr": "la mêlée", "plan": ["125704", 0.2, 1.0]},
-    {"sv": "La toche", "fr": "la touche", "plan": ["125950", 20.0, 1.0]},
-    {"sv": "L'arbitro", "fr": "l'arbitre", "plan": ["143416", 0.5, 1.0]},
-    {"sv": "La pènalitât", "fr": "la pénalité", "plan": ["125950", 26.0, 1.0]},
-    {"sv": "Lo champ", "fr": "le terrain", "plan": ["135004", 20.0, 1.0]},
-    {"sv": "Lo passâjo", "fr": "la passe", "plan": ["143456", 5.0, 1.0]},
-    {"sv": "Lo calço", "fr": "le coup de pied", "plan": ["143456", 25.0, 1.0]},
-    {"sv": "Los fanaticos", "fr": "les supporters"},
-    {"sv": "La transformacion", "fr": "la transformation", "plan": ["125644", 0.5, 0.6]}
+    {
+      "sv": "Lo stado",
+      "fr": "le stade"
+    },
+    {
+      "sv": "Lo pallon",
+      "fr": "le ballon",
+      "plan": [
+        "125950",
+        2.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "L'èssê",
+      "fr": "l'essai",
+      "plan": [
+        "130210",
+        0.2,
+        1.0
+      ]
+    },
+    {
+      "sv": "Lo placâjo",
+      "fr": "le plaquage",
+      "plan": [
+        "125950",
+        12.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "La mècllâye",
+      "fr": "la mêlée",
+      "plan": [
+        "125704",
+        0.2,
+        1.0
+      ]
+    },
+    {
+      "sv": "La toche",
+      "fr": "la touche",
+      "plan": [
+        "125950",
+        20.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "L'arbitro",
+      "fr": "l'arbitre",
+      "plan": [
+        "143416",
+        0.5,
+        1.0
+      ]
+    },
+    {
+      "sv": "La pènalitât",
+      "fr": "la pénalité",
+      "plan": [
+        "125950",
+        26.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "Lo champ",
+      "fr": "le terrain",
+      "plan": [
+        "135004",
+        20.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "Lo passâjo",
+      "fr": "la passe",
+      "plan": [
+        "143456",
+        5.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "Lo calço",
+      "fr": "le coup de pied",
+      "plan": [
+        "143456",
+        25.0,
+        1.0
+      ]
+    },
+    {
+      "sv": "Los fanaticos",
+      "fr": "les supporters"
+    },
+    {
+      "sv": "La transformacion",
+      "fr": "la transformation",
+      "plan": [
+        "125644",
+        0.5,
+        0.6
+      ]
+    }
   ]
 }
