@@ -403,8 +403,8 @@ def mannequin(j, lw_fixe=None):
         hc = hc0
     out.append(([fuseau(ms, hc, 0.11 * T, 0.11 * T)], PEAU, True))
     # torse : volume arrondi épaules -> bassin
-    lsh = max(float(np.hypot(*(k[EG] - k[ED]))) / 2, 0.24 * T)
-    lhp = max(float(np.hypot(*(k[HG] - k[HD]))) / 2, 0.19 * T)
+    lsh = max(float(np.hypot(*(k[EG] - k[ED]))) / 2, 0.19 * T)
+    lhp = max(float(np.hypot(*(k[HG] - k[HD]))) / 2, 0.16 * T)
     vv = (k[EG] - k[ED])
     vv = vv / max(1e-3, float(np.hypot(*vv))) if np.hypot(*vv) > 0.15 * T else v
     torse = cercles_hull([
@@ -557,18 +557,7 @@ class Piste:
         return e
 
     def short(self):
-        e = self.equipe()
-        base = EQUIPES[e]["s"]
-        if self.vshort:
-            s = max(self.vshort, key=self.vshort.get)
-            if self.vshort[s] > 0.6 * sum(self.vshort.values()):
-                if s == "blanc":
-                    return SHORT_TON["blanc"]
-                if s == "noir":
-                    return SHORT_TON["noir"]
-                if s == "bleu" and e == "ITA":
-                    return EQUIPES["ITA"]["s"]
-        return base
+        return EQUIPES[self.equipe()]["s"]
 
 
 def iou(a, b):
@@ -610,6 +599,174 @@ def _hist_vote(h):
     return (e, eq[e]) if eq[e] > seuil else None
 
 
+
+# ================================================================ MÊLÉE
+def _debout(d):
+    kp = d["kp"]
+    ms, mh = (kp[EG, :2] + kp[ED, :2]) / 2, (kp[HG, :2] + kp[HD, :2]) / 2
+    v = ms - mh
+    ang = np.degrees(np.arctan2(abs(v[0]), -v[1]))
+    tc = kp[[EG, ED, HG, HD], 2].mean()
+    return ang < 38 and tc > 0.35
+
+
+def trouver_melee(rgb, dets):
+    """Mêlée / maul : >= 4 joueurs penchés imbriqués, les deux équipes au contact.
+    -> (dict mêlée | None, joueurs restant à dessiner un par un)"""
+    pen = [d for d in dets if not _debout(d)]
+    if len(pen) < 4:
+        return None, dets
+    # groupe connexe (boîtes qui se touchent)
+    n = len(pen)
+    lab = list(range(n))
+
+    def f(i):
+        while lab[i] != i:
+            i = lab[i]
+        return i
+    for i in range(n):
+        for j in range(i + 1, n):
+            a, b = pen[i]["box"], pen[j]["box"]
+            if a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]:
+                lab[f(i)] = f(j)
+    grp = {}
+    for i in range(n):
+        grp.setdefault(f(i), []).append(i)
+    g = max(grp.values(), key=len)
+    if len(g) < 4:
+        return None, dets
+    mb = np.zeros((DH, DW), bool)
+    for i in g:
+        mb |= pen[i]["mask"]
+    ys, xs = np.nonzero(mb)
+    y0, y1 = np.percentile(ys, 6) * DS, np.percentile(ys, 98) * DS
+    x0, x1 = np.percentile(xs, 1) * DS, np.percentile(xs, 99) * DS
+    if (x1 - x0) < 1.3 * (y1 - y0):
+        return None, dets
+    # ligne de contact : séparation bleu | vert le long de la mêlée
+    m = cv2.resize(mb.astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST) > 0
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    h, sa, v = hsv[..., 0].astype(int), hsv[..., 1].astype(int), hsv[..., 2].astype(int)
+    bleu = ((h >= 96) & (h <= 128) & (sa > 90) & (v > 60) & m).sum(0).astype(np.float32)
+    vert = ((h >= 38) & (h <= 92) & (sa > 45) & (v < 125) & m).sum(0).astype(np.float32)
+    if bleu.sum() < 300 or vert.sum() < 300:
+        return None, dets
+    cb, cv_ = np.cumsum(bleu), np.cumsum(vert)
+    # bleu à gauche, vert à droite (ou l'inverse) : coût minimal
+    c1 = cv_ + (cb[-1] - cb)         # vert à gauche + bleu à droite = erreurs si bleu à gauche
+    c2 = cb + (cv_[-1] - cv_)
+    if c1.min() <= c2.min():
+        xc, gauche, droite = float(np.argmin(c1)), "ITA", "RSA"
+    else:
+        xc, gauche, droite = float(np.argmin(c2)), "RSA", "ITA"
+    xsb = np.arange(W, dtype=np.float32)
+    mb_b = (h >= 96) & (h <= 128) & (sa > 90) & (v > 60) & m
+    mb_v = (h >= 38) & (h <= 92) & (sa > 45) & (v < 125) & m
+    yb, xb = np.nonzero(mb_b)
+    yv, xv = np.nonzero(mb_v)
+    if gauche == "ITA":
+        dxp, dyp = xv.mean() - xb.mean(), yv.mean() - yb.mean()
+    else:
+        dxp, dyp = xb.mean() - xv.mean(), yb.mean() - yv.mean()
+    pente = float(np.clip(dyp / max(abs(dxp), 1.0), -1.2, 1.2))
+    membres = {id(pen[i]) for i in g}
+    reste = []
+    for d in dets:
+        if id(d) in membres:
+            continue
+        b = d["box"]
+        cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+        if x0 < cx < x1 and y0 < cy < y1 and (not _debout(d) or b[1] > y0 - 0.25 * (y1 - y0)):
+            continue                       # dans la mêlée : redessiné par le modèle
+        reste.append(d)
+    return dict(y0=y0, y1=y1, x0=x0, x1=x1, xc=xc, pente=pente, g=gauche, d=droite), reste
+
+
+# Mêlée en 3D (mètres ; X = axe de poussée, Y = travers, Z = haut), projetée avec
+# la caméra de la retransmission (élévation fixe, lacet tiré de l'image).
+# rôles : (X épaules, Y, rôle) pour le paquet qui pousse vers +X
+PAQUET = [(-0.22, -0.56, "P"), (-0.22, 0.0, "P"), (-0.22, 0.56, "P"),
+          (-0.98, -0.29, "L"), (-0.98, 0.29, "L"),
+          (-0.92, -0.92, "F"), (-0.92, 0.92, "F"), (-1.72, 0.0, "8")]
+ELEV = np.deg2rad(35)
+
+
+def _corps_melee(Xs, Y, sd, role, pompe, rng):
+    """Squelette 3D (17,3) d'un joueur lié en mêlée, poussant vers sd*X."""
+    k = np.zeros((17, 3), np.float32)
+    dz = rng.uniform(-0.04, 0.04)
+    S = np.float32([Xs, Y, 0.66 + dz])
+    Hh = np.float32([Xs - sd * 0.56, Y, 0.74 + dz * 0.5])
+    head = np.float32([Xs + sd * 0.2, Y, 0.5 + dz])
+    L = np.float32([0, 1, 0]) * sd          # côté gauche du joueur
+    for i in (NEZ, OG, OD, ORG, ORD):
+        k[i] = head
+    k[EG], k[ED] = S + 0.21 * L, S - 0.21 * L
+    k[HG], k[HD] = Hh + 0.16 * L, Hh - 0.16 * L
+    for hi, gi, ci, sg, st in ((HG, GG, CHG, 1, 0.0), (HD, GD, CHD, -1, 0.18)):
+        k[gi] = Hh + sg * 0.19 * L + np.float32([sd * 0.12, 0, -0.34])
+        k[ci] = Hh + sg * 0.21 * L + np.float32([-sd * (0.36 + st + 0.06 * pompe), 0, -0.70 - dz * 0.5])
+    if role == "8":
+        bras = ((0.18, 0.3, 0.6), (0.42, 0.34, 0.66))
+    elif role == "L":
+        bras = ((0.16, 0.34, 0.62), (0.38, 0.4, 0.7))
+    else:                                    # bras de liaison sur le dos du voisin
+        bras = ((-0.04, 0.4, 0.8), (-0.26, 0.56, 0.84))
+    (ex, ey, ez), (wx, wy, wz) = bras
+    for (ei, wi), sg in (((CG, PG), 1), ((CD, PD), -1)):
+        k[ei] = np.float32([Xs + sd * ex, Y, ez]) + sg * ey * L
+        k[wi] = np.float32([Xs + sd * wx, Y, wz]) + sg * wy * L
+    if role == "P":                          # bras extérieur du pilier : vers le sol, en appui
+        k[CD] = np.float32([Xs + sd * 0.18, Y, 0.36]) - 0.3 * L
+        k[PD] = np.float32([Xs + sd * 0.36, Y, 0.16]) - 0.34 * L
+    return k
+
+
+def joueurs_melee(sc, t):
+    """Modèle de mêlée : 2 x 8 joueurs penchés (dos plats, têtes basses, bras liés),
+    construit en 3D puis projeté ; calé sur la masse détectée (ligne de contact,
+    hauteur, orientation de l'axe)."""
+    e = ELEV
+    yaw = float(np.clip(np.arctan2(sc.get("pente", 0.0), np.sin(e)), -0.95, 0.95))
+    cy_, sy_ = np.cos(yaw), np.sin(yaw)
+
+    def proj(P):
+        u = P[..., 0] * cy_ - P[..., 1] * sy_
+        v = (P[..., 0] * sy_ + P[..., 1] * cy_) * np.sin(e) - P[..., 2] * np.cos(e)
+        return np.stack([u, v], -1)
+
+    corps = []
+    for sd, eq, dy in ((1, sc["g"], 0.0), (-1, sc["d"], 0.28)):
+        for k, (Xs, Y, role) in enumerate(PAQUET):
+            rng = np.random.default_rng(97 + k + (sd > 0) * 13)
+            ph = 1.7 * k + (0.9 if sd < 0 else 0)
+            pompe = np.sin(2 * np.pi * t / 13.0 + ph)
+            Xs_ = sd * Xs + sd * 0.015 * pompe
+            K3 = _corps_melee(Xs_, Y + dy, sd, role, pompe, rng)
+            corps.append((sd, eq, k, K3))
+    allp = np.concatenate([proj(c[3]) for c in corps])
+    hb = allp[:, 1].max() - allp[:, 1].min()
+    s = (sc["y1"] - sc["y0"]) / max(hb, 1e-3)
+    vb = allp[:, 1].max()
+    out = []
+    for sd, eq, k, K3 in corps:
+        P = proj(K3)
+        k17 = np.float32(np.stack([sc["xc"] + s * P[:, 0], sc["y1"] + s * (P[:, 1] - vb)], 1))
+        sol = proj(np.float32([(K3[HG, 0] + K3[HD, 0]) / 2, (K3[HG, 1] + K3[HD, 1]) / 2, 0.0]))
+        j = Joueur()
+        j.id, j.k, j.vis, j.T = 10000 + (sd > 0) * 100 + k, k17, np.ones(17, bool), 0.55 * s
+        j.box = np.float32([k17[:, 0].min(), k17[:, 1].min(), k17[:, 0].max(), k17[:, 1].max()])
+        j.eq = eq
+        j.short = EQUIPES[eq]["s"]
+        j.pied = -float(sd) if cy_ > 0 else float(sd)
+        # côté gauche du joueur (+Y si sd>0) vers la caméra ?
+        j.proche = (sd > 0)
+        j.depth = float(sc["y1"] + s * (sol[1] - vb))
+        j.mvt = 0.0
+        out.append(j)
+    return out
+
+
 # ================================================================ STYLE
 class Style:
     def __init__(self, echos=True, lignes=True, graine=11):
@@ -628,6 +785,7 @@ class Style:
         self.lig = []
         self.bal = None
         self.bal_miss = 99
+        self.sc = None
         self.temps = []
 
     # -- analyse d'une image (sur les images paires) ------------------------------
@@ -682,6 +840,7 @@ class Style:
                     d["vshort"] = s
             sm = d["mask"].astype(np.uint8)
             mfull = sm if mfull is None else np.maximum(mfull, sm)
+        sc, final = trouver_melee(rgb, final)
         lig = []
         if self.lignes:
             mm = None
@@ -696,9 +855,20 @@ class Style:
             cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
             if cy < hz or max(w, h) < 14 or max(w, h) > 220:
                 continue
-            pres = any((d["box"][0] - 0.4 * (d["box"][2] - d["box"][0]) < cx < d["box"][2] + 0.4 * (d["box"][2] - d["box"][0]))
-                       and (d["box"][1] - 0.1 * (d["box"][3] - d["box"][1]) < cy < d["box"][3]) for d in final)
-            if not pres and b["score"] < 0.5:
+            if sc is not None and sc["x0"] < cx < sc["x1"] and sc["y0"] - 30 < cy < sc["y1"]:
+                continue
+            # porté : près d'un poignet ou contre le buste d'un joueur
+            pres = False
+            for d in final:
+                kq = d["kp"]
+                Tq = 0.27 * (d["box"][3] - d["box"][1])
+                for a in (PG, PD):
+                    if kq[a, 2] > 0.25 and np.hypot(*(kq[a, :2] - [cx, cy])) < 0.8 * Tq:
+                        pres = True
+                bu = kq[[EG, ED, HG, HD], :2].mean(0)
+                if np.hypot(*(bu - [cx, cy])) < 0.7 * Tq:
+                    pres = True
+            if not pres and b["score"] < 0.6:
                 continue
             # un ballon est clair et peu saturé (pas un crampon fluo)
             bm = cv2.resize(b["mask"].astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST) > 0
@@ -733,7 +903,7 @@ class Style:
             bal = (np.float32([ex, ey]), np.float32([ea / 2, eb / 2]), ang, b["score"])
             break
         self.temps.append(time.time() - t0)
-        return dict(hz=hz, dets=final, lig=lig, bal=bal)
+        return dict(hz=hz, dets=final, lig=lig, bal=bal, sc=sc)
 
     # -- suivi causal --------------------------------------------------------------
     def suivre(self, an, idx, lisse=True):
@@ -836,7 +1006,7 @@ class Style:
             if len(p.hist) > lag:
                 old = p.hist[-1 - lag]
                 d = np.hypot(*(((old.k[HG] + old.k[HD]) / 2) - mh))
-                if d > 0.55 * j.T:
+                if 0.55 * j.T < d < 2.5 * j.T and 0.8 < old.T / j.T < 1.25:
                     out.append((old, self._teinte(EQUIPES[j.eq]["m"], f)))
         return out
 
@@ -885,6 +1055,21 @@ class Style:
             self.bal_miss += 1
             if self.bal_miss > 3:
                 self.bal = None
+        sc = an["sc"]
+        if sc is not None:
+            if self.sc is None:
+                self.sc = dict(sc)
+            else:
+                for c in ("y0", "y1", "x0", "x1", "xc", "pente"):
+                    self.sc[c] = 0.7 * self.sc[c] + 0.3 * sc[c]
+                self.sc["g"], self.sc["d"] = sc["g"], sc["d"]
+            self.sc_miss = 0
+        else:
+            self.sc_miss = getattr(self, "sc_miss", 0) + 1
+            if self.sc_miss > 4:
+                self.sc = None
+        if self.sc is not None:
+            joueurs += joueurs_melee(self.sc, idx)
         self.prev = self.rendre(self.hz, self.lig, joueurs, echos, self.bal)
         self.k += 1
         return self.prev
@@ -920,7 +1105,23 @@ class Style:
                 log(f"  analyse {k}/{n} {self.temps[-1]:.2f}s  {len(an['dets'])} joueurs")
         Np = len(idxs)
         hz = np.array([a["hz"] for a in ans], np.float32)
-        hz = np.full_like(hz, np.median(hz)) if np.ptp(hz) < 0.08 * H else hz
+        hz = np.array([np.median(hz[max(0, t - 3):t + 4]) for t in range(Np)], np.float32)
+        if np.ptp(hz) < 0.08 * H:
+            hz[:] = np.median(hz)
+        scs = [a["sc"] for a in ans]
+        nsc = sum(x is not None for x in scs)
+        melee = [None] * Np
+        if nsc >= max(2, 0.4 * Np):
+            keys = ("y0", "y1", "x0", "x1", "xc", "pente")
+            vals = {c: np.array([x[c] if x is not None else np.nan for x in scs], np.float32) for c in keys}
+            gl = [x["g"] for x in scs if x is not None]
+            g = max(set(gl), key=gl.count)
+            for t in range(Np):
+                lo, hi = max(0, t - 3), min(Np, t + 4)
+                md = {c: float(np.nanmedian(vals[c][lo:hi])) if np.isfinite(vals[c][lo:hi]).any()
+                      else float(np.nanmedian(vals[c])) for c in keys}
+                md["g"], md["d"] = g, ("RSA" if g == "ITA" else "ITA")
+                melee[t] = md
         # pistes : interpolation des trous, lissage centré
         tracks = []
         for p in self.pistes_all():
@@ -980,6 +1181,8 @@ class Style:
                 echos += self._echos(p, j)
                 p.hist.append(j)
                 joueurs.append(j)
+            if melee[t] is not None:
+                joueurs += joueurs_melee(melee[t], t)
             img = self.rendre(float(hz[t]), ans[t]["lig"], joueurs, echos, bal[t])
             res[k] = img
             if k + 1 < n:
