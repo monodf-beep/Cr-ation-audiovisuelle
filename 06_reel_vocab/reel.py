@@ -79,7 +79,17 @@ def prep_clip(seg, cfg, style_obj, out):
     speed = seg.get("vitesse", 1.0)
     dur = seg["dur"]
     sdur = dur * speed + 0.15
-    if seg["src"] == "pro":
+    if "z" in seg:
+        # très gros plan (finale à la Leone) : fenêtre 9:16 de hauteur z * hauteur source,
+        # centrée en (cx, cy) ; les rushes sont d'abord redressés en 1080x1920
+        pre = "" if seg["src"] == "pro" else f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+        sw, sh = (src["w"], src["h"]) if seg["src"] == "pro" else (W, H)
+        ch = int(round(sh * seg["z"])) // 2 * 2
+        cw = int(round(ch * 9 / 16)) // 2 * 2
+        x = int(min(max(seg["cx"] - cw / 2, 0), sw - cw))
+        y = int(min(max(seg.get("cy", sh / 2) - ch / 2, 0), sh - ch))
+        vf = pre + f"crop={cw}:{ch}:{x}:{y},hqdn3d=3:3:4:4,scale={W}:{H}:flags=lanczos,"
+    elif seg["src"] == "pro":
         # recadrage 9:16 avec panoramique linéaire cx_debut -> cx_fin
         sw, sh = src["w"], src["h"]
         cw = int(round(sh * 9 / 16)) // 2 * 2
@@ -102,10 +112,11 @@ def prep_clip(seg, cfg, style_obj, out):
                             "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
                             "-crf", "14", "-preset", "fast", "-pix_fmt", "yuv420p", out],
                            stdin=subprocess.PIPE)
-    if style_obj is not None and seg["src"] == "pro":
+    styl = style_obj is not None and seg.get("styliser", seg["src"] == "pro")
+    if styl:
         style_obj.reset()
     for f in frames:
-        if style_obj is not None and seg["src"] == "pro":
+        if styl:
             f = style_obj(np.ascontiguousarray(f))
         enc.stdin.write(np.ascontiguousarray(f).tobytes())
     enc.stdin.close()
@@ -158,7 +169,7 @@ def read_audio(cfg, seg, piste):
 #  - niveaux crête par rôle (dBFS) puis master -14 LUFS, -1 dBTP.
 SONS = os.path.join(HERE, "sons")
 CRETE = {"impact": -4, "whoosh": -9, "montee": -12, "sifflet": -8, "clameur": -8,
-         "pop": -14, "musique": -3}
+         "pop": -14, "musique": -3, "coup_de_pied": -5}
 _CACHE = {}
 
 
@@ -443,7 +454,9 @@ def main():
 
     # --- PREP
     for i, s in enumerate(segs):
-        tag = f"{i:02d}_{s['src']}_{s['start']}_{s['dur']}_{s.get('vitesse',1)}_{cfg.get('style') if s['src']=='pro' else 'brut'}"
+        styl = s.get("styliser", s["src"] == "pro")
+        extra = f"_{s['cx']}_{s.get('cy','')}_{s['z']}" if "z" in s else ""
+        tag = f"{i:02d}_{s['src']}_{s['start']}_{s['dur']}_{s.get('vitesse',1)}{extra}_{cfg.get('style') if styl else 'brut'}"
         s["_clip"] = os.path.join(work, "clips", tag.replace(".", "-") + ".mp4")
         prep_clip(s, cfg, style_obj, s["_clip"])
         print(f"prep {i+1}/{len(segs)}", flush=True)
@@ -471,8 +484,9 @@ def main():
             wi += 1
             ti = t0 + card.impact_time()
             last = wi == N
-            if last:  # moment héroïque : montée -> temps d'air -> impact + clameur
-                sfx.add(ti - 0.15, "montee", anchor="end", label="montée transformation")
+            if last:  # moment héroïque : (montée -> temps d'air ->) impact + clameur
+                if not any(x["type"] == "leone" for x in segs):
+                    sfx.add(ti - 0.15, "montee", anchor="end", label="montée transformation")
                 sfx.add(ti + 0.01, "clameur", anchor="arrive", label="clameur")
             sfx.add(ti, "impact", anchor="arrive", gain_db=float(rng.uniform(-1.5, 1.5)),
                     st=float(rng.uniform(-0.4, 0.4)), label=s["sv"])
@@ -481,10 +495,19 @@ def main():
         if kind == "accroche":  # seul « RUGBY » claque ; la musique entre dessus
             sfx.add(t0 + 0.35 + 0.16, "impact", anchor="arrive", gain_db=1.0, label="RUGBY")
             music_start = t0 + 0.35 + 0.16
+        if kind == "leone":
+            # finale à la Leone : la musique s'arrête net sur la mesure, l'ambiance
+            # retombe, la montée court sur les plans qui raccourcissent et s'arrête
+            # 0,12 s avant le contact du pied (temps d'air), puis le « toc » du ballon
+            if music_end is None:
+                music_end = t0
+            if s.get("role") == "frappe":
+                sfx.add(t0 + s["dur"] - 0.12, "montee", anchor="end", label="montée Leone")
+                sfx.add(t0 + s["dur"] - 0.01, "coup_de_pied", name="coup_de_pied", anchor="arrive", label="frappe")
         if kind == "froid":  # coup de zoom final = mouvement de caméra -> whoosh
             sfx.add(t0 + s["dur"] - 0.25, "whoosh", anchor="peak", max_dur=0.9, label="zoom ouverture")
         if kind == "fin":
-            music_end = t0
+            music_end = t0 if music_end is None else music_end
             sfx.add(t0 + 0.4 + 0.18, "impact", anchor="arrive", gain_db=-5.0, label="COMBIEN")
         impact = (card.impact_time() if card else
                   0.51 if kind == "accroche" else None)
@@ -507,13 +530,13 @@ def main():
             a_ = grade(img, "pro" if s["src"] == "pro" else "rush")
             # flash d'impact / de coupe
             fl = 0
-            if si > 0 and fi < 3:
+            if si > 0 and fi < 3 and kind != "leone":
                 fl = 0.5 * (1 - fi / 3)
             if impact is not None and 0 <= t - impact < 0.1:
                 fl = max(fl, 0.55 * (1 - (t - impact) / 0.1))
             if fl:
                 a_ = a_ * (1 - fl) + fl
-            out = Image.fromarray(finish(a_, 0.45 if kind == "mot" else 0.25 if kind != "froid" else 0)).convert("RGBA")
+            out = Image.fromarray(finish(a_, 0.45 if kind == "mot" else 0 if kind in ("froid", "leone") else 0.25)).convert("RGBA")
 
             if kind == "mot":
                 card.draw(out, t, s["dur"])

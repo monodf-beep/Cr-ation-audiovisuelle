@@ -165,14 +165,20 @@ class Style:
         n, cc, sts, _ = cv2.connectedComponentsWithStats(1 - zone, connectivity=4)
         bordure = np.zeros(n, bool)
         bordure[np.unique(np.concatenate([cc[0], cc[-1], cc[:, 0], cc[:, -1]]))] = True
-        trou = ~bordure & (sts[:, cv2.CC_STAT_AREA] < 0.04 * w * h)
+        trou = ~bordure & (sts[:, cv2.CC_STAT_AREA] < 0.08 * w * h)
         trou[0] = False
         zone = zone.astype(bool) | trou[cc]
-        fig = ((zone & ~pel & ~crowd) | pers)
+        fig = ((zone & ~pel) | pers)
         fig = cv2.morphologyEx(fig.astype(np.uint8), cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
-        # silhouette anguleuse : polygone simplifié de chaque figure
+        # silhouette anguleuse : polygone simplifié de chaque figure ;
+        # les miettes (bouts de ligne, panneaux lointains) hors personnes sont ignorées
         cs, _ = cv2.findContours(fig, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        poly = [cv2.approxPolyDP(c, 1.6 * k, True) for c in cs if cv2.contourArea(c) > 6 * k * k]
+        poly = []
+        for c in cs:
+            a = cv2.contourArea(c)
+            x, y, bw, bh = cv2.boundingRect(c)
+            if a > 70 * k * k or (a > 8 * k * k and pers[y:y + bh, x:x + bw].mean() > 0.3):
+                poly.append(cv2.approxPolyDP(c, 1.6 * k, True))
         figp = np.zeros((h, w), np.uint8)
         cv2.fillPoly(figp, poly, 1)
         fig = figp.astype(bool)
@@ -183,7 +189,6 @@ class Style:
         efig = e.copy()
         hors = fig & (np.isin(e, list(foule)) | pel | (e == ipel))
         if hors.any():
-            efig[hors] = rep[B.I_SB] if False else efig[hors]
             m = (~hors & fig & ~np.isin(e, list(foule)) & (e != ipel)).astype(np.uint8)
             if m.any():
                 _, lab_i = cv2.distanceTransformWithLabels(1 - m, cv2.DIST_L2, 3,
@@ -250,7 +255,8 @@ class Style:
         fe[:, 1:] += cid[:, 1:] != cid[:, :-1]
         fe[1:, :] += cid[1:, :] != cid[:-1, :]
         fe = np.clip(cv2.GaussianBlur(cv2.dilate(fe, np.ones((2, 2), np.uint8)), (0, 0), 0.6), 0, 1)
-        out = out * (1 - 0.55 * fe[..., None]) + np.float32(NERO) * 0.55 * fe[..., None]
+        fe *= (0.6 - 0.48 * pelF[..., 0])           # arêtes discrètes sur la pelouse
+        out = out * (1 - fe[..., None]) + np.float32(NERO) * fe[..., None]
         # lignes du terrain (rendu de base) en crème
         pel_n = cv2.resize(pel.astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST)
         a_l = np.clip((sortie_base[..., 0].astype(np.float32) - B.PELOUSE[0] - 20)
@@ -307,15 +313,16 @@ class Style:
             g = rng.normal(0, 1, (H // 2 + 1, W // 2 + 1)).astype(np.float32)
             g = cv2.GaussianBlur(g, (0, 0), 0.8)
             g = cv2.resize(g, (W, H), interpolation=cv2.INTER_LINEAR)[:H, :W]
-            self._fac = ((W, H), g * 7.0 / max(1e-6, g.std()))
+            self._fac = ((W, H), g * 5.0 / max(1e-6, g.std()))
         return self._fac[1]
 
     def _forces(self, out, fig, z, W, H):
         """5 coins effilés partant derrière le centre de l'action (lissé)."""
-        ys, xs = np.nonzero(fig)
-        if len(xs) > 20:
-            # centre pondéré vers les grosses figures, borné au cadre
-            c = np.array([np.median(xs), np.median(ys)], np.float32) * z
+        n, cc, st, cen = cv2.connectedComponentsWithStats(fig.astype(np.uint8), connectivity=8)
+        if n > 1:
+            # centre de la plus grosse figure (le porteur, le groupe)
+            i = 1 + int(np.argmax(st[1:, cv2.CC_STAT_AREA]))
+            c = cen[i].astype(np.float32) * z
         else:
             c = np.array([W * 0.5, H * 0.55], np.float32)
         if self.apex is None or not self.temporel:
