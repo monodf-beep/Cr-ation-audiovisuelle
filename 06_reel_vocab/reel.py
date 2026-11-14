@@ -195,11 +195,11 @@ def read_frames(path, n):
 
 
 def read_audio(cfg, seg, piste):
-    """Audio mono 48 kHz du segment. piste : 'plein' (avec commentateur),
+    """Audio stéréo 48 kHz (n, 2) du segment. piste : 'plein' (avec commentateur),
     'foule' (stem sans voix), 'aucun'."""
     n = int(seg["dur"] * SR)
     if piste == "aucun":
-        return np.zeros(n, np.float32)
+        return np.zeros((n, 2), np.float32)
     src = cfg["sources"][seg["src"]]
     path = src["path"]
     start = seg["start"]
@@ -209,12 +209,12 @@ def read_audio(cfg, seg, piste):
     speed = seg.get("vitesse", 1.0)
     af = f"atempo={max(0.5, speed)}" if speed != 1 else "anull"
     raw = run(["ffmpeg", "-v", "error", "-ss", f"{max(0, start):.3f}", "-t", f"{seg['dur']*speed+0.2:.3f}",
-               "-i", path, "-af", af, "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"])
-    a = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
-    a = np.pad(a, (0, max(0, n - len(a))))[:n]
+               "-i", path, "-af", af, "-ac", "2", "-ar", str(SR), "-f", "s16le", "-"])
+    a = np.frombuffer(raw, np.int16).astype(np.float32).reshape(-1, 2) / 32768
+    a = np.pad(a, ((0, max(0, n - len(a))), (0, 0)))[:n].copy()
     f = int(0.04 * SR)
-    a[:f] *= np.linspace(0, 1, f)
-    a[-f:] *= np.linspace(1, 0, f)
+    a[:f] *= np.linspace(0, 1, f)[:, None]
+    a[-f:] *= np.linspace(1, 0, f)[:, None]
     return a
 
 
@@ -236,7 +236,7 @@ _CACHE = {}
 
 
 def load_sound(name):
-    """Charge sons/<name>.* en mono 48 kHz, normalisé à 0 dBFS crête."""
+    """Charge sons/<name>.* en stéréo 48 kHz (n, 2), normalisé à 0 dBFS crête."""
     if name in _CACHE:
         return _CACHE[name]
     path = None
@@ -248,8 +248,8 @@ def load_sound(name):
     if path is None:
         _CACHE[name] = None
         return None
-    raw = run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"])
-    a = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
+    raw = run(["ffmpeg", "-v", "error", "-i", path, "-ac", "2", "-ar", str(SR), "-f", "s16le", "-"])
+    a = np.frombuffer(raw, np.int16).astype(np.float32).reshape(-1, 2) / 32768
     a = a / max(1e-6, np.abs(a).max())
     _CACHE[name] = a
     return a
@@ -263,6 +263,8 @@ def pool(prefix):
 
 
 def envelope(a, win=0.01):
+    if a.ndim == 2:
+        a = a.mean(1)
     n = max(1, int(win * SR))
     e = np.sqrt(np.convolve(a ** 2, np.ones(n) / n, mode="same"))
     return e
@@ -287,14 +289,18 @@ def pitch(a, st):
         return a
     r = 2 ** (st / 12)
     x = np.arange(0, len(a) - 1, r)
-    return np.interp(x, np.arange(len(a)), a).astype(np.float32)
+    return np.stack([np.interp(x, np.arange(len(a)), a[:, c]) for c in range(a.shape[1])], 1).astype(np.float32)
+
+
+# effets secs et centrés (règle earshot) ; whoosh, montée, clameur, musique restent larges
+MONO_ROLES = ("impact", "sifflet", "coup_de_pied", "pop")
 
 
 class SfxTrack:
     """Piste d'effets construite à partir d'une liste de repères."""
 
     def __init__(self, n):
-        self.buf = np.zeros(n, np.float32)
+        self.buf = np.zeros((n, 2), np.float32)
         self.cues = []
         self._last = {}
 
@@ -311,13 +317,15 @@ class SfxTrack:
         if a is None:
             self.cues.append((t, role, None, label))
             return
+        if role in MONO_ROLES:
+            a = np.repeat(a.mean(1, keepdims=True), 2, 1)
         a = pitch(a, st)
         if max_dur:
             n = int(max_dur * SR)
             if len(a) > n:
                 a = a[:n].copy()
                 f = int(0.03 * SR)
-                a[-f:] *= np.linspace(1, 0, f)
+                a[-f:] *= np.linspace(1, 0, f)[:, None]
         off = anchor_offset(a, anchor)
         g = 10 ** ((CRETE.get(role, -10) + gain_db) / 20)
         mix_at(self.buf, a * g, t - off)
@@ -530,7 +538,8 @@ def main():
         print(f"prep {i+1}/{len(segs)}", flush=True)
 
     total = sum(s["dur"] for s in segs)
-    audio = np.zeros(int((total + 1) * SR), np.float32)
+    audio = np.zeros((int((total + 1) * SR), 2), np.float32)
+    kick_t = hero_t = None
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24",
                            "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
                            "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p",
@@ -555,7 +564,9 @@ def main():
             if last:  # moment héroïque : (montée -> temps d'air ->) impact + clameur
                 if not any(x["type"] == "leone" for x in segs):
                     sfx.add(ti - 0.15, "montee", anchor="end", label="montée transformation")
-                sfx.add(ti + 0.01, "clameur", anchor="arrive", label="clameur")
+                sfx.add(ti + 0.01, "clameur", anchor="arrive", gain_db=-2, label="clameur")
+            if last:
+                hero_t = ti
             sfx.add(ti, "impact", anchor="arrive", gain_db=float(rng.uniform(-1.5, 1.5)),
                     st=float(rng.uniform(-0.4, 0.4)), label=s["sv"])
             if s.get("sifflet"):
@@ -571,12 +582,13 @@ def main():
                 music_end = t0
             if s.get("role") == "frappe":
                 sfx.add(t0 + s["dur"] - 0.12, "montee", anchor="end", label="montée Leone")
+                kick_t = t0 + s["dur"]
                 sfx.add(t0 + s["dur"] - 0.01, "coup_de_pied", name="coup_de_pied", anchor="arrive", label="frappe")
         if kind == "froid":  # coup de zoom final = mouvement de caméra -> whoosh
             sfx.add(t0 + s["dur"] - 0.25, "whoosh", anchor="peak", max_dur=0.9, label="zoom ouverture")
         if kind == "fin":
             music_end = t0 if music_end is None else music_end
-            sfx.add(t0 + 0.4 + 0.18, "impact", anchor="arrive", gain_db=-5.0, label="COMBIEN")
+            sfx.add(t0 + 0.4 + 0.18, "impact", anchor="arrive", gain_db=-9.0, label="COMBIEN")
         impact = (card.impact_time() if card else
                   0.51 if kind == "accroche" else None)
 
@@ -682,13 +694,13 @@ def main():
         piece = music[int(m0 * SR): int(m0 * SR) + n].copy()
         f = int(0.12 * SR)
         if len(piece) > f:
-            piece[-f:] *= np.linspace(1, 0, f)
+            piece[-f:] *= np.linspace(1, 0, f)[:, None]
         mix_at(mus, piece, music_start, 10 ** (cfg.get("musique", {}).get("gain_db", -12) / 20))
 
     # --- voix off éventuelle (fichier + repères [t_reel, t_fichier, durée]) :
     # la musique et l'ambiance baissent dessous, les effets aussi (≈ -9 dB)
     voice = np.zeros_like(audio)
-    duck = np.ones_like(audio)
+    duck = np.ones(len(audio), np.float32)
     vo = cfg.get("voix")
     if vo and os.path.exists(vo["fichier"]):
         raw = run(["ffmpeg", "-v", "error", "-i", vo["fichier"], "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"])
@@ -696,12 +708,26 @@ def main():
         v = v / max(1e-6, np.abs(v).max())
         for tr, tf, d in vo["reperes"]:
             piece = v[int(tf * SR): int((tf + d) * SR)]
-            mix_at(voice, piece, tr, 10 ** (vo.get("gain_db", -2) / 20))
+            mix_at(voice, np.repeat(piece[:, None], 2, 1), tr, 10 ** (vo.get("gain_db", -2) / 20))
             i, j = int(tr * SR), int((tr + d) * SR)
             duck[max(0, i - 4800): j + 4800] = 10 ** (-9 / 20)
         k = int(0.08 * SR)  # lissage des remontées
         duck = np.convolve(duck, np.ones(k) / k, mode="same")
-    audio = audio * duck + mus * duck + sfx.buf * duck + voice
+    # « stop-down » à la Leone : tout retombe presque au silence entre le contact
+    # du pied et l'impact du dernier mot, puis tout explose
+    if kick_t is not None and hero_t is not None and hero_t - kick_t > 0.15:
+        a0, a1 = int((kick_t + 0.06) * SR), int((hero_t - 0.02) * SR)
+        r = int(0.03 * SR)
+        g = np.ones(len(audio), np.float32)
+        g[a0:a1] = 10 ** (-20 / 20)
+        g = np.convolve(g, np.ones(r) / r, mode="same")
+        audio *= g[:, None]
+        mus *= g[:, None]
+    dk = duck[:, None]
+    audio = audio * dk + mus * dk + sfx.buf * dk + voice
+    f = int(0.45 * SR)  # extinction finale (pas de son coupé net)
+    end = int(total * SR)
+    audio[end - f:end] *= np.linspace(1, 0, f)[:, None] ** 1.5
     audio = audio[: int(total * SR)]
     audio /= max(1e-6, np.abs(audio).max()) / 0.9
     with open(os.path.join(work, "repere_sons.txt"), "w", encoding="utf-8") as fh:
@@ -709,8 +735,8 @@ def main():
             fh.write(f"{c[0]:7.3f}  {c[1]:8s} {c[2] or 'MUET (aucun son)'}  {c[3]}\n")
     wpath = os.path.join(work, "_a.wav")
     with wave.open(wpath, "wb") as w:
-        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
-        w.writeframes((audio * 32767).astype(np.int16).tobytes())
+        w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
+        w.writeframes(np.ascontiguousarray(audio * 32767).astype(np.int16).tobytes())
     out = cfg["sortie"]
     run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(work, "_v.mp4"), "-i", wpath,
          "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-af", "loudnorm=I=-14:TP=-1",
