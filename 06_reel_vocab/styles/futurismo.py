@@ -348,7 +348,7 @@ class Style:
             n, cc, st, _ = cv2.connectedComponentsWithStats(cand, connectivity=8)
             for i in range(1, n):
                 x, y, bw, bh, a = st[i]
-                if a < 22 * k * k or a > 0.2 * w * h:
+                if a < 22 * k * k or a > 0.6 * w * h:
                     continue
                 sl = (slice(y, y + bh), slice(x, x + bw))
                 m = cc[sl] == i
@@ -375,8 +375,8 @@ class Style:
                 (ex, ey), (d1, d2), ang = cv2.fitEllipse(pts[ok].reshape(-1, 1, 2).astype(np.float32))
                 if not (np.isfinite(ex) and d1 > 3 and d2 > 3):
                     continue
-                if max(d1, d2) / min(d1, d2) > 2.2:
-                    continue
+                if max(d1, d2) / min(d1, d2) > 2.2 or max(d1, d2) < 42 * k:
+                    continue                  # petits ballons (plans larges) : pas redessinés
                 em = np.zeros((h, w), np.uint8)
                 cv2.ellipse(em, ((ex + x, ey + y), (d1, d2), ang), 1, -1)
                 em = em.astype(bool)
@@ -391,6 +391,23 @@ class Style:
                 plein = reg[em].mean()
                 if iou < 0.78 or plein < 0.45:
                     continue
+                # anneau autour : pas de grande zone bleue (maillot azur collé = faux ballon)
+                e3 = np.zeros((h, w), np.uint8)
+                cv2.ellipse(e3, ((ex + x, ey + y), (d1 * 1.7, d2 * 1.7), ang), 1, -1)
+                ring = e3.astype(bool) & ~em
+                if ring.any() and bleu[ring].mean() > (0.2 if max(d1, d2) > 45 * k else 0.08):
+                    continue
+                if max(d1, d2) < 45 * k:
+                    # petit ballon : la bande bleue traverse le blanc (pas une moitié bleue
+                    # collée à une moitié blanche : chaussette + chaussure, maillot + short)
+                    by, bx = np.nonzero(bleu & em)
+                    if len(bx) == 0:
+                        continue
+                    t = np.deg2rad(ang)
+                    du = (bx.mean() - ex - x) * np.cos(t) + (by.mean() - ey - y) * np.sin(t)
+                    dv = -(bx.mean() - ex - x) * np.sin(t) + (by.mean() - ey - y) * np.cos(t)
+                    if np.hypot(du / (d1 / 2), dv / (d2 / 2)) > 0.42 or (blanc | bleu)[em].mean() < 0.6:
+                        continue
                 main = (skin & cv2.dilate(em.astype(np.uint8), B._disque(5 * k)).astype(bool)).any()
                 sc = iou * min(1.0, bf / 0.15) * (1.15 if main else 1.0)
                 if self.bal is not None:      # continuité avec la piste (position, taille)
@@ -426,15 +443,20 @@ class Style:
                 P["bleu_img"] = det["bleu"]
                 return P
             A = self.bal_att
-            if A is not None and det["sc"] > 0.8 and A["sc"] > 0.8 \
+            if A is not None and det["sc"] > 0.8 \
                     and np.linalg.norm(det["c"] - A["c"]) < 0.9 * float(A["ax"].max()) + 6:
-                det["miss"] = 0
-                det["v"] = np.zeros(2, np.float32)
-                det["can"] = None
-                det["bleu_img"] = det["bleu"]
-                self.bal_att = None
-                self.bal = det
-                return det
+                det["n"] = A.get("n", 1) + 1
+                besoin = 3 if float(det["ax"].max()) > 45 * self._k else 4
+                if det["n"] >= besoin:
+                    det["miss"] = 0
+                    det["v"] = np.zeros(2, np.float32)
+                    det["can"] = None
+                    det["bleu_img"] = det["bleu"]
+                    self.bal_att = None
+                    self.bal = det
+                    return det
+            else:
+                det["n"] = 1
             self.bal_att = det
             if P is None or not self.temporel:
                 if not self.temporel:
@@ -501,6 +523,7 @@ class Style:
         etiq = b.prev["etiq"].copy()
         h, w = etiq.shape
         k = min(h, w) / 540.0
+        self._k = k
         prob = st.pers(rgb, w, h)
         rep, pal, foule = st._table()
         pers = np.zeros((h, w), bool)
@@ -535,7 +558,7 @@ class Style:
         for c in cs:
             a = cv2.contourArea(c)
             x, y, bw, bh = cv2.boundingRect(c)
-            if a > 90 * k * k or (a > 14 * k * k and pers[y:y + bh, x:x + bw].mean() > 0.3):
+            if a > 160 * k * k or (a > 45 * k * k and pers[y:y + bh, x:x + bw].mean() > 0.3):
                 eps = float(np.clip(0.012 * np.sqrt(a), 1.4, 4.5)) * k
                 poly.append(cv2.approxPolyDP(c, eps, True))
         figp = np.zeros((h, w), np.uint8)
@@ -719,8 +742,8 @@ class Style:
             if len(v) == 0:
                 v = ci[(m > 0) & (ci >= 0)]
             c = int(np.bincount(v).argmax()) if len(v) else C_CREMA
-            col = 0.62 * np.float32(FP[c]) + 0.38 * np.float32(CREMA)
-            cols.append(col)
+            col = 0.72 * np.float32(FP[c]) + 0.28 * np.float32(CREMA)
+            cols.append(col if cv2.contourArea(p) > 0.0025 * h * w else None)
         return cols
 
     def _echos(self, out, sp, figfrac, dvec, z, W, H, f):
@@ -736,13 +759,17 @@ class Style:
             return out
         pas = (0.022 + 0.004 * min(self.vit, 4.0)) * max(H, W) / z
         ep = max(1, int(round(2.0 * f)))
-        for ret, alpha, nk in ((6, 0.42, 2), (3, 0.62, 1)):
+        for ret, alpha, nk in ((6, 0.72, 2), (3, 0.88, 1)):
             idx = max(0, len(self.hist) - 1 - ret) if self.temporel else len(self.hist) - 1
             polys, cols, cam0 = self.hist[idx]
             off = ((self.cam - cam0) - dvec * pas * nk * 0.5) * z
             calque = np.zeros((H, W), np.uint8)
             coul = np.zeros((H, W, 3), np.float32)
-            for p, c in zip(polys, cols):
+            garde = [(p, c) for p, c in zip(polys, cols) if c is not None]
+            if not garde:
+                continue
+            polys = [p for p, _ in garde]
+            for p, c in garde:
                 q = np.round((p.astype(np.float32) + off) * 4).astype(np.int32)
                 m = np.zeros((H, W), np.uint8)
                 cv2.fillPoly(m, [q], 255, cv2.LINE_AA, shift=2)
@@ -754,7 +781,7 @@ class Style:
             tr = np.zeros((H, W), np.uint8)
             qs = [np.round((p.astype(np.float32) + off) * 4).astype(np.int32) for p in polys]
             cv2.polylines(tr, qs, True, 255, ep, cv2.LINE_AA, shift=2)
-            ta = tr.astype(np.float32) / 255 * (0.55 * g)
+            ta = tr.astype(np.float32) / 255 * (0.8 * g)
             out = out * (1 - ta[..., None]) + np.float32(ENCRE) * ta[..., None]
         return out
 
