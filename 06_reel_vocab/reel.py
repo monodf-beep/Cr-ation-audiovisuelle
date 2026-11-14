@@ -202,11 +202,13 @@ def read_audio(cfg, seg, piste):
         return np.zeros((n, 2), np.float32)
     src = cfg["sources"][seg["src"]]
     path = src["path"]
-    start = seg["start"]
+    # le son peut venir d'un autre instant que l'image (ex. ouverture : l'image de
+    # l'échappée, le cri « Brilliant! » qui suit) et ne pas être ralenti
+    start = seg.get("son_debut", seg["start"])
     if seg["src"] == "pro" and piste == "foule" and src.get("foule"):
         path = src["foule"]
-        start = seg["start"] - src.get("foule_offset", 0.0)
-    speed = seg.get("vitesse", 1.0)
+        start = start - src.get("foule_offset", 0.0)
+    speed = seg.get("son_vitesse", seg.get("vitesse", 1.0))
     af = f"atempo={max(0.5, speed)}" if speed != 1 else "anull"
     raw = run(["ffmpeg", "-v", "error", "-ss", f"{max(0, start):.3f}", "-t", f"{seg['dur']*speed+0.2:.3f}",
                "-i", path, "-af", af, "-ac", "2", "-ar", str(SR), "-f", "s16le", "-"])
