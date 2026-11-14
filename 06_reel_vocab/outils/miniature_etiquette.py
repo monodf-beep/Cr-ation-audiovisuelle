@@ -106,16 +106,10 @@ if arg.rond:
     img = fond_illustre()
     cx, cy, r = (int(v) for v in arg.rond.split(","))
     R = arg.rond_source
-    boite = (int(vx - R), int(vy - R * 1.05), int(vx + R), int(vy + R * 0.95))
-    # dans le rond : toi seul, détouré, sur le bleu (la tribune derrière brouillait le visage)
-    m = detoure(np.asarray(src))
-    for z in arg.effacer:
-        x0, y0, x1, y1 = (int(v) for v in z.split(","))
-        m[y0:y1, x0:x1] = 0
-    perso = src.crop(boite).resize((2 * r, 2 * r), Image.LANCZOS).filter(ImageFilter.UnsharpMask(1.2, 60, 2))
-    pm = Image.fromarray(m).crop(boite).resize((2 * r, 2 * r), Image.LANCZOS)
-    vignette = Image.new("RGB", (2 * r, 2 * r), BLEU)
-    vignette.paste(perso, (0, 0), pm)
+    # cadrage serré : les yeux à ~42 % du haut, le haut des cheveux peut être coupé ;
+    # la vraie tribune reste derrière (un fond uni ne marchait pas)
+    boite = (int(vx - R), int(vy - R * 0.85), int(vx + R), int(vy + R * 1.15))
+    vignette = src.crop(boite).resize((2 * r, 2 * r), Image.LANCZOS).filter(ImageFilter.UnsharpMask(1.2, 60, 2))
     rond = Image.new("L", (8 * r, 8 * r), 0)
     ImageDraw.Draw(rond).ellipse((0, 0, 8 * r - 1, 8 * r - 1), fill=255)
     rond = rond.resize((2 * r, 2 * r), Image.LANCZOS)
