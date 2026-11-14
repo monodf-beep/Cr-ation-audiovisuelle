@@ -35,11 +35,12 @@ import stylize as B           # noqa: E402  (non modifié)
 import ligne_claire as LC     # noqa: E402  (réutilisé pour les étiquettes)
 
 PAPIER = np.array((247, 241, 228), np.float32)   # papier chaud
-GRAPHITE = np.array((52, 50, 58), np.float32)    # mine / encre diluée
+GRAPHITE = np.array((58, 54, 62), np.float32)    # mine / encre diluée
 # couleurs de lavis (pigment pur, avant dilution)
 LAVIS = {B.I_AZ: (30, 110, 205), B.I_AZO: (30, 110, 205), B.I_SB: (14, 104, 66),
          B.I_SBO: (14, 104, 66), B.I_OR: (240, 176, 30), B.I_ORO: (240, 176, 30),
          B.I_BLANC: (236, 236, 232), B.I_PEL: (118, 172, 84)}
+EQUIPE = (B.I_AZ, B.I_AZO, B.I_SB, B.I_SBO, B.I_OR, B.I_ORO)
 FPS_TRAIT = 10.0              # cadence du « tremblé » du trait
 
 
@@ -65,14 +66,14 @@ class _Textures:
         self.papier = 1.0 + 0.020 * fin / (fin.std() + 1e-6) + 0.012 * fibre / (fibre.std() + 1e-6) \
             + 0.012 * moy
         # granulation du pigment : le pigment se dépose dans les creux du papier
-        gr = cv2.GaussianBlur(r.standard_normal((H, W)).astype(np.float32), (0, 0), 1.3 * f + 0.3)
+        gr = cv2.GaussianBlur(r.standard_normal((H, W)).astype(np.float32), (0, 0), 1.8 * f + 0.5)
         gr = gr / (gr.std() + 1e-6)
-        self.granul = np.clip(1.0 + 0.16 * gr + 0.10 * _bruit(H, W, 9 * f, 4), 0.55, 1.5)
+        self.granul = np.clip(1.0 + 0.07 * gr + 0.07 * _bruit(H, W, 7 * f, 4), 0.7, 1.3)
         # taches de lavis (dilution irrégulière à grande échelle)
         self.taches = 1.0 + 0.16 * _bruit(H, W, 130 * f, 5) + 0.08 * _bruit(H, W, 40 * f, 6)
         # marges : le lavis s'arrête de façon irrégulière près des bords de l'image
         yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        d = np.minimum.reduce([xx, yy, W - 1 - xx, H - 1 - yy]) / (min(H, W) * 0.05)
+        d = np.minimum.reduce([xx, yy, W - 1 - xx, H - 1 - yy]) / (min(H, W) * 0.035)
         d = d + 0.9 * _bruit(H, W, 60 * f, 8)
         self.marge = np.clip(d - 0.3, 0, 1).astype(np.float32)
 
@@ -107,25 +108,28 @@ class Style:
         col = pal.astype(np.float32).copy()
         dil = np.full(n, 0.62, np.float32)          # densité de pigment (1 = pur)
         lab = B._lab(pal.tolist())
+        peaux = set(B.PEAUX) | set(range(b.n_normal + B.N_FOULE, n))
         for i in range(n):
-            # tons neutres sombres (shorts, chaussettes, cheveux) : gris bleuté léger
-            if lab[i, 0] < 35:
-                col[i] = (70, 72, 86)
-                dil[i] = 0.55
+            # tons neutres sombres (shorts, ombres, cheveux) : lavis gris de Payne léger
+            if lab[i, 0] < 38 and i not in peaux:
+                col[i] = (96, 94, 112)
+                dil[i] = 0.30
         for i, c in LAVIS.items():
             if i < n:
                 col[i] = c
-        dil[[i for i in (B.I_AZ, B.I_AZO, B.I_SB, B.I_SBO) if i < n]] = 0.80
+        dil[[i for i in (B.I_AZ, B.I_AZO, B.I_SB, B.I_SBO) if i < n]] = 0.74
         dil[[i for i in (B.I_OR, B.I_ORO) if i < n]] = 0.78
         if B.I_BLANC < n:
             dil[B.I_BLANC] = 0.10                    # blanc = papier réservé
         if B.I_PEL < n:
             dil[B.I_PEL] = 0.40                      # pelouse : lavis vert clair
-        for i in list(B.PEAUX) + list(range(b.n_normal + B.N_FOULE, n)):
-            if i < n:
-                dil[i] = 0.42                        # chair : lavis léger, uni
+        for i in peaux:
+            # chair : lavis uni, réchauffé (peaux foncées = terre de Sienne)
+            col[i] = np.clip(col[i] * (0.9, 0.8, 0.72) + (20, 8, 0), 0, 255)
+            dil[i] = 0.55 if lab[i, 0] > 55 else 0.62
         for i in foule:
-            dil[i] = 0.16                            # foule : presque papier nu
+            col[i] = (0.5 * col[i] + 0.5 * np.array((200, 190, 170))).astype(np.float32)
+            dil[i] = 0.10                            # foule : presque papier nu
         # densité équivalente : couleur « pure » dont la dilution donne la couleur cible
         self._pal = (key, col, dil)
         return col, dil
@@ -161,7 +165,23 @@ class Style:
         if prob is not None:
             etiq, pers = lc._joueurs(rgb, etiq, prob)
         lc._prev_e = etiq
-        e = np.where(pers, etiq, B.Stylizer._mode(etiq, 3))
+        e = rep[etiq]                  # couleurs voisines fusionnées (moins de taches)
+        e = np.where(pers, e, B.Stylizer._mode(e, 3))
+        # îlots (touffes d'herbe, reflets) entourés de pelouse hors joueurs -> pelouse
+        ip = rep[B.I_PEL]
+        n, cc, st, _ = cv2.connectedComponentsWithStats((e != ip).astype(np.uint8), connectivity=8)
+        if n > 1:
+            pet = st[:, cv2.CC_STAT_AREA] < 0.0006 * w * h
+            pet[0] = False
+            m = pet[cc] & ~pers
+            autour = cv2.dilate(m.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool) & ~m
+            if m.any():
+                # composante dont le voisinage est majoritairement pelouse
+                dil = cv2.dilate(cc.astype(np.float32) * m, np.ones((5, 5), np.uint8)).astype(np.int32)
+                tot = np.bincount(dil[autour], minlength=n)
+                vert = np.bincount(dil[autour & (e == ip)], minlength=n)
+                ok = pet & (vert >= 0.75 * np.maximum(tot, 1))
+                e[ok[cc] & ~pers] = ip
         return e, pers, pal, foule, sortie_base
 
     def __call__(self, rgb):
@@ -171,7 +191,7 @@ class Style:
         tx = self._tex
         e, pers, pal_lc, foule, sortie_base = self._etiquettes(rgb)
         h, w = e.shape
-        col, dil = self._lavis(self.lc.base.palette if False else B._rgb_of_lab(self.lc.base.palette), foule)
+        col, dil = self._lavis(B._rgb_of_lab(self.lc.base.palette), foule)
         en_foule = np.isin(e, list(foule))
         peau = np.isin(e, list(B.PEAUX) + list(range(self.lc.base.n_normal + B.N_FOULE, len(col))))
 
@@ -216,21 +236,36 @@ class Style:
 
         # --- trait crayon --------------------------------------------------------------
         pl = B._lab(col.tolist())[e]
+        # poids du trait : silhouette des joueurs = appuyé, frontières contrastées =
+        # moyen, frontières faibles = à peine effleurées
         bord = np.zeros((h, w), np.float32)
         for ax in (0, 1):
             a = pl[1:] if ax == 0 else pl[:, 1:]
             c = pl[:-1] if ax == 0 else pl[:, :-1]
             fa = en_foule[1:] if ax == 0 else en_foule[:, 1:]
             fc = en_foule[:-1] if ax == 0 else en_foule[:, :-1]
-            diff = (np.linalg.norm(a - c, axis=2) > 12) & ~(fa | fc)
+            de = np.linalg.norm(a - c, axis=2)
+            poids = np.where(de > 30, 0.8, np.where(de > 14, 0.35, 0.0)) * ~(fa | fc)
+            # à l'intérieur d'un joueur : seulement les bords de maillot, à peine appuyés
+            pa = pers[1:] if ax == 0 else pers[:, 1:]
+            pc = pers[:-1] if ax == 0 else pers[:, :-1]
+            ea = e[1:] if ax == 0 else e[:, 1:]
+            ec = e[:-1] if ax == 0 else e[:, :-1]
+            maillot = np.isin(ea, EQUIPE) | np.isin(ec, EQUIPE)
+            poids = np.where(pa & pc, np.where(maillot & (de > 30), 0.45, 0.18 * (de > 30)), poids)
             if ax == 0:
-                bord[:-1][diff] = 1
+                bord[:-1] = np.maximum(bord[:-1], poids)
             else:
-                bord[:, :-1][diff] = 1
-        bord = B.Stylizer._sans_miettes(bord, int(14 * k))
+                bord[:, :-1] = np.maximum(bord[:, :-1], poids)
+        if pers.any():
+            pu = pers.astype(np.uint8)
+            sil = (cv2.dilate(pu, np.ones((3, 3), np.uint8)) != pu) & ~en_foule
+            bord[sil] = 1.0
+        bord = B.Stylizer._sans_miettes(bord, int(26 * k))
+        poids = cv2.resize(cv2.dilate(bord, np.ones((3, 3), np.uint8)), (W, H), interpolation=cv2.INTER_LINEAR)
         t = cv2.resize(bord, (W, H), interpolation=cv2.INTER_LINEAR)
         t = cv2.GaussianBlur(t, (0, 0), 0.8 * W / w)
-        axe = (t > 0.3 * float(t.max() if t.max() > 0 else 1)).astype(np.uint8)
+        axe = (t > 0.12).astype(np.uint8)
         dt = cv2.distanceTransform(1 - axe, cv2.DIST_L2, 3)
         # tremblé : champ de déformation changé à ~10 i/s (jamais à chaque image)
         ws = self._deformations(H, W)
@@ -238,14 +273,14 @@ class Style:
         j = (self.n // etape) % 3
         self.n += 1
         # épaisseur et pression variables le long du trait (bruit fixe)
-        pres = np.clip(0.75 + 0.45 * _bruit_cache(self, H, W), 0.3, 1.2)
-        demi = 0.5 * self.epaisseur * f * (0.6 + 0.6 * pres)
+        pres = np.clip(0.7 + 0.6 * _bruit_cache(self, H, W), 0.0, 1.2)   # 0 = trait levé
+        demi = 0.5 * self.epaisseur * f * (0.5 + 0.6 * pres)
         a1 = np.clip(demi + 0.5 - cv2.remap(dt, ws[j][0], ws[j][1], cv2.INTER_LINEAR,
                                                 borderMode=cv2.BORDER_REPLICATE), 0, 1)
         j2 = (j + 1) % 3
         a2 = np.clip(0.55 * demi + 0.5 - cv2.remap(dt, ws[j2][0] + 1.5 * f, ws[j2][1] - 1.0 * f,
                                                      cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE), 0, 1)
-        a = np.maximum(a1 * (0.55 + 0.35 * pres), 0.45 * a2)
+        a = np.maximum(a1 * (0.5 + 0.4 * pres), 0.4 * a2) * np.clip(poids * 1.15, 0, 1)
         # la mine accroche le grain du papier
         a = np.clip(a * (0.8 + 0.25 * tx.granul), 0, 1) * np.clip(tx.marge * 1.5, 0.25, 1)
         out = out * (1 - a[..., None]) + GRAPHITE * a[..., None]

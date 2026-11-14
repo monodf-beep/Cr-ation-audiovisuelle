@@ -215,6 +215,12 @@ class Style:
         proche[sur] = e[sur]
         proche[np.isin(e, PEAUX_F) & ~a_refaire] = e[np.isin(e, PEAUX_F) & ~a_refaire]
         proche[visage_base] = e[visage_base]
+        # couleur très saturée prise pour de la peau (maillot orange de l'arbitre…)
+        vif = np.isin(proche, PEAUX_F) & (np.hypot(lab[..., 1], lab[..., 2]) > 40) & ~visage_base
+        if vif.any():
+            cv_ = np.array([F_ORA, F_RO, F_OR])
+            dv = np.linalg.norm(lab[vif][:, None, :] - self.lab_f[cv_][None], axis=2)
+            proche[vif] = cv_[np.argmin(dv, 1)]
         # herbe prise pour un maillot vert (ombres, herbe entre les joueurs) :
         # tout pixel proche de la couleur médiane de la pelouse redevient pelouse
         mp = (e == F_PEL) & (b.prev["etiq"] == B.I_PEL)

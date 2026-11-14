@@ -146,26 +146,109 @@ def read_audio(cfg, seg, piste):
 
 
 # ================================================================ sons
-def sfx_boom():
-    t = np.arange(int(SR * 0.55)) / SR
-    f = 38 + 110 * np.exp(-t * 18)
-    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 6)
-    rng = np.random.default_rng(3)
-    click = rng.standard_normal(len(t)) * np.exp(-t * 90) * 0.5
-    return 0.8 * (body + click)
+# Règles (Clipwing real-sfx + earshot sound-design) :
+#  - uniquement des enregistrements réels (dossier sons/, Openverse CC0/CC-BY),
+#    aucun son synthétisé ; pas de son adapté -> le moment reste muet ;
+#  - pas de whoosh sur chaque coupe (85 % des coupes pro sont muettes) :
+#    seulement sur les vrais mouvements de caméra (2 max) ;
+#  - une action répétée (le mot qui claque) puise dans un pool de prises,
+#    jamais deux fois la même d'affilée, ±1,5 dB, ±0,4 demi-ton ;
+#  - calage : impacts sur l'ARRIVÉE du son, whoosh sur son PIC,
+#    montée qui FINIT 150 ms avant l'impact (un temps d'air) ;
+#  - niveaux crête par rôle (dBFS) puis master -14 LUFS, -1 dBTP.
+SONS = os.path.join(HERE, "sons")
+CRETE = {"impact": -4, "whoosh": -9, "montee": -12, "sifflet": -8, "clameur": -8,
+         "pop": -14, "musique": -3}
+_CACHE = {}
 
 
-def sfx_whoosh(dur=0.28):
-    n = int(SR * dur)
-    x = np.random.default_rng(1).standard_normal(n)
-    y = np.convolve(x, np.ones(18) / 18, mode="same")
-    env = np.sin(np.pi * np.linspace(0, 1, n) ** 0.7) ** 2
-    return 0.55 * y * env
+def load_sound(name):
+    """Charge sons/<name>.* en mono 48 kHz, normalisé à 0 dBFS crête."""
+    if name in _CACHE:
+        return _CACHE[name]
+    path = None
+    if os.path.isdir(SONS):
+        for f in sorted(os.listdir(SONS)):
+            if os.path.splitext(f)[0] == name:
+                path = os.path.join(SONS, f)
+                break
+    if path is None:
+        _CACHE[name] = None
+        return None
+    raw = run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"])
+    a = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
+    a = a / max(1e-6, np.abs(a).max())
+    _CACHE[name] = a
+    return a
 
 
-def sfx_tick():
-    t = np.arange(int(SR * 0.08)) / SR
-    return 0.25 * np.sin(2 * np.pi * 1800 * t) * np.exp(-t * 60)
+def pool(prefix):
+    if not os.path.isdir(SONS):
+        return []
+    return sorted({os.path.splitext(f)[0] for f in os.listdir(SONS)
+                   if f.startswith(prefix) and not f.endswith(".md")})
+
+
+def envelope(a, win=0.01):
+    n = max(1, int(win * SR))
+    e = np.sqrt(np.convolve(a ** 2, np.ones(n) / n, mode="same"))
+    return e
+
+
+def anchor_offset(a, mode):
+    """Position (s) dans le son du point à caler sur l'image."""
+    e = envelope(a)
+    pk = int(np.argmax(e))
+    if mode == "peak":
+        return pk / SR
+    if mode == "end":
+        above = np.nonzero(e > e.max() * 10 ** (-40 / 20))[0]
+        return (above[-1] if len(above) else len(a)) / SR
+    # arrivée : premier instant à moins de 6 dB du maximum
+    idx = np.nonzero(e >= e.max() * 10 ** (-6 / 20))[0]
+    return (idx[0] if len(idx) else pk) / SR
+
+
+def pitch(a, st):
+    if abs(st) < 1e-3:
+        return a
+    r = 2 ** (st / 12)
+    x = np.arange(0, len(a) - 1, r)
+    return np.interp(x, np.arange(len(a)), a).astype(np.float32)
+
+
+class SfxTrack:
+    """Piste d'effets construite à partir d'une liste de repères."""
+
+    def __init__(self, n):
+        self.buf = np.zeros(n, np.float32)
+        self.cues = []
+        self._last = {}
+
+    def add(self, t, role, name=None, anchor="arrive", gain_db=0.0, st=0.0, max_dur=None, label=""):
+        if name is None:  # pool : on tourne, jamais deux fois la même prise
+            p = pool(role)
+            if not p:
+                self.cues.append((t, role, None, label))
+                return
+            k = (self._last.get(role, -1) + 1) % len(p)
+            self._last[role] = k
+            name = p[k]
+        a = load_sound(name)
+        if a is None:
+            self.cues.append((t, role, None, label))
+            return
+        a = pitch(a, st)
+        if max_dur:
+            n = int(max_dur * SR)
+            if len(a) > n:
+                a = a[:n].copy()
+                f = int(0.03 * SR)
+                a[-f:] *= np.linspace(1, 0, f)
+        off = anchor_offset(a, anchor)
+        g = 10 ** ((CRETE.get(role, -10) + gain_db) / 20)
+        mix_at(self.buf, a * g, t - off)
+        self.cues.append((round(t, 3), role, name, label))
 
 
 def mix_at(buf, s, t, g=1.0):
@@ -364,7 +447,8 @@ def main():
                            "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264",
                            "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p",
                            os.path.join(work, "_v.mp4")], stdin=subprocess.PIPE)
-    f_hook = font(F_DISPLAY, 210)
+    sfx = SfxTrack(len(audio))
+    music_start, music_end = None, None
     t0 = 0.0
     wi = 0
     for si, s in enumerate(segs):
@@ -373,22 +457,30 @@ def main():
         kind = s["type"]
         a = read_audio(cfg, s, s.get("son", "foule" if s["src"] == "pro" else "plein"))
         mix_at(audio, a, t0, s.get("gain", 0.6))
-        if si > 0:
-            mix_at(audio, sfx_whoosh(), t0 - 0.2, 0.7)
         card = None
+        rng = np.random.default_rng(si)
         if kind == "mot":
             card = WordCard(s["sv"], s["fr"], wi, N)
             wi += 1
-            mix_at(audio, sfx_boom(), t0 + card.impact_time() - 0.02, 0.9)
-            for k in range(card.n_letters):
-                mix_at(audio, sfx_tick(), t0 + 0.10 + card.STAGGER * k, 0.35)
-        if kind == "accroche":
-            for k, tt in enumerate((0.05, 0.35, 0.75)):
-                mix_at(audio, sfx_boom(), t0 + tt + 0.1, 0.55 + 0.2 * (k == 1))
+            ti = t0 + card.impact_time()
+            last = wi == N
+            if last:  # moment héroïque : montée -> temps d'air -> impact + clameur
+                sfx.add(ti - 0.15, "montee", anchor="end", label="montée transformation")
+                sfx.add(ti + 0.01, "clameur", anchor="arrive", label="clameur")
+            sfx.add(ti, "impact", anchor="arrive", gain_db=float(rng.uniform(-1.5, 1.5)),
+                    st=float(rng.uniform(-0.4, 0.4)), label=s["sv"])
+            if s.get("sifflet"):
+                sfx.add(ti + 0.05, "sifflet", anchor="arrive", max_dur=0.7, label="sifflet")
+        if kind == "accroche":  # seul « RUGBY » claque ; la musique entre dessus
+            sfx.add(t0 + 0.35 + 0.16, "impact", anchor="arrive", gain_db=1.0, label="RUGBY")
+            music_start = t0 + 0.35 + 0.16
+        if kind == "froid":  # coup de zoom final = mouvement de caméra -> whoosh
+            sfx.add(t0 + s["dur"] - 0.25, "whoosh", anchor="peak", max_dur=0.9, label="zoom ouverture")
         if kind == "fin":
-            mix_at(audio, sfx_boom(), t0 + 0.5, 0.7)
+            music_end = t0
+            sfx.add(t0 + 0.4 + 0.18, "impact", anchor="arrive", gain_db=-5.0, label="COMBIEN")
         impact = (card.impact_time() if card else
-                  0.85 if kind == "accroche" else None)
+                  0.51 if kind == "accroche" else None)
 
         for fi in range(nf):
             t = fi / FPS
@@ -481,20 +573,42 @@ def main():
     enc.stdin.close()
     enc.wait()
 
-    # --- voix off éventuelle (fichier + repères [t_reel, t_fichier, durée])
+    # --- musique : entre sur « RUGBY », s'arrête net sur la fin (un temps de
+    # quasi-silence avant le dernier carton), niveau réglé dans montage.json
+    music = load_sound("musique")
+    mus = np.zeros_like(audio)
+    if music is not None and music_start is not None:
+        m0 = cfg.get("musique", {}).get("debut_s", 0.0)  # point du morceau calé sur RUGBY (un temps fort)
+        end = music_end if music_end is not None else total
+        n = int((end - music_start) * SR)
+        piece = music[int(m0 * SR): int(m0 * SR) + n].copy()
+        f = int(0.12 * SR)
+        if len(piece) > f:
+            piece[-f:] *= np.linspace(1, 0, f)
+        mix_at(mus, piece, music_start, 10 ** (cfg.get("musique", {}).get("gain_db", -12) / 20))
+
+    # --- voix off éventuelle (fichier + repères [t_reel, t_fichier, durée]) :
+    # la musique et l'ambiance baissent dessous, les effets aussi (≈ -9 dB)
+    voice = np.zeros_like(audio)
+    duck = np.ones_like(audio)
     vo = cfg.get("voix")
     if vo and os.path.exists(vo["fichier"]):
         raw = run(["ffmpeg", "-v", "error", "-i", vo["fichier"], "-ac", "1", "-ar", str(SR), "-f", "s16le", "-"])
         v = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
-        duck = np.ones_like(audio)
+        v = v / max(1e-6, np.abs(v).max())
         for tr, tf, d in vo["reperes"]:
             piece = v[int(tf * SR): int((tf + d) * SR)]
-            mix_at(audio, piece, tr, vo.get("gain", 1.6))
+            mix_at(voice, piece, tr, 10 ** (vo.get("gain_db", -2) / 20))
             i, j = int(tr * SR), int((tr + d) * SR)
-            duck[max(0, i - 4800): j + 4800] = 0.45
-        audio = audio * duck + 0  # ambiance baissée sous la voix
+            duck[max(0, i - 4800): j + 4800] = 10 ** (-9 / 20)
+        k = int(0.08 * SR)  # lissage des remontées
+        duck = np.convolve(duck, np.ones(k) / k, mode="same")
+    audio = audio * duck + mus * duck + sfx.buf * duck + voice
     audio = audio[: int(total * SR)]
     audio /= max(1e-6, np.abs(audio).max()) / 0.9
+    with open(os.path.join(work, "repere_sons.txt"), "w", encoding="utf-8") as fh:
+        for c in sfx.cues:
+            fh.write(f"{c[0]:7.3f}  {c[1]:8s} {c[2] or 'MUET (aucun son)'}  {c[3]}\n")
     wpath = os.path.join(work, "_a.wav")
     with wave.open(wpath, "wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
