@@ -113,21 +113,22 @@ footer { color: var(--dim); font-size: 12px; line-height: 1.5; }
 const CUES = [
   { t0: 0.0,  t1: 3.2,  silence: true, text: "Ouverture : le stade et le commentateur. Silence." },
   { t0: 3.2,  t1: 5.7,  say: 3.25, text: "Turin. Et si on parlait rugby… en savoyard ?" },
-  { t0: 5.7,  t1: 7.7,  say: 6.25, text: "Lo pallon",    fr: "le ballon" },
-  { t0: 7.7,  t1: 9.7,  say: 8.25, text: "Lo bu",        fr: "l'en-but" },
-  { t0: 9.7,  t1: 11.7, say: 10.25, text: "Lo placâjo",  fr: "le plaquage" },
-  { t0: 11.7, t1: 13.7, say: 12.25, text: "La mècllâye", fr: "la mêlée" },
-  { t0: 13.7, t1: 15.7, say: 14.25, text: "La toche",    fr: "la touche" },
-  { t0: 15.7, t1: 17.7, say: 16.25, text: "L'arbitro",   fr: "l'arbitre" },
-  { t0: 17.7, t1: 19.7, say: 18.25, text: "La pènalitât", fr: "la pénalité" },
-  { t0: 19.7, t1: 21.7, say: 20.25, text: "Lo champ",    fr: "le terrain" },
-  { t0: 21.7, t1: 23.7, say: 22.25, text: "La pâsse",    fr: "la passe" },
-  { t0: 23.7, t1: 25.7, say: 24.25, text: "Lo calço",    fr: "le coup de pied" },
-  { t0: 25.7, t1: 28.5, silence: true, text: "Finale à la Leone. Silence total." },
-  { t0: 28.5, t1: 31.0, say: 28.75, text: "Et pour finir… la transformacion !", fr: "la transformation" },
-  { t0: 31.0, t1: 34.4, say: 31.15, text: "Tu en connaissais combien ? Dis-le en commentaire !" },
+  { t0: 5.7,  t1: 6.7,  silence: true, text: "Focus sur le ballon. Silence." },
+  { t0: 6.70,  t1: 8.70,  say: 7.25, text: "Lo pallon",    fr: "le ballon" },
+  { t0: 8.70,  t1: 10.70,  say: 9.25, text: "Lo bu",        fr: "l'en-but" },
+  { t0: 10.70,  t1: 12.70, say: 11.25, text: "Lo placâjo",  fr: "le plaquage" },
+  { t0: 12.70, t1: 14.70, say: 13.25, text: "La mècllâye", fr: "la mêlée" },
+  { t0: 14.70, t1: 16.70, say: 15.25, text: "La toche",    fr: "la touche" },
+  { t0: 16.70, t1: 18.70, say: 17.25, text: "L'arbitro",   fr: "l'arbitre" },
+  { t0: 18.70, t1: 20.70, say: 19.25, text: "La pènalitât", fr: "la pénalité" },
+  { t0: 20.70, t1: 22.70, say: 21.25, text: "Lo champ",    fr: "le terrain" },
+  { t0: 22.70, t1: 24.70, say: 23.25, text: "La pâsse",    fr: "la passe" },
+  { t0: 24.70, t1: 26.70, say: 25.25, text: "Lo calço",    fr: "le coup de pied" },
+  { t0: 26.70, t1: 29.50, silence: true, text: "Finale à la Leone. Silence total." },
+  { t0: 29.50, t1: 32.0, say: 29.75, text: "Et pour finir… la transformacion !", fr: "la transformation" },
+  { t0: 32.0, t1: 35.40, say: 32.15, text: "Tu en connaissais combien ? Dis-le en commentaire !" },
 ];
-const TOTAL = 34.4, LEAD = 0.9, SAYLEN = 1.1;
+const TOTAL = 35.4, LEAD = 0.9, SAYLEN = 1.1;
 const $ = (id) => document.getElementById(id);
 const vid = $("vid");
 let ctx = null, t0 = null, raf = null, running = false, wake = null;
