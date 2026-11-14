@@ -13,13 +13,19 @@ Principe
      - pelouse = deux verts olive alternés selon les mêmes facettes (prisme)
      - « linee di forza » : quelques coins pointus noirs/vermillon/crème
        qui partent derrière l'action, dans le sens du mouvement
-     - joueurs : couleurs d'équipe conservées (azur ; vert, or, blanc),
-       autres tons ramenés à la palette chaude, silhouette anguleuse
-     - « dinamismo » : échos décalés et dégressifs des joueurs, tirés des
-       images précédentes (caméra compensée) + petit décalage le long du
-       mouvement : déterministe, pas de scintillement
+     - joueurs : affiche « propre » — peu de grands aplats :
+         * couleurs d'équipe conservées (azur ; vert, or), blanc = crème
+         * une seule teinte chair par personne, une seule teinte de cheveux
+         * îlots et miettes fusionnés dans l'aplat voisin dominant
+         * frontières lissées (argmax de masques flous, en pleine résolution)
+     - « dinamismo » : 2 échos = silhouettes nettes en aplat (couleur
+       dominante du joueur délavée), décalées (images passées, caméra
+       compensée + décalage dans le sens du mouvement) ; aucun écho quand
+       l'action est quasi immobile ou en très gros plan
+     - ballon : détecté (blanc + bande bleue, ellipse), suivi dans le temps
+       et redessiné : ellipse blanche nette, bande bleue propre, contour noir
      - contours noirs épais, silhouette en polygone
-  3. visages : aplat chair sans yeux, bouche ni barbe (hérité)
+  3. visages : aplat chair sans yeux, bouche ni barbe (hérité + forcé)
 
 Usage : python3 futurismo.py ENTREE SORTIE [--start S --dur D]
         (image -> image, vidéo -> vidéo même taille/cadence, sans son)
@@ -55,9 +61,38 @@ FOND = [CREMA, OCRE, OCRE_CL, VERMIGLIO, NERO, TERRA, CREMA, OCRE]   # tirage po
 FIG_CHAUD = [NERO, TERRA, OCRE, CREMA, (96, 84, 76)]                  # tons non-équipe
 ENCRE = (20, 16, 16)
 
+# --- Palette des figures (classes d'aplats) ---------------------------------------
+GRIS = (96, 84, 76)
+PEAUX_F = [(238, 194, 152), (212, 152, 106), (166, 106, 70), (112, 70, 46)]   # chair clair -> foncé
+BAL_BLANC = (250, 247, 238)
+BAL_BLEU = (34, 62, 164)
+FP = [NERO, TERRA, OCRE, CREMA, GRIS, LC.AZUR_LC, LC.SB_VERT_LC, LC.OR_LC] + PEAUX_F + [BAL_BLANC, BAL_BLEU]
+C_NERO, C_TERRA, C_OCRE, C_CREMA, C_GRIS, C_AZ, C_SB, C_OR = range(8)
+C_PEAU = list(range(8, 8 + len(PEAUX_F)))
+C_BB, C_BL = 8 + len(PEAUX_F), 9 + len(PEAUX_F)
+C_EQUIPE = (C_AZ, C_SB, C_OR)
+FP_RGB = np.array(FP, np.uint8)
+FP_LAB = B._lab(FP)
+PEAU_L = FP_LAB[C_PEAU, 0]
+C_SKIN = 99                    # classe provisoire « peau » (résolue par personne)
+
 
 def _lab(c):
     return B._lab(c)
+
+
+def _remplir_trous(m, frac, maxi=None):
+    """Bouche les trous (composantes du complément ne touchant pas le bord)."""
+    m8 = m.astype(np.uint8)
+    n, cc, st, _ = cv2.connectedComponentsWithStats(1 - m8, connectivity=4)
+    if n <= 1:
+        return m.astype(bool)
+    bord = np.zeros(n, bool)
+    bord[np.unique(np.concatenate([cc[0], cc[-1], cc[:, 0], cc[:, -1]]))] = True
+    lim = frac * m8.sum() if maxi is None else min(frac * m8.sum(), maxi)
+    trou = ~bord & (st[:, cv2.CC_STAT_AREA] < lim)
+    trou[0] = False
+    return m.astype(bool) | trou[cc]
 
 
 class Style:
@@ -78,13 +113,17 @@ class Style:
 
     def reset(self):
         self.lc.reset()
-        self.hist = deque(maxlen=10)   # (couleur, masque, position caméra)
+        self.hist = deque(maxlen=10)   # (polygones, couleurs, position caméra)
         self.cam = np.zeros(2, np.float32)
         self.dir = self.dir0.copy()
         self.vit = 0.0
         self.apex = None
         self.gris = None
         self._fac = None
+        self.prev_c = None             # carte de classes précédente (hystérésis des tons)
+        self.g_echo = None             # intensité des échos (lissée)
+        self.bal = None                # piste du ballon
+        self.bal_att = None            # détection en attente de confirmation
 
     # -- facettes : arrangement de droites fixes (par taille d'image) -------------
     def _facettes(self, W, H, dx, dy):
@@ -132,6 +171,258 @@ class Style:
         out[rep[B.I_BLANC]] = CREMA
         return out
 
+    def _classes_etiq(self, pf, rep):
+        """Étiquette (après rep) -> classe d'aplat FP (ou C_SKIN pour la peau)."""
+        b = self.lc.base
+        n = len(pf)
+        peau = {int(rep[i]) for i in list(B.PEAUX) + list(range(b.n_normal + B.N_FOULE, len(b.palette)))
+                if i < len(rep)}
+        out = np.zeros(n, np.int32)
+        cand = np.array(FP[:8], np.float32)
+        for i in range(n):
+            if i in peau:
+                out[i] = C_SKIN
+            else:
+                out[i] = int(np.argmin(np.linalg.norm(cand - pf[i].astype(np.float32), axis=1)))
+        out[int(rep[B.I_AZ])] = C_AZ
+        out[int(rep[B.I_SB])] = C_SB
+        out[int(rep[B.I_OR])] = C_OR
+        out[int(rep[B.I_BLANC])] = C_CREMA
+        return out
+
+    # -- nettoyage de la carte de classes (basse résolution) -----------------------
+    def _nettoyer(self, ci, fig, cl, pers, lab_src, k):
+        h, w = ci.shape
+        L = lab_src[..., 0]
+        equipe = np.isin(ci, C_EQUIPE)
+        # peau : étiquettes chair + peau MediaPipe (ombres comprises), hors couleurs d'équipe
+        skin = (ci == C_SKIN)
+        if cl is not None:
+            skin |= pers & ((cl == 2) | (cl == 3)) & ~equipe
+        # visages suivis : toujours un aplat chair plein (anonymat)
+        for p in self.lc.base.visages.pistes:
+            if p.get("age", 0) > 8:
+                continue
+            cx, cy, bw, bh = p["c"]
+            e = np.zeros((h, w), np.uint8)
+            cv2.ellipse(e, (int(cx), int(cy + bh * 0.04)), (max(1, int(bw * 0.5)), max(1, int(bh * 0.55))),
+                        0, 0, 360, 1, -1)
+            skin |= e.astype(bool) & fig
+        skin &= fig
+        skin = cv2.morphologyEx(skin.astype(np.uint8), cv2.MORPH_CLOSE, B._disque(3 * k)).astype(bool) & fig
+        skin = _remplir_trous(skin, 0.12) & fig
+        cheveux = np.zeros((h, w), bool)
+        if cl is not None:
+            cheveux = pers & (cl == 1) & ~equipe & ~skin & fig
+        out = ci.copy()
+        out[skin] = C_PEAU[1]
+        # une teinte chair par personne (composante connexe de peau)
+        n, cc, st, _ = cv2.connectedComponentsWithStats(skin.astype(np.uint8), connectivity=8)
+        for i in range(1, n):
+            x, y, bw, bh, a = st[i]
+            sl = (slice(y, y + bh), slice(x, x + bw))
+            m = cc[sl] == i
+            pv = None if self.prev_c is None else self.prev_c[sl]
+            t = self._ton_dans(m, L[sl], pv, C_PEAU, PEAU_L - 4, 8)
+            out[sl][m] = t
+        # cheveux : un seul ton sombre par composante
+        n, cc, st, _ = cv2.connectedComponentsWithStats(cheveux.astype(np.uint8), connectivity=8)
+        ch_c = [C_NERO, C_TERRA, C_OCRE]
+        ch_L = np.array([22.0, 45.0, 68.0])
+        for i in range(1, n):
+            x, y, bw, bh, a = st[i]
+            sl = (slice(y, y + bh), slice(x, x + bw))
+            m = cc[sl] == i
+            pv = None if self.prev_c is None else self.prev_c[sl]
+            out[sl][m] = self._ton_dans(m, L[sl], pv, ch_c, ch_L, 10)
+        out[~fig] = -1
+        out[out == C_SKIN] = C_PEAU[1]
+        # îlots : composantes trop petites -> aplat voisin (le plus proche)
+        aire_fig = max(1, int(fig.sum()))
+        amin = float(np.clip(0.004 * aire_fig, 14 * k * k, 700 * k * k))
+        petit = np.zeros((h, w), bool)
+        for c in np.unique(out):
+            if c < 0:
+                continue
+            m = (out == c).astype(np.uint8)
+            n, cc, st, _ = cv2.connectedComponentsWithStats(m, connectivity=4)
+            if n <= 1:
+                continue
+            lim = amin * (0.35 if c == C_OR else 1.0)     # chiffres des maillots : gardés
+            pt = st[:, cv2.CC_STAT_AREA] < lim
+            pt[0] = False
+            if pt.any():
+                petit |= pt[cc]
+        out = self._combler(out, petit, fig)
+        return out
+
+    def _ton_dans(self, m, Lsrc, pv, choix, centres, marge):
+        Lm = float(np.percentile(Lsrc[m], 60))
+        j = int(np.argmin(np.abs(centres - Lm)))
+        t = int(choix[j])
+        if pv is not None:
+            p = pv[m]
+            p = p[np.isin(p, choix)]
+            if len(p) > 0.3 * m.sum():
+                t0 = int(np.bincount(p).argmax())
+                j0 = list(choix).index(t0)
+                if abs(centres[j0] - Lm) < abs(centres[j] - Lm) + marge:
+                    t = t0
+        return t
+
+    @staticmethod
+    def _combler(out, trou, fig):
+        """Pixels `trou` (et figure sans classe) -> classe du pixel valide le plus proche."""
+        inval = (trou | (out < 0)) & fig
+        if not inval.any():
+            return out
+        valide = fig & ~inval
+        if not valide.any():
+            out[inval] = C_CREMA
+            return out
+        _, lab_i = cv2.distanceTransformWithLabels((~valide).astype(np.uint8), cv2.DIST_L2, 3,
+                                                   labelType=cv2.DIST_LABEL_PIXEL)
+        ys, xs = np.nonzero(valide)
+        src = np.zeros(lab_i.max() + 1, np.int32)
+        src[lab_i[ys, xs]] = out[ys, xs]
+        out = out.copy()
+        out[inval] = src[lab_i[inval]]
+        return out
+
+    # -- ballon ----------------------------------------------------------------------
+    def _detecter_ballon(self, petit, fig, skin, k):
+        h, w = skin.shape
+        hsv = cv2.cvtColor(cv2.medianBlur(petit, 3), cv2.COLOR_RGB2HSV)
+        Hh, S, V = hsv[..., 0].astype(np.int16), hsv[..., 1].astype(np.int16), hsv[..., 2].astype(np.int16)
+        blanc = (S < 62) & (V > 140)
+        bleu = (Hh >= 100) & (Hh <= 135) & (S > 70) & (V > 45)
+        cand = (blanc | bleu).astype(np.uint8)
+        cand = cv2.morphologyEx(cand, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
+        cand = cv2.morphologyEx(cand, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+        n, cc, st, _ = cv2.connectedComponentsWithStats(cand, connectivity=8)
+        best, bs = None, 0.0
+        for i in range(1, n):
+            x, y, bw, bh, a = st[i]
+            if a < 22 * k * k or a > 0.2 * w * h:
+                continue
+            sl = (slice(y, y + bh), slice(x, x + bw))
+            m = cc[sl] == i
+            wf = float(blanc[sl][m].mean())
+            bf = float(bleu[sl][m].mean())
+            if wf < 0.2 or bf < 0.06 or wf + bf < 0.8:
+                continue
+            cs, _ = cv2.findContours(m.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            c = max(cs, key=cv2.contourArea)
+            hull = cv2.convexHull(c)
+            pts = hull.reshape(-1, 2)
+            # points du bord de l'image exclus de l'ajustement (ballon coupé)
+            gx, gy = pts[:, 0] + x, pts[:, 1] + y
+            ok = (gx > 1) & (gx < w - 2) & (gy > 1) & (gy < h - 2)
+            if ok.sum() < 5:
+                continue
+            (ex, ey), (d1, d2), ang = cv2.fitEllipse(pts[ok].reshape(-1, 1, 2).astype(np.float32))
+            if not (np.isfinite(ex) and d1 > 2 and d2 > 2):
+                continue
+            ra = max(d1, d2) / min(d1, d2)
+            if ra > 2.3:
+                continue
+            em = np.zeros((h, w), np.uint8)
+            cv2.ellipse(em, ((ex + x, ey + y), (d1, d2), ang), 1, -1)
+            em = em.astype(bool)
+            ae = em.sum()
+            if ae < 10:
+                continue
+            reg = np.zeros((h, w), bool)
+            reg[sl] = m
+            occ = reg | (skin & em)
+            inter = (occ & em).sum()
+            iou = inter / max(1, (occ | em).sum())
+            plein = reg[em].mean()
+            if iou < 0.62 or plein < 0.5:
+                continue
+            sc = iou * min(1.0, bf / 0.15) * (1.15 if (skin & cv2.dilate(em.astype(np.uint8),
+                                                                     B._disque(5 * k)).astype(bool)).any() else 1.0)
+            if sc > bs:
+                bs, best = sc, dict(c=np.array([ex + x, ey + y], np.float32), ax=np.array([d1, d2], np.float32),
+                                     ang=float(ang), sc=sc)
+        if best is None:
+            return None
+        bl = (bleu & ~skin).astype(np.float32)
+        best["bleu"] = cv2.GaussianBlur(bl, (0, 0), 0.8)
+        return best
+
+    def _suivre_ballon(self, det, dcam):
+        """Piste lissée : confirmation sur 2 images, maintien 2 images sans détection."""
+        P = self.bal
+        if P is not None:
+            P["c"] = P["c"] + P.get("v", np.zeros(2, np.float32))
+        if det is not None:
+            if P is not None and np.linalg.norm(det["c"] - P["c"]) < 0.9 * float(P["ax"].max()) + 6:
+                v = det["c"] - (P["c"] - P.get("v", 0))
+                P["v"] = 0.5 * P.get("v", np.zeros(2, np.float32)) + 0.5 * v * 0.5
+                P["c"] = 0.35 * P["c"] + 0.65 * det["c"]
+                # axes / angle : ordre (grand, petit) pour un lissage cohérent
+                P["ax"] = 0.6 * P["ax"] + 0.4 * det["ax"]
+                da = ((det["ang"] - P["ang"] + 90) % 180) - 90
+                P["ang"] = (P["ang"] + 0.4 * da) % 180
+                P["miss"] = 0
+                P["bleu_img"] = det["bleu"]
+                return P
+            A = self.bal_att
+            if A is not None and np.linalg.norm(det["c"] - A["c"]) < 0.9 * float(A["ax"].max()) + 6:
+                det["miss"] = 0
+                det["v"] = np.zeros(2, np.float32)
+                det["can"] = None
+                det["bleu_img"] = det["bleu"]
+                self.bal_att = None
+                self.bal = det
+                return det
+            self.bal_att = det
+            if P is None or not self.temporel:
+                if not self.temporel:
+                    det.update(miss=0, v=np.zeros(2, np.float32), can=None, bleu_img=det["bleu"])
+                    self.bal = det
+                    return det
+                return None
+        else:
+            self.bal_att = None
+        if P is not None:
+            P["miss"] = P.get("miss", 0) + 1
+            P["v"] = P.get("v", np.zeros(2, np.float32)) * 0.5
+            P["bleu_img"] = None
+            if P["miss"] > 2:
+                self.bal = None
+                return None
+            return P
+        return None
+
+    def _affine_ballon(self, P, z, n=64):
+        """Affine canonique (n x n, disque unité) -> image (échelle z)."""
+        a, b = P["ax"] * 0.5
+        t = np.deg2rad(P["ang"])
+        ca, sa = np.cos(t), np.sin(t)
+        c = P["c"]
+        # u,v dans [-1,1] ; (u * a) le long de l'axe d1 (orienté par ang), (v * b) perpendiculaire
+        s = 2.0 / (n - 1)
+        M = np.float32([[a * ca * s, -b * sa * s, 0], [a * sa * s, b * ca * s, 0]])
+        M[:, 2] = c - M[:, :2] @ np.float32([(n - 1) / 2, (n - 1) / 2])
+        return M * np.float32([[z, z, z], [z, z, z]]) if z != 1 else M
+
+    def _bande_ballon(self, P, h, w):
+        """Masque canonique de la bande bleue, lissé dans le temps."""
+        n = 64
+        M = self._affine_ballon(P, 1.0, n)
+        if P.get("bleu_img") is not None:
+            can = cv2.warpAffine(P["bleu_img"], M, (n, n), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
+                                 borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+            can = cv2.GaussianBlur(can, (0, 0), 2.5)
+            if P.get("can") is None or not self.temporel:
+                P["can"] = can
+            else:
+                P["can"] = 0.55 * P["can"] + 0.45 * can
+        return P.get("can")
+
+    # -- passe principale --------------------------------------------------------------
     def __call__(self, rgb):
         H, W = rgb.shape[:2]
         st = self.lc
@@ -145,22 +436,30 @@ class Style:
             self.hist.clear()
             self.gris = None
             self.apex = None
+            self.prev_c = None
+            self.bal = None
+            self.bal_att = None
+            self.g_echo = None
         etiq = b.prev["etiq"].copy()
         h, w = etiq.shape
         k = min(h, w) / 540.0
         prob = st.pers(rgb, w, h)
         rep, pal, foule = st._table()
         pers = np.zeros((h, w), bool)
+        cl = None
         if prob is not None:
             etiq, pers = st._joueurs(rgb, etiq, prob)
+            cl = np.argmax(prob, axis=2)
         st._prev_e = etiq
         e = rep[etiq]
         e = np.where(pers, e, B.Stylizer._mode(e, 5))
+        petit = cv2.resize(rgb, (w, h), interpolation=cv2.INTER_AREA)
+        lab_src = cv2.cvtColor(cv2.bilateralFilter(petit, 7, 30, 5).astype(np.float32) / 255.0,
+                               cv2.COLOR_RGB2Lab)
 
         # zones : pelouse / figures (joueurs, même minuscules) / fond
         ipel = rep[B.I_PEL]
         pel = e == ipel
-        crowd = np.isin(e, list(foule))
         zone = cv2.morphologyEx(pel.astype(np.uint8), cv2.MORPH_CLOSE, B._disque(15 * k))
         n, cc, sts, _ = cv2.connectedComponentsWithStats(1 - zone, connectivity=4)
         bordure = np.zeros(n, bool)
@@ -170,39 +469,43 @@ class Style:
         zone = zone.astype(bool) | trou[cc]
         fig = ((zone & ~pel) | pers)
         fig = cv2.morphologyEx(fig.astype(np.uint8), cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
-        # silhouette anguleuse : polygone simplifié de chaque figure ;
-        # les miettes (bouts de ligne, panneaux lointains) hors personnes sont ignorées
-        cs, _ = cv2.findContours(fig, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # silhouette lissée puis polygone anguleux ; trous de la silhouette bouchés
+        fig = (cv2.GaussianBlur(fig.astype(np.float32), (0, 0), 1.2 * k) > 0.5)
+        fig = _remplir_trous(fig, 0.03, 400 * k * k).astype(np.uint8)
+        cs, _ = cv2.findContours(fig, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         poly = []
         for c in cs:
             a = cv2.contourArea(c)
             x, y, bw, bh = cv2.boundingRect(c)
-            if a > 70 * k * k or (a > 8 * k * k and pers[y:y + bh, x:x + bw].mean() > 0.3):
-                poly.append(cv2.approxPolyDP(c, 1.6 * k, True))
+            if a > 90 * k * k or (a > 14 * k * k and pers[y:y + bh, x:x + bw].mean() > 0.3):
+                eps = float(np.clip(0.012 * np.sqrt(a), 1.4, 4.5)) * k
+                poly.append(cv2.approxPolyDP(c, eps, True))
         figp = np.zeros((h, w), np.uint8)
         cv2.fillPoly(figp, poly, 1)
         fig = figp.astype(bool)
         pel &= ~fig
+        figfrac = float(fig.mean())
 
-        # couleurs des figures (aplats), pixels hors figure -> voisin le plus proche
+        # couleurs des figures -> classes d'aplats, nettoyées
         pf = self._pal_fig(pal, rep)
-        efig = e.copy()
-        hors = fig & (np.isin(e, list(foule)) | pel | (e == ipel))
-        if hors.any():
-            m = (~hors & fig & ~np.isin(e, list(foule)) & (e != ipel)).astype(np.uint8)
-            if m.any():
-                _, lab_i = cv2.distanceTransformWithLabels(1 - m, cv2.DIST_L2, 3,
-                                                           labelType=cv2.DIST_LABEL_PIXEL)
-                ys, xs = np.nonzero(m)
-                src = np.zeros(lab_i.max() + 1, np.int32)
-                src[lab_i[ys, xs]] = e[ys, xs]
-                efig[hors] = src[lab_i[hors]]
-        col_fig = pf[efig]
+        cls_e = self._classes_etiq(pf, rep)
+        ci = cls_e[e]
+        hors = fig & (np.isin(e, list(foule)) | (e == ipel))
+        ci[hors] = -1
+        ci = self._combler(ci, np.zeros_like(fig), fig)
+        ci = self._nettoyer(ci, fig, cl, pers, lab_src, k)
+        ci[~fig] = -1
+
+        # ballon : détection + suivi
+        skin_lr = np.isin(ci, C_PEAU)
+        det = self._detecter_ballon(petit, fig | pers, skin_lr, k)
+        P = self._suivre_ballon(det, None)
 
         # mouvement : caméra (fond) et action (figures), lissés
         gris = cv2.resize(cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY), (w // 2, h // 2),
                           interpolation=cv2.INTER_AREA)
         dcam = np.zeros(2, np.float32)
+        sp = 0.0
         if self.temporel and self.gris is not None and self.gris.shape == gris.shape:
             fl = self.dis.calc(self.gris, gris, None) * 2.0       # précédent -> courant
             f2 = cv2.resize(fig.astype(np.uint8), (w // 2, h // 2), interpolation=cv2.INTER_NEAREST) > 0
@@ -221,28 +524,9 @@ class Style:
         self.cam = self.cam + dcam
         dvec = self.dir
 
-        # échos (dinamismo) : images passées, caméra compensée, + décalage synthétique
-        self.hist.append((col_fig, fig.astype(np.float32), self.cam.copy()))
-        pas = (0.022 + 0.004 * min(self.vit, 4.0)) * max(h, w)    # décalage par écho
-        echo_c = np.zeros((h, w, 3), np.float32)
-        echo_a = np.zeros((h, w), np.float32)
-        for j, (ret, alpha) in enumerate(((6, 0.22), (4, 0.36), (2, 0.55))):
-            idx = max(0, len(self.hist) - 1 - ret) if self.temporel else len(self.hist) - 1
-            c0, m0, cam0 = self.hist[idx]
-            nk = 3 - j
-            off = (self.cam - cam0) - dvec * pas * nk * 0.5
-            M = np.float32([[1, 0, off[0]], [0, 1, off[1]]])
-            c1 = cv2.warpAffine(c0, M, (w, h), flags=cv2.INTER_NEAREST, borderValue=0)
-            m1 = cv2.warpAffine(m0, M, (w, h), flags=cv2.INTER_LINEAR, borderValue=0)
-            # écho : couleur du joueur délavée vers la crème
-            c1 = 0.7 * c1.astype(np.float32) + 0.3 * np.float32(CREMA)
-            a1 = m1 * alpha
-            echo_c = echo_c * (1 - a1[..., None]) + c1 * a1[..., None]
-            echo_a = echo_a * (1 - a1) + a1
-        echo_c = echo_c / np.maximum(echo_a[..., None], 1e-4)
-
         # --- rendu pleine résolution ---------------------------------------------
         z = W / w
+        f = min(W, H) / 1080.0
         # facettes du fond (parallaxe douce avec la caméra)
         dx, dy = self.cam * z * 0.3
         cid = self._facettes(W, H, float(dx), float(dy))
@@ -266,46 +550,134 @@ class Style:
         # lignes de force : coins pointus derrière l'action, dans le sens du mouvement
         out = self._forces(out, fig, z, W, H)
 
-        # échos puis figures
-        ea = cv2.resize(echo_a, (W, H), interpolation=cv2.INTER_LINEAR)[..., None]
-        ec = cv2.resize(echo_c, (W, H), interpolation=cv2.INTER_NEAREST)
-        out = out * (1 - ea) + ec * ea
-        cf = cv2.resize(col_fig, (W, H), interpolation=cv2.INTER_NEAREST)
-        cf = cv2.medianBlur(cf, min(7, max(3, int(round(z * 1.6)) | 1)))
-        fa = cv2.resize(fig.astype(np.float32), (W, H), interpolation=cv2.INTER_LINEAR)
-        fa = np.clip((cv2.GaussianBlur(fa, (0, 0), 0.6 * z) - 0.5) * 3 + 0.5, 0, 1)[..., None]
-        out = out * (1 - fa) + cf.astype(np.float32) * fa
+        # échos : silhouettes nettes en aplat, tirées des images passées
+        polyF = [np.round(p.reshape(-1, 2).astype(np.float32) * z).astype(np.int32) for p in poly]
+        cols = self._couleurs_echo(poly, ci, h, w)
+        self.hist.append((polyF, cols, self.cam.copy()))
+        out = self._echos(out, sp, figfrac, dvec, z, W, H, f)
 
-        # contours : frontières d'aplats dans les figures + silhouette épaisse
-        f = min(W, H) / 1080.0
-        labf = B._lab(pf.tolist())[efig]
-        bord = np.zeros((h, w), np.float32)
-        dh = np.linalg.norm(labf[:, 1:] - labf[:, :-1], axis=2) > 14
-        dv = np.linalg.norm(labf[1:] - labf[:-1], axis=2) > 14
+        # figures : classes en pleine résolution, frontières lissées
+        sig = float(np.clip(np.sqrt(figfrac) * 4.5, 1.1, 3.2)) * k
+        CF = self._classes_pleine(ci, fig, sig, W, H)
+        fa8 = np.zeros((H, W), np.uint8)
+        if polyF:
+            cv2.fillPoly(fa8, [(p * 4) for p in polyF], 255, cv2.LINE_AA, shift=2)
+        fa = fa8.astype(np.float32) / 255
+        # ballon redessiné
+        if P is not None:
+            band = self._bande_ballon(P, h, w)
+            M = self._affine_ballon(P, z, 64)
+            ell = np.zeros((H, W), np.uint8)
+            cpx = P["c"] * z
+            cv2.ellipse(ell, ((float(cpx[0]), float(cpx[1])), (float(P["ax"][0] * z), float(P["ax"][1] * z)),
+                              float(P["ang"])), 1, -1, cv2.LINE_8)
+            ell = ell.astype(bool)
+            doigts = np.isin(CF, C_PEAU) & ell
+            # doigts : seulement des zones de peau franches (pas des miettes)
+            doigts = cv2.morphologyEx(doigts.astype(np.uint8), cv2.MORPH_OPEN, B._disque(5 * f)).astype(bool)
+            bal = ell & ~doigts
+            CF[bal] = C_BB
+            if band is not None:
+                bF = cv2.warpAffine(band, M, (W, H), flags=cv2.INTER_LINEAR, borderValue=0)
+                CF[bal & (bF > 0.42)] = C_BL
+            fa = np.maximum(fa, cv2.GaussianBlur(ell.astype(np.float32), (0, 0), 0.8))
+        cf = FP_RGB[np.clip(CF, 0, len(FP) - 1)].astype(np.float32)
+        fa3 = fa[..., None]
+        out = out * (1 - fa3) + cf * fa3
+
+        # contours : frontières d'aplats (pleine résolution) + silhouette épaisse
+        bord = np.zeros((H, W), np.uint8)
+        dh = CF[:, 1:] != CF[:, :-1]
+        dv = CF[1:] != CF[:-1]
         bord[:, 1:][dh] = 1
         bord[1:][dv] = 1
-        bord *= cv2.erode(fig.astype(np.uint8), np.ones((3, 3), np.uint8))
-        bord = B.Stylizer._sans_miettes(bord, int(8 * k))
-        t_in = self._trait(bord, W, H, 2.6 * f, z)
+        bord[fa < 0.5] = 0
+        dt = cv2.distanceTransform(1 - bord, cv2.DIST_L2, 3)
+        t_in = np.clip(1.25 * f + 0.5 - dt, 0, 1)
         sil = np.zeros((H, W), np.uint8)
-        polyF = [np.round(p.astype(np.float32) * z).astype(np.int32) for p in poly]
         cv2.polylines(sil, polyF, True, 255, max(2, int(round(5.0 * f))), cv2.LINE_AA)
-        # contour d'écho : trait fin noir, transparence de l'écho
-        t_ec = cv2.Canny((ea[..., 0] * 255).astype(np.uint8), 40, 90).astype(np.float32) / 255
-        t_ec = cv2.GaussianBlur(cv2.dilate(t_ec, np.ones((2, 2), np.uint8)), (0, 0), 0.6) * 0.6
-        t = np.maximum(np.maximum(t_in, sil.astype(np.float32) / 255), np.clip(t_ec, 0, 1) * (1 - fa[..., 0]))
+        if P is not None:
+            cpx = P["c"] * z
+            cv2.ellipse(sil, ((float(cpx[0]), float(cpx[1])), (float(P["ax"][0] * z), float(P["ax"][1] * z)),
+                              float(P["ang"])), 255, max(2, int(round(4.0 * f))), cv2.LINE_AA)
+        t = np.maximum(t_in, sil.astype(np.float32) / 255)
         out = out * (1 - t[..., None]) + np.float32(ENCRE) * t[..., None]
 
+        self.prev_c = ci
         # grain de toile fixe (identique à chaque image : pas de scintillement)
         out = out + self._grain(W, H)[..., None]
         return np.clip(out + 0.5, 0, 255).astype(np.uint8)
 
-    def _trait(self, bord, W, H, ep, z):
-        t = cv2.resize(bord, (W, H), interpolation=cv2.INTER_LINEAR)
-        t = cv2.GaussianBlur(t, (0, 0), max(0.8, 0.8 * z))
-        axe = (t > 0.3 * float(t.max() if t.max() > 0 else 1)).astype(np.uint8)
-        dt = cv2.distanceTransform(1 - axe, cv2.DIST_L2, 3)
-        return np.clip(max(0.6, 0.5 * ep - 0.25 * z) + 0.5 - dt, 0, 1)
+    def _classes_pleine(self, ci, fig, sig, W, H):
+        """Argmax de masques de classe flous, agrandis en pleine résolution :
+        frontières courbes et nettes, sans escaliers ni miettes."""
+        h, w = ci.shape
+        best = np.full((H, W), -1.0, np.float32)
+        CF = np.full((H, W), C_CREMA, np.int32)
+        dil = cv2.dilate(fig.astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool)
+        # on étend les classes un peu hors figure (bord de silhouette sans trou)
+        ci2 = ci.copy()
+        ci2 = self._combler(ci2, np.zeros_like(fig), dil)
+        ci2[~dil] = -1
+        for c in np.unique(ci2):
+            if c < 0:
+                continue
+            m = (ci2 == c).astype(np.float32)
+            m = cv2.GaussianBlur(m, (0, 0), sig)
+            mF = cv2.resize(m, (W, H), interpolation=cv2.INTER_LINEAR)
+            sel = mF > best
+            best[sel] = mF[sel]
+            CF[sel] = c
+        return CF
+
+    def _couleurs_echo(self, poly, ci, h, w):
+        """Couleur d'écho de chaque silhouette : aplat dominant (hors peau), délavé."""
+        cols = []
+        for p in poly:
+            m = np.zeros((h, w), np.uint8)
+            cv2.fillPoly(m, [p], 1)
+            v = ci[(m > 0) & (ci >= 0) & ~np.isin(ci, C_PEAU)]
+            if len(v) == 0:
+                v = ci[(m > 0) & (ci >= 0)]
+            c = int(np.bincount(v).argmax()) if len(v) else C_CREMA
+            col = 0.62 * np.float32(FP[c]) + 0.38 * np.float32(CREMA)
+            cols.append(col)
+        return cols
+
+    def _echos(self, out, sp, figfrac, dvec, z, W, H, f):
+        # intensité : mouvement réel de l'action, aucune en très gros plan
+        g_mvt = float(np.clip((max(self.vit, sp * 0.5) - 0.4) / 1.6, 0, 1))
+        g_gp = float(np.clip((0.30 - figfrac) / 0.15, 0, 1))
+        g = (0.35 + 0.65 * g_mvt) * g_gp
+        if not self.temporel:
+            g = 0.8 * g_gp
+        self.g_echo = g if self.g_echo is None else 0.85 * self.g_echo + 0.15 * g
+        g = self.g_echo
+        if g < 0.03 or not self.hist:
+            return out
+        pas = (0.022 + 0.004 * min(self.vit, 4.0)) * max(H, W) / z
+        ep = max(1, int(round(2.0 * f)))
+        for ret, alpha, nk in ((6, 0.42, 2), (3, 0.62, 1)):
+            idx = max(0, len(self.hist) - 1 - ret) if self.temporel else len(self.hist) - 1
+            polys, cols, cam0 = self.hist[idx]
+            off = ((self.cam - cam0) - dvec * pas * nk * 0.5) * z
+            calque = np.zeros((H, W), np.uint8)
+            coul = np.zeros((H, W, 3), np.float32)
+            for p, c in zip(polys, cols):
+                q = np.round((p.astype(np.float32) + off) * 4).astype(np.int32)
+                m = np.zeros((H, W), np.uint8)
+                cv2.fillPoly(m, [q], 255, cv2.LINE_AA, shift=2)
+                coul[m > 0] = c
+                calque = np.maximum(calque, m)
+            a = calque.astype(np.float32) / 255 * (alpha * g)
+            out = out * (1 - a[..., None]) + coul * a[..., None]
+            # contour fin de l'écho
+            tr = np.zeros((H, W), np.uint8)
+            qs = [np.round((p.astype(np.float32) + off) * 4).astype(np.int32) for p in polys]
+            cv2.polylines(tr, qs, True, 255, ep, cv2.LINE_AA, shift=2)
+            ta = tr.astype(np.float32) / 255 * (0.55 * g)
+            out = out * (1 - ta[..., None]) + np.float32(ENCRE) * ta[..., None]
+        return out
 
     def _grain(self, W, H):
         if self._fac is None or self._fac[0] != (W, H):
@@ -330,7 +702,6 @@ class Style:
         else:
             self.apex = 0.92 * self.apex + 0.08 * c
         d = self.dir
-        nrm = np.array([-d[1], d[0]], np.float32)
         L = 1.3 * np.hypot(W, H)
         a0 = self.apex + d * 0.06 * max(W, H)      # pointe un peu devant l'action
         couche = np.zeros((H, W, 3), np.float32)
@@ -350,8 +721,6 @@ class Style:
             mf = m.astype(np.float32) / 255
             couche = couche * (1 - mf[..., None]) + np.float32(col) * mf[..., None]
             alpha = np.maximum(alpha, mf)
-        # fondu : plein près de la pointe, s'efface vers le bord
-        _ = nrm
         a = alpha * 0.62
         return out * (1 - a[..., None]) + couche * a[..., None]
 
