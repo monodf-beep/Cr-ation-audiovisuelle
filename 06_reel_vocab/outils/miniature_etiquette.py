@@ -179,8 +179,8 @@ MED = None
 if arg.rond:
     img = fond_illustre()
     rcx, rcy, rr = (int(v) for v in arg.rond.split(","))
-    MED = medaillon(rr)
-    if not arg.rond_coin:
+    MED = medaillon(rr) if rr > 0 else None          # --rond 0,0,0 : illustration et titre seuls
+    if MED is not None and not arg.rond_coin:
         img.paste(MED, (rcx - MED.width // 2, rcy - MED.height // 2), MED)
 elif arg.fond:
     # illustration en fond, selfie détouré posé devant, net
