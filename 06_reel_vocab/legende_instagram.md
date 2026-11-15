@@ -17,7 +17,7 @@ Le savoyard se parle aussi en tribune.
 🔹 Lo calço : le coup de pied
 🔹 La transformacion : la transformation
 
-👇 Lequel manque selon toi ? Je ferai la suite avec vos mots.
+👇 Tu en connaissais combien ? Dis-le en commentaire.
 
 Grant-marci !
 
