@@ -63,4 +63,4 @@ Puis dans Claude Code : « agent veilleur sur donnees/compte_x ».
 
 ## Publication
 
-Postiz (voir `02_outils.md`) : l'agent `redacteur` prépare, Postiz reçoit en **brouillon**, tu valides, Postiz publie. Prérequis : compte Instagram en mode Professionnel.
+**Régie éditoriale** : https://claude.ai/artifact/K9brdqLe3WWMsxzzbCc5F2 (gratuite, privée). L'agent `redacteur` y dépose idées et brouillons ; tu valides ; tu programmes dans Meta Business Suite (Instagram) ou LinkedIn ; tu reportes les résultats dans la fiche. Voir `02_outils.md`.

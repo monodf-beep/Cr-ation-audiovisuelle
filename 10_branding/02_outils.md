@@ -14,6 +14,17 @@ Recherche du 15/11/2026 (pages GitHub et docs officielles). Les nombres d'étoil
 - Profil perso : publication texte, lien, image, vidéo via `w_member_social` (self-serve).
 - Les statistiques détaillées d'un profil perso ne sont pas accessibles par API : export manuel.
 
+## Décision (15/11) : outil gratuit fait maison
+
+Franck veut du gratuit. Aucun outil GitHub ne convainc à coût zéro : Postiz et BrightBean demandent un serveur à héberger, et BrightBean ne confirme ni les Reels ni les carrousels.
+
+Solution retenue, 0 € :
+- **Régie éditoriale** (https://claude.ai/artifact/K9brdqLe3WWMsxzzbCc5F2, source `10_branding/regie/regie.html`) : tableau des idées en 6 colonnes (idée → brouillon → à valider → validé → programmé → publié), calendrier mensuel, bilan des résultats (vues, enregistrements, messages, appels réservés). Contrôles de la charte intégrés (mots interdits, emoji, longueur, hashtags, éléments à fournir). Privée, hébergée sur claude.ai, les agents y écrivent directement.
+- **Publication** : planificateurs natifs gratuits. Meta Business Suite pour Instagram (Reels et carrousels programmables), programmation intégrée de LinkedIn. On copie la légende depuis la régie, on programme, on passe le post en « Programmé ».
+- Limite assumée : pas de publication automatique. Elle exigerait une app Meta ou un serveur ; la validation humaine reste de toute façon obligatoire.
+
+Si un jour le volume le justifie : Postiz auto-hébergé, qui a un serveur MCP.
+
 ## Planificateur : Postiz
 
 [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) — ~42k étoiles, AGPL-3.0, version du 13/11/2026.
