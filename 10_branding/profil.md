@@ -52,5 +52,7 @@ Pub « CHAMPIONS 26 » pour le FC Cluses : script, génération d'images, étalo
 
 Captures : `charte/etat-actuel-*.jpg`.
 
+**Charte (relevé du 15/11, voir `charte/charte.md`)** : la carte « États de Savoie » fournie par Franck utilise Semplicita Pro + bleu `#0A36AF` + gris neutres. C'est la référence actuelle : même police que franckmonod.eu, même bleu que ia.franckmonod.eu. Pas encore de charte complète.
+
 ## Ce que je ne sais pas encore
 Voir `00_questions.md`. Tant que ces réponses manquent, les agents produisent des hypothèses étiquetées, jamais des certitudes.

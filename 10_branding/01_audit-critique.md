@@ -38,7 +38,9 @@ Soit la création audiovisuelle est une offre (et la phrase est fausse), soit c'
 
 ## 5. Identité visuelle : un atout gâché, une page générique
 
-**Ce qui est bon, et rare** : franckmonod.eu raconte quelque chose. Semplicita, dessinée à Turin en 1930 par Butti pour Nebiolo. Rosso mattone des briques turinoises. Le monogramme `fm`. C'est une vraie idée de marque, ancrée, que personne d'autre ne peut copier. **C'est ça qu'il faut garder, pas ce qui marche chez les autres.**
+**Ce qui est bon, et rare** : franckmonod.eu raconte quelque chose. Semplicita, dessinée à Turin en 1930 par Butti pour Nebiolo. Le monogramme `fm`. Et la carte des États de Savoie (voir `charte/charte.md`) : la silhouette du territoire que tu vends, dans ta police et ton bleu. C'est une vraie idée de marque, ancrée, que personne d'autre ne peut copier. **C'est ça qu'il faut garder, pas ce qui marche chez les autres.**
+
+*Mise à jour 15/11 : la carte que tu considères comme ta charte est en bleu `#0A36AF`, pas en rouge brique. Le rouge de franckmonod.eu devient donc l'exception à trancher.*
 
 **Ce qui ne va pas :**
 - La photo hero est éclairée en gélatine violet-magenta-orange. Ça jure avec le rouge brique et ça dit « studio podcast tech », pas « Turin-Chambéry ».
