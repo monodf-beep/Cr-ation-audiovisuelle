@@ -21,3 +21,5 @@ __pycache__/
 10_branding/veille/donnees/
 !10_branding/charte/etat-actuel-*.jpg
 !10_branding/charte/charte-v1-apercu-*.jpg
+10_branding/veille/veille-*.zip
+10_branding/veille/export_veille/
