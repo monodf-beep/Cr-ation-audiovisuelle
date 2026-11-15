@@ -51,6 +51,8 @@ ap.add_argument("--angle", type=float, default=7.0)
 ap.add_argument("--fond")
 ap.add_argument("--fond-echelle", type=float, default=1.0)
 ap.add_argument("--fond-decalage", default="0,0")
+ap.add_argument("--fond-effacer", action="append", default=[],
+                help="x0,y0,x1,y1 (px de l'illustration) : élément parasite à effacer (repeint en pelouse)")
 ap.add_argument("--etiquette", default="262,1000", help="centre de l'étiquette")
 ap.add_argument("--largeur", type=int, default=390, help="largeur du texte de l'étiquette")
 ap.add_argument("--rond", help="cx,cy,r : médaillon du visage")
@@ -99,6 +101,30 @@ src = ImageEnhance.Color(ImageEnhance.Contrast(src).enhance(1.10)).enhance(1.15)
 tx, ty = (float(v) for v in arg.cible.split(","))
 def fond_illustre():
     f = Image.open(arg.fond).convert("RGB")
+    if arg.fond_effacer:
+        # ex. la jambe d'un coéquipier mal redessinée : tout ce qui n'est pas de la
+        # pelouse claire dans la zone est repeint à partir des alentours
+        import cv2
+        a = np.asarray(f).copy()
+        hsv = cv2.cvtColor(a, cv2.COLOR_RGB2HSV)
+        sombre = hsv[..., 2] < 80
+        for z in arg.fond_effacer:
+            x0, y0, x1, y1 = (int(v) for v in z.split(","))
+            # ligne par ligne : on repeint de la fin du contour noir du joueur (à gauche)
+            # jusqu'au bord de la zone, avec la couleur de la pelouse propre juste à droite
+            # (la nuance suit la hauteur, les raccords restent invisibles)
+            for y in range(y0, min(y1, a.shape[0])):
+                noirs = np.nonzero(sombre[y, x0 - 40:x0 + 10])[0]
+                xa = x0 - 40 + noirs[-1] + 2 if len(noirs) else x0
+                ref = a[max(0, y - 6):y + 7, x1:min(a.shape[1], x1 + 60)].reshape(-1, 3)
+                teinte = np.median(ref, axis=0)
+                n = x1 - xa
+                if n <= 0:
+                    continue
+                k = np.clip(np.arange(n)[::-1] / 12.0, 0, 1)[:, None]      # fondu de 12 px à droite
+                a[y, xa:x1] = (a[y, xa:x1] * (1 - k) + teinte * k).astype(np.uint8)
+            a = cv2.GaussianBlur(a, (0, 0), 0.01) if False else a
+        f = Image.fromarray(a)
     kf = max(arg.fond_echelle, W / f.width, H / f.height)
     f = f.resize((round(f.width * kf), round(f.height * kf)), Image.LANCZOS)
     dx, dy = (int(v) for v in arg.fond_decalage.split(","))
