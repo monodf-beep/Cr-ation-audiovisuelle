@@ -34,6 +34,8 @@ Offres :
 Pub « CHAMPIONS 26 » pour le FC Cluses : script, génération d'images, étalonnage, montage. N'apparaît sur aucun des deux sites.
 
 ## Canaux connus
+**Instagram = canal qui convertit le plus, sur le place-based marketing** (Franck, 15/11). Canal de conversion de l'offre IA : inconnu.
+
 - LinkedIn : linkedin.com/in/franck-monod
 - Instagram : @franck_culture_savoie (lié depuis franckmonod.eu ; absent de ia.franckmonod.eu)
 - Podcast : Glow
@@ -52,7 +54,7 @@ Pub « CHAMPIONS 26 » pour le FC Cluses : script, génération d'images, étalo
 
 Captures : `charte/etat-actuel-*.jpg`.
 
-**Charte (relevé du 15/11, voir `charte/charte.md`)** : la carte « États de Savoie » fournie par Franck utilise Semplicita Pro + bleu `#0A36AF` + gris neutres. C'est la référence actuelle : même police que franckmonod.eu, même bleu que ia.franckmonod.eu. Pas encore de charte complète.
+**Charte : v1.0 de novembre 2026, résumée dans `charte/charte.md`, tokens dans `charte/tokens.css`.** Bleu Savoie `#0A36AF` partout, rouge sombre `#8B0000` réservé à franckmonod.eu (culture, événementiel), Semplicità Pro. Les sites ne la suivent pas encore entièrement (voir écarts dans `charte/charte.md`).
 
 ## Ce que je ne sais pas encore
 Voir `00_questions.md`. Tant que ces réponses manquent, les agents produisent des hypothèses étiquetées, jamais des certitudes.

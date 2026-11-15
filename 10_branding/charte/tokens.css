@@ -1,0 +1,35 @@
+/* Tokens de la charte graphique Franck Monod v1.0 (novembre 2026).
+   Relevés tels quels dans « Charte graphique — Franck Monod (hors ligne) ».
+   Les polices ne sont pas versionnées ici (licence Semplicita Pro). */
+:root{
+  --blue-50:#eef1fb;--blue-100:#d6def5;--blue-200:#aec0eb;--blue-300:#7d9bde;--blue-400:#4a6fcb;
+  --blue-500:#2148b8;--blue-600:#0a36af;--blue-700:#082b8c;--blue-800:#062069;--blue-900:#041646;
+  --red-50:#fbeaea;--red-100:#f0c9c9;--red-200:#de9a9a;--red-300:#c56666;--red-400:#a83636;
+  --red-500:#8b0000;--red-600:#6e0000;--red-700:#4f0000;--red-800:#330000;
+  --neutral-0:#ffffff;--neutral-50:#f7f7f8;--neutral-100:#ededef;--neutral-200:#d9d9dc;--neutral-300:#b8b8be;
+  --neutral-400:#8c8c94;--neutral-500:#64646c;--neutral-600:#45454c;--neutral-700:#2b2b30;--neutral-800:#171719;--neutral-900:#000000;
+
+  --color-bg:var(--neutral-900);--color-bg-elevated:var(--neutral-800);--color-surface:var(--neutral-0);
+  --color-text-on-dark:var(--neutral-0);--color-text-on-dark-muted:var(--neutral-300);
+  --color-text-on-light:var(--neutral-900);--color-text-on-light-muted:var(--neutral-600);
+  --color-border-on-dark:var(--neutral-700);--color-border-on-light:var(--neutral-200);
+  --color-primary:var(--blue-600);--color-primary-hover:var(--blue-500);--color-primary-press:var(--blue-700);
+  --color-accent-event:var(--red-500);--color-accent-event-hover:var(--red-400);   /* franckmonod.eu seulement */
+  --color-ia-primary:var(--blue-600);--color-ia-primary-hover:var(--blue-500);--color-ia-primary-press:var(--blue-700);
+
+  --font-sans:'Semplicita Pro',-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --font-accent:'Bungee Shade','Semplicita Pro',sans-serif;   /* provisoire, cible : Ombra */
+  --fw-light:300;--fw-regular:400;--fw-medium:500;--fw-semibold:600;--fw-bold:700;
+  --font-size-display:6rem;--font-size-h1:4rem;--font-size-h2:2.75rem;--font-size-h3:1.875rem;--font-size-h4:1.375rem;
+  --font-size-body-lg:1.25rem;--font-size-body:1.0625rem;--font-size-caption:.875rem;--font-size-micro:.75rem;
+  --line-height-tight:1.05;--line-height-heading:1.15;--line-height-body:1.55;
+  --letter-spacing-display:-.01em;--letter-spacing-caps:.14em;
+
+  --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-6:1.5rem;--space-8:2rem;
+  --space-12:3rem;--space-16:4rem;--space-24:6rem;--space-32:8rem;
+  --radius-sm:2px;--radius-md:4px;--radius-lg:8px;--radius-pill:999px;
+  --container-max:1200px;--grid-columns:12;--grid-gap:var(--space-6);
+  --shadow-card:0 1px 2px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.08);
+  --shadow-card-dark:0 8px 32px rgba(0,0,0,.45);
+  --ease-standard:cubic-bezier(.2,.7,.2,1);--duration-fast:120ms;--duration-base:220ms;
+}

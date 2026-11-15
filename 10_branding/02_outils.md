@@ -25,6 +25,8 @@ Pourquoi lui :
 
 Second choix : [Mixpost Pro](https://mixpost.app/pricing), 299 $ une fois, auto-hébergé. La version gratuite ne gère ni Instagram ni LinkedIn.
 
+Alternative sérieuse : [BrightBean Studio](https://github.com/brightbeanxyz/brightbean-studio) — ~2,6k étoiles, AGPL-3.0, gratuit, sans offre payante. **Tableau kanban des idées**, circuit de validation, calendrier, statistiques, boîte de réception unifiée, API + serveur MCP. LinkedIn profil perso OK. Mais Reels et carrousels Instagram non mentionnés, aucune release publiée, et auto-hébergement obligatoire (Docker + Postgres) ou version hébergée gratuite dont la pérennité est inconnue.
+
 À écarter : Shoutify (archivé 2023), Socioboard (vieillissant).
 
 ## Skills et agents Claude Code réutilisables

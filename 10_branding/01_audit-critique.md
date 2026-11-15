@@ -53,11 +53,12 @@ Je ne le recommande pas, et voici pourquoi. Si tu calques la charte des comptes 
 
 Ce qu'on copie chez les concurrents, ce sont **les mécaniques** : formats qui retiennent (durée, rythme de coupe, accroche des 2 premières secondes), structures de carrousel, angles de sujets, fréquence, type d'appel à l'action. Ce qu'on ne copie pas : couleurs, typo, ton. La veille sert à trouver l'écart, pas la moyenne.
 
-## 7. Instagram est-il le bon canal ?
+## 7. Instagram est-il le bon canal ? — réponse de Franck (15/11)
 
-Tes acheteurs : élus, directeurs d'office de tourisme, dirigeants de PME, réseaux CCI/CPME. Ils décident sur LinkedIn, par recommandation et en réunion, beaucoup moins sur Instagram. Instagram fonctionne pour la partie **culture savoyarde / territoire** (visuel, émotion, communauté), qui nourrit ta légitimité mais ne signe pas directement de contrat.
-
-Hypothèse à valider avec tes chiffres : LinkedIn = canal de vente, Instagram = canal de récit. Si c'est vrai, l'effort de veille Instagram doit être dimensionné en conséquence.
+Mon hypothèse était fausse : **Instagram est le canal où Franck a le plus converti, sur le place-based marketing.** Conséquences :
+- la veille Instagram des concurrents est prioritaire, pas accessoire ;
+- l'offre territoriale se vend en image et en récit : la carte des États de Savoie, l'architecture, le terrain sont des contenus de vente, pas de décor ;
+- reste à savoir si LinkedIn convertit l'offre IA (question ouverte).
 
 ## Ce qui est solide
 
