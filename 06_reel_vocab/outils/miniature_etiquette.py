@@ -125,11 +125,19 @@ def fond_illustre():
                 a[y, xa:x1] = (a[y, xa:x1] * (1 - k) + teinte * k).astype(np.uint8)
             a = cv2.GaussianBlur(a, (0, 0), 0.01) if False else a
         f = Image.fromarray(a)
-    kf = max(arg.fond_echelle, W / f.width, H / f.height)
+    # échelle : l'image couvre le cadre (x --fond-echelle pour zoomer)
+    kf = max(W / f.width, H / f.height) * max(1.0, arg.fond_echelle)
     f = f.resize((round(f.width * kf), round(f.height * kf)), Image.LANCZOS)
     dx, dy = (int(v) for v in arg.fond_decalage.split(","))
+    ox = min(0, max(W - f.width, dx))
+    oy = min(0, dy)
     im = Image.new("RGB", (W, H))
-    im.paste(f, (min(0, max(W - f.width, dx)), min(0, max(H - f.height, dy))))
+    im.paste(f, (ox, oy))
+    bas = oy + f.height
+    if bas < H:
+        # image remontée : le bas libéré prolonge la pelouse (dernières lignes étirées)
+        bande = f.crop((0, f.height - 40, f.width, f.height)).resize((f.width, H - bas + 40), Image.BICUBIC)
+        im.paste(bande, (ox, bas - 40))
     return im
 
 
