@@ -615,6 +615,9 @@ def zoom(img, k, dx=0, dy=0):
 def main():
     mpath = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "montage.json")
     cfg = json.load(open(mpath, encoding="utf-8"))
+    global BLEU
+    if cfg.get("couleur"):   # couleur d'accent (bandeaux, étiquettes) : bleu par défaut
+        BLEU = tuple(cfg["couleur"])
     work = cfg["travail"]
     os.makedirs(os.path.join(work, "clips"), exist_ok=True)
     style_obj = load_style(cfg.get("style"))

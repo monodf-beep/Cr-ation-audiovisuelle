@@ -66,7 +66,9 @@ ap.add_argument("--rond-debord", default="0.18,0.18",
 ap.add_argument("--liseré", type=int, default=14)
 ap.add_argument("--effacer", action="append", default=[],
                 help="x0,y0,x1,y1 (px source) : zone à retirer du détourage (un voisin collé)")
+ap.add_argument("--couleur", default="bleu", help="bleu, rouge ou r,g,b : couleur de l'étiquette")
 arg = ap.parse_args()
+BLEU = {"bleu": BLEU, "rouge": (200, 16, 46)}.get(arg.couleur) or tuple(int(v) for v in arg.couleur.split(","))
 
 
 def detoure(rgb):
