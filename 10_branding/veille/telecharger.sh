@@ -15,8 +15,8 @@ NAVIGATEUR="${NAVIGATEUR:-firefox}"
 ARCHIVE="donnees/.archive.sqlite3"
 mkdir -p donnees
 
-command -v gallery-dl >/dev/null || { echo "gallery-dl absent : pipx install 'gallery-dl[video]'"; exit 1; }
-command -v ffmpeg >/dev/null || { echo "ffmpeg absent : brew install ffmpeg"; exit 1; }
+command -v gallery-dl >/dev/null || { echo "gallery-dl absent : python -m pip install gallery-dl"; exit 1; }
+command -v ffmpeg >/dev/null || { echo "ffmpeg absent : winget install Gyan.FFmpeg (Windows) ou brew install ffmpeg (Mac)"; exit 1; }
 
 grep -vE '^\s*(#|$)' concurrents.txt | while read -r compte _; do
   echo "== $compte"
@@ -44,4 +44,4 @@ grep -vE '^\s*(#|$)' concurrents.txt | while read -r compte _; do
   sleep $((20 + RANDOM % 40))       # pause entre deux comptes
 done
 
-echo "Terminé. Étape suivante : python3 traiter.py donnees/<compte> puis python3 indexer.py donnees/<compte>"
+echo "Terminé. Étape suivante : python traiter.py donnees/<compte> puis python indexer.py donnees/<compte>  (python3 sur Mac)"

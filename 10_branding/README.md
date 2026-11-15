@@ -27,23 +27,33 @@ Exemple : « Utilise l'agent veilleur sur donnees/compte_x, puis l'avocat-du-dia
 
 Le scraping tourne **chez toi**, avec ta session Instagram. Pas depuis le cloud : Instagram bloque les IP de serveurs, et c'est ton compte qui porte le risque. Utilise un **compte secondaire** connecté dans Firefox.
 
-### Installation (Mac)
+### Installation (Windows — PowerShell, une seule fois)
 
-```bash
-brew install ffmpeg gallery-dl yt-dlp
-pip3 install faster-whisper pillow
+```powershell
+winget install --id Git.Git -e
+winget install --id Python.Python.3.12 -e
+winget install --id Gyan.FFmpeg -e
 ```
 
-### Utilisation
+Fermer et rouvrir PowerShell, puis :
+
+```powershell
+python -m pip install gallery-dl yt-dlp faster-whisper pillow
+```
+
+### Utilisation (dans **Git Bash**, installé avec Git)
 
 ```bash
-cd 10_branding/veille
-# 1. lister les comptes dans concurrents.txt
+cd ~/cr-ation-audiovisuelle/10_branding/veille
 ./telecharger.sh                       # 30 dernières publications par compte, puis incrémental
 ./stats.sh donnees/compte_x            # optionnel : commentaires et vues via yt-dlp
-python3 traiter.py donnees/compte_x    # transcriptions + planches d'images + rythme de montage
-python3 indexer.py donnees/compte_x    # index.csv + resume.md triés par engagement relatif
+python traiter.py donnees/compte_x     # transcriptions + planches d'images + rythme de montage
+python indexer.py donnees/compte_x     # index.csv + resume.md triés par engagement relatif
 ```
+
+Sur Mac : `brew install ffmpeg gallery-dl yt-dlp`, `pip3 install faster-whisper pillow`, et `python3` au lieu de `python`.
+
+Navigateur : **Firefox**, connecté à Instagram avec le compte secondaire. Sur Windows, Chrome chiffre ses cookies et l'extraction échoue souvent.
 
 Puis dans Claude Code : « agent veilleur sur donnees/compte_x ».
 
