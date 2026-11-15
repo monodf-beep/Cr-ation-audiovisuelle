@@ -57,6 +57,8 @@ ap.add_argument("--rond", help="cx,cy,r : médaillon du visage")
 ap.add_argument("--rond-source", type=int, default=320)
 ap.add_argument("--rond-coin", choices=["hd", "hg", "bd", "bg"],
                 help="accroche le médaillon à un coin de l'étiquette (cx,cy de --rond ignorés)")
+ap.add_argument("--rond-decor", help="image de fond derrière toi dans le rond (tu es détouré)")
+ap.add_argument("--rond-decor-boite", help="x0,y0,x1,y1 : partie du décor à utiliser")
 ap.add_argument("--rond-debord", default="0.18,0.18",
                 help="débord du rond vers l'extérieur du coin, en fraction du rayon (x,y)")
 ap.add_argument("--liseré", type=int, default=14)
@@ -112,6 +114,20 @@ def medaillon(r):
     # la vraie tribune reste derrière (un fond uni ne marchait pas)
     boite = (int(vx - R), int(vy - R * 0.85), int(vx + R), int(vy + R * 1.15))
     vignette = src.crop(boite).resize((2 * r, 2 * r), Image.LANCZOS).filter(ImageFilter.UnsharpMask(1.2, 60, 2))
+    if arg.rond_decor:
+        # les gens derrière toi disparaissent : détourage, puis une vue du stade
+        # légèrement floue (profondeur de champ) à leur place
+        dec = Image.open(arg.rond_decor).convert("RGB")
+        if arg.rond_decor_boite:
+            dec = dec.crop(tuple(int(v) for v in arg.rond_decor_boite.split(",")))
+        dec = dec.resize((2 * r, 2 * r), Image.LANCZOS).filter(ImageFilter.GaussianBlur(2.5))
+        m = detoure(np.asarray(src))
+        for z in arg.effacer:
+            x0, y0, x1, y1 = (int(v) for v in z.split(","))
+            m[y0:y1, x0:x1] = 0
+        pm = Image.fromarray(m).crop(boite).resize((2 * r, 2 * r), Image.LANCZOS)
+        dec.paste(vignette, (0, 0), pm)
+        vignette = dec
     e = arg.liseré
     rond = Image.new("L", (8 * r, 8 * r), 0)
     ImageDraw.Draw(rond).ellipse((0, 0, 8 * r - 1, 8 * r - 1), fill=255)
