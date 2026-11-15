@@ -114,6 +114,42 @@ tbody tr:hover{background:var(--line-2)}
 h3.section{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin:8px 0 0}
 p.note{margin:0;font-size:13px;color:var(--ink-3);max-width:70ch}
 
+/* Grille Instagram (maquette du profil) */
+.ig{max-width:620px;margin:0 auto;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);display:flex;flex-direction:column}
+.ig-profil{display:grid;grid-template-columns:auto 1fr;gap:14px 20px;padding:18px 16px 12px;align-items:center}
+.ig-avatar{width:86px;height:86px;border-radius:50%;background:#0a36af;color:#fff;display:grid;place-items:center;font-size:34px;font-weight:500;overflow:hidden;border:0;padding:0}
+.ig-avatar img{width:100%;height:100%;object-fit:cover}
+.ig-nums{display:flex;gap:18px;justify-content:space-around;text-align:center}
+.ig-nums b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
+.ig-nums span{font-size:13px;color:var(--ink-2)}
+.ig-pseudo{font-weight:600;font-size:16px}
+.ig-bio{grid-column:1/-1;font-size:14px;line-height:1.4;white-space:pre-wrap;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ig-bio .nom{font-weight:600}
+.ig-bio a{color:var(--primary);text-decoration:none;overflow-wrap:anywhere}
+.ig-hl{display:flex;gap:14px;overflow-x:auto;padding:4px 16px 14px}
+.ig-hl div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--ink-2);flex:0 0 auto;max-width:72px;text-align:center}
+.ig-hl i{width:58px;height:58px;border-radius:50%;border:1px solid var(--line);background:var(--primary-wash);display:block}
+.ig-tabs{display:flex;border-top:1px solid var(--line)}
+.ig-tabs span{flex:1;text-align:center;padding:8px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.ig-tabs span.on{color:var(--ink);box-shadow:inset 0 1px 0 var(--ink)}
+.ig-grille{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.tuile{position:relative;aspect-ratio:3/4;max-width:100%;border:0;padding:0;overflow:hidden;background:#0a36af;color:#fff;cursor:pointer;display:block;width:100%}
+.tuile img{width:100%;height:100%;object-fit:cover;display:block}
+.tuile .tx{position:absolute;inset:0;padding:10px;display:flex;align-items:flex-end;text-align:left;font-size:13px;font-weight:500;line-height:1.2}
+.tuile.noir{background:#000}
+.tuile.culture{background:#8b0000}
+.tuile.ia{background:#082b8c}
+.tuile.idee{background:repeating-linear-gradient(135deg,var(--line-2) 0 10px,var(--surface) 10px 20px);color:var(--ink-2);outline:1px dashed var(--line);outline-offset:-1px}
+.tuile .ic{position:absolute;top:6px;right:8px;font-size:15px;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.tuile .bd{position:absolute;top:6px;left:6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.92);color:#000;border-radius:var(--r-pill);padding:1px 6px}
+.tuile.cible{outline:3px solid var(--primary);outline-offset:-3px}
+.ig-outils{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;max-width:620px;margin:0 auto;width:100%}
+.ig-outils label{font-size:14px;display:flex;gap:6px;align-items:center}
+.equilibre{max-width:620px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:6px}
+.visuel-apercu{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.visuel-apercu figure{margin:0;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink-3)}
+.visuel-apercu img{display:block;object-fit:cover;border:1px solid var(--line);background:var(--line-2)}
+
 /* Panneau d'édition */
 .voile{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20}
 .panneau{position:fixed;top:0;right:0;bottom:0;width:min(640px,100%);background:var(--surface);z-index:21;box-shadow:var(--shadow);display:flex;flex-direction:column;
@@ -148,6 +184,7 @@ details[open] summary{margin-bottom:10px}
     </div>
     <nav class="vues" aria-label="Vues">
       <a href="#tableau" data-vue="tableau">Tableau</a>
+      <a href="#grille" data-vue="grille">Grille</a>
       <a href="#calendrier" data-vue="calendrier">Calendrier</a>
       <a href="#bilan" data-vue="bilan">Bilan</a>
     </nav>
@@ -344,11 +381,135 @@ details[open] summary{margin-bottom:10px}
       el("h3",{class:"section",text:"Toutes les publications"}), tPosts);
   }
 
+  const blob = (id) => id ? "/_blob/" + id : "";
+  function vueGrille() {
+    const c = S.config, ig = c.profil || {};
+    const avecIdees = !!S.grilleIdees;
+    let ps = S.posts.filter(p => p.reseau==="instagram" && p.format!=="story" && (avecIdees || !["idee"].includes(p.statut||"idee")));
+    const cle = p => p.date ? p.date+"T"+(p.heure||"12:00") : "9999";   // sans date = tout en haut
+    ps.sort((a,b)=> cle(b) < cle(a) ? -1 : cle(b) > cle(a) ? 1 : 0);
+    const publies = S.posts.filter(p=>p.reseau==="instagram" && p.statut==="publie" && p.format!=="story").length;
+    const auj = iso(new Date());
+    const tuile = (p) => {
+      const prevu = p.statut!=="publie";
+      const t = el("button",{type:"button",class:"tuile"+(p.statut==="idee"?" idee":p.offre==="culture"?" culture":p.offre==="ia"?" ia":(p.format==="reel"?" noir":"")),
+        "aria-label":p.sujet, draggable:S.peutEcrire && prevu ? "true" : null, onclick:()=>ouvrir(p.id),
+        ondragstart:e=>e.dataTransfer.setData("text/plain",p.id),
+        ondragover:e=>{ if(prevu){e.preventDefault(); t.classList.add("cible");} },
+        ondragleave:()=>t.classList.remove("cible"),
+        ondrop:e=>{e.preventDefault(); t.classList.remove("cible"); const id=e.dataTransfer.getData("text/plain"); if(id && id!==p.id) echanger(id,p.id);} },
+        p.visuel ? el("img",{src:blob(p.visuel),alt:"",loading:"lazy"}) : el("span",{class:"tx",text:p.sujet||""}),
+        el("span",{class:"ic","aria-hidden":"true",text:p.format==="reel"?"▶":p.format==="carrousel"?"❐":""}),
+        prevu ? el("span",{class:"bd",text:p.statut==="idee"?"idée":p.date?(p.date<auj?"en retard ":"")+fmtDate(p.date):"sans date"}) : null
+      );
+      return t;
+    };
+    // équilibre des 9 premières tuiles : ce qu'un visiteur voit sans faire défiler
+    const neuf = ps.slice(0,9);
+    const compte = (f) => neuf.reduce((m,p)=>(m[f(p)]=(m[f(p)]||0)+1,m),{});
+    const fmts = compte(p=>NOM_FORMAT[p.format]||p.format), offres = compte(p=>NOM_OFFRE[p.offre]||"—");
+    const remarques = [];
+    if (neuf.length >= 6 && !neuf.some(p=>p.format==="reel")) remarques.push("Aucun reel dans les 9 premières tuiles : c'est le format qui fait découvrir le compte.");
+    if (neuf.length >= 6 && (offres["IA"]||0) > neuf.length/2) remarques.push("L'IA domine le haut de la grille, alors que c'est le territoire qui convertit sur Instagram.");
+    for (let i=2;i<neuf.length;i++) if (neuf[i].format===neuf[i-1].format && neuf[i].format===neuf[i-2].format) { remarques.push(`Trois ${NOM_FORMAT[neuf[i].format]||neuf[i].format}s d'affilée en positions ${i-1} à ${i+1}.`); break; }
+    if (neuf.filter(p=>!p.visuel).length && neuf.length) remarques.push(`${neuf.filter(p=>!p.visuel).length} tuile(s) sans visuel sur les 9 premières : dépose une couverture dans la fiche pour juger la grille.`);
+    const hl = (ig.temps_forts||[]);
+    return el("div",{style:"display:flex;flex-direction:column;gap:14px"},
+      el("div",{class:"ig-outils"},
+        el("label",{}, el("input",{type:"checkbox",id:"g-idees",checked:avecIdees,onchange:e=>{S.grilleIdees=e.target.checked;rendre();}}), "Afficher aussi les idées"),
+        el("button",{type:"button",class:"btn sec",disabled:!S.peutEcrire,onclick:ouvrirProfil,text:"Modifier le profil"})
+      ),
+      el("section",{class:"ig","aria-label":"Aperçu du profil Instagram"},
+        el("div",{class:"ig-profil"},
+          el("div",{class:"ig-avatar"}, ig.avatar ? el("img",{src:blob(ig.avatar),alt:""}) : "fm"),
+          el("div",{style:"display:flex;flex-direction:column;gap:8px;min-width:0"},
+            el("span",{class:"ig-pseudo",text:ig.pseudo||"franck_culture_savoie"}),
+            el("div",{class:"ig-nums"},
+              el("div",{}, el("b",{text:String(publies)}), el("span",{text:"publications"})),
+              el("div",{}, el("b",{text:ig.abonnes!=null&&ig.abonnes!==""?Number(ig.abonnes).toLocaleString("fr-FR"):"—"}), el("span",{text:"followers"})),
+              el("div",{}, el("b",{text:ig.suivis!=null&&ig.suivis!==""?Number(ig.suivis).toLocaleString("fr-FR"):"—"}), el("span",{text:"suivi(e)s"})))
+          ),
+          el("div",{class:"ig-bio"},
+            el("span",{class:"nom",text:ig.nom||"Franck Monod"}),
+            ig.categorie ? el("span",{style:"color:var(--ink-3)",text:ig.categorie}) : null,
+            el("span",{text:ig.bio||"Bio à écrire : clique sur « Modifier le profil »."}),
+            ig.lien ? el("a",{href:ig.lien.startsWith("http")?ig.lien:"https://"+ig.lien,target:"_blank",rel:"noopener",text:ig.lien.replace(/^https?:\/\//,"")}) : null)
+        ),
+        hl.length ? el("div",{class:"ig-hl"}, hl.map(h=>el("div",{}, el("i"), el("span",{text:h})))) : null,
+        el("div",{class:"ig-tabs"}, el("span",{class:"on",text:"Publications"}), el("span",{text:"Reels"}), el("span",{text:"Identifié"})),
+        ps.length ? el("div",{class:"ig-grille"}, ps.map(tuile)) : el("p",{class:"note",style:"padding:16px",text:"Aucun post Instagram prévu ou publié. Coche « Afficher aussi les idées » pour voir les idées en attente."})
+      ),
+      el("div",{class:"equilibre"},
+        el("h3",{class:"section",text:"Ce qu'on voit sans faire défiler (9 premières tuiles)"}),
+        el("p",{class:"note",text:"Formats : "+(Object.entries(fmts).map(([k,v])=>`${k} ${v}`).join(" · ")||"—")+"   ·   Offres : "+(Object.entries(offres).map(([k,v])=>`${k} ${v}`).join(" · ")||"—")}),
+        remarques.length ? el("div",{class:"garde alerte"}, el("ul",{}, remarques.map(r=>el("li",{text:r})))) : null,
+        el("p",{class:"note",text:"Glisse une tuile prévue sur une autre pour échanger leurs dates. Les tuiles sont au format 3:4, celui de la grille Instagram ; un visuel 4:5 (1080×1350) y est légèrement rogné en haut et en bas."})
+      )
+    );
+  }
+
+  async function echanger(idA, idB) {
+    const a = S.posts.find(p=>p.id===idA), b = S.posts.find(p=>p.id===idB);
+    if (!a || !b || a.statut==="publie" || b.statut==="publie") { toast("Seuls les posts non publiés s'échangent"); return; }
+    const maj = new Date().toISOString();
+    try {
+      await S.db.collection("posts").doc(a.id).update({date:b.date||"", heure:b.heure||"", maj});
+      await S.db.collection("posts").doc(b.id).update({date:a.date||"", heure:a.heure||"", maj});
+      toast("Dates échangées");
+    } catch(e) { toast("Échange refusé : "+(e.message||e.code)); }
+  }
+
+  async function televerser(fichier) {
+    const assets = await window.claude?.use?.("assets");
+    if (!assets) throw new Error("Dépôt d'images indisponible dans cette vue");
+    if (!/^image\//.test(fichier.type)) throw new Error("Choisis une image");
+    const r = await assets.upload(fichier);
+    return r.id;
+  }
+
+  function ouvrirProfil() {
+    const ig = {...(S.config.profil||{})};
+    const zone = $("#edition"); zone.hidden=false; zone.replaceChildren();
+    const fermer = () => { zone.hidden=true; zone.replaceChildren(); };
+    const t = (id,v,ph) => el("input",{type:"text",id,value:v??"",placeholder:ph||""});
+    const iPseudo=t("pr-pseudo",ig.pseudo,"franck_culture_savoie"), iNom=t("pr-nom",ig.nom,"Franck Monod"), iCat=t("pr-cat",ig.categorie,"Catégorie affichée (ex. Consultant)"), iLien=t("pr-lien",ig.lien,"franckmonod.eu");
+    const iAb=el("input",{type:"number",min:"0",id:"pr-ab",value:ig.abonnes??""}), iSu=el("input",{type:"number",min:"0",id:"pr-su",value:ig.suivis??""});
+    const iBio=el("textarea",{id:"pr-bio",rows:"4"}); iBio.value=ig.bio||"";
+    const cBio=el("span",{class:"compte"}); const majBio=()=>{cBio.textContent=`${iBio.value.length} / 150`;cBio.classList.toggle("trop",iBio.value.length>150);}; iBio.addEventListener("input",majBio); majBio();
+    const iHl=t("pr-hl",(ig.temps_forts||[]).join(", "),"Offres, Cas clients, Turin, Savoie…");
+    let avatar = ig.avatar||"";
+    const apercu = el("div",{class:"ig-avatar"}, avatar?el("img",{src:blob(avatar),alt:""}):"fm");
+    const iAv = el("input",{type:"file",id:"pr-av",accept:"image/*",onchange:async e=>{const f=e.target.files[0]; if(!f) return; try{ avatar=await televerser(f); apercu.replaceChildren(el("img",{src:blob(avatar),alt:""})); toast("Photo déposée"); }catch(err){ toast(err.message||err.code); }}});
+    const bEnr = el("button",{type:"button",class:"btn",text:"Enregistrer",onclick:async()=>{
+      const profil = {pseudo:iPseudo.value.trim(),nom:iNom.value.trim(),categorie:iCat.value.trim(),lien:iLien.value.trim(),bio:iBio.value,
+        abonnes:iAb.value===""?null:+iAb.value, suivis:iSu.value===""?null:+iSu.value, avatar,
+        temps_forts:iHl.value.split(",").map(x=>x.trim()).filter(Boolean)};
+      try{ await S.db.doc("config/reglages").update({profil}); toast("Profil enregistré"); fermer(); }
+      catch(e){ try{ await S.db.doc("config/reglages").set({...S.config, profil}); toast("Profil enregistré"); fermer(); }catch(e2){ toast("Refusé : "+(e2.message||e2.code)); } }
+    }});
+    zone.append(el("div",{class:"voile",onclick:fermer}),
+      el("aside",{class:"panneau",role:"dialog","aria-modal":"true","aria-labelledby":"pr-titre"},
+        el("div",{class:"p-tete"}, el("h2",{id:"pr-titre",text:"Profil Instagram (maquette)"}), el("button",{type:"button",class:"btn lien",onclick:fermer,text:"Fermer"})),
+        el("div",{class:"p-corps"},
+          el("p",{class:"note",text:"Ces réglages ne touchent pas ton vrai compte : ils servent à tester la bio, le nom et les temps forts avant de les changer sur Instagram."}),
+          el("div",{class:"visuel-apercu"}, apercu, champ("pr-av","Photo de profil",iAv)),
+          el("div",{class:"grille"}, champ("pr-pseudo","Nom d'utilisateur",iPseudo), champ("pr-nom","Nom affiché",iNom)),
+          champ("pr-cat","Catégorie",iCat),
+          champ("pr-bio","Bio",iBio,cBio),
+          champ("pr-lien","Lien",iLien),
+          el("div",{class:"grille"}, champ("pr-ab","Followers",iAb), champ("pr-su","Suivis",iSu)),
+          champ("pr-hl","Temps forts (séparés par des virgules)",iHl)
+        ),
+        el("div",{class:"p-pied"}, el("span"), el("div",{class:"ligne-btn"}, el("button",{type:"button",class:"btn sec",onclick:fermer,text:"Annuler"}), bEnr))
+      ));
+    iBio.focus();
+  }
+
   function rendre() {
     document.querySelectorAll("nav.vues a").forEach(a=>{ if(a.dataset.vue===S.vue) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
     const v = $("#vue"); v.replaceChildren();
     if (!S.charge) { v.append(el("p",{class:"note",text:"Les publications apparaissent ici dès que la base répond : idées, brouillons, posts validés et publiés, sur Instagram et LinkedIn."})); return; }
-    v.append(S.vue==="calendrier" ? vueCalendrier() : S.vue==="bilan" ? vueBilan() : vueTableau());
+    v.append(S.vue==="calendrier" ? vueCalendrier() : S.vue==="bilan" ? vueBilan() : S.vue==="grille" ? vueGrille() : vueTableau());
   }
 
   /* ---------- Panneau d'édition ---------- */
@@ -394,11 +555,25 @@ details[open] summary{margin-bottom:10px}
     const blocScript = champ("e-script","Script du reel",iScript);
     const blocStats = el("details",{open:p.statut==="publie"}, el("summary",{text:"Résultats (après publication)"}),
       el("div",{class:"grille"}, nb("vues","Vues / portée"), nb("likes","J'aime"), nb("commentaires","Commentaires"), nb("partages","Partages"), nb("enregistrements","Enregistrements"), nb("dm","Messages reçus"), nb("rdv","Appels réservés")));
+    let visuel = p.visuel || "";
+    const apercuV = el("div",{class:"visuel-apercu"});
+    const majApercu = () => apercuV.replaceChildren(...(visuel ? [
+      el("figure",{}, el("img",{src:blob(visuel),alt:"",style:"width:96px;aspect-ratio:3/4"}), el("figcaption",{text:"grille 3:4"})),
+      el("figure",{}, el("img",{src:blob(visuel),alt:"",style:"width:96px;aspect-ratio:4/5"}), el("figcaption",{text:"feed 4:5"})),
+      el("button",{type:"button",class:"btn lien",disabled:ro,onclick:()=>{visuel="";majApercu();},text:"Retirer"})
+    ] : [el("span",{class:"note",text:"Pas encore de visuel."})]));
+    majApercu();
+    const iVisuel = el("input",{type:"file",id:"e-visuel",accept:"image/*",disabled:ro,onchange:async e=>{
+      const f=e.target.files[0]; if(!f) return;
+      try{ toast("Envoi de l'image…"); visuel = await televerser(f); majApercu(); toast("Visuel déposé : pense à enregistrer"); }
+      catch(err){ toast(err.message||err.code||"Envoi refusé"); }
+    }});
+    const blocVisuel = el("div",{class:"champ"}, el("label",{for:"e-visuel"},"Visuel / couverture"), iVisuel, apercuV);
     const garde = el("div");
     const lirePost = () => ({ ...p,
       sujet:iSujet.value.trim(), reseau:iReseau.value, format:iFormat.value, offre:iOffre.value, pilier:iPilier.value,
       statut:iStatut.value, date:iDate.value, heure:iHeure.value, accroche:iAcc.value.trim(), texte:iTexte.value,
-      slides:iSlides.value.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean), script:iScript.value, source:iSource.value.trim(), notes:iNotes.value.trim(),
+      slides:iSlides.value.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean), script:iScript.value, source:iSource.value.trim(), notes:iNotes.value.trim(), visuel,
       stats:Object.fromEntries(["vues","likes","commentaires","partages","enregistrements","dm","rdv"].map(k=>[k,!iStats[k]||iStats[k].value===""?null:+iStats[k].value]))
     });
     const majGarde = () => { const a=alertes(lirePost()); garde.className="garde "+(a.length?"alerte":"bon");
@@ -436,6 +611,7 @@ details[open] summary{margin-bottom:10px}
           el("div",{class:"grille"}, champ("e-reseau","Réseau",iReseau), champ("e-format","Format",iFormat), champ("e-offre","Offre",iOffre), champ("e-pilier","Pilier",iPilier)),
           el("div",{class:"grille"}, champ("e-statut","Statut",iStatut), champ("e-date","Date",iDate), champ("e-heure","Heure",iHeure)),
           garde,
+          blocVisuel,
           champ("e-accroche","Accroche",iAcc),
           champ("e-texte","Légende",iTexte,compte),
           el("div",{class:"ligne-btn"},
@@ -451,7 +627,6 @@ details[open] summary{margin-bottom:10px}
       )
     );
     iSujet.focus();
-    zone.addEventListener("keydown",e=>{ if(e.key==="Escape") fermer(); });
   }
 
   async function deplacer(id, statut) {
@@ -462,8 +637,9 @@ details[open] summary{margin-bottom:10px}
   }
 
   /* ---------- Navigation ---------- */
-  const lireHash = () => { const h=location.hash.slice(1); S.vue = ["tableau","calendrier","bilan"].includes(h)?h:"tableau"; rendre(); };
+  const lireHash = () => { const h=location.hash.slice(1); S.vue = ["tableau","grille","calendrier","bilan"].includes(h)?h:"tableau"; rendre(); };
   addEventListener("hashchange", lireHash);
+  document.addEventListener("keydown", e => { if (e.key==="Escape" && !$("#edition").hidden) $("#edition .voile")?.click(); });
   $("#f-reseau").addEventListener("change", rendre);
   $("#f-offre").addEventListener("change", rendre);
   $("#nouveau").addEventListener("click", ()=>ouvrir(null));
