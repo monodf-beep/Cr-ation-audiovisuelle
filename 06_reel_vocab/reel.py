@@ -35,16 +35,14 @@ NUIT = (14, 14, 20)
 # Semplicità (fonderie Nebiolo, Turin, 1930) pour le texte.
 # Bodoni Moda : instance optique 11 pt (déliés plus épais, lisibles sur téléphone), OFL.
 # Semplicità : numérisation Leonardo Di Lena, CC BY-ND 3.0 (à créditer, fichier non modifié).
-F_DISPLAY = os.path.join(HERE, "polices", "BodoniModa-BlackItalic.ttf")
-F_ARTICLE = os.path.join(HERE, "polices", "BodoniModa-MediumItalic.ttf")
+# v12 : typo de la miniature. Mots en capitales condensées (Anton, OFL),
+# étiquettes blanches en Semplicità Gras bleu ; bandeaux en bleu.
+F_DISPLAY = os.path.join(HERE, "polices", "Anton.ttf")
+F_ARTICLE = os.path.join(HERE, "polices", "Anton.ttf")
+F_PASTILLE = os.path.join(HERE, "polices", "Semplicita-Bold.otf")
 F_BOLD = os.path.join(HERE, "polices", "Semplicita-Medium.otf")
 F_BLACK = os.path.join(HERE, "polices", "Semplicita-Bold.otf")
 TRACK = -0.01   # interlettrage des mots (em)
-# Système de la miniature (v9) : étiquette bleue inclinée, capitales condensées
-# blanches (Anton, OFL), traduction dans une pastille blanche (Semplicità Gras).
-F_ETIQ = os.path.join(HERE, "polices", "Anton.ttf")
-F_PASTILLE = os.path.join(HERE, "polices", "Semplicita-Bold.otf")
-ANGLE_ETIQ = 7.0
 
 
 # ================================================================ outils
@@ -444,134 +442,122 @@ def split_article(sv):
     return "", s.lower()
 
 
-def _ligne_etiq(texte, taille):
-    f = font(F_ETIQ, taille)
-    x0, y0, x1, y1 = f.getbbox(texte)
-    im = Image.new("RGBA", (x1 - x0, y1 - y0), (0, 0, 0, 0))
-    ImageDraw.Draw(im).text((-x0, -y0), texte, font=f, fill=BLANC)
-    return im
-
-
-class Etiquette:
-    """Étiquette de la miniature : rectangle bleu incliné, lignes en capitales
-    condensées blanches centrées (une ligne en grand), pastille blanche dessous
-    avec le texte en bleu. render() dessine un état de l'animation."""
-
-    def __init__(self, lignes, largeur, grande=-1, pastille=None, angle=ANGLE_ETIQ):
-        grande = grande % len(lignes)
-        self.angle = angle
-        t = 300
-        while font(F_ETIQ, t).getlength(lignes[grande]) > largeur and t > 90:
-            t -= 4
-        tailles = []
-        for i, l in enumerate(lignes):
-            if i == grande:
-                tailles.append(t)
-                continue
-            u = int(t * 0.46)
-            while font(F_ETIQ, u).getlength(l) > largeur and u > 40:
-                u -= 2
-            tailles.append(u)
-        self.lignes = [_ligne_etiq(l, z) for l, z in zip(lignes, tailles)]
-        self.pad_x, self.pad_y, self.inter = 44, 38, 18
-        self.bw = max(im.width for im in self.lignes) + 2 * self.pad_x
-        self.bh = sum(im.height for im in self.lignes) + self.inter * (len(self.lignes) - 1) + 2 * self.pad_y
-        self.pastille = None
-        if pastille:
-            fp = font(F_PASTILLE, 60)
-            x0, y0, x1, y1 = fp.getbbox(pastille)
-            pw, ph = x1 - x0 + 2 * 42, y1 - y0 + 2 * 22
-            im = Image.new("RGBA", (pw, ph), (0, 0, 0, 0))
-            d = ImageDraw.Draw(im)
-            d.rounded_rectangle((0, 0, pw - 1, ph - 1), radius=ph // 2, fill=BLANC + (255,))
-            d.text((42 - x0, 22 - y0), pastille, font=fp, fill=BLEU)
-            self.pastille = im
-        self._cache = {}
-
-    def render(self, lignes=None, pastille=1.0, boite=1.0):
-        """lignes : [(échelle, opacité)] par ligne (None = toutes posées) ;
-        pastille : 0..1 (glisse depuis le bas) ; boite : opacité du fond bleu."""
-        cle = None
-        if lignes is None and pastille in (0.0, 1.0) and boite == 1.0:
-            cle = pastille
-            if cle in self._cache:
-                return self._cache[cle]
-        pw, ph = (self.pastille.size if self.pastille is not None else (0, 0))
-        recouvre = 18
-        cw = max(self.bw, pw) + 120
-        ch = self.bh + (ph - recouvre if ph else 0) + 120
-        cal = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
-        bx, by = (cw - self.bw) // 2, 60
-        ombre = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
-        ImageDraw.Draw(ombre).rectangle((bx + 8, by + 14, bx + self.bw + 8, by + self.bh + 14), fill=(0, 0, 0, int(110 * boite)))
-        cal.alpha_composite(ombre.filter(ImageFilter.GaussianBlur(14)))
-        ImageDraw.Draw(cal).rectangle((bx, by, bx + self.bw, by + self.bh), fill=BLEU + (int(255 * boite),))
-        y = by + self.pad_y
-        for k, im in enumerate(self.lignes):
-            sc, al = (1.0, 1.0) if lignes is None else lignes[k]
-            if al > 0:
-                l2 = im.resize((max(1, int(im.width * sc)), max(1, int(im.height * sc))), Image.BICUBIC) if abs(sc - 1) > 1e-3 else im
-                cal.alpha_composite(_alpha(l2, al), (int(cw / 2 - l2.width / 2), int(y + im.height / 2 - l2.height / 2)))
-            y += im.height + self.inter
-        if self.pastille is not None and pastille > 0:
-            px = (cw - pw) // 2
-            py = by + self.bh - recouvre + int((1 - pastille) * 60)
-            cal.alpha_composite(_alpha(self.pastille, pastille), (px, py))
-        out = cal.rotate(self.angle, expand=True, resample=Image.BICUBIC)
-        # centre du rectangle bleu dans l'image tournée (pour placer l'étiquette)
-        out.info["centre"] = (out.width / 2, out.height / 2 - ((ph - recouvre) / 2 if ph else 0))
-        if cle is not None:
-            self._cache[cle] = out
-        return out
-
-
-def colle_etiquette(fr, im, cx, cy, sc=1.0, al=1.0, flou=0.0):
-    """Pose l'étiquette (rectangle bleu centré en cx, cy), avec échelle et flou de bougé."""
-    ox, oy = im.info.get("centre", (im.width / 2, im.height / 2))
-    if abs(sc - 1) > 1e-3:
-        im2 = im.resize((max(1, int(im.width * sc)), max(1, int(im.height * sc))), Image.BICUBIC)
-        ox, oy = ox * sc, oy * sc
-    else:
-        im2 = im
-    if flou > 0.3:
-        im2 = im2.filter(ImageFilter.GaussianBlur(flou))
-    fr.alpha_composite(_alpha(im2, al), (int(cx - ox), int(cy - oy)))
+def lettre_layer(ch, f, top, bot, m=60):
+    """Une lettre avec ombre, dans une boîte verticale commune (top, bot du mot)."""
+    l, _, r, _ = f.getbbox(ch)
+    img = Image.new("RGBA", (r - l + 2 * m, bot - top + 2 * m), (0, 0, 0, 0))
+    sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(sh).text((m - l + 6, m - top + 12), ch, font=f, fill=(0, 0, 0, 170))
+    img = Image.alpha_composite(img, sh.filter(ImageFilter.GaussianBlur(16)))
+    ImageDraw.Draw(img).text((m - l, m - top), ch, font=f, fill=BLANC)
+    return img
 
 
 class WordCard:
-    """Mot en étiquette bleue (système de la miniature) : l'étiquette claque sur
-    l'image du contact, la traduction arrive dessous dans la pastille blanche."""
+    """Mot géant façon teaser : lettres qui tombent une à une, bandeau rouge
+    oblique, traduction qui glisse dessous."""
 
     def __init__(self, sv, fr, idx, n, impact=0.5, largeur=960):
         art, noun = split_article(sv)
-        if art == "L'":
-            lignes = [("L'" + noun).upper()]
-        elif art:
-            lignes = [art.upper(), noun.upper()]
-        else:
-            lignes = [noun.upper()]
-        self.IMPACT = impact
-        self.etq = Etiquette(lignes, min(760, largeur - 200), pastille=fr)
+        art, noun = art.upper(), noun.upper()      # capitales condensées (miniature)
+        self.IMPACT = impact   # la dernière lettre tombe sur l'image du contact
+        self.f = fit(F_DISPLAY, noun, largeur, 330)
+        tr = TRACK * self.f.size
+        self.letters = []
+        # toutes les lettres partagent la même boîte verticale (celle du mot entier) :
+        # les capitales accentuées (Â, È, Ç) gardent la ligne de base commune
+        _, self.l_top, _, self.l_bot = self.f.getbbox(noun)
+        for k, ch in enumerate(noun):  # positions avec crénage (longueur des préfixes)
+            x = self.f.getlength(noun[:k]) + tr * k
+            adv = self.f.getlength(noun[:k + 1]) + tr * (k + 1) - x
+            lay = lettre_layer(ch, self.f, self.l_top, self.l_bot) if ch != " " else None
+            self.letters.append((lay, x, adv))
+        self.noun_w = self.f.getlength(noun) + tr * (len(noun) - 1)
+        asc, desc = self.f.getmetrics()
+        self.noun_h = asc
+        self.art = text_layer(art, font(F_ARTICLE, int(min(130, self.f.size * 0.5))), shadow=True) if art else None
+        self.fr = text_layer(fr, font(F_PASTILLE, 70), fill=BLEU, shadow=False)
         self.cnt = text_layer(f"{idx+1:02d}", font(F_BLACK, 70), shadow=True)
         self.cnt_tot = text_layer(f"/{n:02d}", font(F_BOLD, 40), fill=(255, 255, 255, 200), shadow=True)
+        self.n_letters = sum(1 for l in self.letters if l[0] is not None)
 
-    LAND = 0.15
-    IMPACT = 0.5
+    STAGGER, LAND = 0.045, 0.14
+    IMPACT = 0.5   # par défaut ; « impact » du plan sinon (les MOTS restent sur les
+                   # temps de la musique, ce sont les coupes qui se décalent)
+
+    def _timing(self):
+        n = max(1, self.n_letters - 1)
+        st = min(self.STAGGER, (self.IMPACT - self.LAND - 0.03) / n)
+        return self.IMPACT - self.LAND - st * n, st
 
     def impact_time(self, t0=None):
         return self.IMPACT
 
     def debut(self):
-        return max(0.0, self.IMPACT - self.LAND - 0.04)
+        """Instant où l'habillage arrive : juste avant les lettres, pour laisser
+        l'action nue jusqu'au contact."""
+        return max(0.0, self._timing()[0] - 0.12)
+
+    def cy_min(self):
+        h_art = (self.art.height - 120) if self.art is not None else 0
+        return 420 + h_art + 16 + (self.l_bot - self.l_top) / 2
 
     def draw(self, fr, t, dur, cy=900):
-        p = (t - (self.IMPACT - self.LAND)) / self.LAND
-        if p > 0:
-            sc = 1 + 1.1 * (1 - ease_out_back(min(1, p), 1.5)) if p < 1 else 1.0
-            sc *= 1 + 0.03 * clamp01((t - self.IMPACT) / max(0.1, dur))     # respire
-            rp = ease_out((t - (self.IMPACT + 0.12)) / 0.2)
-            im = self.etq.render(pastille=round(rp * 8) / 8)
-            colle_etiquette(fr, im, W / 2, cy, sc, ease_out(min(1, p * 2)), (1 - p) * 6 if p < 1 else 0)
+        # l'article ne doit pas monter dans le compteur (y 250-330) : la carte descend
+        # juste assez (les capitales condensées sont plus hautes que l'ancien bas de casse)
+        cy = max(cy, self.cy_min())
+        t0, stag = self._timing()
+        tb = self.debut()
+        # bandeau rouge oblique qui balaie
+        bp = ease_out((t - tb) / 0.2)
+        if bp > 0:
+            band_h = int(self.noun_h * 0.62)
+            band = Image.new("RGBA", (W + 400, band_h), BLEU + (255,))
+            band = band.rotate(-6, expand=True, resample=Image.BICUBIC)
+            wv = int(band.width * bp)
+            if wv > 0:
+                band = band.crop((0, 0, wv, band.height))
+                fr.alpha_composite(band, (-200, int(cy - band.height / 2 + self.noun_h * 0.06)))
+        # article au-dessus, à gauche
+        x_start = (W - self.noun_w) / 2
+        if self.art is not None:
+            ap = ease_out((t - tb - 0.02) / 0.18)
+            if ap > 0:
+                lay = self.art
+                haut_caps = cy - (self.l_bot - self.l_top) / 2
+                fr.alpha_composite(_alpha(lay, ap), (int(x_start - 30 + (1 - ap) * -80),
+                                                     int(haut_caps - 16 - lay.height + 60)))
+        # lettres
+        k = 0
+        for lay, x, adv in self.letters:
+            if lay is None:
+                continue
+            ts = t0 + stag * k
+            k += 1
+            p = (t - ts) / self.LAND
+            if p <= 0:
+                continue
+            sc = 1 + 1.6 * (1 - ease_out_back(p, 1.4)) if p < 1 else 1.0
+            sc = max(sc, 0.85)
+            al = ease_out(p * 2)
+            breathe = 1 + 0.025 * clamp01((t - self.impact_time()) / max(0.1, dur))
+            sc *= breathe
+            lw, lh = lay.width * sc, lay.height * sc
+            cx = (x_start + x + adv / 2 - W / 2) * breathe + W / 2
+            l2 = lay.resize((max(1, int(lw)), max(1, int(lh))), Image.BICUBIC) if abs(sc - 1) > 1e-3 else lay
+            if p < 1:
+                l2 = l2.filter(ImageFilter.GaussianBlur((1 - p) * 6))
+            fr.alpha_composite(_alpha(l2, al), (int(cx - l2.width / 2), int(cy - l2.height / 2)))
+        # traduction : bandeau blanc qui glisse depuis la droite
+        rp = ease_out((t - (self.impact_time() + 0.18)) / 0.25)
+        if rp > 0:
+            pad = 28
+            box = Image.new("RGBA", (self.fr.width - 120 + 2 * pad, self.fr.height - 120 + 2 * pad),
+                            (255, 255, 255, 245))
+            box.alpha_composite(self.fr, (pad - 60, pad - 60))
+            xx = int((W - box.width) / 2 + (1 - rp) * 500)
+            fr.alpha_composite(_alpha(box, rp), (xx, int(cy + (self.l_bot - self.l_top) / 2 + 56)))
+        # compteur
         fr.alpha_composite(self.cnt, (70, 250))
         fr.alpha_composite(self.cnt_tot, (70 + self.cnt.width - 110, 250 + 30))
 
@@ -788,6 +774,8 @@ def main():
         gel_s = s["gel"][1] / FPS if (s.get("gel") and impact is not None) else 0.0
         heros = kind == "mot" and wi == N
         cy = s.get("cy", 900)
+        if card is not None:
+            cy = max(cy, card.cy_min())   # assombrissement et carte au même endroit
         for fi in range(nf):
             if apercu is not None and round(t0 * FPS) + fi not in apercu:
                 continue
@@ -826,7 +814,7 @@ def main():
             if fl:
                 a_ = a_ * (1 - fl) + fl
             # l'image reste nue jusqu'à l'arrivée du mot, puis s'assombrit derrière la carte
-            sombre = 0.22 * clamp01((t - card.debut()) / 0.15) if kind == "mot" else \
+            sombre = 0.45 * clamp01((t - card.debut()) / 0.15) if kind == "mot" else \
                 0 if kind in ("froid", "leone", "ballon") else 0.25
             out = Image.fromarray(finish(a_, sombre, cy)).convert("RGBA")
 
@@ -837,38 +825,63 @@ def main():
                 bw, y = W - 140, 210
                 d.rectangle((70, y, 70 + bw, y + 8), fill=(255, 255, 255, 70))
                 pr = (card_idx_prog := (wi - 1 + clamp01(t / s["dur"])) / N)
-                d.rectangle((70, y, 70 + int(bw * pr), y + 8), fill=BLANC + (255,))
+                d.rectangle((70, y, 70 + int(bw * pr), y + 8), fill=BLEU + (255,))
             elif kind == "accroche":
-                # même étiquette que la miniature : « RUGBY » en grand claque sur le temps
-                if "_etq" not in s:
-                    s["_etq"] = Etiquette(s.get("texte", ["ET SI ON PARLAIT", "RUGBY", "EN SAVOYARD ?"]), 760,
-                                          grande=1, pastille=s.get("promesse"))
-                etq = s["_etq"]
-                bp = (t - 0.0) / 0.14
-                if bp > 0:
-                    etats = []
-                    for ts in (0.05, 0.35, 0.75):
-                        pp = (t - ts) / 0.16
-                        etats.append((1 + 1.2 * (1 - ease_out_back(pp, 1.3)) if 0 < pp < 1 else 1.0,
-                                      ease_out(pp * 2) if pp > 0 else 0.0))
-                    rp = ease_out((t - s.get("promesse_t", 1.25)) / 0.2)
-                    im = etq.render(etats, pastille=rp)
-                    sc = 1 + 0.6 * (1 - ease_out_back(min(1, bp), 1.3)) if bp < 1 else 1.0
-                    colle_etiquette(out, im, W / 2, s.get("etiquette_y", 1230), sc, ease_out(min(1, bp * 2)))
+                lines = s.get("texte", ["ET SI ON PARLAIT", "RUGBY", "EN SAVOYARD ?"])
+                ys = (640, 860, 1080)
+                for li, (txt, yy) in enumerate(zip(lines, ys)):
+                    ts = (0.05, 0.35, 0.75)[li]
+                    pp = (t - ts) / 0.16
+                    if pp <= 0:
+                        continue
+                    f = fit(F_DISPLAY, txt, 960, 300 if li == 1 else 120)
+                    lay = text_layer(txt, f, fill=BLANC)
+                    if li == 1:
+                        box = Image.new("RGBA", (lay.width - 40, lay.height - 70), BLEU + (255,))
+                        box = box.rotate(-4, expand=True)
+                        bb = Image.new("RGBA", (max(lay.width, box.width), max(lay.height, box.height)), (0, 0, 0, 0))
+                        bb.alpha_composite(box, ((bb.width - box.width) // 2, (bb.height - box.height) // 2))
+                        bb.alpha_composite(lay, ((bb.width - lay.width) // 2, (bb.height - lay.height) // 2))
+                        lay = bb
+                    sc = 1 + 1.2 * (1 - ease_out_back(pp, 1.3)) if pp < 1 else 1
+                    l2 = lay.resize((int(lay.width * sc), int(lay.height * sc)), Image.BICUBIC) if sc != 1 else lay
+                    out.alpha_composite(_alpha(l2, ease_out(pp * 2)), (int(W / 2 - l2.width / 2), int(yy - l2.height / 2)))
+                # promesse écrite : une étiquette blanche qui claque après la question
+                if s.get("promesse"):
+                    pp = (t - s.get("promesse_t", 1.25)) / 0.16
+                    if pp > 0:
+                        lay = text_layer(s["promesse"], font(F_PASTILLE, 60), fill=BLEU, shadow=False)
+                        box = Image.new("RGBA", (lay.width - 120 + 64, lay.height - 120 + 48), (255, 255, 255, 250))
+                        box.alpha_composite(lay, (32 - 60, 24 - 60))
+                        box = box.rotate(-4, expand=True, resample=Image.BICUBIC)
+                        sc = 1 + 0.8 * (1 - ease_out_back(pp, 1.3)) if pp < 1 else 1
+                        b2 = box.resize((int(box.width * sc), int(box.height * sc)), Image.BICUBIC) if sc != 1 else box
+                        out.alpha_composite(_alpha(b2, ease_out(pp * 2)), (int(W / 2 - b2.width / 2), int(1290 - b2.height / 2)))
             elif kind == "fin":
-                if "_etq" not in s:
-                    s["_etq"] = Etiquette(s.get("texte", ["TU EN CONNAISSAIS", "COMBIEN ?"]), 760, grande=-1)
-                etq = s["_etq"]
-                bp = (t - 0.1) / 0.14
-                if bp > 0:
-                    etats = []
-                    for ts in (0.15, 0.42):
-                        pp = (t - ts) / 0.16
-                        etats.append((1 + 1.0 * (1 - ease_out_back(pp, 1.3)) if 0 < pp < 1 else 1.0,
-                                      ease_out(pp * 2) if pp > 0 else 0.0))
-                    im = etq.render(etats)
-                    sc = 1 + 0.6 * (1 - ease_out_back(min(1, bp), 1.3)) if bp < 1 else 1.0
-                    colle_etiquette(out, im, W / 2, s.get("etiquette_y", 1230), sc, ease_out(min(1, bp * 2)))
+                lines = s.get("texte", ["TU EN CONNAISSAIS", "COMBIEN ?"])
+                for li, txt in enumerate(lines):
+                    ts = 0.15 + 0.35 * li
+                    pp = (t - ts) / 0.18
+                    if pp <= 0:
+                        continue
+                    f = fit(F_DISPLAY, txt, 960, 260 if li == 1 else 115)
+                    lay = text_layer(txt, f)
+                    sc = 1 + 1.0 * (1 - ease_out_back(pp, 1.3)) if pp < 1 else 1
+                    l2 = lay.resize((int(lay.width * sc), int(lay.height * sc)), Image.BICUBIC) if sc != 1 else lay
+                    out.alpha_composite(_alpha(l2, ease_out(pp * 2)), (int(W / 2 - l2.width / 2), int((640, 830)[li] - l2.height / 2)))
+                cta = s.get("cta")
+                cp = ease_out((t - 1.1) / 0.3) if cta else 0
+                if cp > 0:
+                    lay = text_layer(cta, font(F_BOLD, 58), fill=NUIT, shadow=False)
+                    box = Image.new("RGBA", (lay.width - 120 + 60, lay.height - 120 + 44), (255, 255, 255, 245))
+                    box.alpha_composite(lay, (30 - 60, 22 - 60))
+                    out.alpha_composite(_alpha(box, cp), (int(W / 2 - box.width / 2), 1010))
+                sig = s.get("signature")
+                if sig:
+                    sp = ease_out((t - 1.5) / 0.4)
+                    if sp > 0:
+                        lay = text_layer(sig, font(F_BOLD, 44))
+                        out.alpha_composite(_alpha(lay, sp), (int(W / 2 - lay.width / 2), 1480))
                 if t > s["dur"] - 0.3:
                     kk = (t - (s["dur"] - 0.3)) / 0.3
                     arr = np.asarray(out.convert("RGB"), np.float32) * (1 - kk)
