@@ -1,5 +1,9 @@
 # Un compte Instagram par ligne, sans @. Les lignes commençant par # sont ignorées.
-# Format : compte  [catégorie]
-# Catégories suggérées : concurrent-ia, concurrent-territoire, modele, a-eviter
-#
-# exemple_compte  concurrent-ia
+# Format : compte  [catégorie]   — source : benchmark-web.md (15/11/2026)
+blue1310  concurrent-territoire
+chaire_anmt  concurrent-territoire
+egonewcom  concurrent-territoire
+mek_consulting  concurrent-ia
+piemontesinainviaggio  modele
+girinsoliti_piemonte_  modele
+# À vérifier puis décommenter : Amine le Conquérant, Simon de la Garde du Patrimoine (pseudos non confirmés)
