@@ -55,6 +55,10 @@ ap.add_argument("--etiquette", default="262,1000", help="centre de l'étiquette"
 ap.add_argument("--largeur", type=int, default=390, help="largeur du texte de l'étiquette")
 ap.add_argument("--rond", help="cx,cy,r : médaillon du visage")
 ap.add_argument("--rond-source", type=int, default=320)
+ap.add_argument("--rond-coin", choices=["hd", "hg", "bd", "bg"],
+                help="accroche le médaillon à un coin de l'étiquette (cx,cy de --rond ignorés)")
+ap.add_argument("--rond-debord", default="0.18,0.18",
+                help="débord du rond vers l'extérieur du coin, en fraction du rayon (x,y)")
 ap.add_argument("--liseré", type=int, default=14)
 ap.add_argument("--effacer", action="append", default=[],
                 help="x0,y0,x1,y1 (px source) : zone à retirer du détourage (un voisin collé)")
@@ -101,24 +105,33 @@ def fond_illustre():
     return im
 
 
-if arg.rond:
-    # médaillon : rond découpé autour du visage, liseré blanc, posé sur l'illustration
-    img = fond_illustre()
-    cx, cy, r = (int(v) for v in arg.rond.split(","))
+def medaillon(r):
+    """Visage dans un rond (liseré blanc), en RGBA de côté 2(r+e)."""
     R = arg.rond_source
     # cadrage serré : les yeux à ~42 % du haut, le haut des cheveux peut être coupé ;
     # la vraie tribune reste derrière (un fond uni ne marchait pas)
     boite = (int(vx - R), int(vy - R * 0.85), int(vx + R), int(vy + R * 1.15))
     vignette = src.crop(boite).resize((2 * r, 2 * r), Image.LANCZOS).filter(ImageFilter.UnsharpMask(1.2, 60, 2))
+    e = arg.liseré
     rond = Image.new("L", (8 * r, 8 * r), 0)
     ImageDraw.Draw(rond).ellipse((0, 0, 8 * r - 1, 8 * r - 1), fill=255)
     rond = rond.resize((2 * r, 2 * r), Image.LANCZOS)
-    e = arg.liseré
     anneau = Image.new("L", (8 * (r + e), 8 * (r + e)), 0)
     ImageDraw.Draw(anneau).ellipse((0, 0, 8 * (r + e) - 1, 8 * (r + e) - 1), fill=255)
     anneau = anneau.resize((2 * (r + e), 2 * (r + e)), Image.LANCZOS)
-    img.paste(Image.new("RGB", anneau.size, BLANC), (cx - r - e, cy - r - e), anneau)
-    img.paste(vignette, (cx - r, cy - r), rond)
+    m = Image.new("RGBA", anneau.size, (0, 0, 0, 0))
+    m.paste(Image.new("RGBA", anneau.size, BLANC + (255,)), (0, 0), anneau)
+    m.paste(vignette, (e, e), rond)
+    return m
+
+
+MED = None
+if arg.rond:
+    img = fond_illustre()
+    rcx, rcy, rr = (int(v) for v in arg.rond.split(","))
+    MED = medaillon(rr)
+    if not arg.rond_coin:
+        img.paste(MED, (rcx - MED.width // 2, rcy - MED.height // 2), MED)
 elif arg.fond:
     # illustration en fond, selfie détouré posé devant, net
     m = detoure(np.asarray(src))
@@ -171,18 +184,30 @@ px0, py0, px1, py1 = fp.getbbox(arg.lieu)
 pw, ph = (px1 - px0) + 2 * 34, (py1 - py0) + 2 * 18
 recouvre = 16                                        # la pastille mord sur le bas de l'étiquette
 
-calque = Image.new("RGBA", (max(bw, pw) + 40, bh + ph - recouvre + 40), (0, 0, 0, 0))
+# marge autour de l'étiquette : de quoi y accrocher le médaillon à un coin
+M = MED.width // 2 if (MED is not None and arg.rond_coin) else 0
+fx, fy = (float(v) for v in arg.rond_debord.split(","))
+G = int(M * (1 + max(fx, fy))) + 4      # le rond déborde du coin : la marge doit le contenir
+calque = Image.new("RGBA", (max(bw, pw) + 40 + 2 * G, bh + ph - recouvre + 40 + 2 * G), (0, 0, 0, 0))
 d = ImageDraw.Draw(calque)
 bx = (calque.width - bw) // 2
-d.rectangle((bx, 20, bx + bw, 20 + bh), fill=BLEU)
-y = 20 + pad_y
+haut = 20 + G
+d.rectangle((bx, haut, bx + bw, haut + bh), fill=BLEU)
+y = haut + pad_y
 for l, f, x0, y0, lw, lh in blocs:
     d.text((bx + (bw - lw) / 2 - x0, y - y0), l, font=f, fill=BLANC)
     y += lh + inter
 pxx = (calque.width - pw) // 2
-pyy = 20 + bh - recouvre
+pyy = haut + bh - recouvre
 d.rounded_rectangle((pxx, pyy, pxx + pw, pyy + ph), radius=ph // 2, fill=BLANC)
 d.text((pxx + 34 - px0, pyy + 18 - py0), arg.lieu, font=fp, fill=BLEU)
+if M:
+    # le centre du rond sur le coin, légèrement débordant vers l'extérieur
+    kx = bx + bw if arg.rond_coin[1] == "d" else bx
+    ky = haut if arg.rond_coin[0] == "h" else haut + bh
+    dx = fx * M * (1 if arg.rond_coin[1] == "d" else -1)
+    dy = fy * M * (-1 if arg.rond_coin[0] == "h" else 1)
+    calque.alpha_composite(MED, (int(kx + dx - M), int(ky + dy - M)))
 calque = calque.rotate(arg.angle, expand=True, resample=Image.BICUBIC)
 
 # position : à gauche du visage, centrée dans la zone 3:4 comme sur la miniature du CERN
