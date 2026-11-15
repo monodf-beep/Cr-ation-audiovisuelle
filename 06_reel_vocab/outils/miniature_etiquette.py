@@ -222,9 +222,12 @@ bh = sum(b[5] for b in blocs) + inter * (len(blocs) - 1) + 2 * pad_y
 
 # pastille du lieu
 fp = ImageFont.truetype(PASTILLE, 40)
-px0, py0, px1, py1 = fp.getbbox(arg.lieu)
-pw, ph = (px1 - px0) + 2 * 34, (py1 - py0) + 2 * 18
-recouvre = 16                                        # la pastille mord sur le bas de l'étiquette
+if arg.lieu:
+    px0, py0, px1, py1 = fp.getbbox(arg.lieu)
+    pw, ph = (px1 - px0) + 2 * 34, (py1 - py0) + 2 * 18
+    recouvre = 16                                    # la pastille mord sur le bas de l'étiquette
+else:                                                # --lieu "" : pas de pastille (visuel intemporel)
+    pw = ph = recouvre = 0
 
 # marge autour de l'étiquette : de quoi y accrocher le médaillon à un coin
 M = MED.width // 2 if (MED is not None and arg.rond_coin) else 0
@@ -241,8 +244,9 @@ for l, f, x0, y0, lw, lh in blocs:
     y += lh + inter
 pxx = (calque.width - pw) // 2
 pyy = haut + bh - recouvre
-d.rounded_rectangle((pxx, pyy, pxx + pw, pyy + ph), radius=ph // 2, fill=BLANC)
-d.text((pxx + 34 - px0, pyy + 18 - py0), arg.lieu, font=fp, fill=BLEU)
+if arg.lieu:
+    d.rounded_rectangle((pxx, pyy, pxx + pw, pyy + ph), radius=ph // 2, fill=BLANC)
+    d.text((pxx + 34 - px0, pyy + 18 - py0), arg.lieu, font=fp, fill=BLEU)
 if M:
     # le centre du rond sur le coin, légèrement débordant vers l'extérieur
     kx = bx + bw if arg.rond_coin[1] == "d" else bx
