@@ -1,0 +1,5 @@
+# Un compte Instagram par ligne, sans @. Les lignes commençant par # sont ignorées.
+# Format : compte  [catégorie]
+# Catégories suggérées : concurrent-ia, concurrent-territoire, modele, a-eviter
+#
+# exemple_compte  concurrent-ia

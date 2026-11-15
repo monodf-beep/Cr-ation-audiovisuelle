@@ -16,3 +16,7 @@ __pycache__/
 *.webp
 04_montage/coupes.json
 22_drapeaux/
+
+# Veille Instagram : médias et métadonnées des concurrents, jamais dans le dépôt
+10_branding/veille/donnees/
+!10_branding/charte/etat-actuel-*.jpg
