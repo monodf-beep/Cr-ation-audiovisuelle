@@ -42,7 +42,7 @@ def charger(d: Path) -> list[dict]:
             "date": date,
             "type": j.get("type") or "post",
             "slides": j.get("count") or 1,
-            "likes": j.get("likes") or 0,
+            "likes": j.get("likes"),   # None = masqués par le compte
             "commentaires": "",
             "vues": "",
             "duree_s": "",
@@ -101,24 +101,29 @@ def charger(d: Path) -> list[dict]:
 
 def scorer(pubs: list[dict]) -> None:
     def inter(p):
+        if p["likes"] is None:          # likes masqués : pas de score, plutôt qu'un faux zéro
+            return None
         c = p["commentaires"] if isinstance(p["commentaires"], int) else 0
         return p["likes"] + 3 * c
 
-    valeurs = [inter(p) for p in pubs if not p["epingle"]] or [inter(p) for p in pubs]
+    connus = [p for p in pubs if inter(p) is not None]
+    valeurs = [inter(p) for p in connus if not p["epingle"]] or [inter(p) for p in connus]
     med = statistics.median(valeurs) if valeurs else 0
     for p in pubs:
-        p["interactions"] = inter(p)
-        p["score"] = round(inter(p) / med, 2) if med else 0
+        i = inter(p)
+        p["interactions"] = "" if i is None else i
+        p["score"] = "" if i is None else (round(i / med, 2) if med else 0)
 
 
 def resume(pubs: list[dict], compte: str) -> str:
     dates = sorted(datetime.fromisoformat(p["date"]) for p in pubs)
     semaines = max(1, (dates[-1] - dates[0]).days / 7) if len(dates) > 1 else 1
     formats = Counter(p["format"] for p in pubs)
-    tri = sorted(pubs, key=lambda p: p["score"], reverse=True)
+    tri = sorted([p for p in pubs if p["score"] != ""], key=lambda p: p["score"], reverse=True)
+    masques = len(pubs) - len(tri)
 
     def moyenne_score(fmt):
-        s = [p["score"] for p in pubs if p["format"] == fmt]
+        s = [p["score"] for p in pubs if p["format"] == fmt and p["score"] != ""]
         return f"{statistics.mean(s):.2f}" if s else "-"
 
     tags = Counter(t for p in pubs for t in p["hashtags"].split())
@@ -132,6 +137,8 @@ def resume(pubs: list[dict], compte: str) -> str:
         f"- Légende médiane : {statistics.median(p['mots_legende'] for p in pubs):.0f} mots",
         "- Hashtags fréquents : " + (" ".join(t for t, _ in tags.most_common(10)) or "aucun"),
     ]
+    if masques:
+        lignes.append(f"- {masques} publication(s) aux likes masqués : exclues du classement (voir les vues pour les reels).")
     if len(pubs) < 20:
         lignes.append(f"- ⚠ Seulement {len(pubs)} publications : conclusions fragiles.")
     if not any(p["commentaires"] != "" for p in pubs):
@@ -163,7 +170,7 @@ def main() -> None:
     if not pubs:
         sys.exit(f"Aucune métadonnée gallery-dl trouvée dans {d}")
     scorer(pubs)
-    pubs.sort(key=lambda p: p["score"], reverse=True)
+    pubs.sort(key=lambda p: -1 if p["score"] == "" else p["score"], reverse=True)
     with open(d / "index.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=COLONNES, extrasaction="ignore")
         w.writeheader()
