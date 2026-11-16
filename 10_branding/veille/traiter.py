@@ -67,7 +67,15 @@ def duree(video: Path) -> float:
 def transcrire(video: Path, sortie: Path, modele) -> None:
     if sortie.exists():
         return
-    segments, info = modele.transcribe(str(video), vad_filter=True)
+    # Décodage par ffmpeg (16 kHz mono) plutôt que par PyAV : évite les conflits de versions.
+    import numpy as np
+    brut = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(video), "-vn", "-ac", "1",
+                           "-ar", "16000", "-f", "s16le", "-"], capture_output=True).stdout
+    if not brut:
+        sortie.write_text(f"# pas de piste audio duree={duree(video):.1f}s\n", encoding="utf-8")
+        return
+    audio = np.frombuffer(brut, np.int16).astype(np.float32) / 32768.0
+    segments, info = modele.transcribe(audio, vad_filter=True)
     lignes = [f"[{s.start:05.1f}s] {s.text.strip()}" for s in segments]
     entete = f"# langue={info.language} duree={duree(video):.1f}s\n"
     sortie.write_text(entete + "\n".join(lignes) + "\n", encoding="utf-8")
